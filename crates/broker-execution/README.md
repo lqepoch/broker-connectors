@@ -36,7 +36,7 @@ boundary, not a claim that the combined engine workspace has already built. Run
 `python3 scripts/check_broker_execution_dependency_firewall.py` at the repository root to verify
 the full normal dependency graph remains limited to this crate, core `domain`, and `exact-decimal`.
 
-The workspace has no Alpaca REST or IBKR execution SDK dependency. The pinned
+This crate has no Alpaca REST or IBKR execution SDK dependency. The pinned
 [`wmzhai/alpaca-rust@d91be382e3e9d25c52c24e626e78702532d24ba2`](https://github.com/wmzhai/alpaca-rust/tree/d91be382e3e9d25c52c24e626e78702532d24ba2)
 is a community Rust SDK candidate listed by Alpaca as community-made, not an Alpaca-supported
 official SDK. The evaluated [`wboayue/rust-ibapi@3e73f2f1cfac151c10e403a3e7d779272134445f`](https://github.com/wboayue/rust-ibapi/tree/3e73f2f1cfac151c10e403a3e7d779272134445f)
@@ -46,7 +46,7 @@ protocol references only; they do not establish vendor support for these communi
 ## Local checks
 
 ```sh
-CARGO_BUILD_JOBS=2 cargo +1.98.1 test -p broker-execution --locked
-CARGO_BUILD_JOBS=2 cargo +1.98.1 test -p broker-execution --features offline-fake --locked
-CARGO_BUILD_JOBS=2 cargo +1.98.1 tree -p broker-execution --all-features --edges all
+CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p broker-execution --locked
+CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p broker-execution --features offline-fake --locked
+CARGO_BUILD_JOBS=2 cargo +1.99.0 tree -p broker-execution --all-features --edges all
 ```

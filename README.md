@@ -8,7 +8,9 @@ No broker writer or provider execution adapter is present. The separate `broker-
 
 `broker-execution` is intentionally separate from `broker-ports`. A minimal engine resolver probe rejected the combined dependency graph because `market-contracts` at core revision `0a2eaff08d45e8abc1a0137dab17d5d3ef5553c8` requires `serde_json=1.0.151` while the pinned Schwab persistence source requires `serde_json=1.0.149`; the exact command and failure are recorded in [`DEPENDENCY-RESOLUTION.md`](DEPENDENCY-RESOLUTION.md). The new crate depends only on core `domain`; `scripts/check_broker_execution_dependency_firewall.py` verifies its full normal dependency graph, including all features, remains `broker-execution`, `domain`, and `exact-decimal`.
 
-The pinned upstream/community [`alpaca-rust` v0.33.3](https://github.com/wmzhai/alpaca-rust/tree/d91be382e3e9d25c52c24e626e78702532d24ba2) candidate is not an Alpaca-maintained or Alpaca-supported official SDK, and it is not a production REST client in this workspace. Alpaca lists it under [Community-Made SDKs](https://docs.alpaca.markets/us/docs/sdks-and-tools); the upstream README names individual maintainer Weiming Zhai. At that exact revision, [`alpaca-rest-http` buffers response text without a byte cap](https://github.com/wmzhai/alpaca-rust/blob/d91be382e3e9d25c52c24e626e78702532d24ba2/crates/alpaca-http/src/client.rs), and the high-level data client has no custom zeroizing authenticator path. The workspace metadata declares `MIT OR Apache-2.0`; the upstream [`MIT`](https://github.com/wmzhai/alpaca-rust/blob/d91be382e3e9d25c52c24e626e78702532d24ba2/LICENSE-MIT) and [`Apache-2.0`](https://github.com/wmzhai/alpaca-rust/blob/d91be382e3e9d25c52c24e626e78702532d24ba2/LICENSE-APACHE) files were checked, although the GitHub repository API reports `NOASSERTION`. No Alpaca REST SDK dependency or credential-bearing client is added. A later integration needs a narrowly reviewed, pinned upstream patch with bounded response-body reads, redirects disabled, and zeroization for long-lived credential storage; transient transport copies must still be described separately.
+The pinned community [`alpaca-rust` v0.33.3](https://github.com/wmzhai/alpaca-rust/tree/d91be382e3e9d25c52c24e626e78702532d24ba2) is not maintained or supported by Alpaca. Alpaca lists it under [Community-Made SDKs](https://docs.alpaca.markets/us/docs/sdks-and-tools); the pinned upstream README names Weiming Zhai as maintainer. The workspace vendors only `alpaca-core`, `alpaca-data`, and `alpaca-rest-http` under `vendor/alpaca-rust/`, retaining the upstream `MIT OR Apache-2.0` license files. The exact source tree, package paths, removed live API tests, security patches, and patch hash are recorded in [`vendor/alpaca-rust/UPSTREAM.md`](vendor/alpaca-rust/UPSTREAM.md) and `SOURCE-MANIFEST.json`.
+
+The [`alpaca-rest-read`](crates/alpaca-rest-read/README.md) crate is a narrow, read-only adapter over the pinned community SDK. It uses shared `market-contracts` quote/trade payloads; only quote, trade, and snapshot reads are exposed. Credentials are explicitly injected and owned in zeroizing buffers, there is no environment-variable lookup, the HTTPS origin is fixed, redirects are disabled, response bodies are capped at 8 MiB, and request/page/retry budgets are finite. HTTP request construction necessarily creates transient header copies that this patch cannot zeroize. The adapter keeps requested `opra`/`indicative` separate from effective source and entitlement, which remain `unknown`. Historical option bars/trades and trusted watermarks remain unsupported. No Alpaca provider request or OAuth flow was run.
 
 This workspace has no IBKR SDK integration. The evaluated pinned Rust client [`wboayue/rust-ibapi`](https://github.com/wboayue/rust-ibapi/tree/3e73f2f1cfac151c10e403a3e7d779272134445f) identifies itself as an unofficial community client; the [official TWS API documentation](https://www.interactivebrokers.com/docs/tws-api/doc/orders/modifying-orders) is the protocol reference, not evidence that IBKR maintains or supports that Rust SDK.
 
@@ -52,12 +54,19 @@ The initial implementation reuses the audited source `schwab_auto_bot@c907d18bc3
 ## Local checks
 
 ```sh
-CARGO_BUILD_JOBS=2 cargo +1.98.1 fmt --all -- --check
-CARGO_BUILD_JOBS=2 cargo +1.98.1 test -p broker-execution --locked --offline
-CARGO_BUILD_JOBS=2 cargo +1.98.1 test -p broker-execution --features offline-fake --locked --offline
+CARGO_BUILD_JOBS=2 cargo +1.99.0 fmt --all -- --check
+CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p broker-execution --locked --offline
+CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p broker-execution --features offline-fake --locked --offline
 python3 scripts/check_broker_execution_dependency_firewall.py
-CARGO_BUILD_JOBS=2 cargo +1.98.1 test --workspace --locked
-CARGO_BUILD_JOBS=2 cargo +1.98.1 clippy --workspace --all-targets --locked -- -D warnings
+CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p alpaca-rest-read --locked --offline
+CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy -p alpaca-rest-read --all-targets --locked --offline -- -D warnings
+CARGO_BUILD_JOBS=2 cargo +1.99.0 test --workspace --locked
+CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy --workspace --all-targets --locked -- -D warnings
+python3 scripts/generate_spdx_sbom.py
+python3 scripts/update_source_manifest_hashes.py
+python3 scripts/check_vendor_provenance.py
+CARGO_BUILD_JOBS=2 cargo +1.99.0 test --manifest-path vendor/alpaca-rust/Cargo.toml -p alpaca-core -p alpaca-rest-http -p alpaca-data --lib --offline
+CARGO_BUILD_JOBS=2 cargo +1.99.0 test --manifest-path vendor/alpaca-rust/Cargo.toml -p alpaca-rest-http --test client_retry --offline
 ```
 
-These checks use synthetic inputs. Real Alpaca entitlement, OPRA service behavior, SIP service behavior (not implemented here), remote network operation, durable frame storage, and native Windows/macOS runtime remain `NOT RUN` in this repository task.
+The workspace toolchain is pinned to Rust 1.99.0 because the selected SDK requires that compiler; shared workspace crates such as `broker-execution` retain MSRV 1.98.1. Consumers of `alpaca-rest-read` need Rust 1.99.0. These checks use synthetic inputs or localhost-only fake transport. Real Alpaca entitlement, OPRA service behavior, SIP service behavior (not implemented here), provider network operation, durable frame storage, and native Windows/macOS runtime remain `NOT RUN` in this repository task.
