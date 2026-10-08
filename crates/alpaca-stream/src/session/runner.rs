@@ -9,14 +9,30 @@ use super::*;
 use crate::ControlEvent;
 use std::collections::BTreeSet;
 
-use broker_ports::{RawFrameCaptureError, RawFrameDisposition, RawFramePayload};
-use market_contracts::{DecimalString, MarketEventV1, NumericEncodingV1};
+use broker_ports::{
+    RawFrameCapture, RawFrameCaptureAck, RawFrameCaptureError, RawFrameDisposition,
+    RawFrameFinalization, RawFrameFinalizationError, RawFramePayload, RawFrameSink,
+    RawFrameWireEncoding,
+};
+use market_contracts::{
+    DecimalString, EntitlementState, MarketEventV1, NumericEncodingV1, UtcTimestamp,
+};
+use std::sync::Arc;
+
+const RAW_FRAME_SINK_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(5);
 
 #[derive(Clone)]
 struct RawFrameCorrelation {
     frame_sequence: u64,
     event_count: u32,
     sha256: String,
+}
+
+struct PendingRawCapture {
+    sink: Arc<dyn RawFrameSink>,
+    capture: RawFrameCapture,
+    acknowledgement: RawFrameCaptureAck,
+    received_at_utc: chrono::DateTime<chrono::Utc>,
 }
 
 struct DecodedProviderFrame {
@@ -490,7 +506,7 @@ where
         }
     }
 
-    #[allow(clippy::too_many_arguments)] // Each deadline and capture bound is explicit at this protocol boundary.
+    #[allow(clippy::too_many_arguments, clippy::too_many_lines)] // Protocol deadlines and both capture ACK phases remain auditable together.
     async fn receive_frame<S: StreamSocket>(
         &mut self,
         socket: &mut S,
@@ -529,10 +545,36 @@ where
                 Err(self.protocol_violation(generation, ProtocolViolationReason::TextFrame))
             }
             Abort::Completed(Ok(Some(SocketFrame::Binary(payload)))) => {
-                match decode_frame_with_diagnostics(&payload) {
+                let mut memory_payload = Some(payload);
+                let received_at_utc =
+                    chrono::DateTime::<chrono::Utc>::from(std::time::SystemTime::now());
+                let pending_capture = if !matches!(capture_mode, FrameCaptureMode::None)
+                    && self.raw_frame_sink.is_some()
+                {
+                    Some(
+                        self.persist_predecode_capture(
+                            generation,
+                            frame_sequence,
+                            memory_payload
+                                .take()
+                                .expect("captured frame bytes are still owned before decode"),
+                            received_at_utc,
+                        )
+                        .await?,
+                    )
+                } else {
+                    None
+                };
+                let decode_bytes = pending_capture.as_ref().map_or_else(
+                    || {
+                        memory_payload
+                            .as_deref()
+                            .expect("memory-only frame bytes remain available before decode")
+                    },
+                    |pending| pending.capture.payload().as_bytes(),
+                );
+                match decode_frame_with_diagnostics(decode_bytes) {
                     Ok(messages) => {
-                        let received_at_utc =
-                            chrono::DateTime::<chrono::Utc>::from(std::time::SystemTime::now());
                         let acknowledgement_matches = messages
                             .iter()
                             .find_map(|message| match message {
@@ -542,36 +584,54 @@ where
                                 _ => None,
                             })
                             .unwrap_or(false);
-                        let raw_frame =
+                        let analysis =
                             analyze_raw_frame(&messages, capture_mode, acknowledgement_matches)
-                                .map(|analysis| {
+                                .map_err(|_| {
+                                    self.protocol_violation(
+                                        generation,
+                                        ProtocolViolationReason::UnexpectedMarketMessage,
+                                    )
+                                })?;
+                        let raw_frame = match pending_capture {
+                            Some(pending) => {
+                                let summary = analysis.unwrap_or_else(control_finalization);
+                                Some(self.finalize_and_publish_capture(pending, summary).await?)
+                            }
+                            None => analysis
+                                .map(|summary| {
                                     self.capture_raw_frame(
                                         generation,
                                         frame_sequence,
-                                        payload,
+                                        memory_payload
+                                            .take()
+                                            .expect("memory-only frame bytes remain available"),
                                         received_at_utc,
-                                        analysis,
+                                        &summary,
                                     )
                                 })
-                                .transpose()?;
+                                .transpose()?,
+                        };
                         Ok(DecodedProviderFrame {
                             messages,
                             raw_frame,
                         })
                     }
                     Err(error) => {
-                        if !matches!(capture_mode, FrameCaptureMode::None) {
+                        if let Some(pending) = pending_capture {
+                            self.finalize_and_publish_capture(
+                                pending,
+                                decode_failure_finalization(),
+                            )
+                            .await?;
+                        } else if !matches!(capture_mode, FrameCaptureMode::None) {
                             self.capture_raw_frame(
                                 generation,
                                 frame_sequence,
-                                payload,
-                                chrono::DateTime::<chrono::Utc>::from(std::time::SystemTime::now()),
-                                RawFrameAnalysis {
-                                    event_count: 0,
-                                    symbols: Vec::new(),
-                                    numeric_encoding: None,
-                                    disposition: RawFrameDisposition::DecodeFailure,
-                                },
+                                memory_payload
+                                    .take()
+                                    .expect("memory-only frame bytes remain available"),
+                                received_at_utc,
+                                &decode_failure_finalization(),
                             )?;
                         }
                         Err(self
@@ -588,7 +648,7 @@ where
         frame_sequence: &mut u64,
         payload: Vec<u8>,
         received_at_utc: chrono::DateTime<chrono::Utc>,
-        analysis: RawFrameAnalysis,
+        analysis: &RawFrameFinalization,
     ) -> Result<RawFrameCorrelation, AttemptEnd> {
         *frame_sequence = frame_sequence.checked_add(1).ok_or_else(|| {
             failed(
@@ -616,10 +676,10 @@ where
             frame_sequence: *frame_sequence,
             received_at_utc,
             wire_encoding: broker_ports::RawFrameWireEncoding::MessagePack,
-            event_count: analysis.event_count,
-            symbols: analysis.symbols,
-            numeric_encoding: analysis.numeric_encoding,
-            disposition: analysis.disposition,
+            event_count: analysis.event_count(),
+            symbols: analysis.symbols().to_vec(),
+            numeric_encoding: analysis.numeric_encoding(),
+            disposition: analysis.disposition(),
             payload: payload.clone(),
         };
         self.publishers
@@ -627,7 +687,118 @@ where
             .map_err(|failure| AttemptEnd::Failed(lane_failure(failure)))?;
         Ok(RawFrameCorrelation {
             frame_sequence: *frame_sequence,
-            event_count: analysis.event_count,
+            event_count: analysis.event_count(),
+            sha256: payload.sha256().to_owned(),
+        })
+    }
+
+    async fn persist_predecode_capture(
+        &mut self,
+        generation: SessionGeneration,
+        frame_sequence: &mut u64,
+        payload: Vec<u8>,
+        received_at_utc: chrono::DateTime<chrono::Utc>,
+    ) -> Result<PendingRawCapture, AttemptEnd> {
+        *frame_sequence = frame_sequence.checked_add(1).ok_or_else(|| {
+            failed(
+                StreamError::SequenceExhausted,
+                SessionStatusCause::ProtocolViolation,
+                false,
+            )
+        })?;
+        let payload = RawFramePayload::capture(payload).map_err(|_| raw_capture_failure())?;
+        let feed = self
+            .config
+            .feed
+            .as_str()
+            .map_err(|_| raw_capture_failure())?;
+        let timestamp = UtcTimestamp::parse(
+            &received_at_utc.to_rfc3339_opts(chrono::SecondsFormat::Nanos, true),
+        )
+        .map_err(|_| raw_capture_failure())?;
+        let sink = Arc::clone(
+            self.raw_frame_sink
+                .as_ref()
+                .expect("predecode capture requires a configured sink"),
+        );
+        let capture_instance_id = self
+            .raw_capture_instance_id
+            .expect("sink identity is fixed at logical subscription creation");
+        let capture = RawFrameCapture::new(
+            capture_instance_id,
+            "alpaca",
+            feed,
+            EntitlementState::Unknown,
+            generation.get(),
+            *frame_sequence,
+            timestamp,
+            RawFrameWireEncoding::MessagePack,
+            payload,
+        )
+        .map_err(|_| raw_capture_failure())?;
+        let predecode = time::timeout(RAW_FRAME_SINK_TIMEOUT, sink.persist_before_decode(&capture));
+        let acknowledgement =
+            match cancellable(predecode, &mut self.shutdown, &mut self.consumers_closed).await {
+                Abort::Cancelled => return Err(AttemptEnd::Cancelled),
+                Abort::ConsumersClosed => return Err(AttemptEnd::ConsumersClosed),
+                Abort::Completed(Err(_) | Ok(Err(_))) => {
+                    return Err(raw_capture_failure());
+                }
+                Abort::Completed(Ok(Ok(acknowledgement))) => acknowledgement,
+            };
+        if !acknowledgement.matches(&capture) {
+            return Err(raw_capture_failure());
+        }
+        Ok(PendingRawCapture {
+            sink,
+            capture,
+            acknowledgement,
+            received_at_utc,
+        })
+    }
+
+    async fn finalize_and_publish_capture(
+        &mut self,
+        pending: PendingRawCapture,
+        summary: RawFrameFinalization,
+    ) -> Result<RawFrameCorrelation, AttemptEnd> {
+        let finalization = time::timeout(
+            RAW_FRAME_SINK_TIMEOUT,
+            pending
+                .sink
+                .finalize_after_decode(&pending.acknowledgement, &summary),
+        );
+        let acknowledgement =
+            match cancellable(finalization, &mut self.shutdown, &mut self.consumers_closed).await {
+                Abort::Cancelled => return Err(AttemptEnd::Cancelled),
+                Abort::ConsumersClosed => return Err(AttemptEnd::ConsumersClosed),
+                Abort::Completed(Err(_) | Ok(Err(_))) => {
+                    return Err(raw_capture_failure());
+                }
+                Abort::Completed(Ok(Ok(acknowledgement))) => acknowledgement,
+            };
+        if !acknowledgement.matches(&pending.acknowledgement, &summary) {
+            return Err(raw_capture_failure());
+        }
+        let payload = pending.capture.payload().clone();
+        let frame = crate::InboundRawMarketFrame {
+            capture_instance_id: Some(pending.capture.capture_instance_id()),
+            generation: SessionGeneration::new(pending.capture.generation()),
+            frame_sequence: pending.capture.frame_sequence(),
+            received_at_utc: pending.received_at_utc,
+            wire_encoding: pending.capture.wire_encoding(),
+            event_count: summary.event_count(),
+            symbols: summary.symbols().to_vec(),
+            numeric_encoding: summary.numeric_encoding(),
+            disposition: summary.disposition(),
+            payload: payload.clone(),
+        };
+        self.publishers
+            .control(ControlEvent::RawMarketFrame(frame))
+            .map_err(|failure| AttemptEnd::Failed(lane_failure(failure)))?;
+        Ok(RawFrameCorrelation {
+            frame_sequence: pending.capture.frame_sequence(),
+            event_count: summary.event_count(),
             sha256: payload.sha256().to_owned(),
         })
     }
@@ -907,18 +1078,11 @@ where
     }
 }
 
-struct RawFrameAnalysis {
-    event_count: u32,
-    symbols: Vec<String>,
-    numeric_encoding: Option<NumericEncodingV1>,
-    disposition: RawFrameDisposition,
-}
-
 fn analyze_raw_frame(
     messages: &[ProviderMessage],
     mode: FrameCaptureMode,
     acknowledgement_matches: bool,
-) -> Option<RawFrameAnalysis> {
+) -> Result<Option<RawFrameFinalization>, RawFrameFinalizationError> {
     let mut event_count = 0_u32;
     let mut symbols = BTreeSet::new();
     let mut observed_encoding = None;
@@ -935,7 +1099,6 @@ fn analyze_raw_frame(
                 {
                     protocol_shape_invalid = true;
                 }
-                symbols.insert(quote.symbol.as_str().to_owned());
                 let bid = numeric_encoding(quote.bid_price);
                 let ask = numeric_encoding(quote.ask_price);
                 if bid == ask {
@@ -946,6 +1109,7 @@ fn analyze_raw_frame(
                 }
                 if raw_event_is_normalizable(message) && bid == ask {
                     event_count = event_count.saturating_add(1);
+                    symbols.insert(quote.symbol.as_str().to_owned());
                 } else {
                     protocol_shape_invalid = true;
                 }
@@ -955,7 +1119,6 @@ fn analyze_raw_frame(
                 {
                     protocol_shape_invalid = true;
                 }
-                symbols.insert(trade.symbol.as_str().to_owned());
                 observe_encoding(
                     &mut observed_encoding,
                     &mut mixed_encoding,
@@ -963,6 +1126,7 @@ fn analyze_raw_frame(
                 );
                 if raw_event_is_normalizable(message) {
                     event_count = event_count.saturating_add(1);
+                    symbols.insert(trade.symbol.as_str().to_owned());
                 } else {
                     protocol_shape_invalid = true;
                 }
@@ -984,7 +1148,7 @@ fn analyze_raw_frame(
     }
 
     if matches!(mode, FrameCaptureMode::None) {
-        return None;
+        return Ok(None);
     }
     if !saw_unknown
         && !saw_provider_error
@@ -992,7 +1156,7 @@ fn analyze_raw_frame(
         && (event_count == 0
             || matches!(mode, FrameCaptureMode::SubscriptionHandshake) && !acknowledgement_seen)
     {
-        return None;
+        return Ok(None);
     }
 
     let disposition = if saw_unknown {
@@ -1004,14 +1168,33 @@ fn analyze_raw_frame(
     } else {
         RawFrameDisposition::DecodedMarketData
     };
-    Some(RawFrameAnalysis {
+    let symbols = symbols.into_iter().collect();
+    RawFrameFinalization::new(
         event_count,
-        symbols: symbols.into_iter().collect(),
-        numeric_encoding: (event_count > 0 && !mixed_encoding)
+        symbols,
+        (event_count > 0 && !mixed_encoding)
             .then_some(observed_encoding)
             .flatten(),
         disposition,
-    })
+    )
+    .map(Some)
+}
+
+fn control_finalization() -> RawFrameFinalization {
+    RawFrameFinalization::new(0, Vec::new(), None, RawFrameDisposition::ControlMessage)
+        .expect("fixed control summary is valid")
+}
+
+fn decode_failure_finalization() -> RawFrameFinalization {
+    RawFrameFinalization::new(0, Vec::new(), None, RawFrameDisposition::DecodeFailure)
+        .expect("fixed decode-failure summary is valid")
+}
+
+fn raw_capture_failure() -> AttemptEnd {
+    AttemptEnd::Failed(terminal(
+        StreamError::RawCaptureFailed,
+        SessionStatusCause::ProtocolViolation,
+    ))
 }
 
 fn observe_encoding(

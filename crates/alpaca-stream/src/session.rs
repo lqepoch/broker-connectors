@@ -5,6 +5,7 @@
 use std::error::Error;
 use std::fmt::{self, Display, Formatter};
 use std::future::Future;
+use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering as AtomicOrdering};
 use std::time::SystemTime;
 
@@ -31,6 +32,7 @@ use crate::state::{InternalPhase, PhaseMachine, reconnect_delay};
 use crate::transport::{
     ConnectFailure, SocketConnector, SocketFrame, StreamSocket, TokioConnector,
 };
+use broker_ports::RawFrameSink;
 
 mod runner;
 
@@ -76,16 +78,27 @@ fn next_session_retry_seed() -> Option<u64> {
 pub struct AlpacaOptionsStream<P> {
     config: StreamConfig,
     credential_provider: P,
+    raw_frame_sink: Option<Arc<dyn RawFrameSink>>,
 }
 
 impl<P: CredentialProvider> AlpacaOptionsStream<P> {
-    /// Creates an options stream using fixed local configuration and an injected credential port.
-    /// 使用固定本地配置和注入的凭证端口创建期权行情流。
+    /// Creates an options stream using fixed configuration and injected credentials.
+    /// Without [`Self::with_raw_frame_sink`], raw records remain memory-only diagnostics.
+    /// 使用固定配置与注入凭证创建期权流。未调用 [`Self::with_raw_frame_sink`] 时，原始记录仅作内存诊断。
     pub fn new(config: StreamConfig, credential_provider: P) -> Self {
         Self {
             config,
             credential_provider,
+            raw_frame_sink: None,
         }
+    }
+
+    /// Requires a trusted sink for pre-decode capture and post-decode finalization.
+    /// 设置可信 sink，并要求行情帧在解码与事件发布前完成两阶段确认。
+    #[must_use]
+    pub fn with_raw_frame_sink(mut self, sink: Arc<dyn RawFrameSink>) -> Self {
+        self.raw_frame_sink = Some(sink);
+        self
     }
 
     /// Starts one bounded session task and returns its independent consumer lanes.
@@ -100,6 +113,7 @@ impl<P: CredentialProvider> AlpacaOptionsStream<P> {
             shutdown_rx,
             consumers_closed,
             publishers,
+            self.raw_frame_sink,
         ));
         receivers.into_handle(shutdown_tx, task)
     }
@@ -166,6 +180,9 @@ pub enum StreamError {
     /// The provider sent a malformed, oversized, or out-of-order frame.
     /// Provider 发送了畸形、超大或顺序错误的 frame。
     ProtocolViolation,
+    /// A configured raw sink failed, timed out, or returned a mismatched acknowledgement.
+    /// 已配置的 raw sink 失败、超时或返回不匹配的确认。
+    RawCaptureFailed,
     /// The local session generation or ingest sequence could not advance safely.
     /// 本地会话代次或接收序号无法安全递增。
     SequenceExhausted,
@@ -213,6 +230,7 @@ impl Display for StreamError {
             }
             Self::TransportLost => formatter.write_str("ALPACA_STREAM_TRANSPORT_LOST"),
             Self::ProtocolViolation => formatter.write_str("ALPACA_STREAM_PROTOCOL_VIOLATION"),
+            Self::RawCaptureFailed => formatter.write_str("ALPACA_STREAM_RAW_CAPTURE_FAILED"),
             Self::SequenceExhausted => formatter.write_str("ALPACA_STREAM_SEQUENCE_EXHAUSTED"),
             Self::ConsumerOverloaded => formatter.write_str("ALPACA_STREAM_CONSUMER_OVERLOADED"),
             Self::ConsumerClosed => formatter.write_str("ALPACA_STREAM_CONSUMER_CLOSED"),
@@ -232,6 +250,8 @@ struct Runner<P, C, W> {
     shutdown: watch::Receiver<bool>,
     consumers_closed: watch::Receiver<bool>,
     publishers: LanePublishers,
+    raw_frame_sink: Option<Arc<dyn RawFrameSink>>,
+    raw_capture_instance_id: Option<broker_ports::RawCaptureInstanceId>,
     phases: PhaseMachine,
     generation: u64,
     retry_seed: u64,
@@ -278,6 +298,7 @@ async fn run_session<P, C>(
     shutdown: watch::Receiver<bool>,
     consumers_closed: watch::Receiver<bool>,
     publishers: LanePublishers,
+    raw_frame_sink: Option<Arc<dyn RawFrameSink>>,
 ) -> Result<SessionExit, StreamError>
 where
     P: CredentialProvider,
@@ -294,6 +315,7 @@ where
         shutdown,
         consumers_closed,
         publishers,
+        raw_frame_sink,
         SessionRuntime {
             retry_seed,
             freshness_clock: SystemFreshnessClock,
@@ -302,6 +324,7 @@ where
     .await
 }
 
+#[allow(clippy::too_many_arguments)] // Runtime inputs stay explicit in the deterministic session harness.
 async fn run_session_with_seed_and_clock<P, C, W>(
     config: StreamConfig,
     credential_provider: P,
@@ -309,6 +332,7 @@ async fn run_session_with_seed_and_clock<P, C, W>(
     shutdown: watch::Receiver<bool>,
     consumers_closed: watch::Receiver<bool>,
     publishers: LanePublishers,
+    raw_frame_sink: Option<Arc<dyn RawFrameSink>>,
     runtime: SessionRuntime<W>,
 ) -> Result<SessionExit, StreamError>
 where
@@ -316,6 +340,9 @@ where
     C: SocketConnector,
     W: FreshnessClock,
 {
+    let raw_capture_instance_id = raw_frame_sink
+        .as_ref()
+        .map(|sink| sink.capture_instance_id());
     let mut runner = Runner {
         config,
         credential_provider,
@@ -323,6 +350,8 @@ where
         shutdown,
         consumers_closed,
         publishers,
+        raw_frame_sink,
+        raw_capture_instance_id,
         phases: PhaseMachine::new(),
         generation: 0,
         retry_seed: runtime.retry_seed,

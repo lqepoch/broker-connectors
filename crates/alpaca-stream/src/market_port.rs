@@ -10,7 +10,8 @@ use std::time::SystemTime;
 
 use broker_ports::{
     BrokerPortError, MarketDataItem, MarketDataPort, MarketDataSession,
-    MarketDataSubscriptionRequest, PortFuture, RawFrameReference, RawMarketFrame,
+    MarketDataSubscriptionRequest, PortFuture, RawFrameReference, RawFrameSinkError,
+    RawFrameSinkFactory, RawMarketFrame,
 };
 use chrono::{SecondsFormat, Utc};
 use market_contracts::{
@@ -41,19 +42,30 @@ static ACTIVE_ALPACA_PORT_SESSIONS: OnceLock<Arc<Semaphore>> = OnceLock::new();
 pub struct AlpacaOptionsMarketDataPort<P> {
     environment: StreamEnvironment,
     credentials: Arc<Mutex<P>>,
+    raw_frame_sink_factory: Option<Arc<dyn RawFrameSinkFactory>>,
 }
 
 impl<P> AlpacaOptionsMarketDataPort<P>
 where
     P: CredentialProvider,
 {
-    /// Creates a provider port for an allowlisted environment without loading credentials.
-    /// 为 allowlist 环境创建供应商端口，但不在构造时读取凭证。
+    /// Creates an allowlisted provider port without loading credentials.
+    /// Without [`Self::with_raw_frame_sink_factory`], its raw records are memory-only diagnostics.
+    /// 为 allowlist 环境创建供应商端口，但不读取凭证；未配置 [`Self::with_raw_frame_sink_factory`] 时，原始记录仅作内存诊断。
     pub fn new(environment: StreamEnvironment, credential_provider: P) -> Self {
         Self {
             environment,
             credentials: Arc::new(Mutex::new(credential_provider)),
+            raw_frame_sink_factory: None,
         }
+    }
+
+    /// Requires a trusted sink for each logical subscription instead of memory-only diagnostics.
+    /// 为每个逻辑订阅配置可信 sink，避免仅保留内存诊断帧。
+    #[must_use]
+    pub fn with_raw_frame_sink_factory(mut self, factory: Arc<dyn RawFrameSinkFactory>) -> Self {
+        self.raw_frame_sink_factory = Some(factory);
+        self
     }
 }
 
@@ -68,6 +80,7 @@ where
     ) -> PortFuture<'_, Result<MarketDataSession, BrokerPortError>> {
         let environment = self.environment;
         let credentials = Arc::clone(&self.credentials);
+        let raw_frame_sink_factory = self.raw_frame_sink_factory.as_ref().map(Arc::clone);
         Box::pin(async move {
             if request.provider() != "alpaca" {
                 return Err(BrokerPortError::UnsupportedSource);
@@ -99,7 +112,16 @@ where
                 .map_err(|_| BrokerPortError::InvalidRequest)?;
             let config = StreamConfig::new(environment, feed, subscriptions)
                 .map_err(|_| BrokerPortError::InvalidRequest)?;
-            let stream = AlpacaOptionsStream::new(config, SharedCredentialProvider(credentials));
+            let raw_frame_sink = raw_frame_sink_factory
+                .as_ref()
+                .map(|factory| factory.create_sink(request.provider(), request.feed()))
+                .transpose()
+                .map_err(map_raw_sink_error)?;
+            let mut stream =
+                AlpacaOptionsStream::new(config, SharedCredentialProvider(credentials));
+            if let Some(sink) = raw_frame_sink {
+                stream = stream.with_raw_frame_sink(sink);
+            }
             let mut handle = stream.spawn();
 
             let (records_tx, records_rx) = mpsc::channel(RECORD_LANE_CAPACITY);
@@ -188,6 +210,16 @@ where
 
             Ok(MarketDataSession::new(records_rx, cancel_tx))
         })
+    }
+}
+
+fn map_raw_sink_error(error: RawFrameSinkError) -> BrokerPortError {
+    match error {
+        RawFrameSinkError::CapacityExceeded => BrokerPortError::Overloaded,
+        RawFrameSinkError::Unavailable
+        | RawFrameSinkError::Ambiguous
+        | RawFrameSinkError::Cancelled
+        | RawFrameSinkError::Poisoned => BrokerPortError::Transport,
     }
 }
 
@@ -1019,6 +1051,55 @@ mod tests {
         assert_eq!(
             projector.raw_frame(raw_frame(1, 0, Vec::new(), payload), OptionFeed::Opra,),
             Err(BrokerPortError::ProtocolViolation)
+        );
+    }
+
+    #[test]
+    fn capture_identity_flows_from_raw_frame_to_event_reference() {
+        let mut capture_bytes = [0x51; 16];
+        capture_bytes[6] = 0x45;
+        capture_bytes[8] = 0x95;
+        let capture_id = broker_ports::RawCaptureInstanceId::new(capture_bytes)
+            .expect("synthetic UUIDv4 capture ID");
+        let payload =
+            RawFramePayload::capture(b"synthetic-frame".to_vec()).expect("bounded synthetic frame");
+        let mut input = raw_frame(1, 1, vec!["QQQ261218C00500000".to_owned()], payload.clone());
+        input.capture_instance_id = Some(capture_id);
+        let mut projector = EventProjector::default();
+        let projected = projector
+            .raw_frame(input, OptionFeed::Opra)
+            .expect("captured frame is projected");
+        assert_eq!(projected.capture_instance_id, Some(capture_id));
+        assert_eq!(
+            projected.wire_encoding,
+            broker_ports::RawFrameWireEncoding::MessagePack
+        );
+
+        let mut quote = quote();
+        quote.raw_frame_sha256 = payload.sha256().to_owned();
+        let (_, raw_reference) = projector
+            .quote(
+                QuoteUpdate {
+                    quote,
+                    feed: OptionFeed::Opra,
+                    ingest: crate::IngestStamp {
+                        generation: SessionGeneration::new(1),
+                        sequence: 1,
+                        raw_frame_sequence: 1,
+                        raw_frame_event_ordinal: 1,
+                        raw_frame_event_count: 1,
+                        received_at: tokio::time::Instant::now(),
+                        received_at_utc: chrono::DateTime::<Utc>::from(SystemTime::now()),
+                    },
+                    freshness: DataFreshness::Fresh,
+                    coalesced_updates: 0,
+                },
+                OptionFeed::Opra,
+            )
+            .expect("event references the exact captured frame");
+        assert_eq!(
+            raw_reference.expect("raw link exists").capture_instance_id,
+            Some(capture_id)
         );
     }
 

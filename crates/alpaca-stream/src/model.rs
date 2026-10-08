@@ -62,8 +62,8 @@ pub struct IngestStamp {
 /// 在行情事件规范化前捕获的原始帧元数据。
 #[derive(Clone, Eq, PartialEq)]
 pub struct InboundRawMarketFrame {
-    /// Capture UUIDv4 when a trusted pre-decode sink was configured.
-    /// 配置可信解码前 sink 时的捕获 UUIDv4。
+    /// Capture `UUIDv4` when a trusted pre-decode sink was configured.
+    /// 配置可信解码前 sink 时的捕获 `UUIDv4`。
     pub capture_instance_id: Option<broker_ports::RawCaptureInstanceId>,
     /// Source-local generation that received the raw frame.
     /// 接收原始帧的来源本地代次。

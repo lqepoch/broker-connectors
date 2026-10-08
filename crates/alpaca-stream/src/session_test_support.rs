@@ -16,6 +16,10 @@
     use crate::lane::{ControlEvent, LaneReceivers, create_lanes};
     use crate::state::ReconnectPolicy;
     use crate::transport::{SocketFailure, SocketFrame};
+    use broker_ports::{
+        PortFuture, RawCaptureInstanceId, RawFrameCapture, RawFrameCaptureAck,
+        RawFrameFinalization, RawFrameFinalizationAck, RawFrameSink, RawFrameSinkError,
+    };
 
     const SYMBOL: &str = "AAPL260123C00150000";
     const TEST_RETRY_SEED: u64 = 0x236a_1aca_5eed;
@@ -59,6 +63,144 @@
 
     struct PendingCredentialFuture {
         observations: Arc<PendingCredentialObservations>,
+    }
+
+    #[derive(Clone, Copy)]
+    enum RawSinkFault {
+        None,
+        FailPredecode(u64),
+        MismatchPredecode(u64),
+        FailFinalization(u64),
+        MismatchFinalization(u64),
+        PendingPredecode(u64),
+    }
+
+    struct FakeRawFrameSink {
+        id: RawCaptureInstanceId,
+        fault: RawSinkFault,
+        observations: Arc<StdMutex<Vec<String>>>,
+    }
+
+    impl FakeRawFrameSink {
+        fn with_fault(fault: RawSinkFault) -> (Arc<dyn RawFrameSink>, Arc<StdMutex<Vec<String>>>) {
+            let mut id = [0x31; 16];
+            id[6] = 0x41;
+            id[8] = 0x91;
+            let id = RawCaptureInstanceId::new(id).expect("synthetic UUIDv4 capture ID");
+            let observations = Arc::new(StdMutex::new(Vec::new()));
+            let sink: Arc<dyn RawFrameSink> = Arc::new(Self {
+                id,
+                fault,
+                observations: Arc::clone(&observations),
+            });
+            (sink, observations)
+        }
+
+        fn wrong_capture(capture: &RawFrameCapture) -> RawFrameCapture {
+            let mut id = [0x52; 16];
+            id[6] = 0x42;
+            id[8] = 0x92;
+            RawFrameCapture::new(
+                RawCaptureInstanceId::new(id).expect("synthetic wrong UUIDv4 capture ID"),
+                capture.provider(),
+                capture.feed(),
+                capture.entitlement(),
+                capture.generation(),
+                capture.frame_sequence(),
+                capture.received_timestamp_utc().clone(),
+                capture.wire_encoding(),
+                capture.payload().clone(),
+            )
+            .expect("well-formed synthetic capture with a wrong identity")
+        }
+    }
+
+    impl RawFrameSink for FakeRawFrameSink {
+        fn capture_instance_id(&self) -> RawCaptureInstanceId {
+            self.id
+        }
+
+        fn persist_before_decode<'a>(
+            &'a self,
+            capture: &'a RawFrameCapture,
+        ) -> PortFuture<'a, Result<RawFrameCaptureAck, RawFrameSinkError>> {
+            Box::pin(async move {
+                self.observations
+                    .lock()
+                    .expect("fake raw sink observations")
+                    .push(format!("pre:{}:{}", capture.generation(), capture.frame_sequence()));
+                match self.fault {
+                    RawSinkFault::FailPredecode(sequence)
+                        if capture.frame_sequence() == sequence =>
+                    {
+                        return Err(RawFrameSinkError::CapacityExceeded);
+                    }
+                    RawSinkFault::PendingPredecode(sequence)
+                        if capture.frame_sequence() == sequence =>
+                    {
+                        pending::<()>().await;
+                    }
+                    RawSinkFault::MismatchPredecode(sequence)
+                        if capture.frame_sequence() == sequence =>
+                    {
+                        return Ok(RawFrameCaptureAck::for_capture(&Self::wrong_capture(capture)));
+                    }
+                    _ => {}
+                }
+                Ok(RawFrameCaptureAck::for_capture(capture))
+            })
+        }
+
+        fn finalize_after_decode<'a>(
+            &'a self,
+            predecode_ack: &'a RawFrameCaptureAck,
+            summary: &'a RawFrameFinalization,
+        ) -> PortFuture<'a, Result<RawFrameFinalizationAck, RawFrameSinkError>> {
+            Box::pin(async move {
+                self.observations
+                    .lock()
+                    .expect("fake raw sink observations")
+                    .push(format!("final:{}", summary.event_count()));
+                let sequence = predecode_ack.frame_sequence();
+                match self.fault {
+                    RawSinkFault::FailFinalization(target) if sequence == target => {
+                        return Err(RawFrameSinkError::Ambiguous);
+                    }
+                    RawSinkFault::MismatchFinalization(target) if sequence == target => {
+                        let mut wrong_id = [0x73; 16];
+                        wrong_id[6] = 0x43;
+                        wrong_id[8] = 0x93;
+                        let wrong = RawFrameCapture::new(
+                            RawCaptureInstanceId::new(wrong_id)
+                                .expect("synthetic wrong UUIDv4 capture ID"),
+                            "alpaca",
+                            "opra",
+                            market_contracts::EntitlementState::Unknown,
+                            predecode_ack.generation(),
+                            predecode_ack.frame_sequence(),
+                            market_contracts::UtcTimestamp::parse(
+                                "2026-10-08T12:00:00Z",
+                            )
+                            .expect("fixed UTC timestamp"),
+                            broker_ports::RawFrameWireEncoding::MessagePack,
+                            broker_ports::RawFramePayload::capture(b"synthetic".to_vec())
+                                .expect("bounded synthetic capture"),
+                        )
+                        .expect("synthetic wrong capture identity");
+                        let wrong_ack = RawFrameCaptureAck::for_capture(&wrong);
+                        return Ok(RawFrameFinalizationAck::for_finalization(
+                            &wrong_ack,
+                            summary,
+                        ));
+                    }
+                    _ => {}
+                }
+                Ok(RawFrameFinalizationAck::for_finalization(
+                    predecode_ack,
+                    summary,
+                ))
+            })
+        }
     }
 
     impl CredentialProvider for PendingCredentialProvider {
@@ -295,9 +437,44 @@
             shutdown_rx,
             consumers_closed,
             publishers,
+            None,
             SessionRuntime {
                 retry_seed,
                 freshness_clock,
+            },
+        ));
+        (
+            RunningFake {
+                task,
+                shutdown,
+                receivers,
+            },
+            credential_calls,
+        )
+    }
+
+    fn start_with_raw_sink(
+        config: StreamConfig,
+        connector: FakeConnector,
+        raw_frame_sink: Arc<dyn RawFrameSink>,
+    ) -> (RunningFake, Arc<AtomicUsize>) {
+        let (publishers, receivers, consumers_closed) = create_lanes(&config);
+        let (shutdown, shutdown_rx) = watch::channel(false);
+        let credential_calls = Arc::new(AtomicUsize::new(0));
+        let provider = FakeCredentialProvider {
+            calls: Arc::clone(&credential_calls),
+        };
+        let task = tokio::spawn(run_session_with_seed_and_clock(
+            config,
+            provider,
+            connector,
+            shutdown_rx,
+            consumers_closed,
+            publishers,
+            Some(raw_frame_sink),
+            SessionRuntime {
+                retry_seed: TEST_RETRY_SEED,
+                freshness_clock: SystemFreshnessClock,
             },
         ));
         (
@@ -329,6 +506,7 @@
             shutdown_rx,
             consumers_closed,
             publishers,
+            None,
             SessionRuntime {
                 retry_seed,
                 freshness_clock,

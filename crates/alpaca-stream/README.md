@@ -10,17 +10,36 @@ shortest-round-tripping decimal projection, are marked with the corresponding
 binary-float encoding, and carry the SHA-256 of the raw frame. The adapter does
 not claim that the projection is an exact provider decimal token.
 
-The canonical `MarketDataItem` lane can also carry each received market-data
-application frame once, with its original bytes and a
-`DecodedMarketData`, `UnknownMessage`, `ProviderError`, or `DecodeFailure`
-disposition. Outbound authentication and subscription messages are never
-captured. A frame is at most 1 MiB; outstanding frame leases are bounded to 16
-MiB and 1,024 records process-wide. Normalized events refer to the canonical
-generation, frame sequence, exact frame hash, and 1-based ordinal/count. The
-count describes quote/trade events expected from that frame, even if an unknown
-or invalid message makes the frame terminal. Such records are diagnostics, not
-complete archive input. This crate transports raw frames in memory only; it does
-not persist them or qualify research completeness.
+The canonical `MarketDataItem` lane can also carry each received application
+frame once, with exact bytes and a `ControlMessage`, `DecodedMarketData`,
+`UnknownMessage`, `ProviderError`, or `DecodeFailure` disposition. Capture starts
+only after successful authentication and includes inbound subscription ACKs and
+market application frames; outbound authentication/subscription messages and
+authentication diagnostics are never captured. A frame is at most 1 MiB;
+outstanding frame leases are bounded to 16 MiB and 1,024 records process-wide.
+Normalized events refer to the canonical generation, frame sequence, exact
+frame hash, and 1-based ordinal/count. The count describes quote/trade events
+expected from that frame, even if an unknown or invalid message makes the frame
+terminal. Such records are diagnostics, not complete archive input.
+
+`AlpacaOptionsStream::new` and `AlpacaOptionsMarketDataPort::new` keep the
+existing in-memory diagnostic mode. To require pre-decode persistence, inject a
+trusted `RawFrameSink` or configure
+`AlpacaOptionsMarketDataPort::with_raw_frame_sink_factory`. The runner awaits a
+matching pre-decode ACK before decoding and a matching post-decode finalization
+ACK before publishing the raw frame or its normalized events. These ACKs bind
+capture UUID, generation, frame sequence, and exact byte hash; finalization also
+binds the bounded event count, sorted symbols, numeric encoding, disposition,
+and its canonical summary hash. Any sink failure, timeout, cancellation, or
+ACK mismatch ends the generation with no retry or later frame. Decode failures
+are finalized with the original bytes and produce no normalized event. A
+factory-owned UUIDv4 is stable across reconnect generations and new after
+process restart. An unfinalized record after a crash remains unknown/quarantined.
+The ACK types only express the sink implementation's promise: they do not prove
+that bytes were fsynced, that the source is entitled or complete, or that Drive
+publication occurred. This workspace defines the seam and runner ordering but
+does not yet contain the production MDP spool; persistence and recovery remain
+the sink owner's responsibility.
 
 The shared v1 subscription control is channel-agnostic and allows at most 32
 requested `(channel, symbol)` pairs. Quote/trade overlap counts twice toward
@@ -189,17 +208,17 @@ transport 且关闭重定向。
 
 ## Verification boundary / 验证边界
 
-Tests use synthetic MessagePack frames, fake sockets, and Tokio's paused time.
-They do not contact Alpaca, invoke REST, read local credentials, persist raw
-frames, submit orders, calculate volatility, or run strategy code. A passing
+Tests use synthetic MessagePack frames, fake sockets/sinks, and Tokio's paused time.
+They do not contact Alpaca, invoke REST, read local credentials, perform actual
+durable persistence, submit orders, calculate volatility, or run strategy code. A passing
 unit suite is local protocol/adapter evidence only; production entitlement,
 provider behavior, and native Windows/macOS operation remain unverified.
 
-测试只使用合成 MessagePack frame、假 socket 和 Tokio paused time。它们不会连接 Alpaca、调用
-REST、读取本地凭证、持久化原始 frame、提交订单、计算波动率或运行策略。原始 frame 只在内存中
-沿有序 lane 传递，且不捕获发出的认证/订阅消息；frame 上限为 1 MiB，全局未释放预算为 16 MiB /
-1,024 条。frame `event_count` 表示可规范化行情数；未知或无效消息不会减少计数，这类帧会失败关闭并
-作为诊断保留，不能充当完整归档。单元测试通过只构成本地
+测试只使用合成 MessagePack frame、假 socket/sink 和 Tokio paused time。它们不会连接 Alpaca、调用
+REST、读取本地凭证、证明真实耐久存储、提交订单、计算波动率或运行策略。没有注入可信 sink 时，原始
+frame 只在内存中沿有序 lane 传递；注入 sink 时，runner 会等待解码前 ACK 和解码后定稿 ACK。它不捕获
+发出的认证/订阅消息及认证诊断；frame 上限为 1 MiB，全局未释放预算为 16 MiB / 1,024 条。frame
+`event_count` 表示可规范化行情数；未知或无效消息不会减少计数，这类帧会失败关闭并作为诊断保留，不能充当完整归档。单元测试通过只构成本地
 协议/适配器证据；生产 entitlement、provider 行为和原生 Windows/macOS 运行仍未验证。
 
 ## References / 参考资料
