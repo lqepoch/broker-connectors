@@ -105,7 +105,7 @@
                 capture.provider(),
                 capture.feed(),
                 capture.entitlement(),
-                capture.generation(),
+                capture.source_generation(),
                 capture.frame_sequence(),
                 capture.received_timestamp_utc().clone(),
                 capture.wire_encoding(),
@@ -128,7 +128,11 @@
                 self.observations
                     .lock()
                     .expect("fake raw sink observations")
-                    .push(format!("pre:{}:{}", capture.generation(), capture.frame_sequence()));
+                    .push(format!(
+                        "pre:{}:{}",
+                        capture.source_generation(),
+                        capture.frame_sequence()
+                    ));
                 match self.fault {
                     RawSinkFault::FailPredecode(sequence)
                         if capture.frame_sequence() == sequence =>
@@ -176,7 +180,7 @@
                             "alpaca",
                             "opra",
                             market_contracts::EntitlementState::Unknown,
-                            predecode_ack.generation(),
+                            predecode_ack.source_generation(),
                             predecode_ack.frame_sequence(),
                             market_contracts::UtcTimestamp::parse(
                                 "2026-10-08T12:00:00Z",

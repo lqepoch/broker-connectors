@@ -16,19 +16,26 @@ The shared v1 subscription ACK is channel-agnostic and caps each request at 32 `
 
 The ordered market-data lane can also carry the exact bytes of each received
 MessagePack application frame and link normalizable quote/trade events to that
-frame by SHA-256, generation, frame sequence, and 1-based event ordinal/count.
+frame by SHA-256, canonical generation, frame sequence, and 1-based event ordinal/count.
 Capture excludes outbound authentication/subscription frames and starts only
 after authentication, for inbound subscription ACK and market application
 frames. A frame is limited to 1 MiB; outstanding frame leases are limited to 16
 MiB and 1,024 records process-wide. Exceeding a bound terminates that generation
 with a fixed failure. Unknown/provider-error frames retain diagnostic bytes and
-cannot qualify a complete event archive. Decode failures retain the exact bytes
-and are finalized as diagnostics, without normalized events. When a trusted
+cannot qualify a complete event archive. They may retain parsed market-event
+counts and symbols, but the whole frame is quarantined and none of those events
+are published. Decode failures retain the exact bytes and are finalized with
+zero events, no symbols, and no numeric encoding. Mixed numeric encodings remain
+valid with no homogeneous encoding value. When a trusted
 `RawFrameSink` is injected, the runner awaits a matching pre-decode ACK, decodes,
 then awaits a matching post-decode finalization ACK before publishing the raw
-frame or normalized events. Each phase binds the capture UUID, generation,
-sequence, and exact frame SHA-256; finalization also binds a canonical bounded
-summary hash. Sink failure, timeout, cancellation, or ACK mismatch ends the
+frame or normalized events. Both ACKs bind one `RawFrameCaptureKey` containing
+the capture UUID, source-local generation, sequence, and exact frame SHA-256;
+finalization also binds a canonical bounded summary hash. The `generation` on a
+published raw frame/event reference is the canonical port generation; its
+`capture_key` preserves the separate source-local lineage used by the MDP spool.
+This distinction keeps reconnect frames unique when sequence numbers and bytes
+repeat. Sink failure, timeout, cancellation, or ACK mismatch ends the
 generation without retry, decode, or event publication past that frame. ACK
 constructors only express the sink implementation's promise and do not prove
 `fsync`, entitlement, completeness, or Drive publication. `AlpacaOptionsMarketDataPort`

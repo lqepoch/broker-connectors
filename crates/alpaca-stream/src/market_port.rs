@@ -290,7 +290,7 @@ struct EventProjector {
 
 struct PendingRawFrameLink {
     generation: u64,
-    capture_instance_id: Option<broker_ports::RawCaptureInstanceId>,
+    capture_key: Option<broker_ports::RawFrameCaptureKey>,
     frame_sha256: String,
     event_count: u32,
     seen_ordinals: BTreeSet<u32>,
@@ -382,8 +382,8 @@ impl EventProjector {
         frame: crate::InboundRawMarketFrame,
         feed: OptionFeed,
     ) -> Result<RawMarketFrame, BrokerPortError> {
-        let source_generation = frame.generation.get();
-        let generation = self.generation(frame.generation)?;
+        let source_generation = frame.source_generation.get();
+        let generation = self.generation(frame.source_generation)?;
         let expected_feed = feed
             .as_str()
             .map_err(|_| BrokerPortError::UnsupportedSource)?;
@@ -400,6 +400,11 @@ impl EventProjector {
                 .any(|symbol| symbol.is_empty() || symbol.len() > MAX_OPTION_SYMBOL_BYTES)
             || frame.symbols.windows(2).any(|pair| pair[0] >= pair[1])
             || event_count > 0 && frame.symbols.is_empty()
+            || frame.capture_key.as_ref().is_some_and(|key| {
+                key.source_generation() != source_generation
+                    || key.frame_sequence() != frame.frame_sequence
+                    || key.frame_sha256() != frame.payload.sha256()
+            })
         {
             return Err(BrokerPortError::ProtocolViolation);
         }
@@ -421,7 +426,7 @@ impl EventProjector {
                     key,
                     PendingRawFrameLink {
                         generation,
-                        capture_instance_id: frame.capture_instance_id,
+                        capture_key: frame.capture_key.clone(),
                         frame_sha256: frame.payload.sha256().to_owned(),
                         event_count: frame.event_count,
                         seen_ordinals: BTreeSet::new(),
@@ -437,7 +442,7 @@ impl EventProjector {
             provider: "alpaca".to_owned(),
             feed: expected_feed.to_owned(),
             entitlement: EntitlementState::Unknown,
-            capture_instance_id: frame.capture_instance_id,
+            capture_key: frame.capture_key,
             wire_encoding: frame.wire_encoding,
             numeric_encoding: frame.numeric_encoding,
             generation,
@@ -483,12 +488,12 @@ impl EventProjector {
         }
         let complete = pending.seen_ordinals.len()
             == usize::try_from(pending.event_count).map_err(|_| BrokerPortError::LimitExceeded)?;
-        let capture_instance_id = pending.capture_instance_id;
+        let capture_key = pending.capture_key.clone();
         if complete {
             self.pending_raw_frames.remove(&key);
         }
         Ok(Some(RawFrameReference {
-            capture_instance_id,
+            capture_key,
             generation,
             frame_sequence: ingest.raw_frame_sequence,
             event_ordinal: ingest.raw_frame_event_ordinal,
@@ -797,9 +802,20 @@ mod tests {
         symbols: Vec<String>,
         payload: RawFramePayload,
     ) -> InboundRawMarketFrame {
+        raw_frame_for_source_generation(1, frame_sequence, event_count, symbols, payload, None)
+    }
+
+    fn raw_frame_for_source_generation(
+        source_generation: u64,
+        frame_sequence: u64,
+        event_count: u32,
+        symbols: Vec<String>,
+        payload: RawFramePayload,
+        capture_key: Option<broker_ports::RawFrameCaptureKey>,
+    ) -> InboundRawMarketFrame {
         InboundRawMarketFrame {
-            capture_instance_id: None,
-            generation: SessionGeneration::new(1),
+            capture_key,
+            source_generation: SessionGeneration::new(source_generation),
             frame_sequence,
             received_at_utc: chrono::DateTime::<Utc>::from(SystemTime::now()),
             wire_encoding: broker_ports::RawFrameWireEncoding::MessagePack,
@@ -1064,12 +1080,26 @@ mod tests {
         let payload =
             RawFramePayload::capture(b"synthetic-frame".to_vec()).expect("bounded synthetic frame");
         let mut input = raw_frame(1, 1, vec!["QQQ261218C00500000".to_owned()], payload.clone());
-        input.capture_instance_id = Some(capture_id);
+        let timestamp = UtcTimestamp::parse("2026-10-08T12:00:00.000000000Z")
+            .expect("valid synthetic source timestamp");
+        let capture = broker_ports::RawFrameCapture::new(
+            capture_id,
+            "alpaca",
+            "opra",
+            EntitlementState::Unknown,
+            1,
+            1,
+            timestamp,
+            broker_ports::RawFrameWireEncoding::MessagePack,
+            payload.clone(),
+        )
+        .expect("valid synthetic raw capture");
+        input.capture_key = Some(capture.capture_key().clone());
         let mut projector = EventProjector::default();
         let projected = projector
             .raw_frame(input, OptionFeed::Opra)
             .expect("captured frame is projected");
-        assert_eq!(projected.capture_instance_id, Some(capture_id));
+        assert_eq!(projected.capture_key, Some(capture.capture_key().clone()));
         assert_eq!(
             projected.wire_encoding,
             broker_ports::RawFrameWireEncoding::MessagePack
@@ -1098,9 +1128,136 @@ mod tests {
             )
             .expect("event references the exact captured frame");
         assert_eq!(
-            raw_reference.expect("raw link exists").capture_instance_id,
-            Some(capture_id)
+            raw_reference.expect("raw link exists").capture_key,
+            Some(capture.capture_key().clone())
         );
+    }
+
+    #[test]
+    fn raw_projection_rejects_capture_key_with_another_source_generation() {
+        let mut id_bytes = [0x2a; 16];
+        id_bytes[6] = 0x45;
+        id_bytes[8] = 0x85;
+        let capture_id =
+            broker_ports::RawCaptureInstanceId::new(id_bytes).expect("synthetic UUIDv4");
+        let payload =
+            RawFramePayload::capture(b"synthetic-frame".to_vec()).expect("bounded synthetic frame");
+        let timestamp =
+            UtcTimestamp::parse("2026-10-08T12:00:00Z").expect("valid synthetic source timestamp");
+        let capture = broker_ports::RawFrameCapture::new(
+            capture_id,
+            "alpaca",
+            "opra",
+            EntitlementState::Unknown,
+            2,
+            1,
+            timestamp,
+            broker_ports::RawFrameWireEncoding::MessagePack,
+            payload.clone(),
+        )
+        .expect("valid synthetic raw capture");
+        let mut projector = EventProjector::default();
+
+        assert_eq!(
+            projector.raw_frame(
+                raw_frame_for_source_generation(
+                    1,
+                    1,
+                    1,
+                    vec!["QQQ261218C00500000".to_owned()],
+                    payload,
+                    Some(capture.capture_key().clone()),
+                ),
+                OptionFeed::Opra,
+            ),
+            Err(BrokerPortError::ProtocolViolation)
+        );
+    }
+
+    #[test]
+    fn capture_key_preserves_source_generation_across_canonical_projection_and_reconnect() {
+        let mut id_bytes = [0x44; 16];
+        id_bytes[6] = 0x45;
+        id_bytes[8] = 0x85;
+        let capture_id =
+            broker_ports::RawCaptureInstanceId::new(id_bytes).expect("synthetic UUIDv4 capture ID");
+        let bytes = b"same-synthetic-msgpack-frame";
+        let timestamp = UtcTimestamp::parse("2026-10-08T12:00:00.000000000Z")
+            .expect("valid synthetic source timestamp");
+        let mut projector = EventProjector::default();
+        let mut identities = Vec::new();
+        let mut canonical_generations = Vec::new();
+
+        for source_generation in [900, 901] {
+            let payload =
+                RawFramePayload::capture(bytes.to_vec()).expect("bounded synthetic raw frame");
+            let capture = broker_ports::RawFrameCapture::new(
+                capture_id,
+                "alpaca",
+                "opra",
+                EntitlementState::Unknown,
+                source_generation,
+                1,
+                timestamp.clone(),
+                broker_ports::RawFrameWireEncoding::MessagePack,
+                payload.clone(),
+            )
+            .expect("valid synthetic raw capture");
+            let key = capture.capture_key().clone();
+            let projected = projector
+                .raw_frame(
+                    raw_frame_for_source_generation(
+                        source_generation,
+                        1,
+                        1,
+                        vec!["QQQ261218C00500000".to_owned()],
+                        payload.clone(),
+                        Some(key.clone()),
+                    ),
+                    OptionFeed::Opra,
+                )
+                .expect("raw frame projects with separate source and canonical generations");
+            assert_eq!(projected.capture_key, Some(key.clone()));
+            assert_ne!(projected.generation, source_generation);
+            canonical_generations.push(projected.generation);
+
+            let mut quote = quote();
+            quote.raw_frame_sha256 = payload.sha256().to_owned();
+            let (_, reference) = projector
+                .quote(
+                    QuoteUpdate {
+                        quote,
+                        feed: OptionFeed::Opra,
+                        ingest: crate::IngestStamp {
+                            generation: SessionGeneration::new(source_generation),
+                            sequence: 1,
+                            raw_frame_sequence: 1,
+                            raw_frame_event_ordinal: 1,
+                            raw_frame_event_count: 1,
+                            received_at: tokio::time::Instant::now(),
+                            received_at_utc: chrono::DateTime::<Utc>::from(SystemTime::now()),
+                        },
+                        freshness: DataFreshness::Fresh,
+                        coalesced_updates: 0,
+                    },
+                    OptionFeed::Opra,
+                )
+                .expect("event links to source-local raw capture key");
+            let reference = reference.expect("captured event has a raw-frame reference");
+            assert_eq!(reference.generation, projected.generation);
+            assert_eq!(reference.capture_key, Some(key.clone()));
+            identities.push(key);
+        }
+
+        assert_ne!(canonical_generations[0], canonical_generations[1]);
+        assert_ne!(identities[0], identities[1]);
+        assert_eq!(
+            identities[0].frame_sequence(),
+            identities[1].frame_sequence()
+        );
+        assert_eq!(identities[0].frame_sha256(), identities[1].frame_sha256());
+        assert_eq!(identities[0].source_generation(), 900);
+        assert_eq!(identities[1].source_generation(), 901);
     }
 
     #[test]

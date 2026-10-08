@@ -671,8 +671,8 @@ where
             }
         };
         let frame = crate::InboundRawMarketFrame {
-            capture_instance_id: None,
-            generation,
+            capture_key: None,
+            source_generation: generation,
             frame_sequence: *frame_sequence,
             received_at_utc,
             wire_encoding: broker_ports::RawFrameWireEncoding::MessagePack,
@@ -782,8 +782,8 @@ where
         }
         let payload = pending.capture.payload().clone();
         let frame = crate::InboundRawMarketFrame {
-            capture_instance_id: Some(pending.capture.capture_instance_id()),
-            generation: SessionGeneration::new(pending.capture.generation()),
+            capture_key: Some(pending.capture.capture_key().clone()),
+            source_generation: SessionGeneration::new(pending.capture.source_generation()),
             frame_sequence: pending.capture.frame_sequence(),
             received_at_utc: pending.received_at_utc,
             wire_encoding: pending.capture.wire_encoding(),
@@ -1168,16 +1168,19 @@ fn analyze_raw_frame(
     } else {
         RawFrameDisposition::DecodedMarketData
     };
-    let symbols = symbols.into_iter().collect();
-    RawFrameFinalization::new(
-        event_count,
-        symbols,
-        (event_count > 0 && !mixed_encoding)
-            .then_some(observed_encoding)
-            .flatten(),
-        disposition,
-    )
-    .map(Some)
+    let (event_count, symbols, encoding) =
+        if matches!(disposition, RawFrameDisposition::DecodeFailure) {
+            (0, Vec::new(), None)
+        } else {
+            (
+                event_count,
+                symbols.into_iter().collect(),
+                (event_count > 0 && !mixed_encoding)
+                    .then_some(observed_encoding)
+                    .flatten(),
+            )
+        };
+    RawFrameFinalization::new(event_count, symbols, encoding, disposition).map(Some)
 }
 
 fn control_finalization() -> RawFrameFinalization {

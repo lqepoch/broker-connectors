@@ -507,12 +507,28 @@ async fn sink_acknowledgements_bracket_decode_and_control_frames_are_finalized()
         raw_frames[0].disposition,
         RawFrameDisposition::ControlMessage
     );
-    assert!(raw_frames[0].capture_instance_id.is_some());
+    assert!(raw_frames[0].capture_key.is_some());
     assert_eq!(raw_frames[1].frame_sequence, 2);
     assert_eq!(raw_frames[1].event_count, 2);
+    let first_key = raw_frames[0]
+        .capture_key
+        .as_ref()
+        .expect("subscription frame has a capture key");
+    let second_key = raw_frames[1]
+        .capture_key
+        .as_ref()
+        .expect("market frame has a capture key");
     assert_eq!(
-        raw_frames[1].capture_instance_id,
-        raw_frames[0].capture_instance_id
+        first_key.capture_instance_id(),
+        second_key.capture_instance_id()
+    );
+    assert_eq!(
+        first_key.source_generation(),
+        second_key.source_generation()
+    );
+    assert_ne!(
+        first_key, second_key,
+        "each frame has its own source identity key"
     );
 
     let quote = running
@@ -539,6 +555,41 @@ async fn sink_acknowledgements_bracket_decode_and_control_frames_are_finalized()
         running.task.await.expect("session task joins"),
         Ok(SessionExit::Cancelled)
     );
+}
+
+#[tokio::test]
+async fn text_frame_with_raw_sink_fails_closed_before_later_binary_frame() {
+    let mut frames: Vec<_> = acknowledged_frames(true)
+        .into_iter()
+        .map(SocketFrame::Binary)
+        .collect();
+    frames.push(SocketFrame::Text);
+    frames.push(SocketFrame::Binary(frame([quote(1.0)])));
+    let (connector, metrics) = connector([socket_with_frames_script(frames, false)]);
+    let (sink, observations) = FakeRawFrameSink::with_fault(RawSinkFault::None);
+    let (mut running, _) =
+        start_with_raw_sink(config(4, 4, Duration::from_secs(1)), connector, sink);
+
+    assert_eq!(
+        running.task.await.expect("session task joins"),
+        Err(StreamError::ProtocolViolation)
+    );
+    assert_eq!(metrics.connects.load(Ordering::SeqCst), 1);
+    assert_eq!(metrics.closes.load(Ordering::SeqCst), 1);
+    assert_eq!(
+        *observations.lock().expect("fake raw sink observations"),
+        ["pre:1:1", "final:0"],
+        "the text frame is rejected before decode and the later binary frame is not consumed"
+    );
+    let mut raw_frame_count = 0;
+    while let Some(event) = running.receivers.controls.recv().await {
+        raw_frame_count += usize::from(matches!(event, ControlEvent::RawMarketFrame(_)));
+    }
+    assert_eq!(
+        raw_frame_count, 1,
+        "only the subscription frame was finalized"
+    );
+    assert!(running.receivers.quotes.recv().await.is_none());
 }
 
 #[tokio::test]

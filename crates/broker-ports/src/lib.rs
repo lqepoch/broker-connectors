@@ -40,9 +40,10 @@ pub use event::{
 };
 pub use raw_capture::{
     MAX_RAW_FRAME_FINALIZATION_ITEMS, RawCaptureInstanceId, RawCaptureInstanceIdError,
-    RawFrameCapture, RawFrameCaptureAck, RawFrameCaptureRequestError, RawFrameFinalization,
-    RawFrameFinalizationAck, RawFrameFinalizationError, RawFrameSink, RawFrameSinkError,
-    RawFrameSinkFactory, RawFrameWireEncoding,
+    RawFrameCapture, RawFrameCaptureAck, RawFrameCaptureKey, RawFrameCaptureKeyError,
+    RawFrameCaptureRequestError, RawFrameFinalization, RawFrameFinalizationAck,
+    RawFrameFinalizationError, RawFrameSink, RawFrameSinkError, RawFrameSinkFactory,
+    RawFrameWireEncoding,
 };
 pub use read::{
     AccountReadRequest, AccountReadRequestError, BrokerReadError, BrokerReadPage,
@@ -383,9 +384,9 @@ pub struct RawMarketFrame {
     /// Independently verified entitlement state; Alpaca stream currently reports unknown.
     /// 独立验证的 entitlement；当前 Alpaca stream 报告为 unknown。
     pub entitlement: EntitlementState,
-    /// Capture instance `UUIDv4` when a trusted pre-decode sink was configured.
-    /// 配置可信解码前 sink 时的捕获实例 `UUIDv4`。
-    pub capture_instance_id: Option<RawCaptureInstanceId>,
+    /// Exact source-local identity used by the pre-decode sink, when configured.
+    /// 配置解码前 sink 时使用的精确来源本地身份键。
+    pub capture_key: Option<RawFrameCaptureKey>,
     /// Exact wire encoding observed before decoding.
     /// 解码前观察到的精确 wire 编码。
     pub wire_encoding: RawFrameWireEncoding,
@@ -422,7 +423,7 @@ impl std::fmt::Debug for RawMarketFrame {
             .field("provider", &self.provider)
             .field("feed", &self.feed)
             .field("entitlement", &self.entitlement)
-            .field("capture_instance_id", &self.capture_instance_id)
+            .field("capture_key", &self.capture_key)
             .field("wire_encoding", &self.wire_encoding)
             .field("numeric_encoding", &self.numeric_encoding)
             .field("generation", &self.generation)
@@ -440,9 +441,9 @@ impl std::fmt::Debug for RawMarketFrame {
 /// 从一条规范化行情事件关联至其精确来源帧。
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RawFrameReference {
-    /// Capture instance `UUIDv4` when the source frame was durably captured.
-    /// 来源 frame 经耐久捕获时的捕获实例 `UUIDv4`。
-    pub capture_instance_id: Option<RawCaptureInstanceId>,
+    /// Exact source-local identity of the captured frame, separate from canonical generation.
+    /// 捕获帧的精确来源本地身份，与 canonical 代次分开保存。
+    pub capture_key: Option<RawFrameCaptureKey>,
     /// Canonical port generation shared with the linked event envelope.
     /// 与关联事件信封共享的 canonical port 代次。
     pub generation: u64,

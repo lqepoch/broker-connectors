@@ -69,6 +69,121 @@ impl fmt::Debug for RawCaptureInstanceId {
     }
 }
 
+/// Exact identity key shared by a persisted frame, its pre-decode receipt, and its finalization.
+/// 耐久帧、解码前回执及定稿共用的精确身份键。
+#[derive(Clone, Eq, Hash, PartialEq)]
+pub struct RawFrameCaptureKey {
+    capture_instance_id: RawCaptureInstanceId,
+    source_generation: u64,
+    frame_sequence: u64,
+    frame_sha256: String,
+}
+
+impl RawFrameCaptureKey {
+    /// Reconstructs a bounded key from its persisted identity fields.
+    /// 根据已持久化的身份字段重建有界 key。
+    ///
+    /// This key is correlation metadata only; constructing one does not create
+    /// a capture request, an acknowledgement, or evidence of durability.
+    /// 此 key 仅用于关联；构造 key 不会创建捕获请求、ACK 或耐久性证据。
+    ///
+    /// # Errors
+    ///
+    /// Returns a fixed error when a generation/sequence is zero or the hash is
+    /// not exactly 64 lowercase hexadecimal characters.
+    ///
+    /// # 错误
+    ///
+    /// 代次/序号为零或摘要不是 64 位小写十六进制时返回固定错误。
+    pub fn new(
+        capture_instance_id: RawCaptureInstanceId,
+        source_generation: u64,
+        frame_sequence: u64,
+        frame_sha256: impl Into<String>,
+    ) -> Result<Self, RawFrameCaptureKeyError> {
+        let frame_sha256 = frame_sha256.into();
+        if source_generation == 0 || frame_sequence == 0 {
+            return Err(RawFrameCaptureKeyError::InvalidSequence);
+        }
+        if !valid_sha256(&frame_sha256) {
+            return Err(RawFrameCaptureKeyError::InvalidSha256);
+        }
+        Ok(Self {
+            capture_instance_id,
+            source_generation,
+            frame_sequence,
+            frame_sha256,
+        })
+    }
+
+    fn from_capture(
+        capture_instance_id: RawCaptureInstanceId,
+        source_generation: u64,
+        frame_sequence: u64,
+        frame_sha256: String,
+    ) -> Self {
+        Self::new(
+            capture_instance_id,
+            source_generation,
+            frame_sequence,
+            frame_sha256,
+        )
+        .expect("validated capture identity and SHA-256 form a valid key")
+    }
+
+    /// Returns the logical capture-instance identity.
+    /// 返回逻辑捕获实例身份。
+    #[must_use]
+    pub const fn capture_instance_id(&self) -> RawCaptureInstanceId {
+        self.capture_instance_id
+    }
+
+    /// Returns the adapter-local generation recorded before canonical projection.
+    /// 返回 canonical 投影前记录的 adapter 本地代次。
+    #[must_use]
+    pub const fn source_generation(&self) -> u64 {
+        self.source_generation
+    }
+
+    /// Returns the one-based frame sequence within the source generation.
+    /// 返回来源代次内从 1 开始的帧序号。
+    #[must_use]
+    pub const fn frame_sequence(&self) -> u64 {
+        self.frame_sequence
+    }
+
+    /// Returns the lowercase SHA-256 of the exact source bytes.
+    /// 返回精确来源字节的小写 SHA-256。
+    #[must_use]
+    pub fn frame_sha256(&self) -> &str {
+        &self.frame_sha256
+    }
+}
+
+/// Invalid persisted identity fields for [`RawFrameCaptureKey`].
+/// [`RawFrameCaptureKey`] 的持久化身份字段无效。
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum RawFrameCaptureKeyError {
+    /// The source generation or frame sequence is zero.
+    /// 来源代次或帧序号为零。
+    InvalidSequence,
+    /// The SHA-256 is not lowercase hexadecimal with exactly 64 bytes.
+    /// SHA-256 不是恰好 64 字节的小写十六进制值。
+    InvalidSha256,
+}
+
+impl fmt::Debug for RawFrameCaptureKey {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("RawFrameCaptureKey")
+            .field("capture_instance_id", &self.capture_instance_id)
+            .field("source_generation", &self.source_generation)
+            .field("frame_sequence", &self.frame_sequence)
+            .field("frame_sha256", &self.frame_sha256)
+            .finish()
+    }
+}
+
 /// Invalid capture-instance identifier category.
 /// 捕获实例身份无效的固定类别。
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -98,12 +213,10 @@ pub enum RawFrameWireEncoding {
 /// 解码前提交给 raw sink 的不可变身份与精确字节。
 #[derive(Clone, Eq, PartialEq)]
 pub struct RawFrameCapture {
-    capture_instance_id: RawCaptureInstanceId,
+    capture_key: RawFrameCaptureKey,
     provider: String,
     feed: String,
     entitlement: EntitlementState,
-    generation: u64,
-    frame_sequence: u64,
     received_timestamp_utc: UtcTimestamp,
     wire_encoding: RawFrameWireEncoding,
     payload: RawFramePayload,
@@ -130,7 +243,7 @@ impl RawFrameCapture {
         provider: impl Into<String>,
         feed: impl Into<String>,
         entitlement: EntitlementState,
-        generation: u64,
+        source_generation: u64,
         frame_sequence: u64,
         received_timestamp_utc: UtcTimestamp,
         wire_encoding: RawFrameWireEncoding,
@@ -140,16 +253,19 @@ impl RawFrameCapture {
         let feed = feed.into();
         validate_source_id(&provider).map_err(|_| RawFrameCaptureRequestError::InvalidSource)?;
         validate_source_id(&feed).map_err(|_| RawFrameCaptureRequestError::InvalidSource)?;
-        if generation == 0 || frame_sequence == 0 {
+        if source_generation == 0 || frame_sequence == 0 {
             return Err(RawFrameCaptureRequestError::InvalidSequence);
         }
         Ok(Self {
-            capture_instance_id,
+            capture_key: RawFrameCaptureKey::from_capture(
+                capture_instance_id,
+                source_generation,
+                frame_sequence,
+                payload.sha256().to_owned(),
+            ),
             provider,
             feed,
             entitlement,
-            generation,
-            frame_sequence,
             received_timestamp_utc,
             wire_encoding,
             payload,
@@ -160,7 +276,7 @@ impl RawFrameCapture {
     /// 返回逻辑捕获身份。
     #[must_use]
     pub const fn capture_instance_id(&self) -> RawCaptureInstanceId {
-        self.capture_instance_id
+        self.capture_key.capture_instance_id
     }
 
     /// Returns the exact provider identifier.
@@ -184,18 +300,25 @@ impl RawFrameCapture {
         self.entitlement
     }
 
-    /// Returns the source-local connection generation.
-    /// 返回来源本地连接代次。
+    /// Returns the source-local connection generation, before canonical projection.
+    /// 返回 canonical 投影前的来源本地连接代次。
     #[must_use]
-    pub const fn generation(&self) -> u64 {
-        self.generation
+    pub const fn source_generation(&self) -> u64 {
+        self.capture_key.source_generation
     }
 
     /// Returns the one-based frame sequence within this generation.
     /// 返回该代次内从 1 开始的 frame 序号。
     #[must_use]
     pub const fn frame_sequence(&self) -> u64 {
-        self.frame_sequence
+        self.capture_key.frame_sequence
+    }
+
+    /// Returns the shared source identity and exact byte hash for this frame.
+    /// 返回此帧共用的来源身份和精确字节摘要。
+    #[must_use]
+    pub const fn capture_key(&self) -> &RawFrameCaptureKey {
+        &self.capture_key
     }
 
     /// Returns the UTC receive timestamp captured before decoding.
@@ -224,12 +347,10 @@ impl fmt::Debug for RawFrameCapture {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter
             .debug_struct("RawFrameCapture")
-            .field("capture_instance_id", &self.capture_instance_id)
+            .field("capture_key", &self.capture_key)
             .field("provider", &self.provider)
             .field("feed", &self.feed)
             .field("entitlement", &self.entitlement)
-            .field("generation", &self.generation)
-            .field("frame_sequence", &self.frame_sequence)
             .field("received_timestamp_utc", &self.received_timestamp_utc)
             .field("wire_encoding", &self.wire_encoding)
             .field("payload", &self.payload)
@@ -286,11 +407,15 @@ impl RawFrameFinalization {
                 || symbol.len() > MAX_INSTRUMENT_ID_BYTES
                 || symbol.chars().any(char::is_control)
         }) || symbols.windows(2).any(|pair| pair[0] >= pair[1])
+            || event_count == 0 && (!symbols.is_empty() || numeric_encoding.is_some())
             || event_count > 0 && symbols.is_empty()
             || event_count > 0 && symbols.len() > usize::try_from(event_count).unwrap_or(usize::MAX)
             || matches!(disposition, RawFrameDisposition::DecodedMarketData) && event_count == 0
-            || matches!(disposition, RawFrameDisposition::ControlMessage)
-                && (event_count != 0 || !symbols.is_empty())
+            || matches!(numeric_encoding, Some(NumericEncodingV1::Unspecified))
+            || matches!(
+                disposition,
+                RawFrameDisposition::ControlMessage | RawFrameDisposition::DecodeFailure
+            ) && (event_count != 0 || !symbols.is_empty() || numeric_encoding.is_some())
         {
             return Err(RawFrameFinalizationError::InvalidSummary);
         }
@@ -385,10 +510,7 @@ pub enum RawFrameFinalizationError {
 /// Sink 确认解码前捕获意图后返回的回执。
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RawFrameCaptureAck {
-    capture_instance_id: RawCaptureInstanceId,
-    generation: u64,
-    frame_sequence: u64,
-    frame_sha256: String,
+    capture_key: RawFrameCaptureKey,
 }
 
 impl RawFrameCaptureAck {
@@ -401,10 +523,7 @@ impl RawFrameCaptureAck {
     #[must_use]
     pub fn for_capture(capture: &RawFrameCapture) -> Self {
         Self {
-            capture_instance_id: capture.capture_instance_id,
-            generation: capture.generation,
-            frame_sequence: capture.frame_sequence,
-            frame_sha256: capture.payload.sha256().to_owned(),
+            capture_key: capture.capture_key.clone(),
         }
     }
 
@@ -412,38 +531,42 @@ impl RawFrameCaptureAck {
     /// 判断 ACK 是否绑定精确捕获身份和原始字节摘要。
     #[must_use]
     pub fn matches(&self, capture: &RawFrameCapture) -> bool {
-        self.capture_instance_id == capture.capture_instance_id
-            && self.generation == capture.generation
-            && self.frame_sequence == capture.frame_sequence
-            && self.frame_sha256 == capture.payload.sha256()
+        self.capture_key == capture.capture_key
     }
 
     /// Returns the captured `UUIDv4` identity.
     /// 返回捕获 `UUIDv4` 身份。
     #[must_use]
     pub const fn capture_instance_id(&self) -> RawCaptureInstanceId {
-        self.capture_instance_id
+        self.capture_key.capture_instance_id
     }
 
-    /// Returns the acknowledged generation.
-    /// 返回已确认代次。
+    /// Returns the acknowledged source-local generation.
+    /// 返回已确认的来源本地代次。
     #[must_use]
-    pub const fn generation(&self) -> u64 {
-        self.generation
+    pub const fn source_generation(&self) -> u64 {
+        self.capture_key.source_generation
     }
 
     /// Returns the acknowledged one-based frame sequence.
     /// 返回已确认的 frame 序号。
     #[must_use]
     pub const fn frame_sequence(&self) -> u64 {
-        self.frame_sequence
+        self.capture_key.frame_sequence
     }
 
     /// Returns the lowercase SHA-256 of the exact frame bytes.
     /// 返回精确 frame 字节的小写 SHA-256。
     #[must_use]
     pub fn frame_sha256(&self) -> &str {
-        &self.frame_sha256
+        &self.capture_key.frame_sha256
+    }
+
+    /// Returns the exact key acknowledged by the sink.
+    /// 返回 sink 已确认的精确身份键。
+    #[must_use]
+    pub const fn capture_key(&self) -> &RawFrameCaptureKey {
+        &self.capture_key
     }
 }
 
@@ -451,10 +574,7 @@ impl RawFrameCaptureAck {
 /// 匹配的解码后摘要完成持久化定稿后返回的回执。
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RawFrameFinalizationAck {
-    capture_instance_id: RawCaptureInstanceId,
-    generation: u64,
-    frame_sequence: u64,
-    frame_sha256: String,
+    capture_key: RawFrameCaptureKey,
     summary_sha256: String,
 }
 
@@ -471,10 +591,7 @@ impl RawFrameFinalizationAck {
         summary: &RawFrameFinalization,
     ) -> Self {
         Self {
-            capture_instance_id: predecode_ack.capture_instance_id,
-            generation: predecode_ack.generation,
-            frame_sequence: predecode_ack.frame_sequence,
-            frame_sha256: predecode_ack.frame_sha256.clone(),
+            capture_key: predecode_ack.capture_key.clone(),
             summary_sha256: summary.sha256(),
         }
     }
@@ -487,11 +604,14 @@ impl RawFrameFinalizationAck {
         predecode_ack: &RawFrameCaptureAck,
         summary: &RawFrameFinalization,
     ) -> bool {
-        self.capture_instance_id == predecode_ack.capture_instance_id
-            && self.generation == predecode_ack.generation
-            && self.frame_sequence == predecode_ack.frame_sequence
-            && self.frame_sha256 == predecode_ack.frame_sha256
-            && self.summary_sha256 == summary.sha256()
+        self.capture_key == predecode_ack.capture_key && self.summary_sha256 == summary.sha256()
+    }
+
+    /// Returns the exact capture identity carried through finalization.
+    /// 返回定稿阶段继续绑定的精确捕获身份。
+    #[must_use]
+    pub const fn capture_key(&self) -> &RawFrameCaptureKey {
+        &self.capture_key
     }
 
     /// Returns the lowercase SHA-256 of the acknowledged finalization summary.
@@ -596,6 +716,13 @@ fn disposition_tag(disposition: RawFrameDisposition) -> u8 {
     }
 }
 
+fn valid_sha256(value: &str) -> bool {
+    value.len() == 64
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+}
+
 fn numeric_encoding_tag(encoding: Option<NumericEncodingV1>) -> u8 {
     match encoding {
         None => 0,
@@ -625,8 +752,9 @@ mod tests {
 
     use super::{
         RawCaptureInstanceId, RawCaptureInstanceIdError, RawFrameCapture, RawFrameCaptureAck,
-        RawFrameCaptureRequestError, RawFrameDisposition, RawFrameFinalization,
-        RawFrameFinalizationAck, RawFrameFinalizationError,
+        RawFrameCaptureKey, RawFrameCaptureKeyError, RawFrameCaptureRequestError,
+        RawFrameDisposition, RawFrameFinalization, RawFrameFinalizationAck,
+        RawFrameFinalizationError,
     };
 
     fn capture_id(fill: u8) -> RawCaptureInstanceId {
@@ -732,6 +860,96 @@ mod tests {
             ),
             Err(RawFrameFinalizationError::InvalidSummary)
         );
+    }
+
+    #[test]
+    fn finalization_enforces_quarantine_and_mixed_numeric_summary_rules() {
+        assert!(
+            RawFrameFinalization::new(
+                1,
+                vec!["AAPL250117C00100000".to_owned()],
+                None,
+                RawFrameDisposition::DecodedMarketData,
+            )
+            .is_ok(),
+            "mixed numeric encodings remain valid with no homogeneous encoding"
+        );
+        assert_eq!(
+            RawFrameFinalization::new(
+                1,
+                vec!["AAPL250117C00100000".to_owned()],
+                Some(NumericEncodingV1::Unspecified),
+                RawFrameDisposition::DecodedMarketData,
+            ),
+            Err(RawFrameFinalizationError::InvalidSummary)
+        );
+        assert_eq!(
+            RawFrameFinalization::new(
+                1,
+                vec!["AAPL250117C00100000".to_owned()],
+                Some(NumericEncodingV1::IntegerToken),
+                RawFrameDisposition::DecodeFailure,
+            ),
+            Err(RawFrameFinalizationError::InvalidSummary)
+        );
+        assert_eq!(
+            RawFrameFinalization::new(
+                0,
+                Vec::new(),
+                Some(NumericEncodingV1::IntegerToken),
+                RawFrameDisposition::ControlMessage,
+            ),
+            Err(RawFrameFinalizationError::InvalidSummary)
+        );
+    }
+
+    #[test]
+    fn capture_key_keeps_source_generation_when_reconnect_reuses_sequence_and_bytes() {
+        let first = capture(10, 1, b"same-synthetic-frame");
+        let second = capture(11, 1, b"same-synthetic-frame");
+
+        assert_eq!(
+            first.capture_key().capture_instance_id(),
+            second.capture_key().capture_instance_id()
+        );
+        assert_eq!(
+            first.capture_key().frame_sequence(),
+            second.capture_key().frame_sequence()
+        );
+        assert_eq!(
+            first.capture_key().frame_sha256(),
+            second.capture_key().frame_sha256()
+        );
+        assert_eq!(first.capture_key().source_generation(), 10);
+        assert_eq!(second.capture_key().source_generation(), 11);
+        assert_ne!(first.capture_key(), second.capture_key());
+    }
+
+    #[test]
+    fn capture_key_reconstruction_rejects_unbounded_or_invalid_identity_fields() {
+        let id = capture_id(4);
+        assert_eq!(
+            RawFrameCaptureKey::new(id, 0, 1, "a".repeat(64)),
+            Err(RawFrameCaptureKeyError::InvalidSequence)
+        );
+        assert_eq!(
+            RawFrameCaptureKey::new(id, 1, 0, "a".repeat(64)),
+            Err(RawFrameCaptureKeyError::InvalidSequence)
+        );
+        assert_eq!(
+            RawFrameCaptureKey::new(id, 1, 1, "A".repeat(64)),
+            Err(RawFrameCaptureKeyError::InvalidSha256)
+        );
+        assert_eq!(
+            RawFrameCaptureKey::new(id, 1, 1, "a".repeat(65)),
+            Err(RawFrameCaptureKeyError::InvalidSha256)
+        );
+        let reconstructed = RawFrameCaptureKey::new(id, 1, 1, "a".repeat(64))
+            .expect("valid persisted identity fields reconstruct a correlation key");
+        assert_eq!(reconstructed.capture_instance_id(), id);
+        assert_eq!(reconstructed.source_generation(), 1);
+        assert_eq!(reconstructed.frame_sequence(), 1);
+        assert_eq!(reconstructed.frame_sha256(), "a".repeat(64));
     }
 
     #[test]

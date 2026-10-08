@@ -62,12 +62,12 @@ pub struct IngestStamp {
 /// 在行情事件规范化前捕获的原始帧元数据。
 #[derive(Clone, Eq, PartialEq)]
 pub struct InboundRawMarketFrame {
-    /// Capture `UUIDv4` when a trusted pre-decode sink was configured.
-    /// 配置可信解码前 sink 时的捕获 `UUIDv4`。
-    pub capture_instance_id: Option<broker_ports::RawCaptureInstanceId>,
-    /// Source-local generation that received the raw frame.
-    /// 接收原始帧的来源本地代次。
-    pub generation: SessionGeneration,
+    /// Exact source-local pre-decode identity, distinct from the later canonical generation.
+    /// 精确的解码前来源本地身份，与之后生成的 canonical 代次分开保存。
+    pub capture_key: Option<broker_ports::RawFrameCaptureKey>,
+    /// Source-local generation that received the raw frame, before canonical projection.
+    /// 接收原始帧的来源本地代次，且位于 canonical 投影之前。
+    pub source_generation: SessionGeneration,
     /// One-based frame sequence within this source generation.
     /// 来源代次内从 1 开始的帧序号。
     pub frame_sequence: u64,
@@ -98,8 +98,8 @@ impl std::fmt::Debug for InboundRawMarketFrame {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         formatter
             .debug_struct("InboundRawMarketFrame")
-            .field("capture_instance_id", &self.capture_instance_id)
-            .field("generation", &self.generation)
+            .field("capture_key", &self.capture_key)
+            .field("source_generation", &self.source_generation)
             .field("frame_sequence", &self.frame_sequence)
             .field("received_at_utc", &self.received_at_utc)
             .field("wire_encoding", &self.wire_encoding)
