@@ -30,17 +30,26 @@ def run_metadata() -> dict:
     return json.loads(result.stdout)
 
 
-def vendored_alpaca_pin() -> tuple[str, dict[str, str]]:
+def vendored_package_sources() -> dict[str, dict[str, str]]:
     document = json.loads(
         (ROOT / "SOURCE-MANIFEST.json").read_text(encoding="utf-8")
     )
     upstreams = document.get("vendored_upstreams", [])
-    if len(upstreams) != 1:
-        raise ValueError("expected one pinned vendored Alpaca Rust upstream")
-    upstream = upstreams[0]
-    return upstream["source_commit"], {
-        package["name"]: package["source_path"] for package in upstream["packages"]
-    }
+    if not upstreams:
+        raise ValueError("no pinned vendored upstreams are recorded")
+    sources = {}
+    for upstream in upstreams:
+        for package in upstream["packages"]:
+            name = package["name"]
+            if name in sources:
+                raise ValueError(f"vendored package has multiple source pins: {name}")
+            sources[name] = {
+                "repository": upstream["source_repository"],
+                "commit": upstream["source_commit"],
+                "source_path": package["source_path"],
+                "target_root": upstream.get("target_root", "vendor/alpaca-rust"),
+            }
+    return sources
 
 
 def reviewed_dependency_licenses() -> dict[tuple[str, str], dict[str, str]]:
@@ -64,7 +73,7 @@ def cargo_purl(name: str, version: str) -> str:
 
 def main() -> None:
     metadata = run_metadata()
-    alpaca_revision, alpaca_package_paths = vendored_alpaca_pin()
+    vendored_sources = vendored_package_sources()
     lock_path = ROOT / "Cargo.lock"
     lock_digest = hashlib.sha256(lock_path.read_bytes()).hexdigest()
     lock = tomllib.loads(lock_path.read_text(encoding="utf-8"))
@@ -99,11 +108,14 @@ def main() -> None:
             download = f"https://crates.io/crates/{quote(name, safe='._-')}/{quote(version, safe='._-+')}"
         elif source and source.startswith("git+"):
             download = "NOASSERTION"
-        elif name in alpaca_package_paths:
-            upstream_path = alpaca_package_paths[name]
+        elif name in vendored_sources:
+            origin = vendored_sources[name]
+            source_path = origin["source_path"]
+            path = "" if source_path == "." else source_path.lstrip("./")
             download = (
-                "https://github.com/wmzhai/alpaca-rust/tree/"
-                f"{alpaca_revision}/{upstream_path}"
+                f"https://github.com/{origin['repository']}/tree/{origin['commit']}"
+                f"/{path}" if path else
+                f"https://github.com/{origin['repository']}/tree/{origin['commit']}"
             )
         elif package["id"] in root_ids:
             download = "https://github.com/lqepoch/broker-connectors"
@@ -129,11 +141,14 @@ def main() -> None:
                 "referenceType": "purl",
                 "referenceLocator": cargo_purl(name, version),
             }]
-        elif name in alpaca_package_paths:
+        elif name in vendored_sources:
+            origin = vendored_sources[name]
             item["sourceInfo"] = (
-                "Vendored from wmzhai/alpaca-rust at commit "
-                f"{alpaca_revision}; narrowly patched source and exclusions are "
-                "documented in vendor/alpaca-rust/UPSTREAM.md and SOURCE-MANIFEST.json."
+                f"Vendored from {origin['repository']}@{origin['commit']}; "
+                f"package source path: {'repository root' if source_path == '.' else source_path}. "
+                "Local adaptations and "
+                f"source-file hashes are documented in {origin['target_root']}/UPSTREAM.md "
+                "and SOURCE-MANIFEST.json."
             )
         reviewed_license = license_exceptions.get((name, version))
         if reviewed_license:

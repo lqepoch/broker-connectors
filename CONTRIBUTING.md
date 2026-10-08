@@ -16,6 +16,8 @@ CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p broker-execution --features offline-fak
 python3 scripts/check_broker_execution_dependency_firewall.py
 CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p alpaca-rest-read --locked --offline
 CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy -p alpaca-rest-read --all-targets --locked --offline -- -D warnings
+CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p ibkr-read --locked --offline
+CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy -p ibkr-read --all-targets --locked --offline -- -D warnings
 CARGO_BUILD_JOBS=2 cargo +1.99.0 test --workspace --locked
 CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy --workspace --all-targets --locked -- -D warnings
 python3 scripts/generate_spdx_sbom.py
@@ -60,3 +62,12 @@ market-contract event types. Requested feed values are not evidence of effective
 feed or entitlement. Historical option bars/trades and trusted watermarks remain
 unsupported until a reviewed implementation carries explicit feed evidence and
 satisfies the bounded-read contract.
+
+`ibkr-read` uses a pinned community Rust TWS API client from
+`vendor/ibapi/UPSTREAM.md`, but exposes only exact loopback option-catalog
+lookup. Keep its client private; do not expose account, market-data, history,
+or order APIs through this adapter. Queries require the full OCC symbol and
+explicit non-`SMART` exchange/currency, and all results require native terminal
+confirmation. Missing option economics stay `Unknown`. Tests use a synthetic
+localhost gateway only; real TWS/Gateway, accounts, and orders are never part
+of this local validation flow.

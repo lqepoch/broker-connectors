@@ -1,13 +1,20 @@
 [package]
 name = "ibkr-read"
-version = "0.1.0"
-edition = "2024"
-rust-version = "1.98.1"
-license = "MIT OR Apache-2.0"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
 description = "Bounded read-only IBKR option contract catalog adapter"
 
 [dependencies]
-domain = { git = "https://github.com/lqepoch/trading-core.git", rev = "0a2eaff08d45e8abc1a0137dab17d5d3ef5553c8", version = "=0.1.0" }
-futures-util = "=0.3.34"
-ibapi = { path = "../../vendor/ibapi", default-features = false, features = ["async"] }
-tokio = { version = "=1.53.1", default-features = false, features = ["io-util", "macros", "net", "rt-multi-thread", "sync", "time"] }
+domain.workspace = true
+futures-util.workspace = true
+ibapi = { workspace = true, features = ["async"] }
+tokio.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["io-util"] }
+
+[lints]
+workspace = true

@@ -23,9 +23,17 @@ files (`accounts/common/test_tables.rs`, `client/async.rs`,
 `orders/builder/async_impl.rs`, `orders/builder/sync_impl.rs`, and
 `orders/mod.rs`) so repository whitespace checks pass; no protocol or SDK
 behavior was changed. The archive digest above covers the unmodified upstream
-archive, not this whitespace-normalized working copy.
+archive, not this whitespace-normalized working copy. The manifest records
+hashes for all 302 files in the pinned `Cargo.toml`, `LICENSE`, and `src/`
+closure, including the exact source path for each file. `LOCAL-CHANGES.json`
+binds each of the five normalized files to its upstream and target hash and
+lists the exact 1-based line numbers; the record is descriptive and is not
+presented as an apply-ready patch.
 
 The adapter crate keeps the SDK client private and exposes only the bounded,
-read-only option-catalog API. It does not expose SDK account, order, market-data
-subscription, or historical-data methods. The SDK itself contains a broader
-public API; the adapter boundary is enforced in `crates/ibkr-read`.
+read-only option-catalog API. Its dependency disables default features and
+enables only the upstream `async` feature. It does not expose SDK account,
+order, market-data subscription, or historical-data methods. The SDK itself
+contains a broader public API; the adapter boundary is enforced in
+`crates/ibkr-read` and its fake-wire tests. The wrapper accepts only loopback
+addresses for this phase; remote Gateway deployments have not been reviewed.
