@@ -48,6 +48,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "broker-execution"
+version = "0.1.0"
+dependencies = [
+ "domain",
+]
+
+[[package]]
 name = "broker-ports"
 version = "0.1.0"
 dependencies = [

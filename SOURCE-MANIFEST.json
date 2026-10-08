@@ -25,12 +25,47 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "e80f750fd15a19b658ef8aeaf86b98d6a1299c3657d0337250630923f1911e7d",
+      "sha256": "5356fc9e1e3b4e346cfd9a95c2fe03aa7c469b8f1ea1f65bee3596b3f44c63a1",
+      "target_path": "crates/broker-execution/Cargo.toml"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "133f7a758328cd7c7cec6e67280bbf012b0b02365a250fb63d9b7e6a54694cb3",
+      "target_path": "crates/broker-execution/README.md"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "4ae1668b54e965287f2197b653c9676eda25a2418e8f5f8be5ccc29cf97d727d",
+      "target_path": "crates/broker-execution/src/lib.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "207761b8bd3c98af4d6256e5f487ffab30bb2e4a31f1995a9e69ecc1f045760d",
+      "target_path": "crates/broker-execution/src/execution_tests.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "dce7f609fbe49d379011dcb92c17b3554a63d34a58b8d5bf6945acd027e7cbcb",
+      "target_path": "crates/broker-execution/src/fake.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "566e78a7cb2678820e5459e1d4fc899ddd29924890239488cb031366bd109b4c",
+      "target_path": "crates/broker-execution/src/fake/tests.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "880b842eef76fa69437f6dbecae33baca66b5c00130978499c4f3b81048e2c0d",
+      "target_path": "scripts/check_broker_execution_dependency_firewall.py"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "c4b7b9293b0718db30e2004ff60e440d0ca74be5787895dbda5840bcb1234461",
       "target_path": "Cargo.toml"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "2144c360f0e1c985f7e363b927e61bec797c8f8d35c453305eaec98756d8e4ce",
+      "sha256": "5baee9f0a13986f0b1223bc27facccebed2721168536888872800af1f4eccb71",
       "target_path": "README.md"
     },
     {
@@ -61,6 +96,15 @@
       "license": "MIT OR Apache-2.0",
       "lockfile": "Cargo.lock includes this package and its transitive core packages at the same commit.",
       "package": "market-contracts",
+      "package_version": "0.1.0",
+      "repository": "lqepoch/trading-core"
+    },
+    {
+      "commit": "0a2eaff08d45e8abc1a0137dab17d5d3ef5553c8",
+      "git_tree": "fc8ec06ec05965ac23331b119047a80cb731a6bb",
+      "license": "MIT OR Apache-2.0",
+      "lockfile": "Cargo.lock resolves exact-decimal as the only normal transitive dependency of domain for broker-execution.",
+      "package": "exact-decimal",
       "package_version": "0.1.0",
       "repository": "lqepoch/trading-core"
     },

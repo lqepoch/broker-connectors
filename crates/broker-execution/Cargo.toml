@@ -1,0 +1,18 @@
+[package]
+name = "broker-execution"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Provider-neutral software execution port contracts"
+
+[features]
+default = []
+offline-fake = []
+
+[dependencies]
+domain.workspace = true
+
+[lints]
+workspace = true
