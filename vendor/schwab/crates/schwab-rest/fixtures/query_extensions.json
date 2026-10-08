@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Synthetic contract for additive Trader query parameters and Node URLSearchParams encoding.",
+  "sourceContract": [
+    "src/clients/trader.ts:OrdersQuery",
+    "src/clients/trader.ts:TransactionsParams",
+    "src/utils/apiClientBase.ts:buildQuery",
+    "src/utils/httpClient.ts:buildUrl"
+  ],
+  "evidenceLimit": "The values are synthetic and characterize local Node serialization only; no Schwab request or credential is used.",
+  "cases": [
+    {
+      "id": "false-zero-omission-and-form-encoding",
+      "extensions": [
+        { "key": "includeSomething", "kind": "boolean", "value": false },
+        { "key": "offset", "kind": "decimal", "value": "0" },
+        { "key": "filter[mode]", "kind": "text", "value": "quote" },
+        { "key": "scope&override", "kind": "text", "value": "safe" },
+        { "key": "memo", "kind": "text", "value": "a b+c&d=e~!*'()" },
+        { "key": "empty", "kind": "text", "value": "" },
+        { "key": "omitThis", "kind": "omit", "value": null }
+      ],
+      "expectedQuery": "includeSomething=false&offset=0&filter%5Bmode%5D=quote&scope%26override=safe&memo=a+b%2Bc%26d%3De%7E%21*%27%28%29&empty="
+    }
+  ]
+}

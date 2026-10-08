@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 1,
+  "source": [
+    "src/clients/trader.ts",
+    "src/utils/httpClient.ts",
+    "src/utils/apiClientBase.ts",
+    "src/utils/errors.ts",
+    "src/types/trader.ts"
+  ],
+  "evidenceLimit": "Runs actual TraderApiClient and HttpClient with fake fetch, a null logger, and an in-memory synthetic token manager. It records request method/path/body and SDK result classification only. No broker, WAL, writer epoch, authoritative reconciliation, automation runtime, environment, or local state is used.",
+  "request": {
+    "accountHash": "synthetic/hash+",
+    "orderId": "4242",
+    "replaceOrder": {
+      "orderStrategyType": "SINGLE",
+      "session": "NORMAL",
+      "duration": "DAY",
+      "orderType": "LIMIT",
+      "price": 0.93,
+      "quantity": 2,
+      "orderLegCollection": [
+        {
+          "instruction": "BUY_TO_OPEN",
+          "quantity": 1,
+          "instrument": {
+            "symbol": "SYNTHETIC-LONG-PUT",
+            "assetType": "OPTION"
+          }
+        },
+        {
+          "instruction": "SELL_TO_OPEN",
+          "quantity": 1,
+          "instrument": {
+            "symbol": "SYNTHETIC-SHORT-PUT",
+            "assetType": "OPTION"
+          }
+        }
+      ]
+    }
+  },
+  "cases": [
+    {
+      "id": "replace-201-location-preserves-frozen-payload",
+      "operation": "replace",
+      "transport": {
+        "kind": "response",
+        "status": 201,
+        "location": "/trader/v1/accounts/synthetic%2Fhash%2B/orders/4242"
+      },
+      "unsafeRetryOverride": false,
+      "expected": {
+        "requests": [
+          {
+            "attempt": 1,
+            "method": "PUT",
+            "pathname": "/trader/v1/accounts/synthetic%2Fhash%2B/orders/4242",
+            "bodyJson": "{\"orderStrategyType\":\"SINGLE\",\"session\":\"NORMAL\",\"duration\":\"DAY\",\"orderType\":\"LIMIT\",\"price\":0.93,\"quantity\":2,\"orderLegCollection\":[{\"instruction\":\"BUY_TO_OPEN\",\"quantity\":1,\"instrument\":{\"symbol\":\"SYNTHETIC-LONG-PUT\",\"assetType\":\"OPTION\"}},{\"instruction\":\"SELL_TO_OPEN\",\"quantity\":1,\"instrument\":{\"symbol\":\"SYNTHETIC-SHORT-PUT\",\"assetType\":\"OPTION\"}}]}"
+          }
+        ],
+        "attempts": 1,
+        "retryEvents": 0,
+        "previewRequests": 0,
+        "inputBodyUnchanged": true,
+        "outcome": {
+          "kind": "returned",
+          "status": 201,
+          "method": "PUT",
+          "location": "/trader/v1/accounts/synthetic%2Fhash%2B/orders/4242",
+          "orderId": "4242"
+        }
+      }
+    },
+    {
+      "id": "replace-503-is-unknown-despite-retry-override",
+      "operation": "replace",
+      "transport": { "kind": "response", "status": 503 },
+      "unsafeRetryOverride": true,
+      "expected": {
+        "requests": [
+          {
+            "attempt": 1,
+            "method": "PUT",
+            "pathname": "/trader/v1/accounts/synthetic%2Fhash%2B/orders/4242",
+            "bodyJson": "{\"orderStrategyType\":\"SINGLE\",\"session\":\"NORMAL\",\"duration\":\"DAY\",\"orderType\":\"LIMIT\",\"price\":0.93,\"quantity\":2,\"orderLegCollection\":[{\"instruction\":\"BUY_TO_OPEN\",\"quantity\":1,\"instrument\":{\"symbol\":\"SYNTHETIC-LONG-PUT\",\"assetType\":\"OPTION\"}},{\"instruction\":\"SELL_TO_OPEN\",\"quantity\":1,\"instrument\":{\"symbol\":\"SYNTHETIC-SHORT-PUT\",\"assetType\":\"OPTION\"}}]}"
+          }
+        ],
+        "attempts": 1,
+        "retryEvents": 0,
+        "previewRequests": 0,
+        "inputBodyUnchanged": true,
+        "outcome": {
+          "kind": "unknown",
+          "errorCode": "SCHWAB_UNKNOWN_OUTCOME",
+          "operation": "REPLACE_ORDER",
+          "method": "PUT",
+          "path": "/accounts/synthetic%2Fhash%2B/orders/4242",
+          "status": 503
+        }
+      }
+    },
+    {
+      "id": "replace-response-lost-is-unknown-despite-retry-override",
+      "operation": "replace",
+      "transport": { "kind": "network-error" },
+      "unsafeRetryOverride": true,
+      "expected": {
+        "requests": [
+          {
+            "attempt": 1,
+            "method": "PUT",
+            "pathname": "/trader/v1/accounts/synthetic%2Fhash%2B/orders/4242",
+            "bodyJson": "{\"orderStrategyType\":\"SINGLE\",\"session\":\"NORMAL\",\"duration\":\"DAY\",\"orderType\":\"LIMIT\",\"price\":0.93,\"quantity\":2,\"orderLegCollection\":[{\"instruction\":\"BUY_TO_OPEN\",\"quantity\":1,\"instrument\":{\"symbol\":\"SYNTHETIC-LONG-PUT\",\"assetType\":\"OPTION\"}},{\"instruction\":\"SELL_TO_OPEN\",\"quantity\":1,\"instrument\":{\"symbol\":\"SYNTHETIC-SHORT-PUT\",\"assetType\":\"OPTION\"}}]}"
+          }
+        ],
+        "attempts": 1,
+        "retryEvents": 0,
+        "previewRequests": 0,
+        "inputBodyUnchanged": true,
+        "outcome": {
+          "kind": "unknown",
+          "errorCode": "SCHWAB_UNKNOWN_OUTCOME",
+          "operation": "REPLACE_ORDER",
+          "method": "PUT",
+          "path": "/accounts/synthetic%2Fhash%2B/orders/4242"
+        }
+      }
+    },
+    {
+      "id": "cancel-204-without-location-is-known-success",
+      "operation": "cancel",
+      "transport": { "kind": "response", "status": 204 },
+      "unsafeRetryOverride": false,
+      "expected": {
+        "requests": [
+          {
+            "attempt": 1,
+            "method": "DELETE",
+            "pathname": "/trader/v1/accounts/synthetic%2Fhash%2B/orders/4242",
+            "bodyJson": null
+          }
+        ],
+        "attempts": 1,
+        "retryEvents": 0,
+        "previewRequests": 0,
+        "outcome": {
+          "kind": "returned",
+          "status": 204,
+          "method": "DELETE",
+          "location": null,
+          "orderId": null
+        }
+      }
+    },
+    {
+      "id": "cancel-503-is-unknown-despite-retry-override",
+      "operation": "cancel",
+      "transport": { "kind": "response", "status": 503 },
+      "unsafeRetryOverride": true,
+      "expected": {
+        "requests": [
+          {
+            "attempt": 1,
+            "method": "DELETE",
+            "pathname": "/trader/v1/accounts/synthetic%2Fhash%2B/orders/4242",
+            "bodyJson": null
+          }
+        ],
+        "attempts": 1,
+        "retryEvents": 0,
+        "previewRequests": 0,
+        "outcome": {
+          "kind": "unknown",
+          "errorCode": "SCHWAB_UNKNOWN_OUTCOME",
+          "operation": "CANCEL_ORDER",
+          "method": "DELETE",
+          "path": "/accounts/synthetic%2Fhash%2B/orders/4242",
+          "status": 503
+        }
+      }
+    },
+    {
+      "id": "cancel-response-lost-is-unknown-despite-retry-override",
+      "operation": "cancel",
+      "transport": { "kind": "network-error" },
+      "unsafeRetryOverride": true,
+      "expected": {
+        "requests": [
+          {
+            "attempt": 1,
+            "method": "DELETE",
+            "pathname": "/trader/v1/accounts/synthetic%2Fhash%2B/orders/4242",
+            "bodyJson": null
+          }
+        ],
+        "attempts": 1,
+        "retryEvents": 0,
+        "previewRequests": 0,
+        "outcome": {
+          "kind": "unknown",
+          "errorCode": "SCHWAB_UNKNOWN_OUTCOME",
+          "operation": "CANCEL_ORDER",
+          "method": "DELETE",
+          "path": "/accounts/synthetic%2Fhash%2B/orders/4242"
+        }
+      }
+    }
+  ]
+}

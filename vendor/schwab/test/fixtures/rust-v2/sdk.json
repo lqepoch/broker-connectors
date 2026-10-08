@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "source": [
+    "src/clients/trader.ts",
+    "src/utils/httpClient.ts",
+    "src/utils/apiClientBase.ts",
+    "src/index.ts"
+  ],
+  "evidenceLimit": "Calls the actual TraderApiClient, HttpClient, authorization boundary, and getAccessToken method with fake fetch, in-memory synthetic tokens, and captured logs only. A body-read failure remains UnknownOutcome at the SDK client layer; it does not characterize automation coordinator recovery. No TokenStore, environment loader, OAuth, runtime, or real network is exercised.",
+  "cases": [
+    {
+      "id": "accepted-post-returns-location-metadata",
+      "kind": "accepted-post",
+      "input": { "transport": "http-201-with-location" },
+      "expected": {
+        "status": 201,
+        "orderId": "4242",
+        "correlationId": "fixture-correlation",
+        "fetchCalls": 1
+      }
+    },
+    {
+      "id": "post-503-is-unknown-and-cannot-enable-retry",
+      "kind": "post-503",
+      "input": { "transport": "http-503", "unsafeRetryOverrides": true },
+      "expected": {
+        "errorCode": "SCHWAB_UNKNOWN_OUTCOME",
+        "status": 503,
+        "operation": "PLACE_ORDER",
+        "fetchCalls": 1,
+        "idempotencyHeaderPresent": false
+      }
+    },
+    {
+      "id": "post-network-failure-is-unknown-without-retry",
+      "kind": "post-network-failure",
+      "input": { "transport": "network-error" },
+      "expected": {
+        "errorCode": "SCHWAB_UNKNOWN_OUTCOME",
+        "operation": "PLACE_ORDER",
+        "fetchCalls": 1
+      }
+    },
+    {
+      "id": "mutation-401-does-not-refresh-or-resend",
+      "kind": "mutation-401",
+      "input": { "transport": "http-401", "mutation": "CANCEL_ORDER" },
+      "expected": {
+        "errorType": "SchwabApiError",
+        "status": 401,
+        "fetchCalls": 1,
+        "refreshCalls": 0
+      }
+    },
+    {
+      "id": "post-201-without-location-remains-unknown",
+      "kind": "missing-location",
+      "input": { "transport": "http-201-without-location" },
+      "expected": {
+        "errorCode": "SCHWAB_UNKNOWN_OUTCOME",
+        "status": 201,
+        "operation": "PLACE_ORDER",
+        "fetchCalls": 1
+      }
+    },
+    {
+      "id": "post-201-body-read-failure-is-sdk-unknown",
+      "kind": "body-read-failure",
+      "input": { "transport": "http-201-location-body-read-failure" },
+      "expected": {
+        "errorCode": "SCHWAB_UNKNOWN_OUTCOME",
+        "status": 201,
+        "operation": "PLACE_ORDER",
+        "fetchCalls": 1
+      },
+      "evidenceScope": "sdk-client-only"
+    },
+    {
+      "id": "get-401-refreshes-once-and-retries-once",
+      "kind": "get-401-refresh",
+      "input": { "transport": "http-401-then-200" },
+      "expected": {
+        "returnedExpectedRecord": true,
+        "fetchCalls": 2,
+        "refreshCalls": 1
+      }
+    },
+    {
+      "id": "get-access-token-logs-synthetic-prefix-and-suffix",
+      "kind": "get-access-token-log-preview",
+      "classification": "BUG_IN_LEGACY",
+      "evidenceScope": "synthetic-prototype-call",
+      "input": { "tokenLength": 64 },
+      "expected": {
+        "returnedSameToken": true,
+        "loggerCalls": 2,
+        "leakedSyntheticTokenFragment": true
+      }
+    }
+  ]
+}

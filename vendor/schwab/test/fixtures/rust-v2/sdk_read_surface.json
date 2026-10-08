@@ -1,0 +1,474 @@
+{
+  "schemaVersion": 1,
+  "purpose": "#167 characterization of the current public Trader and Market Data REST read surface, including wire mapping and response behavior.",
+  "evidenceLimit": "Every request uses actual built Node SDK clients and HttpClient with synthetic token data and fake fetch. No Schwab endpoint, user account, credential store, .env, or .state is accessed.",
+  "cases": [
+    {
+      "id": "trader-account-number-hash-list",
+      "client": "trader",
+      "method": "getAccountNumbersWithResponse",
+      "args": [],
+      "transport": { "status": 200, "body": [{ "accountNumber": "synthetic-account", "hashValue": "synthetic-hash" }] },
+      "expectedRequest": { "path": "/trader/v1/accounts/accountNumbers", "query": {} },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": [{ "accountNumber": "synthetic-account", "hashValue": "synthetic-hash" }] }
+    },
+    {
+      "id": "trader-accounts-positions-field",
+      "client": "trader",
+      "method": "getAccountsWithResponse",
+      "args": [{ "fields": "positions" }],
+      "transport": { "status": 200, "body": [{ "securitiesAccount": { "accountNumber": "synthetic-account", "positions": [] } }] },
+      "expectedRequest": { "path": "/trader/v1/accounts", "query": { "fields": "positions" } },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": [{ "securitiesAccount": { "accountNumber": "synthetic-account", "positions": [] } }] }
+    },
+    {
+      "id": "trader-account-hash-path-encoding",
+      "client": "trader",
+      "method": "getAccountWithResponse",
+      "args": [" synthetic/hash+ ", { "fields": "positions" }],
+      "transport": { "status": 200, "body": { "securitiesAccount": { "accountNumber": "synthetic-account" } } },
+      "expectedRequest": { "path": "/trader/v1/accounts/synthetic%2Fhash%2B", "query": { "fields": "positions" } },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": { "securitiesAccount": { "accountNumber": "synthetic-account" } } }
+    },
+    {
+      "id": "trader-orders-query-preserves-false-zero-and-omits-undefined",
+      "client": "trader",
+      "method": "getOrdersWithResponse",
+      "args": ["synthetic-hash", { "fromEnteredTime": "2026-08-12T09:30:00-04:00", "toEnteredTime": "2026-08-12T16:00:00-04:00", "maxResults": 0, "status": "WORKING", "includeSomething": false, "omitThis": null }],
+      "transport": { "status": 200, "body": [] },
+      "expectedRequest": { "path": "/trader/v1/accounts/synthetic-hash/orders", "query": { "fromEnteredTime": "2026-08-12T09:30:00-04:00", "toEnteredTime": "2026-08-12T16:00:00-04:00", "maxResults": "0", "status": "WORKING", "includeSomething": "false" } },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": [] }
+    },
+    {
+      "id": "trader-order-id-path",
+      "client": "trader",
+      "method": "getOrderWithResponse",
+      "args": ["synthetic-hash", "9007199254740993"],
+      "transport": { "status": 200, "body": { "orderId": 42, "status": "WORKING", "futureBrokerField": "preserved" } },
+      "expectedRequest": { "path": "/trader/v1/accounts/synthetic-hash/orders/9007199254740993", "query": {} },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": { "orderId": 42, "status": "WORKING", "futureBrokerField": "preserved" } }
+    },
+    {
+      "id": "trader-cross-account-orders-query",
+      "client": "trader",
+      "method": "getOrdersAcrossAccountsWithResponse",
+      "args": [{ "fromEnteredTime": "start", "toEnteredTime": "end", "status": "FILLED" }],
+      "transport": { "status": 200, "body": [{ "orderId": 42, "status": "FILLED" }] },
+      "expectedRequest": { "path": "/trader/v1/orders", "query": { "fromEnteredTime": "start", "toEnteredTime": "end", "status": "FILLED" } },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": [{ "orderId": 42, "status": "FILLED" }] }
+    },
+    {
+      "id": "trader-transactions-query",
+      "client": "trader",
+      "method": "getTransactionsWithResponse",
+      "args": ["synthetic-hash", { "startDate": "2026-08-12", "endDate": "2026-08-13", "types": "TRADE", "symbol": "QQQ" }],
+      "transport": { "status": 200, "body": [{ "activityId": 42, "type": "TRADE", "symbol": "QQQ" }] },
+      "expectedRequest": { "path": "/trader/v1/accounts/synthetic-hash/transactions", "query": { "startDate": "2026-08-12", "endDate": "2026-08-13", "types": "TRADE", "symbol": "QQQ" } },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": [{ "activityId": 42, "type": "TRADE", "symbol": "QQQ" }] }
+    },
+    {
+      "id": "trader-transaction-object-response",
+      "client": "trader",
+      "method": "getTransactionWithResponse",
+      "args": ["synthetic-hash", 43],
+      "transport": { "status": 200, "body": { "activityId": 43, "description": "synthetic transaction" } },
+      "expectedRequest": { "path": "/trader/v1/accounts/synthetic-hash/transactions/43", "query": {} },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": { "activityId": 43, "description": "synthetic transaction" } }
+    },
+    {
+      "id": "trader-transaction-array-convenience-selects-first",
+      "client": "trader",
+      "method": "getTransaction",
+      "args": ["synthetic-hash", "44"],
+      "transport": { "status": 200, "body": [{ "activityId": 44 }, { "activityId": 45 }] },
+      "expectedRequest": { "path": "/trader/v1/accounts/synthetic-hash/transactions/44", "query": {} },
+      "expectedOutcome": { "kind": "body", "value": { "activityId": 44 } }
+    },
+    {
+      "id": "trader-empty-transaction-array-throws-not-found",
+      "client": "trader",
+      "method": "getTransaction",
+      "args": ["synthetic-hash", "46"],
+      "transport": { "status": 200, "body": [] },
+      "expectedRequest": { "path": "/trader/v1/accounts/synthetic-hash/transactions/46", "query": {} },
+      "expectedOutcome": { "kind": "error", "name": "Error", "message": "Transaction not found in response array" }
+    },
+    {
+      "id": "trader-user-preference-object-shape",
+      "client": "trader",
+      "method": "getUserPreferencesWithResponse",
+      "args": [],
+      "transport": { "status": 200, "body": { "accounts": [], "streamerInfo": [{ "streamerSocketUrl": "wss://streamer.example.invalid", "schwabClientCustomerId": "synthetic-customer", "schwabClientCorrelId": "synthetic-correlation", "schwabClientChannel": "N9", "schwabClientFunctionId": "synthetic-function" }] } },
+      "expectedRequest": { "path": "/trader/v1/userPreference", "query": {} },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": { "accounts": [], "streamerInfo": [{ "streamerSocketUrl": "wss://streamer.example.invalid", "schwabClientCustomerId": "synthetic-customer", "schwabClientCorrelId": "synthetic-correlation", "schwabClientChannel": "N9", "schwabClientFunctionId": "synthetic-function" }] } }
+    },
+    {
+      "id": "trader-streamer-info-array-preference-selects-first",
+      "client": "trader",
+      "method": "getStreamerInfo",
+      "args": [],
+      "transport": { "status": 200, "body": [{ "streamerInfo": [{ "streamerSocketUrl": "wss://streamer.example.invalid", "schwabClientCustomerId": "synthetic-customer", "schwabClientCorrelId": "synthetic-correlation", "schwabClientChannel": "N9", "schwabClientFunctionId": "synthetic-function" }] }, { "streamerInfo": [{ "streamerSocketUrl": "wss://ignored.example.invalid", "schwabClientCustomerId": "ignored", "schwabClientCorrelId": "ignored", "schwabClientChannel": "N9", "schwabClientFunctionId": "ignored" }] }] },
+      "expectedRequest": { "path": "/trader/v1/userPreference", "query": {} },
+      "expectedOutcome": { "kind": "body", "value": { "streamerSocketUrl": "wss://streamer.example.invalid", "schwabClientCustomerId": "synthetic-customer", "schwabClientCorrelId": "synthetic-correlation", "schwabClientChannel": "N9", "schwabClientFunctionId": "synthetic-function" } }
+    },
+    {
+      "id": "trader-streamer-info-missing-preference-fails",
+      "client": "trader",
+      "method": "getStreamerInfo",
+      "args": [],
+      "transport": { "status": 200, "body": {} },
+      "expectedRequest": { "path": "/trader/v1/userPreference", "query": {} },
+      "expectedOutcome": { "kind": "error", "name": "Error", "message": "Streamer info unavailable in user preferences" }
+    },
+    {
+      "id": "market-batch-quotes-joins-symbols-and-fields",
+      "client": "marketData",
+      "method": "getQuotesWithResponse",
+      "args": [{ "symbols": ["QQQ", "QQQ   260814P00740000"], "fields": ["quote", "fundamental"], "indicative": true }],
+      "transport": { "status": 200, "body": { "QQQ": { "symbol": "QQQ", "assetMainType": "EQUITY", "futureQuoteField": { "value": 1 } } } },
+      "expectedRequest": { "path": "/marketdata/v1/quotes", "query": { "symbols": "QQQ,QQQ   260814P00740000", "fields": "quote,fundamental", "indicative": "true" } },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": { "QQQ": { "symbol": "QQQ", "assetMainType": "EQUITY", "futureQuoteField": { "value": 1 } } } }
+    },
+    {
+      "id": "market-single-symbol-quote-path-encoding",
+      "client": "marketData",
+      "method": "getQuoteWithResponse",
+      "args": ["QQQ   260814P00740000", { "fields": ["quote", "reference"] }],
+      "transport": { "status": 200, "body": { "symbol": "QQQ   260814P00740000", "previousClose": 500, "candles": [] } },
+      "expectedRequest": { "path": "/marketdata/v1/QQQ%20%20%20260814P00740000/quotes", "query": { "fields": "quote,reference" } },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": { "symbol": "QQQ   260814P00740000", "previousClose": 500, "candles": [] } }
+    },
+    {
+      "id": "market-option-quote-normalizes-contract-and-nbbo",
+      "client": "marketData",
+      "method": "getOptionQuote",
+      "args": ["QQQ   260814P00740000"],
+      "transport": { "status": 200, "body": { "QQQ   260814P00740000": { "assetMainType": "OPTION", "symbol": "QQQ   260814P00740000", "realtime": true, "reference": { "underlying": "QQQ", "contractType": "PUT", "strikePrice": 740, "expirationYear": 2026, "expirationMonth": 8, "expirationDay": 14 }, "quote": { "bidPrice": 29.9, "askPrice": 30.1, "quoteTime": 1700000000000, "delta": -0.42 } } } },
+      "expectedRequest": { "path": "/marketdata/v1/quotes", "query": { "symbols": "QQQ   260814P00740000", "fields": "quote,reference" } },
+      "expectedOutcome": { "kind": "quote", "value": { "symbol": "QQQ   260814P00740000", "underlying": "QQQ", "contractType": "PUT", "expiration": "2026-08-14", "strike": 740, "realtime": true, "bid": 29.9, "ask": 30.1, "mid": 30, "spread": 0.20000000000000284, "quoteTime": 1700000000000, "delta": -0.42 } }
+    },
+    {
+      "id": "market-vertical-option-quote-derives-two-leg-market",
+      "classification": "BUG_IN_LEGACY",
+      "legacyBugNote": "The legacy strategy quote helper derives prices with JavaScript IEEE-754 numbers. Rust migration must use exact decimal pricing before applying trading thresholds.",
+      "client": "marketData",
+      "method": "getVerticalOptionQuote",
+      "args": ["QQQ   260814P00740000", "QQQ   260814P00739000"],
+      "transport": { "status": 200, "body": { "QQQ   260814P00740000": { "assetMainType": "OPTION", "symbol": "QQQ   260814P00740000", "realtime": true, "reference": { "underlying": "QQQ", "contractType": "PUT", "strikePrice": 740, "expirationYear": 2026, "expirationMonth": 8, "expirationDay": 14 }, "quote": { "bidPrice": 29.9, "askPrice": 30.1, "quoteTime": 1700000000000 } }, "QQQ   260814P00739000": { "assetMainType": "OPTION", "symbol": "QQQ   260814P00739000", "realtime": true, "reference": { "underlying": "QQQ", "contractType": "PUT", "strikePrice": 739, "expirationYear": 2026, "expirationMonth": 8, "expirationDay": 14 }, "quote": { "bidPrice": 28.95, "askPrice": 29.05, "quoteTime": 1700000000000 } } } },
+      "expectedRequest": { "path": "/marketdata/v1/quotes", "query": { "symbols": "QQQ   260814P00740000,QQQ   260814P00739000", "fields": "quote,reference" } },
+      "expectedOutcome": { "kind": "vertical", "value": { "derivedBid": 0.8499999999999979, "derivedAsk": 1.1500000000000021, "derivedMid": 1, "derivedSpread": 0.30000000000000426, "sameUnderlying": true, "sameExpiration": true, "sameContractType": true } }
+    },
+    {
+      "id": "market-option-chain-forwards-all-supported-fields",
+      "client": "marketData",
+      "method": "getOptionChainsWithResponse",
+      "args": [{ "symbol": "QQQ", "contractType": "PUT", "includeUnderlyingQuote": true, "strategy": "VERTICAL", "interval": 1, "strikeCount": 10, "strike": 400, "range": "OTM", "fromDate": "2026-08-12", "toDate": "2026-08-13", "volatility": 0.2, "underlyingPrice": 400, "interestRate": 0.05, "daysToExpiration": 0, "expMonth": "AUG", "optionType": "ALL", "entitlement": "NP", "unused": null }],
+      "transport": { "status": 200, "body": { "symbol": "QQQ", "isDelayed": false, "putExpDateMap": {}, "futureBrokerField": 7 } },
+      "expectedRequest": { "path": "/marketdata/v1/chains", "query": { "symbol": "QQQ", "contractType": "PUT", "includeUnderlyingQuote": "true", "strategy": "VERTICAL", "interval": "1", "strikeCount": "10", "strike": "400", "range": "OTM", "fromDate": "2026-08-12", "toDate": "2026-08-13", "volatility": "0.2", "underlyingPrice": "400", "interestRate": "0.05", "daysToExpiration": "0", "expMonth": "AUG", "optionType": "ALL", "entitlement": "NP" } },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": { "symbol": "QQQ", "isDelayed": false, "putExpDateMap": {}, "futureBrokerField": 7 } }
+    },
+    {
+      "id": "market-option-chain-deprecated-include-quotes-alias",
+      "client": "marketData",
+      "method": "getOptionChainsWithResponse",
+      "args": [{ "symbol": "QQQ", "includeQuotes": true }],
+      "transport": { "status": 200, "body": { "symbol": "QQQ" } },
+      "expectedRequest": { "path": "/marketdata/v1/chains", "query": { "symbol": "QQQ", "includeUnderlyingQuote": "true" } },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": { "symbol": "QQQ" } }
+    },
+    {
+      "id": "market-option-expiration-chain-query",
+      "client": "marketData",
+      "method": "getOptionExpirationChainWithResponse",
+      "args": [{ "symbol": "QQQ", "contractType": "ALL", "expMonth": "AUG", "optionType": "ALL" }],
+      "transport": { "status": 200, "body": { "symbol": "QQQ", "expirationList": [] } },
+      "expectedRequest": { "path": "/marketdata/v1/expirationchain", "query": { "symbol": "QQQ", "contractType": "ALL", "expMonth": "AUG", "optionType": "ALL" } },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": { "symbol": "QQQ", "expirationList": [] } }
+    },
+    {
+      "id": "market-price-history-query-preserves-zero-and-booleans",
+      "client": "marketData",
+      "method": "getPriceHistoryWithResponse",
+      "args": [{ "symbol": "QQQ", "periodType": "day", "period": 0, "frequencyType": "minute", "frequency": 5, "startDate": 0, "endDate": 2, "needExtendedHoursData": false, "needPreviousClose": true }],
+      "transport": { "status": 200, "body": { "symbol": "QQQ", "empty": true, "candles": [] } },
+      "expectedRequest": { "path": "/marketdata/v1/pricehistory", "query": { "symbol": "QQQ", "periodType": "day", "period": "0", "frequencyType": "minute", "frequency": "5", "startDate": "0", "endDate": "2", "needExtendedHoursData": "false", "needPreviousClose": "true" } },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": { "symbol": "QQQ", "empty": true, "candles": [] } }
+    },
+    {
+      "id": "market-movers-encodes-path-symbol",
+      "client": "marketData",
+      "method": "getMoversWithResponse",
+      "args": ["$DJI", { "sort": "VOLUME", "frequency": 30 }],
+      "transport": { "status": 200, "body": { "screeners": [] } },
+      "expectedRequest": { "path": "/marketdata/v1/movers/%24DJI", "query": { "sort": "VOLUME", "frequency": "30" } },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": { "screeners": [] } }
+    },
+    {
+      "id": "market-batch-hours-joins-market-list",
+      "client": "marketData",
+      "method": "getMarketsWithResponse",
+      "args": [{ "markets": ["EQUITY", "OPTION"], "date": "2026-08-12" }],
+      "transport": { "status": 200, "body": {} },
+      "expectedRequest": { "path": "/marketdata/v1/markets", "query": { "markets": "EQUITY,OPTION", "date": "2026-08-12" } },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": {} }
+    },
+    {
+      "id": "market-single-hours-date-query",
+      "client": "marketData",
+      "method": "getMarketHoursWithResponse",
+      "args": ["OPTION", { "date": "2026-08-12" }],
+      "transport": { "status": 200, "body": {} },
+      "expectedRequest": { "path": "/marketdata/v1/markets/OPTION", "query": { "date": "2026-08-12" } },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": {} }
+    },
+    {
+      "id": "market-instrument-search-joins-symbols",
+      "client": "marketData",
+      "method": "searchInstrumentsWithResponse",
+      "args": [{ "symbol": ["QQQ", "SPY"], "projection": "SYMBOL_SEARCH" }],
+      "transport": { "status": 200, "body": { "instruments": [{ "symbol": "QQQ", "assetType": "EQUITY" }] } },
+      "expectedRequest": { "path": "/marketdata/v1/instruments", "query": { "symbol": "QQQ,SPY", "projection": "SYMBOL_SEARCH" } },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": { "instruments": [{ "symbol": "QQQ", "assetType": "EQUITY" }] } }
+    },
+    {
+      "id": "market-instrument-cusip-path-encoding",
+      "client": "marketData",
+      "method": "getInstrumentByCusipWithResponse",
+      "args": ["12 345"],
+      "transport": { "status": 200, "body": { "cusip": "synthetic-cusip", "symbol": "QQQ" } },
+      "expectedRequest": { "path": "/marketdata/v1/instruments/12%20345", "query": {} },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": { "cusip": "synthetic-cusip", "symbol": "QQQ" } }
+    },
+    {
+      "id": "trader-204-empty-account-response-bypasses-schema",
+      "classification": "BUG_IN_LEGACY",
+      "legacyBugNote": "The transport returns undefined for a successful empty body before the required account-list schema can run; callers receive a value inconsistent with the declared array type.",
+      "client": "trader",
+      "method": "getAccountsWithResponse",
+      "args": [],
+      "transport": { "status": 204 },
+      "expectedRequest": { "path": "/trader/v1/accounts", "query": {} },
+      "expectedOutcome": { "kind": "response", "status": 204, "bodyState": "undefined" }
+    },
+    {
+      "id": "market-200-empty-body-bypasses-required-history-schema",
+      "classification": "BUG_IN_LEGACY",
+      "legacyBugNote": "The transport returns undefined for a successful empty body before the required price-history schema can run; callers receive a value inconsistent with the declared response type.",
+      "client": "marketData",
+      "method": "getPriceHistoryWithResponse",
+      "args": [{ "symbol": "QQQ" }],
+      "transport": { "status": 200, "emptyBody": true },
+      "expectedRequest": { "path": "/marketdata/v1/pricehistory", "query": { "symbol": "QQQ" } },
+      "expectedOutcome": { "kind": "response", "status": 200, "bodyState": "undefined" }
+    },
+    {
+      "id": "trader-invalid-success-envelope-fails-schema-validation",
+      "client": "trader",
+      "method": "getAccountNumbersWithResponse",
+      "args": [],
+      "transport": { "status": 200, "body": { "accounts": [] } },
+      "expectedRequest": { "path": "/trader/v1/accounts/accountNumbers", "query": {} },
+      "expectedOutcome": { "kind": "error", "name": "ZodError", "issuePaths": [""] }
+    },
+    {
+      "id": "market-invalid-success-envelope-fails-schema-validation",
+      "client": "marketData",
+      "method": "getMoversWithResponse",
+      "args": ["$DJI"],
+      "transport": { "status": 200, "body": { "screeners": {} } },
+      "expectedRequest": { "path": "/marketdata/v1/movers/%24DJI", "query": {} },
+      "expectedOutcome": { "kind": "error", "name": "ZodError", "issuePaths": ["screeners"] }
+    },
+    {
+      "id": "trader-http-400-preserves-broker-error-status-and-body",
+      "client": "trader",
+      "method": "getAccountNumbersWithResponse",
+      "args": [],
+      "transport": { "status": 400, "body": { "error": "synthetic invalid request", "code": "FIXTURE_400" } },
+      "expectedRequest": { "path": "/trader/v1/accounts/accountNumbers", "query": {} },
+      "expectedOutcome": { "kind": "error", "name": "SchwabApiError", "status": 400, "isRateLimited": false, "body": { "error": "synthetic invalid request", "code": "FIXTURE_400" } }
+    },
+    {
+      "id": "market-http-429-retries-only-through-read-retry-policy",
+      "client": "marketData",
+      "method": "getQuotesWithResponse",
+      "args": [{ "symbols": "QQQ" }],
+      "transport": { "responses": [{ "status": 429, "body": { "error": "synthetic rate limit" } }, { "status": 200, "body": { "QQQ": { "symbol": "QQQ" } } }] },
+      "httpRetryConfig": { "maxRetries": 1, "initialDelayMs": 0, "maxDelayMs": 0, "jitterRatio": 0, "jitterStrategy": "none" },
+      "expectedFetchCount": 2,
+      "expectedRequest": { "path": "/marketdata/v1/quotes", "query": { "symbols": "QQQ" } },
+      "expectedOutcome": { "kind": "response", "status": 200, "body": { "QQQ": { "symbol": "QQQ" } } }
+    },
+    {
+      "id": "trader-account-numbers-body-wrapper",
+      "client": "trader",
+      "method": "getAccountNumbers",
+      "args": [],
+      "transport": { "status": 200, "body": [{ "accountNumber": "synthetic-account", "hashValue": "synthetic-hash" }] },
+      "expectedRequest": { "path": "/trader/v1/accounts/accountNumbers", "query": {} },
+      "expectedOutcome": { "kind": "body", "value": [{ "accountNumber": "synthetic-account", "hashValue": "synthetic-hash" }] }
+    },
+    {
+      "id": "trader-accounts-body-wrapper-forwards-fields",
+      "client": "trader",
+      "method": "getAccounts",
+      "args": [{ "fields": "positions" }],
+      "transport": { "status": 200, "body": [{ "securitiesAccount": { "accountNumber": "synthetic-account", "positions": [] } }] },
+      "expectedRequest": { "path": "/trader/v1/accounts", "query": { "fields": "positions" } },
+      "expectedOutcome": { "kind": "body", "value": [{ "securitiesAccount": { "accountNumber": "synthetic-account", "positions": [] } }] }
+    },
+    {
+      "id": "trader-account-body-wrapper-forwards-hash-and-fields",
+      "client": "trader",
+      "method": "getAccount",
+      "args": ["synthetic-hash", { "fields": "positions" }],
+      "transport": { "status": 200, "body": { "securitiesAccount": { "accountNumber": "synthetic-account" } } },
+      "expectedRequest": { "path": "/trader/v1/accounts/synthetic-hash", "query": { "fields": "positions" } },
+      "expectedOutcome": { "kind": "body", "value": { "securitiesAccount": { "accountNumber": "synthetic-account" } } }
+    },
+    {
+      "id": "trader-orders-body-wrapper-forwards-range-and-status",
+      "client": "trader",
+      "method": "getOrders",
+      "args": ["synthetic-hash", { "fromEnteredTime": "start", "toEnteredTime": "end", "status": "WORKING", "maxResults": 10 }],
+      "transport": { "status": 200, "body": [{ "orderId": 42, "status": "WORKING" }] },
+      "expectedRequest": { "path": "/trader/v1/accounts/synthetic-hash/orders", "query": { "fromEnteredTime": "start", "toEnteredTime": "end", "status": "WORKING", "maxResults": "10" } },
+      "expectedOutcome": { "kind": "body", "value": [{ "orderId": 42, "status": "WORKING" }] }
+    },
+    {
+      "id": "trader-order-body-wrapper-forwards-id",
+      "client": "trader",
+      "method": "getOrder",
+      "args": ["synthetic-hash", 42],
+      "transport": { "status": 200, "body": { "orderId": 42, "status": "WORKING" } },
+      "expectedRequest": { "path": "/trader/v1/accounts/synthetic-hash/orders/42", "query": {} },
+      "expectedOutcome": { "kind": "body", "value": { "orderId": 42, "status": "WORKING" } }
+    },
+    {
+      "id": "trader-cross-account-orders-body-wrapper-forwards-query",
+      "client": "trader",
+      "method": "getOrdersAcrossAccounts",
+      "args": [{ "fromEnteredTime": "start", "toEnteredTime": "end", "status": "FILLED" }],
+      "transport": { "status": 200, "body": [{ "orderId": 42, "status": "FILLED" }] },
+      "expectedRequest": { "path": "/trader/v1/orders", "query": { "fromEnteredTime": "start", "toEnteredTime": "end", "status": "FILLED" } },
+      "expectedOutcome": { "kind": "body", "value": [{ "orderId": 42, "status": "FILLED" }] }
+    },
+    {
+      "id": "trader-transactions-body-wrapper-forwards-query",
+      "client": "trader",
+      "method": "getTransactions",
+      "args": ["synthetic-hash", { "startDate": "start", "endDate": "end", "types": "TRADE", "symbol": "QQQ" }],
+      "transport": { "status": 200, "body": [{ "activityId": 42, "type": "TRADE" }] },
+      "expectedRequest": { "path": "/trader/v1/accounts/synthetic-hash/transactions", "query": { "startDate": "start", "endDate": "end", "types": "TRADE", "symbol": "QQQ" } },
+      "expectedOutcome": { "kind": "body", "value": [{ "activityId": 42, "type": "TRADE" }] }
+    },
+    {
+      "id": "trader-user-preferences-body-wrapper",
+      "client": "trader",
+      "method": "getUserPreferences",
+      "args": [],
+      "transport": { "status": 200, "body": { "accounts": [], "offers": [] } },
+      "expectedRequest": { "path": "/trader/v1/userPreference", "query": {} },
+      "expectedOutcome": { "kind": "body", "value": { "accounts": [], "offers": [] } }
+    },
+    {
+      "id": "market-batch-quotes-body-wrapper-forwards-query",
+      "client": "marketData",
+      "method": "getQuotes",
+      "args": [{ "symbols": ["QQQ", "SPY"], "fields": ["quote", "reference"], "indicative": false }],
+      "transport": { "status": 200, "body": { "QQQ": { "symbol": "QQQ" }, "SPY": { "symbol": "SPY" } } },
+      "expectedRequest": { "path": "/marketdata/v1/quotes", "query": { "symbols": "QQQ,SPY", "fields": "quote,reference", "indicative": "false" } },
+      "expectedOutcome": { "kind": "body", "value": { "QQQ": { "symbol": "QQQ" }, "SPY": { "symbol": "SPY" } } }
+    },
+    {
+      "id": "market-single-quote-body-wrapper-forwards-fields",
+      "client": "marketData",
+      "method": "getQuote",
+      "args": ["QQQ", { "fields": ["quote", "fundamental"] }],
+      "transport": { "status": 200, "body": { "symbol": "QQQ", "previousClose": 500, "candles": [] } },
+      "expectedRequest": { "path": "/marketdata/v1/QQQ/quotes", "query": { "fields": "quote,fundamental" } },
+      "expectedOutcome": { "kind": "body", "value": { "symbol": "QQQ", "previousClose": 500, "candles": [] } }
+    },
+    {
+      "id": "market-batch-option-quotes-body-wrapper-normalizes-each-contract",
+      "client": "marketData",
+      "method": "getOptionQuotes",
+      "args": [["QQQ   260814P00740000", "QQQ   260814P00739000"]],
+      "transport": { "status": 200, "body": { "QQQ   260814P00740000": { "assetMainType": "OPTION", "symbol": "QQQ   260814P00740000", "realtime": true, "reference": { "underlying": "QQQ", "contractType": "PUT", "strikePrice": 740, "expirationYear": 2026, "expirationMonth": 8, "expirationDay": 14 }, "quote": { "bidPrice": 29.9, "askPrice": 30.1, "quoteTime": 1700000000000 } }, "QQQ   260814P00739000": { "assetMainType": "OPTION", "symbol": "QQQ   260814P00739000", "realtime": true, "reference": { "underlying": "QQQ", "contractType": "PUT", "strikePrice": 739, "expirationYear": 2026, "expirationMonth": 8, "expirationDay": 14 }, "quote": { "bidPrice": 28.95, "askPrice": 29.05, "quoteTime": 1700000000000 } } } },
+      "expectedRequest": { "path": "/marketdata/v1/quotes", "query": { "symbols": "QQQ   260814P00740000,QQQ   260814P00739000", "fields": "quote,reference" } },
+      "expectedOutcome": { "kind": "quotes", "value": [{ "symbol": "QQQ   260814P00740000", "underlying": "QQQ", "contractType": "PUT", "expiration": "2026-08-14", "strike": 740, "realtime": true, "bid": 29.9, "ask": 30.1, "mid": 30, "spread": 0.20000000000000284, "quoteTime": 1700000000000 }, { "symbol": "QQQ   260814P00739000", "underlying": "QQQ", "contractType": "PUT", "expiration": "2026-08-14", "strike": 739, "realtime": true, "bid": 28.95, "ask": 29.05, "mid": 29, "spread": 0.10000000000000142, "quoteTime": 1700000000000 }] }
+    },
+    {
+      "id": "market-option-chain-body-wrapper-forwards-filters",
+      "client": "marketData",
+      "method": "getOptionChains",
+      "args": [{ "symbol": "QQQ", "contractType": "PUT", "includeQuotes": false, "strategy": "SINGLE", "range": "OTM", "daysToExpiration": 0 }],
+      "transport": { "status": 200, "body": { "symbol": "QQQ", "putExpDateMap": {} } },
+      "expectedRequest": { "path": "/marketdata/v1/chains", "query": { "symbol": "QQQ", "contractType": "PUT", "includeUnderlyingQuote": "false", "strategy": "SINGLE", "range": "OTM", "daysToExpiration": "0" } },
+      "expectedOutcome": { "kind": "body", "value": { "symbol": "QQQ", "putExpDateMap": {} } }
+    },
+    {
+      "id": "market-option-expiration-body-wrapper-forwards-filters",
+      "client": "marketData",
+      "method": "getOptionExpirationChain",
+      "args": [{ "symbol": "QQQ", "contractType": "PUT", "expMonth": "AUG", "optionType": "ALL" }],
+      "transport": { "status": 200, "body": { "symbol": "QQQ", "expirationList": [] } },
+      "expectedRequest": { "path": "/marketdata/v1/expirationchain", "query": { "symbol": "QQQ", "contractType": "PUT", "expMonth": "AUG", "optionType": "ALL" } },
+      "expectedOutcome": { "kind": "body", "value": { "symbol": "QQQ", "expirationList": [] } }
+    },
+    {
+      "id": "market-price-history-body-wrapper-forwards-all-fields",
+      "client": "marketData",
+      "method": "getPriceHistory",
+      "args": [{ "symbol": "QQQ", "periodType": "day", "period": 1, "frequencyType": "minute", "frequency": 5, "startDate": 100, "endDate": 200, "needExtendedHoursData": true, "needPreviousClose": true }],
+      "transport": { "status": 200, "body": { "symbol": "QQQ", "candles": [] } },
+      "expectedRequest": { "path": "/marketdata/v1/pricehistory", "query": { "symbol": "QQQ", "periodType": "day", "period": "1", "frequencyType": "minute", "frequency": "5", "startDate": "100", "endDate": "200", "needExtendedHoursData": "true", "needPreviousClose": "true" } },
+      "expectedOutcome": { "kind": "body", "value": { "symbol": "QQQ", "candles": [] } }
+    },
+    {
+      "id": "market-movers-body-wrapper-forwards-sort-frequency",
+      "client": "marketData",
+      "method": "getMovers",
+      "args": ["$DJI", { "sort": "PERCENT_CHANGE_DOWN", "frequency": 60 }],
+      "transport": { "status": 200, "body": { "screeners": [{ "symbol": "SYNTH", "direction": "down" }] } },
+      "expectedRequest": { "path": "/marketdata/v1/movers/%24DJI", "query": { "sort": "PERCENT_CHANGE_DOWN", "frequency": "60" } },
+      "expectedOutcome": { "kind": "body", "value": { "screeners": [{ "symbol": "SYNTH", "direction": "down" }] } }
+    },
+    {
+      "id": "market-batch-hours-body-wrapper-joins-market-list",
+      "client": "marketData",
+      "method": "getMarkets",
+      "args": [{ "markets": ["EQUITY", "OPTION"], "date": "2026-08-12" }],
+      "transport": { "status": 200, "body": {} },
+      "expectedRequest": { "path": "/marketdata/v1/markets", "query": { "markets": "EQUITY,OPTION", "date": "2026-08-12" } },
+      "expectedOutcome": { "kind": "body", "value": {} }
+    },
+    {
+      "id": "market-single-hours-body-wrapper-forwards-date",
+      "client": "marketData",
+      "method": "getMarketHours",
+      "args": ["OPTION", { "date": "2026-08-12" }],
+      "transport": { "status": 200, "body": {} },
+      "expectedRequest": { "path": "/marketdata/v1/markets/OPTION", "query": { "date": "2026-08-12" } },
+      "expectedOutcome": { "kind": "body", "value": {} }
+    },
+    {
+      "id": "market-instrument-search-body-wrapper-joins-symbol-list",
+      "client": "marketData",
+      "method": "searchInstruments",
+      "args": [{ "symbol": ["QQQ", "SPY"], "projection": "SYMBOL_SEARCH" }],
+      "transport": { "status": 200, "body": { "instruments": [{ "symbol": "QQQ" }] } },
+      "expectedRequest": { "path": "/marketdata/v1/instruments", "query": { "symbol": "QQQ,SPY", "projection": "SYMBOL_SEARCH" } },
+      "expectedOutcome": { "kind": "body", "value": { "instruments": [{ "symbol": "QQQ" }] } }
+    },
+    {
+      "id": "market-cusip-body-wrapper-encodes-path",
+      "client": "marketData",
+      "method": "getInstrumentByCusip",
+      "args": ["12 345"],
+      "transport": { "status": 200, "body": { "cusip": "synthetic-cusip", "symbol": "QQQ" } },
+      "expectedRequest": { "path": "/marketdata/v1/instruments/12%20345", "query": {} },
+      "expectedOutcome": { "kind": "body", "value": { "cusip": "synthetic-cusip", "symbol": "QQQ" } }
+    }
+  ]
+}
