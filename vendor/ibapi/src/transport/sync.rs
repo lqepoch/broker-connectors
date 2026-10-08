@@ -130,7 +130,7 @@ impl SharedChannels {
     // `request` has no mapping.
     fn add(&self, request: OutgoingMessages, sender: Sender<RoutedItem>, lease: LeaseRef) {
         let responses = shared_channel_configuration::response_types(request)
-            .unwrap_or_else(|| panic!("unsupported request message {request:?}. check mapping in messages::shared_channel_configuration"));
+            .unwrap_or_else(|| panic!("unsupported request message kind. check mapping in messages::shared_channel_configuration"));
         self.subscribers().push(SharedSubscriber {
             request,
             responses,
@@ -397,7 +397,7 @@ impl<S: Stream> TcpMessageBus<S> {
         // for the 1s socket-read timeout. Errors are non-fatal — a closed
         // or already-shutdown socket still terminates the read.
         if let Err(e) = self.connection.shutdown_read() {
-            debug!("shutdown_read returned: {e:?}");
+            debug!("shutdown_read failed: class={}", e.diagnostic_class());
         }
     }
 
@@ -508,7 +508,7 @@ impl<S: Stream> TcpMessageBus<S> {
                     debug!("dispatcher thread exiting");
                     return Err(Error::Shutdown);
                 }
-                error!("error reading next message (will attempt reconnect): {err:?}");
+                error!("error reading next message (will attempt reconnect): class={}", err.diagnostic_class());
                 self.connection_state.set_disconnected();
 
                 // Fail every registered channel before reconnecting, not
@@ -525,7 +525,7 @@ impl<S: Stream> TcpMessageBus<S> {
                         return Err(Error::Shutdown);
                     }
                     Err(reconnect_err) => {
-                        error!("failed to reconnect to TWS/Gateway: {reconnect_err:?}");
+                        error!("failed to reconnect to TWS/Gateway: class={}", reconnect_err.diagnostic_class());
                         self.request_shutdown();
                         return Err(Error::ConnectionFailed);
                     }
@@ -563,7 +563,7 @@ impl<S: Stream> TcpMessageBus<S> {
                 Ok(())
             }
             Err(err) => {
-                error!("error reading next message (shutting down): {err:?}");
+                error!("error reading next message (shutting down): class={}", err.diagnostic_class());
                 self.request_shutdown();
                 Err(err)
             }
@@ -580,7 +580,7 @@ impl<S: Stream> TcpMessageBus<S> {
                     Ok(_) => {}
                     Err(Error::Shutdown | Error::ConnectionFailed) => break,
                     Err(e) => {
-                        error!("Dispatcher encountered an error: {e:?}");
+                        error!("Dispatcher encountered an error: class={}", e.diagnostic_class());
                         break;
                     }
                 }
@@ -680,13 +680,13 @@ impl<S: Stream> TcpMessageBus<S> {
                 let execution_id = message.execution_id();
                 if let Err(item) = self.deliver_to_order_or_request(message_order_id, message_request_id, message.into(), execution_id.as_ref()) {
                     if !sent_to_update_stream {
-                        warn!("could not route message {item:?}");
+                        warn!("could not route message: {}", item.diagnostic_summary());
                     }
                 }
             }
             OrderRoutingStrategy::ExecutionDataEnd => {
                 if let Err(item) = self.deliver_to_order_or_request(message_order_id, message_request_id, message.into(), None) {
-                    warn!("could not route message {item:?}");
+                    warn!("could not route message: {}", item.diagnostic_summary());
                 }
             }
             OrderRoutingStrategy::OrderOrShared => {
@@ -701,7 +701,7 @@ impl<S: Stream> TcpMessageBus<S> {
                     return;
                 }
                 if !sent_to_update_stream {
-                    warn!("could not route message {message:?}");
+                    warn!("could not route message: {}", message.diagnostic_summary());
                 }
             }
             OrderRoutingStrategy::ByExecutionId => {
@@ -713,7 +713,7 @@ impl<S: Stream> TcpMessageBus<S> {
                 };
                 if let Err(item) = unrouted {
                     if !sent_to_update_stream {
-                        warn!("could not route commission report {item:?}");
+                        warn!("could not route commission report: {}", item.diagnostic_summary());
                     }
                 }
             }
@@ -721,7 +721,7 @@ impl<S: Stream> TcpMessageBus<S> {
                 self.shared_channels.send_message(message.message_type(), &message);
             }
             OrderRoutingStrategy::ByOrderId => {
-                warn!("unhandled order message type: {message:?}");
+                warn!("unhandled order message type: {}", message.diagnostic_summary());
             }
         }
     }
@@ -791,8 +791,8 @@ impl<S: Stream> TcpMessageBus<S> {
         let Some(entry) = order_update_stream.as_ref() else {
             return false;
         };
-        if let Err(e) = entry.sender.send(item) {
-            warn!("error sending to order update stream: {e}");
+        if entry.sender.send(item).is_err() {
+            warn!("error sending to order update stream");
             return false;
         }
         warn_if_backlogged(format_args!("order update stream"), entry.sender.len());
@@ -850,8 +850,8 @@ impl<S: Stream> TcpMessageBus<S> {
         let mut handles = self.handles.lock().unwrap();
 
         for handle in handles.drain(..) {
-            if let Err(e) = handle.join() {
-                warn!("could not join thread: {e:?}");
+            if handle.join().is_err() {
+                warn!("could not join dispatcher thread");
             }
         }
     }
@@ -1037,7 +1037,7 @@ impl Entry<RoutedItem> {
             None => item,
         };
         if let Err(err) = self.sender.send(item) {
-            warn!("error sending: {id:?}, {err}")
+            warn!("error sending to route {id:?}: {}", err.0.diagnostic_summary())
         } else {
             warn_if_backlogged(format_args!("subscription queue for {id:?}"), self.sender.len());
         }
@@ -1187,8 +1187,8 @@ impl<K: std::hash::Hash + Eq + std::fmt::Debug> SenderHash<K, RoutedItem> {
     {
         let mut senders = self.write();
         for entry in senders.values().filter(|entry| !entry.closed()) {
-            if let Err(e) = entry.sender.send(message_fn()) {
-                warn!("error sending notification: {e}");
+            if entry.sender.send(message_fn()).is_err() {
+                warn!("error sending notification");
             }
         }
         senders.clear();
@@ -1205,7 +1205,8 @@ pub(crate) struct TcpSocket {
     connection_url: String,
     tcp_no_delay: bool,
     /// Byte-level capture of the inbound stream. Disabled unless
-    /// `IBAPI_RAW_CAPTURE_DIR` is set; see [`RawFrameTap`].
+    /// Synthetic tests can opt in with an explicit temporary path; production
+    /// connections always keep this disabled.
     tap: RawFrameTap,
 }
 impl TcpSocket {
@@ -1227,7 +1228,7 @@ impl TcpSocket {
             shutdown_handle: Mutex::new(shutdown_handle),
             connection_url: connection_url.to_string(),
             tcp_no_delay,
-            tap: RawFrameTap::from_env(),
+            tap: RawFrameTap::disabled(),
         })
     }
 }

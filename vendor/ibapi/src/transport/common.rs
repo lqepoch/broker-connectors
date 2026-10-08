@@ -23,8 +23,8 @@ pub(crate) trait NoticeSink: Send + Sync {
 /// `Error` variants for this path; `Response` is unreachable here.
 pub(crate) fn log_orphan(id: WireId, item: &RoutedItem) {
     match item {
-        RoutedItem::Notice(n) => info!("no recipient for notice (id={id}): {n}"),
-        RoutedItem::Error(e) => info!("no recipient for error (id={id}): {e}"),
+        RoutedItem::Notice(n) => info!("no recipient for notice (id={id}): {}", n.diagnostic_summary()),
+        RoutedItem::Error(e) => info!("no recipient for error (id={id}): class={}", e.diagnostic_class()),
         RoutedItem::Response(_) => {}
     }
 }
@@ -49,7 +49,7 @@ pub(crate) fn report_unroutable_frame(message: &ResponseMessage, notice_sink: &d
     if message.message_type() == IncomingMessages::NotValid {
         notice_sink.deliver(unknown_message_type_notice(message));
     } else {
-        info!("no recipient found for: {message:?}");
+        info!("no recipient found for: {}", message.diagnostic_summary());
     }
 }
 

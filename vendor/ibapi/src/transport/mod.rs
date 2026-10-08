@@ -319,7 +319,8 @@ impl InternalSubscription {
     pub(crate) fn cancel(&self) {
         if let Some(sender) = &self.sender {
             if let Err(e) = sender.send(Error::Cancelled.into()) {
-                log::warn!("error sending cancel notification: {e}")
+                let _ = e;
+                log::warn!("cancel notification could not be sent");
             }
         }
         // A cancelled subscription is unregistered by the cleanup thread once
@@ -346,7 +347,8 @@ impl InternalSubscription {
         let lease_ref = lease.downgrade();
         drop(lease);
         if let Err(e) = self.signaler.send(self.signal(lease_ref)) {
-            log::warn!("error sending {cause} signal: {e}");
+            let _ = e;
+            log::warn!("{cause} cleanup signal could not be sent");
         }
     }
 

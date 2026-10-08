@@ -90,7 +90,7 @@ impl<S: Stream> Connection<S> {
                 ..Default::default()
             }),
             max_reconnect_attempts: Some(MAX_RECONNECT_ATTEMPTS),
-            recorder: MessageRecorder::from_env(),
+            recorder: MessageRecorder::disabled(),
             connection_handler: ConnectionHandler::default(),
             startup_callback,
             notice_broadcaster,
@@ -164,13 +164,16 @@ impl<S: Stream> Connection<S> {
                             return Ok(());
                         }
                         Err(e) => {
-                            info!("reconnection attempt {attempt_label} failed while establishing session: {e}");
+                            info!(
+                                "reconnection attempt {attempt_label} failed while establishing session: class={}",
+                                e.diagnostic_class()
+                            );
                             last_error = Some(e);
                         }
                     }
                 }
                 Err(e) => {
-                    info!("reconnection attempt {attempt_label} failed: {e}");
+                    info!("reconnection attempt {attempt_label} failed: class={}", e.diagnostic_class());
                     last_error = Some(e);
                 }
             }
@@ -199,7 +202,7 @@ impl<S: Stream> Connection<S> {
     /// Write a protobuf message to the connection
     pub(crate) fn write_message(&self, data: &[u8]) -> Result<(), Error> {
         self.recorder.record_request(data);
-        debug!("-> {:?}", data);
+        debug!("-> outbound frame bytes={}", super::common::outbound_frame_log_length(data));
 
         self.write_raw(data)
     }
@@ -254,7 +257,7 @@ impl<S: Stream> Connection<S> {
     // sends server handshake
     pub(crate) fn handshake(&self) -> Result<(), Error> {
         let handshake = self.connection_handler.format_handshake();
-        debug!("-> handshake: {handshake:?}");
+        debug!("-> handshake bytes={}", super::common::outbound_frame_log_length(&handshake));
 
         self.socket.write_all(&handshake)?;
 
@@ -281,7 +284,8 @@ impl<S: Stream> Connection<S> {
             }
             Err(Error::Io(err)) if err.kind() == std::io::ErrorKind::UnexpectedEof => {
                 return Err(Error::ConnectionRejected(format!(
-                    "server may be rejecting connections from this host: {err}"
+                    "server may be rejecting connections from this host: io-kind={:?}",
+                    err.kind()
                 )));
             }
             Err(err) => {
@@ -347,7 +351,7 @@ impl<S: Stream> Connection<S> {
                 ..Default::default()
             }),
             max_reconnect_attempts: Some(MAX_RECONNECT_ATTEMPTS),
-            recorder: MessageRecorder::new(false, String::from("")),
+            recorder: MessageRecorder::disabled(),
             connection_handler: ConnectionHandler::default(),
             startup_callback: None,
             notice_broadcaster: Arc::new(NoticeBroadcaster::new()),

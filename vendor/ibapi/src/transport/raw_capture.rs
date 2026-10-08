@@ -1,5 +1,4 @@
-//! Byte-level capture of the inbound TWS stream, enabled by setting
-//! `IBAPI_RAW_CAPTURE_DIR` to a directory.
+//! Test-only byte-level capture of the inbound TWS stream.
 //!
 //! This is a *tap*, not a recorder: it sits below the framing, so what lands on
 //! disk is a byte-for-byte copy of what the socket handed us — **including the
@@ -38,8 +37,9 @@
 //!
 //! # Cost
 //!
-//! Nothing here is on the hot path unless the environment variable is set: a
-//! disabled tap is an `Option::None` check per frame, before any formatting,
+//! Production socket constructors always use a disabled tap. Tests that need a
+//! synthetic replay artifact opt in with an explicit temporary directory.
+//! A disabled tap is an `Option::None` check per frame, before any formatting,
 //! allocation, or locking.
 //!
 //! When enabled it costs three unbuffered `write(2)` per frame. **The files are
@@ -51,15 +51,19 @@
 //! On the async side those writes are blocking calls on a runtime worker, made
 //! while the reader mutex is held. That is a few microseconds against a local
 //! directory and unbounded against a slow or full one, which is the deal a
-//! byte-level capture makes; point `IBAPI_RAW_CAPTURE_DIR` at local disk.
+//! byte-level capture makes; tests use a local temporary directory.
 //!
 //! [`MessageRecorder`]: super::recorder::MessageRecorder
 //! [`ResponseMessage`]: crate::messages::ResponseMessage
 
-use std::env;
-use std::fs::{self, File};
+#[cfg(test)]
+use std::fs;
+use std::fs::File;
 use std::io::Write;
-use std::path::{Path, PathBuf};
+#[cfg(test)]
+use std::path::Path;
+use std::path::PathBuf;
+#[cfg(test)]
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 
@@ -67,13 +71,13 @@ use log::{info, warn};
 use time::macros::format_description;
 use time::OffsetDateTime;
 
+#[cfg(test)]
 static TAP_ID: AtomicUsize = AtomicUsize::new(0);
 
 /// Records the inbound byte stream, or does nothing at all.
 ///
-/// Cheap to clone; clones share one set of files. Construct with
-/// [`RawFrameTap::from_env`] in production and [`RawFrameTap::disabled`]
-/// wherever a stream is not the real socket.
+/// Cheap to clone; clones share one set of files. Production sockets use
+/// [`RawFrameTap::disabled`]; tests may explicitly call [`RawFrameTap::capturing_to`].
 #[derive(Clone, Debug)]
 pub(crate) struct RawFrameTap {
     sink: Option<Arc<Sink>>,
@@ -85,23 +89,16 @@ impl RawFrameTap {
         Self { sink: None }
     }
 
-    /// Read `IBAPI_RAW_CAPTURE_DIR`. Unset or empty yields [`Self::disabled`].
-    pub(crate) fn from_env() -> Self {
-        match env::var("IBAPI_RAW_CAPTURE_DIR") {
-            Ok(dir) if !dir.is_empty() => Self::capturing_to(dir),
-            _ => Self::disabled(),
-        }
-    }
-
     /// Capture into `dir`, creating it if needed.
     ///
     /// A destination that cannot be opened downgrades to [`Self::disabled`]
     /// with a warning: a diagnostic aid must never be the reason a connection
     /// fails.
+    #[cfg(test)]
     pub(crate) fn capturing_to(dir: impl AsRef<Path>) -> Self {
         let dir = dir.as_ref().to_path_buf();
         if let Err(err) = fs::create_dir_all(&dir) {
-            warn!("raw frame capture disabled: cannot create {}: {err}", dir.display());
+            warn!("raw frame capture disabled: cannot create destination (kind={:?})", err.kind());
             return Self::disabled();
         }
 
@@ -233,7 +230,7 @@ impl Sink {
                 })
             }
             (Err(err), _) | (_, Err(err)) => {
-                warn!("raw frame capture disabled: cannot open {}: {err}", frames_path.display());
+                warn!("raw frame capture disabled: cannot open destination (kind={:?})", err.kind());
                 None
             }
         }
@@ -245,7 +242,7 @@ impl Sink {
         let mut state = self.lock();
         let Some(segment) = state.segment.as_mut() else { return };
         if let Err(err) = record(segment) {
-            warn!("raw frame capture disabled: write failed: {err}");
+            warn!("raw frame capture disabled: write failed (kind={:?})", err.kind());
             state.segment = None;
         }
     }

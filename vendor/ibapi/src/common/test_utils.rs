@@ -7,6 +7,13 @@ pub mod helpers {
     use crate::{server_versions, Client};
     use std::sync::Arc;
 
+    fn result_class<T>(result: &Result<T, crate::Error>) -> &'static str {
+        match result {
+            Ok(_) => "success",
+            Err(_) => "error",
+        }
+    }
+
     /// Creates a test client with an empty message bus
     pub fn create_test_client() -> (Client, Arc<MessageBusStub>) {
         create_test_client_with_version(server_versions::SIZE_RULES)
@@ -103,11 +110,17 @@ pub mod helpers {
     /// Strict counterpart to `assert_request_msg_id`, which only checks the 4-byte header.
     pub fn assert_request_proto<T>(message_bus: &MessageBusStub, index: usize, expected_msg_id: crate::messages::OutgoingMessages, expected: &T)
     where
-        T: prost::Message + Default + PartialEq + std::fmt::Debug,
+        T: prost::Message + Default + PartialEq,
     {
         assert_request_msg_id(message_bus, index, expected_msg_id);
         let actual: T = decode_request_proto(message_bus, index);
-        assert_eq!(&actual, expected, "request {index} body mismatch");
+        if &actual != expected {
+            panic!(
+                "request {index} body mismatch (actual {} bytes, expected {} bytes)",
+                actual.encoded_len(),
+                expected.encoded_len()
+            );
+        }
     }
 
     /// Builder-aware variant of [`assert_request_proto`]: pulls the expected message id and
@@ -390,11 +403,12 @@ pub mod helpers {
                 assert_eq!(notice.code, expected_code, "wrong error code");
                 assert!(
                     notice.message.contains(expected_substring),
-                    "error message {:?} does not contain {expected_substring:?}",
-                    notice.message
+                    "TWS notice text mismatch: received {} bytes, expected marker {} bytes",
+                    notice.message.len(),
+                    expected_substring.len()
                 );
             }
-            other => panic!("expected Error::Notice(code={expected_code}), got {other:?}"),
+            _ => panic!("expected Error::Notice(code={expected_code}), got error"),
         }
     }
 
@@ -405,26 +419,55 @@ pub mod helpers {
     /// tests. The helper's own semantics are covered exhaustively in
     /// `src/proto/decoders_tests.rs`; these call sites only prove the wiring, so
     /// they all want this one assertion rather than their own `matches!`.
-    pub fn assert_decimal_parse_error<T: std::fmt::Debug>(result: Result<T, crate::Error>, offending_value: &str) {
+    pub fn assert_decimal_parse_error<T>(result: Result<T, crate::Error>, offending_value: &str) {
         match result {
             Err(crate::Error::Parse(_, value, msg)) => {
-                assert_eq!(value, offending_value, "error should carry the offending wire value");
-                assert!(msg.contains("invalid decimal wire value"), "unexpected message: {msg}");
+                assert!(
+                    value == offending_value,
+                    "offending wire-value length mismatch: expected {} bytes, got {} bytes",
+                    offending_value.len(),
+                    value.len()
+                );
+                assert!(
+                    msg.contains("invalid decimal wire value"),
+                    "unexpected parse diagnostic length: {} bytes",
+                    msg.len()
+                );
             }
-            other => panic!("expected Error::Parse for {offending_value:?}, got {other:?}"),
+            other => panic!(
+                "expected Error::Parse for a {}-byte wire value, got {}",
+                offending_value.len(),
+                result_class(&other)
+            ),
         }
     }
 
     /// Asserts that a decoder failed on an absent required field, via
     /// `proto::decoders::required`: `Error::Parse` naming the field and the
     /// message that should have carried it.
-    pub fn assert_missing_field<T: std::fmt::Debug>(result: Result<T, crate::Error>, field: &str, message: &str) {
+    pub fn assert_missing_field<T>(result: Result<T, crate::Error>, field: &str, message: &str) {
         match result {
             Err(crate::Error::Parse(_, name, reason)) => {
-                assert_eq!(name, field);
-                assert_eq!(reason, format!("missing in {message}"));
+                assert!(
+                    name == field,
+                    "missing-field name length mismatch: expected {} bytes, got {} bytes",
+                    field.len(),
+                    name.len()
+                );
+                let expected_reason = format!("missing in {message}");
+                assert!(
+                    reason == expected_reason,
+                    "missing-field diagnostic length mismatch: expected {} bytes, got {} bytes",
+                    expected_reason.len(),
+                    reason.len()
+                );
             }
-            other => panic!("expected Error::Parse for a missing {field} in {message}, got {other:?}"),
+            other => panic!(
+                "expected a missing-field parse error ({}-byte field, {}-byte message), got {}",
+                field.len(),
+                message.len(),
+                result_class(&other)
+            ),
         }
     }
 
@@ -443,7 +486,7 @@ pub mod helpers {
     /// `MarketRule`, which is 93; a literal `"newsProviders"` that parses as no
     /// discriminant at all). A fixture field no assertion depends on will be
     /// wrong eventually.
-    pub fn assert_rejects_text_framing<T: std::fmt::Debug>(
+    pub fn assert_rejects_text_framing<T>(
         expected: crate::messages::IncomingMessages,
         text_frame: &str,
         decode: impl FnOnce(&crate::messages::ResponseMessage) -> Result<T, crate::Error>,
@@ -457,7 +500,10 @@ pub mod helpers {
 
         match decode(&message) {
             Err(crate::Error::UnexpectedWireFormat(_)) => {}
-            other => panic!("expected Error::UnexpectedWireFormat for a text-framed {expected:?}, got {other:?}"),
+            other => panic!(
+                "expected Error::UnexpectedWireFormat for a text-framed {expected:?}, got {}",
+                result_class(&other)
+            ),
         }
     }
 }
@@ -484,13 +530,16 @@ pub mod wire_enum {
     /// Assert every input string in `unknowns` produces `Err(Error::Parse(..))`.
     pub fn check_wire_enum_rejects_unknown<T>(unknowns: &[&str])
     where
-        T: std::str::FromStr<Err = crate::Error> + std::fmt::Debug,
+        T: std::str::FromStr<Err = crate::Error>,
     {
         for &s in unknowns {
             let err = T::from_str(s);
+            let result_class = if err.is_ok() { "success" } else { "error" };
             assert!(
                 matches!(err, Err(crate::Error::Parse(_, _, _))),
-                "expected Parse error for {s:?}, got {err:?}",
+                "expected Parse error for a {}-byte input, got {}",
+                s.len(),
+                result_class
             );
         }
     }

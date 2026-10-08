@@ -468,7 +468,7 @@ impl<T: TickDecoder<T>> TickSubscription<T> {
                         log_cancel_error("historical ticks subscription", &e);
                     }
                 }
-                Err(e) => error!("error encoding cancel historical ticks: {e}"),
+                Err(e) => error!("error encoding cancel historical ticks: class={}", e.diagnostic_class()),
             }
         }
         self.messages.cancel();

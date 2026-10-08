@@ -15,6 +15,37 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "SOURCE-MANIFEST.json"
 SHA256_RE = re.compile(r"[0-9a-f]{64}")
 GIT_SHA_RE = re.compile(r"[0-9a-f]{40}")
+WHITESPACE_ONLY = "remove trailing horizontal whitespace only"
+IBKR_LOCAL_OPERATIONS = {
+    "src/client/async_tests.rs": "test that inbound capture environment cannot persist production frames",
+    "src/client/sync_tests.rs": "test that inbound capture environment cannot persist production frames",
+    "src/common/timezone/mod.rs": "redact timezone alias and parse diagnostics",
+    "src/common/test_utils.rs": "redact payload-bearing test assertion diagnostics",
+    "src/common/test_utils_tests.rs": "test synthetic panic and error diagnostic redaction",
+    "src/connection/async.rs": "redact async wire and error diagnostics and disable environment recorder",
+    "src/connection/common.rs": "redact inbound wire and handshake diagnostics",
+    "src/connection/common_tests.rs": "test synthetic outbound log summary redaction",
+    "src/connection/sync.rs": "redact sync wire and error diagnostics and disable environment recorder",
+    "src/errors.rs": "add fixed payload-free error diagnostic classifications",
+    "src/errors_tests.rs": "test payload-free unexpected response diagnostics",
+    "src/market_data/historical/async.rs": "redact historical tick cancellation diagnostics",
+    "src/market_data/historical/common/tick.rs": "redact unexpected historical response diagnostics",
+    "src/market_data/historical/sync.rs": "redact historical tick cancellation diagnostics",
+    "src/messages.rs": "add payload-free response and notice diagnostic summaries",
+    "src/subscriptions/async.rs": "redact async subscription notice and error diagnostics",
+    "src/subscriptions/common.rs": "add payload-free routed item diagnostics",
+    "src/subscriptions/mod.rs": "redact cancellation error diagnostics",
+    "src/subscriptions/sync.rs": "redact sync subscription notice and error diagnostics",
+    "src/transport/async.rs": "redact async route and error diagnostics",
+    "src/transport/async/io.rs": "keep inbound raw frame tap disabled on production sockets",
+    "src/transport/common.rs": "redact orphan notice, error, and response diagnostics",
+    "src/transport/mod.rs": "redact channel send failure diagnostics",
+    "src/transport/raw_capture.rs": "disable production environment activation for inbound raw frame capture",
+    "src/transport/raw_capture_tests.rs": "test inbound capture requires explicit synthetic test path",
+    "src/transport/recorder.rs": "remove production environment activation for bidirectional recording",
+    "src/transport/recorder_tests.rs": "use explicit temporary directories for synthetic recorder tests",
+    "src/transport/sync.rs": "redact sync route and error diagnostics",
+}
 
 
 def sha256(path: Path) -> str:
@@ -129,20 +160,23 @@ def check_vendor(upstream: dict, project_paths: set[str]) -> None:
     if "local_change_record_path" in upstream:
         change_record = json.loads(change_file.read_text(encoding="utf-8"))
         if (
-            change_record.get("format_version") != 1
+            change_record.get("format_version") != 2
             or change_record.get("source_repository") != repository
             or change_record.get("source_commit") != upstream["source_commit"]
-            or change_record.get("operation") != "remove trailing horizontal whitespace only"
+            or change_record.get("operation") != "reviewed per-file local source adaptations"
         ):
             raise ValueError(f"local change record identity mismatch for {repository}")
         sources_by_path = {entry["source_path"]: entry for entry in upstream["source_files"]}
-        seen_edits = set()
+        seen_targets: set[str] = set()
+        seen_sources: set[str] = set()
         for edit in change_record.get("edits", []):
             target_name = edit["target_path"]
             source_path = edit["source_path"]
-            if target_name in seen_edits or source_path not in sources_by_path:
+            operation = edit.get("operation")
+            if target_name in seen_targets or source_path in seen_sources or source_path not in sources_by_path:
                 raise ValueError(f"duplicate or unregistered local change: {target_name}")
-            seen_edits.add(target_name)
+            seen_targets.add(target_name)
+            seen_sources.add(source_path)
             source_entry = sources_by_path[source_path]
             if (
                 target_name != source_entry["target_path"]
@@ -150,17 +184,37 @@ def check_vendor(upstream: dict, project_paths: set[str]) -> None:
                 or edit["target_sha256"] != source_entry["adapted_target_sha256"]
             ):
                 raise ValueError(f"local change hashes do not match source manifest: {source_path}")
-            target = checked_path(target_name)
-            lines = target.read_text(encoding="utf-8").splitlines()
-            line_numbers = edit["source_line_numbers"]
-            if not line_numbers or any(
-                not isinstance(line, int) or line < 1 or line > len(lines)
-                or lines[line - 1].rstrip(" \t") != lines[line - 1]
-                for line in line_numbers
+            line_numbers = edit.get("source_line_numbers")
+            if not isinstance(line_numbers, list) or not line_numbers or any(
+                not isinstance(line, int) or line < 1 for line in line_numbers
             ):
-                raise ValueError(f"local whitespace normalization record is invalid: {source_path}")
-        if not seen_edits:
+                raise ValueError(f"local source line record is invalid: {source_path}")
+            if operation == WHITESPACE_ONLY:
+                target = checked_path(target_name)
+                target_lines = target.read_text(encoding="utf-8").splitlines()
+                if any(
+                    line > len(target_lines) or target_lines[line - 1].rstrip(" \t") != target_lines[line - 1]
+                    for line in line_numbers
+                ):
+                    raise ValueError(f"local whitespace normalization record is invalid: {source_path}")
+            elif repository == "wboayue/rust-ibapi" and IBKR_LOCAL_OPERATIONS.get(source_path) == operation:
+                if not edit.get("description"):
+                    raise ValueError(f"IBKR local source change needs a description: {source_path}")
+            else:
+                raise ValueError(f"unapproved local source operation for {repository}: {source_path}")
+        if not seen_targets:
             raise ValueError(f"empty local change record for {repository}")
+        changed_targets = {
+            entry["target_path"]
+            for entry in upstream["source_files"]
+            if entry["source_file_sha256"] != entry["adapted_target_sha256"]
+        }
+        if seen_targets != changed_targets:
+            raise ValueError(f"local change record does not cover every adapted file for {repository}")
+        if repository == "wboayue/rust-ibapi":
+            expected_ibkr_sources = set(IBKR_LOCAL_OPERATIONS)
+            if not expected_ibkr_sources.issubset(seen_sources):
+                raise ValueError("IBKR privacy adaptations are missing from LOCAL-CHANGES.json")
 
     for license_file in upstream["license_files"]:
         target_name = license_file["target_path"]
@@ -323,6 +377,102 @@ def check_ibkr_adapter_boundary() -> None:
         raise ValueError("IBKR lookup cancellation must poison and release its SDK owner")
 
 
+def check_ibkr_vendor_diagnostics() -> None:
+    sync = checked_path("vendor/ibapi/src/connection/sync.rs").read_text(encoding="utf-8")
+    asynchronous = checked_path("vendor/ibapi/src/connection/async.rs").read_text(encoding="utf-8")
+    common = checked_path("vendor/ibapi/src/connection/common.rs").read_text(encoding="utf-8")
+    recorder = checked_path("vendor/ibapi/src/transport/recorder.rs").read_text(encoding="utf-8")
+    raw_capture = checked_path("vendor/ibapi/src/transport/raw_capture.rs").read_text(encoding="utf-8")
+    assertions = checked_path("vendor/ibapi/src/common/test_utils.rs").read_text(encoding="utf-8")
+    recorder_tests = checked_path("vendor/ibapi/src/transport/recorder_tests.rs").read_text(encoding="utf-8")
+    raw_capture_tests = checked_path("vendor/ibapi/src/transport/raw_capture_tests.rs").read_text(encoding="utf-8")
+    assertion_tests = checked_path("vendor/ibapi/src/common/test_utils_tests.rs").read_text(encoding="utf-8")
+    sync_client_tests = checked_path("vendor/ibapi/src/client/sync_tests.rs").read_text(encoding="utf-8")
+    async_client_tests = checked_path("vendor/ibapi/src/client/async_tests.rs").read_text(encoding="utf-8")
+
+    for source, label in ((sync, "sync"), (asynchronous, "async")):
+        if (
+            'debug!("-> {:?}", data)' in source
+            or 'debug!("-> handshake: {handshake:?}")' in source
+            or 'debug!("-> outbound frame bytes={}", super::common::outbound_frame_log_length(data));' not in source
+            or 'debug!("-> handshake bytes={}", super::common::outbound_frame_log_length(&handshake));' not in source
+            or "recorder: MessageRecorder::disabled()" not in source
+            or "MessageRecorder::from_env()" in source
+            or "RawFrameTap::from_env()" in source
+        ):
+            raise ValueError(f"IBKR {label} diagnostics must redact frames and keep capture disabled")
+    if (
+        'debug!("<- {raw:?}")' in common
+        or 'debug!("<- protobuf msg_id={real_type}")' in common
+        or 'debug!("<- text msg_id={msg_id}, payload bytes={}", payload.len());' not in common
+        or "pub(crate) fn outbound_frame_log_length(data: &[u8]) -> usize" not in common
+    ):
+        raise ValueError("IBKR response diagnostics must avoid raw payload logging")
+    if (
+        "std::env" in recorder
+        or "from_env" in recorder
+        or "IBAPI_RECORDING_DIR" in recorder
+        or "#[cfg(test)]\n    pub fn recording_to(directory: &Path)" not in recorder
+        or "pub fn disabled() -> Self" not in recorder
+    ):
+        raise ValueError("IBKR MessageRecorder must be disabled in production and test-enabled only explicitly")
+    if (
+        "std::env" in raw_capture
+        or "from_env" in raw_capture
+        or "IBAPI_RAW_CAPTURE_DIR" in raw_capture
+        or "#[cfg(test)]\n    pub(crate) fn capturing_to(dir: impl AsRef<Path>)" not in raw_capture
+        or "RawFrameTap::disabled()" not in checked_path("vendor/ibapi/src/transport/sync.rs").read_text(encoding="utf-8")
+        or "RawFrameTap::disabled()" not in checked_path("vendor/ibapi/src/transport/async/io.rs").read_text(encoding="utf-8")
+    ):
+        raise ValueError("IBKR RawFrameTap must be disabled on production sockets and test-enabled only explicitly")
+    diagnostic_sources = tuple(
+        path
+        for path in sorted(checked_path("vendor/ibapi/src").rglob("*.rs"))
+        if not path.name.endswith("_tests.rs") and path.name != "tests.rs"
+    )
+    sensitive_names = r"(?:message|raw|data|frame|notice|n|item|err|error|response|e|entry|name|dt|earlier|later|pushed|date_str|connection_time|raw_string|value|input)"
+    unsafe_format = re.compile(rf"\{{{sensitive_names}(?::\?)?\}}")
+    unsafe_argument = re.compile(rf"(?:^|,)\s*{sensitive_names}\s*(?:,|$)")
+    log_macro = re.compile(r"(?:log::)?(?:debug|info|warn|error|trace)!\((.*?)\);", re.DOTALL)
+    for path in diagnostic_sources:
+        source = path.read_text(encoding="utf-8")
+        for match in log_macro.finditer(source):
+            body = match.group(1)
+            argument_list = re.match(r"\s*\"[^\"]*\"\s*,(.*)", body, re.DOTALL)
+            if unsafe_format.search(body) or (
+                argument_list and unsafe_argument.search(argument_list.group(1).strip())
+            ):
+                raise ValueError(f"IBKR log macro formats a payload-bearing variable: {path.relative_to(ROOT)}")
+    if (
+        "pub(crate) fn diagnostic_class(&self) -> &'static str" not in checked_path("vendor/ibapi/src/errors.rs").read_text(encoding="utf-8")
+        or "pub(crate) fn diagnostic_summary(&self) -> String" not in checked_path("vendor/ibapi/src/messages.rs").read_text(encoding="utf-8")
+        or "pub(crate) fn diagnostic_summary(&self) -> String" not in checked_path("vendor/ibapi/src/subscriptions/common.rs").read_text(encoding="utf-8")
+    ):
+        raise ValueError("IBKR production diagnostics must use the reviewed payload-free summaries")
+    if (
+        "assert_eq!(&actual, expected" in assertions
+        or "{other:?}" in assertions
+        or "{offending_value:?}" in assertions
+        or "{notice.message:?}" in assertions
+        or "expected Parse error for {s:?}, got {err:?}" in assertions
+    ):
+        raise ValueError("IBKR shared test assertion diagnostics must not print payload-bearing values")
+    if "MessageRecorder::recording_to(directory.path())" not in recorder_tests or "production_recorder_ignores_legacy_environment_variable" not in recorder_tests:
+        raise ValueError("IBKR recorder tests must use explicit temporary paths and cover ignored legacy environment")
+    if (
+        "production_raw_capture_env_var_does_not_persist" not in raw_capture_tests
+        and "test_environment_variable_cannot_enable_production_capture" not in raw_capture_tests
+    ):
+        raise ValueError("IBKR raw capture tests must prove legacy environment cannot enable persistence")
+    if (
+        "raw_capture_env_var_does_not_persist_production_frames" not in sync_client_tests
+        or "raw_capture_env_var_does_not_persist_production_frames" not in async_client_tests
+    ):
+        raise ValueError("IBKR sync/async client tests must cover disabled environment-triggered capture")
+    if "assertion_helper_panics_redact_synthetic_payloads" not in assertion_tests or "SYNTHETIC_ACCOUNT_SECRET_7842" not in assertion_tests:
+        raise ValueError("IBKR test helpers need a synthetic panic-payload redaction regression test")
+
+
 def main() -> None:
     document = json.loads(MANIFEST.read_text(encoding="utf-8"))
     for entry in document.get("source_files", []):
@@ -387,6 +537,13 @@ def main() -> None:
                 or expected_download not in sbom_item.get("downloadLocation", "")
             ):
                 raise ValueError(f"vendored package SBOM provenance mismatch: {key}")
+            change_record_path = upstream.get("local_change_record_path")
+            change_record_hash = upstream.get("local_change_record_sha256")
+            if change_record_path and (
+                change_record_path not in sbom_item.get("sourceInfo", "")
+                or change_record_hash not in sbom_item.get("sourceInfo", "")
+            ):
+                raise ValueError(f"vendored local source-change record missing from SBOM: {key}")
             formatting_configs = [
                 entry
                 for entry in upstream["source_files"]
@@ -419,6 +576,7 @@ def main() -> None:
     if re.search(r"\.\w*_all\s*\(", alpaca_source):
         raise ValueError("alpaca-rest-read must keep pagination finite")
     check_ibkr_adapter_boundary()
+    check_ibkr_vendor_diagnostics()
 
     summary = ", ".join(
         f"{upstream['source_repository']}@{upstream['source_commit']} "

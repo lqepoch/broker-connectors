@@ -268,9 +268,9 @@ impl<T: StreamDecoder<T> + Send + 'static> Subscription<T> {
                         break;
                     }
                 }
-                Ok(Some(Ok(SubscriptionItem::Notice(notice)))) => warn!("ib notice on subscription: {notice}"),
+                Ok(Some(Ok(SubscriptionItem::Notice(notice)))) => warn!("ib notice on subscription: {}", notice.diagnostic_summary()),
                 Ok(Some(Err(e))) => {
-                    warn!("subscription error during collect: {e}");
+                    warn!("subscription error during collect: class={}", e.diagnostic_class());
                     break;
                 }
             }
@@ -289,7 +289,7 @@ impl<T: StreamDecoder<T> + Send + 'static> Subscription<T> {
         while let Some(item) = self.next().await {
             match item? {
                 SubscriptionItem::Data(value) => collected.push(value),
-                SubscriptionItem::Notice(notice) => warn!("ib notice on subscription: {notice}"),
+                SubscriptionItem::Notice(notice) => warn!("ib notice on subscription: {}", notice.diagnostic_summary()),
             }
         }
         if !self.ended_natively() {

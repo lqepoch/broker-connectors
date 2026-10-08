@@ -91,18 +91,23 @@ fn unsupported_timezone_display_contains_alias_and_helpers() {
 }
 
 #[test]
-fn unexpected_response_display_includes_message_debug() {
-    let msg = ResponseMessage::from("4\02\0-1\0200\0boom\0");
+fn unexpected_response_display_includes_safe_message_summary() {
+    let marker = "SYNTHETIC_ACCOUNT_SECRET_7842";
+    let msg = ResponseMessage::from(&format!("4\02\0-1\0200\0{marker}\0"));
     let error = Error::unexpected_response(&msg);
-    assert!(error.to_string().starts_with("UnexpectedResponse:"));
+    let rendered = error.to_string();
+    assert!(rendered.starts_with("UnexpectedResponse:"));
+    assert!(!rendered.contains(marker), "diagnostics must omit decoded payloads");
 }
 
 #[test]
-fn unexpected_wire_format_display_includes_message_debug() {
+fn unexpected_wire_format_display_includes_safe_message_summary() {
     let msg = ResponseMessage::from("50\0\09000\0");
     let error = Error::unexpected_wire_format(&msg);
-    assert!(error.to_string().starts_with("UnexpectedWireFormat:"), "got {error}");
-    assert!(error.to_string().contains("raw_bytes: None"), "got {error}");
+    assert_eq!(
+        error.to_string(),
+        "UnexpectedWireFormat: message_type=RealTimeBars message_id=Some(50) payload_bytes=6"
+    );
 }
 
 #[test]

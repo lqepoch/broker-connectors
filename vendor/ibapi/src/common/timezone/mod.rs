@@ -118,8 +118,8 @@ pub fn find_timezone(name: &str) -> Option<&'static Tz> {
 pub(crate) fn resolve_local(dt: PrimitiveDateTime, tz: &Tz) -> OffsetDateTime {
     match dt.assume_timezone(tz) {
         OffsetResult::Some(v) => v,
-        OffsetResult::Ambiguous(earlier, later) => {
-            debug!("ambiguous local time {dt} in {}: taking {earlier} over {later}", tz.name());
+        OffsetResult::Ambiguous(earlier, _later) => {
+            debug!("ambiguous local time resolved to earlier occurrence in {}", tz.name());
             earlier
         }
         OffsetResult::None => {
@@ -128,7 +128,7 @@ pub(crate) fn resolve_local(dt: PrimitiveDateTime, tz: &Tz) -> OffsetDateTime {
             // whatever the zone's offset, and no zone transitions twice in a day.
             let before = tz.get_offset_utc(&(dt.assume_utc() - Duration::DAY)).to_utc();
             let pushed = dt.assume_offset(before).to_timezone(tz);
-            debug!("nonexistent local time {dt} in {} (DST gap): pushed forward to {pushed}", tz.name());
+            debug!("nonexistent local time shifted forward across DST gap in {}", tz.name());
             pushed
         }
     }
@@ -143,7 +143,7 @@ fn map_timezone_name(name: &str) -> String {
 /// pass a fresh `HashMap` so they don't pollute the process-wide registry.
 fn map_timezone_name_with(registry: &HashMap<String, String>, name: &str) -> String {
     if let Some(iana) = registry.get(name) {
-        debug!("timezone alias matched (registry): {name:?} -> {iana:?}");
+        debug!("timezone alias matched from the local registry");
         return iana.clone();
     }
 
@@ -181,13 +181,13 @@ fn parse_env_aliases(raw: &str) -> Vec<(String, String)> {
                 let name = name.trim();
                 let iana = iana.trim();
                 if name.is_empty() || iana.is_empty() {
-                    warn!("ignoring malformed {ENV_VAR} entry: {entry:?}");
+                    warn!("ignoring malformed {ENV_VAR} entry (name or zone is empty)");
                     continue;
                 }
                 out.push((name.to_string(), iana.to_string()));
             }
             None => {
-                warn!("ignoring malformed {ENV_VAR} entry (missing '='): {entry:?}");
+                warn!("ignoring malformed {ENV_VAR} entry (missing '=')");
             }
         }
     }

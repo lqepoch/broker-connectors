@@ -92,16 +92,14 @@ pub enum Error {
     #[error("EndOfStream")]
     EndOfStream,
 
-    /// Received unexpected message type. The string carries the `Debug` repr
-    /// of the offending wire envelope for diagnostic logging; the structured
-    /// payload is no longer exposed (rust-ibapi 3.x retired
-    /// `ResponseMessage` from the public surface).
+    /// Received unexpected message type. The diagnostic string contains only
+    /// message kind/ID and payload length; it never contains wire fields.
     #[error("UnexpectedResponse: {0}")]
     UnexpectedResponse(String),
 
     /// A message arrived in the wrong wire format for the reader handling it —
     /// text framing at a proto-only decoder, or proto framing at a text-field
-    /// accessor. The string carries the `Debug` repr of the offending envelope.
+    /// accessor. Its diagnostic string contains only safe envelope metadata.
     ///
     /// Deliberately distinct from [`Error::UnexpectedResponse`], which means
     /// "not my message type" and is *skipped* on shared channels. A framing
@@ -222,6 +220,42 @@ impl From<crate::transport::routing::DecodedError> for Error {
 }
 
 impl Error {
+    /// Fixed log-safe classification. Error payloads can contain account IDs,
+    /// order data, or server-provided text, so production diagnostics must not
+    /// format the `Error` value itself.
+    pub(crate) fn diagnostic_class(&self) -> &'static str {
+        match self {
+            Error::Io(_) => "io",
+            Error::ParseInt(_) => "parse-int",
+            Error::FromUtf8(_) => "utf8",
+            Error::ParseTime(_) => "parse-time",
+            Error::Poison(_) => "poison",
+            Error::NotImplemented => "not-implemented",
+            Error::Parse(..) => "parse",
+            Error::ServerVersion(..) => "server-version",
+            Error::Simple(_) => "simple",
+            Error::InvalidArgument(_) => "invalid-argument",
+            Error::ConnectionFailed => "connection-failed",
+            Error::ConnectionRejected(_) => "connection-rejected",
+            Error::UnsupportedTimeZone(_) => "unsupported-time-zone",
+            Error::ConnectionReset => "connection-reset",
+            Error::Cancelled => "cancelled",
+            Error::Shutdown => "shutdown",
+            Error::EndOfStream => "end-of-stream",
+            Error::UnexpectedResponse(_) => "unexpected-response",
+            Error::UnexpectedWireFormat(_) => "unexpected-wire-format",
+            Error::UnexpectedEndOfStream => "unexpected-end-of-stream",
+            Error::BufferLimitExceeded { .. } => "buffer-limit-exceeded",
+            Error::InvalidFrame(_) => "invalid-frame",
+            Error::Notice(_) => "notice",
+            Error::AlreadySubscribed => "already-subscribed",
+            Error::AccountUpdatesInUse { .. } => "account-updates-in-use",
+            Error::OrderIdInRequestRange { .. } => "order-id-in-request-range",
+            Error::HistoricalParseError(_) => "historical-parse",
+            Error::ProtobufDecode(_) => "protobuf-decode",
+        }
+    }
+
     /// Build an [`Error::ProtobufDecode`]. Crate-private so the prost error
     /// type stays out of the public API; decoders reach it through
     /// `crate::proto::decoders::DecodeProto`.
@@ -229,19 +263,16 @@ impl Error {
         Error::ProtobufDecode(ProtobufDecodeError(err))
     }
 
-    /// Build an [`Error::UnexpectedResponse`] from an internal `ResponseMessage`.
-    /// Captures the `Debug` repr in the variant's `String` payload — the
-    /// structured envelope is no longer exposed publicly. Crate-private; the
-    /// variant's pattern `Error::UnexpectedResponse(_)` remains matchable by
-    /// downstream code.
+    /// Build an [`Error::UnexpectedResponse`] from safe envelope metadata.
+    /// Crate-private; the variant's pattern `Error::UnexpectedResponse(_)`
+    /// remains matchable by downstream code.
     pub(crate) fn unexpected_response(message: &ResponseMessage) -> Error {
-        Error::UnexpectedResponse(format!("{message:?}"))
+        Error::UnexpectedResponse(message.diagnostic_summary())
     }
 
-    /// Build an [`Error::UnexpectedWireFormat`] from an internal `ResponseMessage`.
-    /// Same capture as [`Error::unexpected_response`], different variant.
+    /// Build an [`Error::UnexpectedWireFormat`] from safe envelope metadata.
     pub(crate) fn unexpected_wire_format(message: &ResponseMessage) -> Error {
-        Error::UnexpectedWireFormat(format!("{message:?}"))
+        Error::UnexpectedWireFormat(message.diagnostic_summary())
     }
 
     /// Build an [`Error::Parse`] when the failing input came from a text-protocol

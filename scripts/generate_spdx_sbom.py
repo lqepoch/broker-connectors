@@ -59,6 +59,8 @@ def vendored_package_sources() -> dict[str, dict[str, Any]]:
                 "target_root": upstream.get("target_root", "vendor/alpaca-rust"),
                 "source_archive_sha256": upstream.get("source_archive_sha256"),
                 "formatting_config": formatting_config,
+                "local_change_record_path": upstream.get("local_change_record_path"),
+                "local_change_record_sha256": upstream.get("local_change_record_sha256"),
             }
     return sources
 
@@ -164,6 +166,13 @@ def main() -> None:
             archive_sha256 = origin.get("source_archive_sha256")
             if archive_sha256:
                 source_info += f" Pinned source archive SHA-256: {archive_sha256}."
+            change_record_path = origin.get("local_change_record_path")
+            change_record_hash = origin.get("local_change_record_sha256")
+            if change_record_path and change_record_hash:
+                source_info += (
+                    f" Local source-change record: {change_record_path}; "
+                    f"SHA-256 {change_record_hash}."
+                )
             formatting_config = origin.get("formatting_config")
             if formatting_config:
                 source_info += (
