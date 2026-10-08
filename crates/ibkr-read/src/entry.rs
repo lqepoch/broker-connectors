@@ -2,8 +2,8 @@ use std::num::NonZeroI32;
 
 use domain::{
     ContractCurrency, ContractMultiplier, MarketDataProviderId, MetadataSource,
-    OptionExerciseStyle, OptionInstrumentCandidate, OptionSettlementType, OptionSymbol,
-    ProviderMetadataKind, ProviderMetadataRef, ProviderRecordId, ProviderValue, TradingClass,
+    OptionInstrumentCandidate, OptionSymbol, ProviderMetadataKind, ProviderMetadataRef,
+    ProviderRecordId, ProviderValue, TradingClass,
 };
 use ibapi::contracts::{ContractDetails, OptionRight, SecurityType};
 
@@ -22,11 +22,13 @@ pub struct IbkrOptionCatalogEntry {
 
 impl IbkrOptionCatalogEntry {
     /// Returns the shared candidate; unknown economic terms remain unknown.
+    #[must_use]
     pub const fn candidate(&self) -> &OptionInstrumentCandidate {
         &self.candidate
     }
 
     /// Returns the adapter-owned provider record identity.
+    #[must_use]
     pub const fn provider_identity(&self) -> &IbkrProviderContractIdentity {
         &self.provider_identity
     }
@@ -44,26 +46,31 @@ pub struct IbkrProviderContractIdentity {
 
 impl IbkrProviderContractIdentity {
     /// Returns the positive IBKR contract id reported by the provider.
+    #[must_use]
     pub const fn contract_id(&self) -> i32 {
         self.contract_id.get()
     }
 
     /// Returns the provider-reported exchange after exact query matching.
+    #[must_use]
     pub fn exchange(&self) -> &str {
         &self.exchange
     }
 
     /// Returns the provider-reported currency after exact query matching.
+    #[must_use]
     pub const fn currency(&self) -> &ContractCurrency {
         &self.currency
     }
 
     /// Returns the exact provider OCC local symbol.
+    #[must_use]
     pub fn local_symbol(&self) -> &str {
         &self.local_symbol
     }
 
     /// Returns the typed source reference for this provider record.
+    #[must_use]
     pub const fn record(&self) -> &ProviderMetadataRef {
         &self.record
     }
@@ -95,7 +102,7 @@ pub(crate) fn map_contract_details(
         || contract.last_trade_date_or_contract_month != expected_date
         || contract.right != Some(expected_right)
         || !contract.strike.is_finite()
-        || contract.strike != expected_strike
+        || contract.strike.to_bits() != expected_strike.to_bits()
         || contract.exchange.as_str() != query.exchange()
         || contract.currency.as_str() != query.currency().as_str()
         || returned_symbol != *query.symbol()
@@ -113,15 +120,18 @@ pub(crate) fn map_contract_details(
         provider_record_id,
     );
 
-    let trading_class = TradingClass::new(&contract.trading_class)
-        .map(ProviderValue::Known)
-        .unwrap_or_else(|_| ProviderValue::Unknown(record.clone()));
-    let currency = ContractCurrency::new(contract.currency.as_str())
-        .map(ProviderValue::Known)
-        .unwrap_or_else(|_| ProviderValue::Unknown(record.clone()));
-    let multiplier = validated_multiplier(&contract.multiplier)
-        .map(ProviderValue::Known)
-        .unwrap_or_else(|| ProviderValue::Unknown(record.clone()));
+    let trading_class = TradingClass::new(&contract.trading_class).map_or_else(
+        |_| ProviderValue::Unknown(record.clone()),
+        ProviderValue::Known,
+    );
+    let currency = ContractCurrency::new(contract.currency.as_str()).map_or_else(
+        |_| ProviderValue::Unknown(record.clone()),
+        ProviderValue::Known,
+    );
+    let multiplier = validated_multiplier(&contract.multiplier).map_or_else(
+        || ProviderValue::Unknown(record.clone()),
+        ProviderValue::Known,
+    );
 
     let candidate = OptionInstrumentCandidate::new(
         returned_symbol,
@@ -174,20 +184,21 @@ mod tests {
     }
 
     fn valid_details(contract_id: i32, multiplier: &str) -> ContractDetails {
-        let mut contract = Contract::default();
-        contract.contract_id = contract_id;
-        contract.symbol = Symbol::from("AAPL");
-        contract.security_type = SecurityType::Option;
-        contract.last_trade_date_or_contract_month = "20270115".to_string();
-        contract.strike = 150.0;
-        contract.right = Some(OptionRight::Call);
-        contract.multiplier = multiplier.to_string();
-        contract.exchange = Exchange::from("CBOE");
-        contract.currency = Currency::from("USD");
-        contract.local_symbol = "AAPL  270115C00150000".to_string();
-        contract.trading_class = "AAPL".to_string();
         ContractDetails {
-            contract,
+            contract: Contract {
+                contract_id,
+                symbol: Symbol::from("AAPL"),
+                security_type: SecurityType::Option,
+                last_trade_date_or_contract_month: "20270115".to_string(),
+                strike: 150.0,
+                right: Some(OptionRight::Call),
+                multiplier: multiplier.to_string(),
+                exchange: Exchange::from("CBOE"),
+                currency: Currency::from("USD"),
+                local_symbol: "AAPL  270115C00150000".to_string(),
+                trading_class: "AAPL".to_string(),
+                ..Contract::default()
+            },
             ..ContractDetails::default()
         }
     }

@@ -1,3 +1,5 @@
+//! Synthetic loopback protocol tests for the read-only IBKR option catalog adapter.
+
 #[path = "support/fake_gateway.rs"]
 mod fake_gateway;
 
@@ -235,7 +237,7 @@ async fn connect_timeout_closes_unresponsive_loopback_gateway() {
     ));
 
     let observation = gateway.finish().await.expect("finish local fake server");
-    assert!(observation.outbound_ids.is_empty());
+    assert_eq!(observation.outbound_ids, Vec::<i32>::new());
 }
 
 #[tokio::test]
@@ -275,6 +277,61 @@ async fn missing_end_times_out_cancels_and_poisons_the_session() {
         observation.outbound_ids.contains(&CANCEL_CONTRACT_DATA),
         "timeout must issue native cancel"
     );
+}
+
+#[tokio::test]
+async fn caller_abort_poisons_session_and_closes_transport() {
+    let gateway = FakeGateway::start(ResponsePlan::RowsWithoutEnd(vec![ContractFixture::exact(
+        123_456,
+    )]))
+    .await
+    .expect("start fake loopback gateway");
+    let adapter = std::sync::Arc::new(connect(&gateway, Duration::from_secs(10)).await);
+    let lookup_adapter = std::sync::Arc::clone(&adapter);
+    let lookup = tokio::spawn(async move { lookup_adapter.lookup_option(&query()).await });
+
+    tokio::time::timeout(Duration::from_secs(1), async {
+        while gateway.observation().search.is_none() {
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .expect("fake gateway received the catalog query");
+    // Let the SDK finish constructing/polling its subscription and consume the
+    // synthetic row so abort exercises Subscription::drop during a live request.
+    tokio::time::sleep(Duration::from_millis(30)).await;
+    lookup.abort();
+    assert!(
+        lookup
+            .await
+            .expect_err("aborted request task")
+            .is_cancelled()
+    );
+
+    assert_eq!(
+        adapter.lookup_option(&query()).await,
+        Err(IbkrCatalogError::SessionPoisoned),
+        "a dropped lookup cannot reuse a request id without native END evidence"
+    );
+    let observation = gateway.finish().await.expect("finish local fake server");
+    assert!(
+        observation.peer_closed,
+        "dropping an aborted lookup must terminate the poisoned SDK connection"
+    );
+    assert_read_only_requests(&observation);
+    assert_eq!(
+        observation
+            .outbound_ids
+            .iter()
+            .filter(|id| **id == 9)
+            .count(),
+        1,
+        "aborted lookup must never issue another contract-details request"
+    );
+    adapter
+        .disconnect()
+        .await
+        .expect("idempotent bounded disconnect");
 }
 
 #[tokio::test]

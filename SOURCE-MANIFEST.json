@@ -15,7 +15,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "9756934b8c7c4c9084b6f4bbcf6e938503e1b14f45191495ab9bf9399b02d616",
+      "sha256": "23f05a43080fa381426cf5712e10cdfaa68e8cd9d40b69c8d72ef1c28ef91bcf",
       "target_path": "AGENTS.md"
     },
     {
@@ -45,7 +45,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "4fb63f9d0b21bb737f63c163cdf227bcaac544e42c946d876d6cadede75685b3",
+      "sha256": "f7ade647b5579b4ad13a031f92033ef7e919b2e7bc419a89c6d11e0048d8d937",
       "target_path": "README.md"
     },
     {
@@ -165,42 +165,42 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "2a3e67a2263f282acb208a01d35a53aa5e83877fc58d07a1be7ec626448cc0b4",
+      "sha256": "f5879b4c849530406bb667dda8ea360596614dc729ef5965de1916f410316c6a",
       "target_path": "crates/ibkr-read/README.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "c62b9aaddf0943724cc57532307047f831bc471bb0a4070e00d15aafb8f51370",
+      "sha256": "2886a3fa715f4d8bb71d75980bfc07d1b1c5952ac91cbf0781b4df3a5d600d46",
       "target_path": "crates/ibkr-read/src/adapter.rs"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "4913768adfc177390fa906ddf257ada861498b6199fc68ac13f134c43a4390a1",
+      "sha256": "a923da603b28767058d54589b9f37c907d3face9fbf7da66dea85be9ea333d8d",
       "target_path": "crates/ibkr-read/src/entry.rs"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "13a90c11ee5d3551a9f755ae2ae469fef27612c71ab64b1a060c40cc4a207348",
+      "sha256": "52ba1fb70790ebb529354e2e96708596dff87debe1a5fa739ff12bf807c2f084",
       "target_path": "crates/ibkr-read/src/error.rs"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "e3e5e44884583a94d3c226444fd09fea29bd98808c69d845218647fa727175e3",
+      "sha256": "96918e50c0b3704eb7b28fe9987adfeefc7bd89e64909238bf0f9a6a3740cd9e",
       "target_path": "crates/ibkr-read/src/lib.rs"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "b85fa06b39e5e578270984e196e438c44d15627897d4c5345961f712511523e8",
+      "sha256": "6b00939eab82b664e90182f4b48aed01d6b96d3159ee6916e52d81c547f17ebd",
       "target_path": "crates/ibkr-read/src/query.rs"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "3cc32e45094e6008127cd2b2f3a8b966e547b5a5c9ad5fc80217b78d5219db58",
+      "sha256": "f564e44079c4e6d3663695f18c72cb049a9f2884ac618dc44f121ad9562aeb8f",
       "target_path": "crates/ibkr-read/tests/catalog_fake_wire.rs"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "9e4274df34e8d9a98eb70de8977116ce2b40d96b4eeb0ff93a0ce1205c7cdddf",
+      "sha256": "fc5e17d0b01c17b759cc6ca7317d4fe1ab276dbb840f232dc0d822d82b325912",
       "target_path": "crates/ibkr-read/tests/support/fake_gateway.rs"
     },
     {
@@ -219,7 +219,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "bfafd57bfafdb2b442873e431009bf7a8a17376f5f7f0fed5b27b09e39ba56ed",
+      "sha256": "2988afe9fb7a350e027444d3bd4ea369d039884727cd1d19ef146a9a940eeab2",
       "target_path": "scripts/check_vendor_provenance.py"
     },
     {

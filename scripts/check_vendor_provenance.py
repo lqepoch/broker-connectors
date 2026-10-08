@@ -290,8 +290,25 @@ def check_ibkr_adapter_boundary() -> None:
     )
     if any(re.search(pattern, source) for pattern in forbidden):
         raise ValueError("ibkr-read exposes SDK client types or write operations")
-    if "pub struct IbkrCatalogAdapter" not in source or "client: ibapi::Client" not in source:
-        raise ValueError("IBKR SDK client must remain a private adapter field")
+    if "pub struct IbkrCatalogAdapter" not in source or not re.search(
+        r"(?m)^\s*client:\s*std::sync::Mutex<Option<Arc<ibapi::Client>>>,\s*$",
+        source,
+    ):
+        raise ValueError("IBKR SDK client owner must remain a private adapter field")
+    if (
+        "pub const MAX_TIMEOUT: Duration = Duration::from_secs(60);" not in source
+        or "Instant::now().checked_add(duration)" not in source
+    ):
+        raise ValueError("IBKR request budgets must stay capped and use checked deadlines")
+    drop_guard = source.find("impl Drop for RequestPoisonGuard")
+    if drop_guard < 0:
+        raise ValueError("IBKR lookup cancellation must poison the SDK session")
+    drop_body = source[drop_guard : drop_guard + 1_000]
+    if (
+        "self.poisoned.store(true, Ordering::Release)" not in drop_body
+        or ".take()" not in drop_body
+    ):
+        raise ValueError("IBKR lookup cancellation must poison and release its SDK owner")
 
 
 def main() -> None:

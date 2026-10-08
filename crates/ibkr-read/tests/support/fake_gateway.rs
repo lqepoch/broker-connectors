@@ -43,6 +43,7 @@ pub(crate) enum ResponsePlan {
 pub(crate) struct Observation {
     pub(crate) outbound_ids: Vec<i32>,
     pub(crate) search: Option<SearchRequest>,
+    pub(crate) peer_closed: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -118,10 +119,38 @@ async fn serve(
         }
     }
     send_handshake(&mut stream).await?;
+    let Some(request) = receive_search_request(&mut stream, &observation).await? else {
+        observation
+            .lock()
+            .expect("synthetic gateway observation mutex")
+            .peer_closed = true;
+        return Ok(());
+    };
+    serve_response_plan(&mut stream, &request, plan, &observation).await?;
 
-    let request = loop {
-        let Some(packet) = read_packet(&mut stream).await? else {
-            return Ok(());
+    while let Some(packet) = read_packet(&mut stream).await? {
+        if let Some(message_id) = decode_message_id(&packet) {
+            observation
+                .lock()
+                .expect("synthetic gateway observation mutex")
+                .outbound_ids
+                .push(message_id);
+        }
+    }
+    observation
+        .lock()
+        .expect("synthetic gateway observation mutex")
+        .peer_closed = true;
+    Ok(())
+}
+
+async fn receive_search_request(
+    stream: &mut TcpStream,
+    observation: &Arc<Mutex<Observation>>,
+) -> io::Result<Option<SearchRequest>> {
+    loop {
+        let Some(packet) = read_packet(stream).await? else {
+            return Ok(None);
         };
         let Some(message_id) = decode_message_id(&packet) else {
             continue;
@@ -137,33 +166,30 @@ async fn serve(
                 .lock()
                 .expect("synthetic gateway observation mutex")
                 .search = Some(request.clone());
-            break request;
+            return Ok(Some(request));
         }
-    };
+    }
+}
 
+async fn serve_response_plan(
+    stream: &mut TcpStream,
+    request: &SearchRequest,
+    plan: ResponsePlan,
+    observation: &Arc<Mutex<Observation>>,
+) -> io::Result<()> {
     match plan {
         ResponsePlan::NoHandshakeResponse => unreachable!("handled before API handshake"),
         ResponsePlan::RowsAndEnd(rows) => {
-            send_rows(&mut stream, request.request_id, &rows).await?;
-            write_protocol_packet(
-                &mut stream,
-                protocol_frame(
-                    52,
-                    &varint_field(
-                        1,
-                        u64::try_from(request.request_id).expect("positive synthetic request id"),
-                    ),
-                ),
-            )
-            .await?;
+            send_rows(stream, request.request_id, &rows).await?;
+            send_native_end(stream, request.request_id).await?;
         }
         ResponsePlan::RowsWithoutEnd(rows) => {
-            send_rows(&mut stream, request.request_id, &rows).await?
+            send_rows(stream, request.request_id, &rows).await?;
         }
         ResponsePlan::RowsThenEndAfterCancel(rows) => {
-            send_rows(&mut stream, request.request_id, &rows).await?;
+            send_rows(stream, request.request_id, &rows).await?;
             loop {
-                let Some(packet) = read_packet(&mut stream).await? else {
+                let Some(packet) = read_packet(stream).await? else {
                     return Ok(());
                 };
                 let Some(message_id) = decode_message_id(&packet) else {
@@ -175,38 +201,22 @@ async fn serve(
                     .outbound_ids
                     .push(message_id);
                 if message_id == CANCEL_CONTRACT_DATA {
-                    write_protocol_packet(
-                        &mut stream,
-                        protocol_frame(
-                            52,
-                            &varint_field(
-                                1,
-                                u64::try_from(request.request_id)
-                                    .expect("positive synthetic request id"),
-                            ),
-                        ),
-                    )
-                    .await?;
+                    send_native_end(stream, request.request_id).await?;
                     break;
                 }
             }
         }
         ResponsePlan::CloseAfterRows(rows) => {
-            send_rows(&mut stream, request.request_id, &rows).await?;
+            send_rows(stream, request.request_id, &rows).await?;
             return Ok(());
         }
     }
-
-    while let Some(packet) = read_packet(&mut stream).await? {
-        if let Some(message_id) = decode_message_id(&packet) {
-            observation
-                .lock()
-                .expect("synthetic gateway observation mutex")
-                .outbound_ids
-                .push(message_id);
-        }
-    }
     Ok(())
+}
+
+async fn send_native_end(stream: &mut TcpStream, request_id: i32) -> io::Result<()> {
+    let request_id = u64::try_from(request_id).expect("positive synthetic request id");
+    write_protocol_packet(stream, &protocol_frame(52, &varint_field(1, request_id))).await
 }
 
 async fn read_client_handshake(stream: &mut TcpStream) -> io::Result<()> {
@@ -291,10 +301,11 @@ fn decode_search_request(packet: &[u8]) -> io::Result<SearchRequest> {
         .map_err(|_| io::Error::new(ErrorKind::InvalidData, "request id overflow"))?;
     let contract = required_bytes(&fields, 2)?;
     let contract_fields = decode_fields(contract)?;
+    let contract_id = i32::try_from(optional_varint(&contract_fields, 1)?.unwrap_or(0))
+        .map_err(|_| io::Error::new(ErrorKind::InvalidData, "contract id overflow"))?;
     Ok(SearchRequest {
         request_id,
-        contract_id: i32::try_from(required_varint(&contract_fields, 1)?)
-            .map_err(|_| io::Error::new(ErrorKind::InvalidData, "contract id overflow"))?,
+        contract_id,
         symbol: required_string(&contract_fields, 2)?,
         security_type: required_string(&contract_fields, 3)?,
         expiration: required_string(&contract_fields, 4)?,
@@ -360,6 +371,19 @@ fn required_varint(fields: &[(u32, Field<'_>)], number: u32) -> io::Result<u64> 
                 format!("missing varint field {number}"),
             )
         })
+}
+
+fn optional_varint(fields: &[(u32, Field<'_>)], number: u32) -> io::Result<Option<u64>> {
+    let Some((_, value)) = fields.iter().find(|(field, _)| *field == number) else {
+        return Ok(None);
+    };
+    match value {
+        Field::Varint(value) => Ok(Some(*value)),
+        _ => Err(io::Error::new(
+            ErrorKind::InvalidData,
+            format!("field {number} is not a varint"),
+        )),
+    }
 }
 
 fn required_bytes<'a>(fields: &'a [(u32, Field<'a>)], number: u32) -> io::Result<&'a [u8]> {

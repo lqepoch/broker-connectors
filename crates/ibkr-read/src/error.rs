@@ -9,7 +9,7 @@ pub enum IbkrCatalogError {
     InvalidExchange,
     /// The currency is not a validated three-letter code.
     InvalidCurrency,
-    /// A configured timeout is zero.
+    /// A configured timeout is zero or exceeds the 60-second per-phase maximum.
     InvalidTimeout,
     /// The local connection attempt exceeded its configured deadline.
     ConnectTimeout,

@@ -17,6 +17,12 @@ pub struct IbkrOptionCatalogQuery {
 
 impl IbkrOptionCatalogQuery {
     /// Creates a query from a validated OCC symbol and explicit provider scope.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IbkrCatalogError::InvalidExchange`] for empty, malformed, or
+    /// `SMART` exchange input, and [`IbkrCatalogError::InvalidCurrency`] when
+    /// the explicit currency is invalid.
     pub fn new(
         symbol: OptionSymbol,
         exchange: &str,
@@ -33,43 +39,47 @@ impl IbkrOptionCatalogQuery {
     }
 
     /// Returns the exact OCC option symbol used by the lookup.
+    #[must_use]
     pub const fn symbol(&self) -> &OptionSymbol {
         &self.symbol
     }
 
     /// Returns the explicit exchange code used by the lookup.
+    #[must_use]
     pub fn exchange(&self) -> &str {
         &self.exchange
     }
 
     /// Returns the explicit currency used by the lookup.
+    #[must_use]
     pub const fn currency(&self) -> &ContractCurrency {
         &self.currency
     }
 }
 
 pub(crate) fn sdk_contract(query: &IbkrOptionCatalogQuery) -> Contract {
-    let mut contract = Contract::default();
     // Zero is the TWS contract-search sentinel. It is not a returned provider id.
-    contract.contract_id = 0;
-    contract.symbol = Symbol::from(query.symbol.underlying().as_str());
-    contract.security_type = SecurityType::Option;
     let expiration = query.symbol.expiration();
-    contract.last_trade_date_or_contract_month = format!(
-        "{:04}{:02}{:02}",
-        expiration.year(),
-        expiration.month(),
-        expiration.day()
-    );
-    contract.strike = f64::from(query.symbol.strike().mills()) / 1_000.0;
-    contract.right = Some(match query.symbol.right() {
-        domain::OptionRight::Call => OptionRight::Call,
-        domain::OptionRight::Put => OptionRight::Put,
-    });
-    contract.exchange = Exchange::from(query.exchange.as_str());
-    contract.currency = Currency::from(query.currency.as_str());
-    contract.local_symbol = query.symbol.format();
-    contract
+    Contract {
+        contract_id: 0,
+        symbol: Symbol::from(query.symbol.underlying().as_str()),
+        security_type: SecurityType::Option,
+        last_trade_date_or_contract_month: format!(
+            "{:04}{:02}{:02}",
+            expiration.year(),
+            expiration.month(),
+            expiration.day()
+        ),
+        strike: f64::from(query.symbol.strike().mills()) / 1_000.0,
+        right: Some(match query.symbol.right() {
+            domain::OptionRight::Call => OptionRight::Call,
+            domain::OptionRight::Put => OptionRight::Put,
+        }),
+        exchange: Exchange::from(query.exchange.as_str()),
+        currency: Currency::from(query.currency.as_str()),
+        local_symbol: query.symbol.format(),
+        ..Contract::default()
+    }
 }
 
 fn normalize_exchange(value: &str) -> Result<String, IbkrCatalogError> {
@@ -125,8 +135,8 @@ mod tests {
         assert_eq!(contract.exchange.as_str(), "CBOE");
         assert_eq!(contract.currency.as_str(), "USD");
         assert_eq!(contract.local_symbol, "AAPL  270115C00150000");
-        assert!(contract.primary_exchange.as_str().is_empty());
-        assert!(contract.multiplier.is_empty());
-        assert!(contract.trading_class.is_empty());
+        assert_eq!(contract.primary_exchange.as_str(), "");
+        assert_eq!(contract.multiplier, "");
+        assert_eq!(contract.trading_class, "");
     }
 }

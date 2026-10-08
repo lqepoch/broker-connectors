@@ -16,7 +16,7 @@ mod entry;
 mod error;
 mod query;
 
-pub use adapter::{IbkrCatalogAdapter, IbkrCatalogTimeouts};
+pub use adapter::{IbkrCatalogAdapter, IbkrCatalogTimeouts, MAX_TIMEOUT};
 pub use entry::{IbkrOptionCatalogEntry, IbkrProviderContractIdentity};
 pub use error::IbkrCatalogError;
 pub use query::IbkrOptionCatalogQuery;
