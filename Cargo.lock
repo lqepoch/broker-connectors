@@ -51,6 +51,7 @@ dependencies = [
 name = "broker-ports"
 version = "0.1.0"
 dependencies = [
+ "domain",
  "market-contracts",
  "sha2",
  "tokio",

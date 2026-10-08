@@ -15,13 +15,63 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "daa48bf3e478a0ce85378747a53d4eb5d80f68ad57301331f0b88b21f9ce63c4",
+      "sha256": "53e8efa653fb0dc08de16fc6e0813f6d752f3f4a4bbdbe4b3eeb832adef36bb5",
       "target_path": "crates/broker-ports/Cargo.toml"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "4aa5dc0bc1dfa0ebb1e6a990c1aa0937492b5b9a232f6e9e2f70a7936f686d93",
+      "sha256": "eafc8700f6bab05333ab06342b706c36a49cfebb9fc6b30db4bc26927e0b7804",
       "target_path": "crates/broker-ports/src/lib.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "e80f750fd15a19b658ef8aeaf86b98d6a1299c3657d0337250630923f1911e7d",
+      "target_path": "Cargo.toml"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "2144c360f0e1c985f7e363b927e61bec797c8f8d35c453305eaec98756d8e4ce",
+      "target_path": "README.md"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "ca6ddd34d43e383d412525b2e8679ff8dca59f4e6a80c597052149b0cf90cc48",
+      "target_path": "crates/broker-ports/src/admission.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "01b710ffedaaf71702fc445df67f2d93456b53440b60bde427eb046e549a5c2a",
+      "target_path": "crates/broker-ports/src/catalog.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "1d38671eb635ca07e53766eae114875d107d1ace403e36b7eec12579e26fdd6e",
+      "target_path": "crates/broker-ports/src/event.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "d6198e3447987ffd6d1ee080714ed23afca78c6a472a6ebfda5f9c94996e845e",
+      "target_path": "crates/broker-ports/src/read.rs"
+    }
+  ],
+  "shared_contract_dependencies": [
+    {
+      "commit": "0a2eaff08d45e8abc1a0137dab17d5d3ef5553c8",
+      "git_tree": "fc8ec06ec05965ac23331b119047a80cb731a6bb",
+      "license": "MIT OR Apache-2.0",
+      "lockfile": "Cargo.lock includes this package and its transitive core packages at the same commit.",
+      "package": "market-contracts",
+      "package_version": "0.1.0",
+      "repository": "lqepoch/trading-core"
+    },
+    {
+      "commit": "0a2eaff08d45e8abc1a0137dab17d5d3ef5553c8",
+      "git_tree": "fc8ec06ec05965ac23331b119047a80cb731a6bb",
+      "license": "MIT OR Apache-2.0",
+      "lockfile": "Cargo.lock resolves domain and market-contracts from the same immutable trading-core revision.",
+      "package": "domain",
+      "package_version": "0.1.0",
+      "repository": "lqepoch/trading-core"
     }
   ],
   "source_commit": "c907d18bc31790ede4cf36a4312a6813467506f0",
@@ -183,16 +233,5 @@
   ],
   "source_license_status": "The source repository is private and this commit has no repository-wide open-source license. Repository-owner authorization covers only the source paths enumerated here and permits this selected project-owned code to be published in this repository under MIT OR Apache-2.0.",
   "source_repository": "lqepoch/schwab_auto_bot",
-  "target_license": "MIT OR Apache-2.0 for the selected project-owned code; third-party dependencies retain their own licenses.",
-  "shared_contract_dependencies": [
-    {
-      "repository": "lqepoch/trading-core",
-      "commit": "0a2eaff08d45e8abc1a0137dab17d5d3ef5553c8",
-      "git_tree": "fc8ec06ec05965ac23331b119047a80cb731a6bb",
-      "package": "market-contracts",
-      "package_version": "0.1.0",
-      "license": "MIT OR Apache-2.0",
-      "lockfile": "Cargo.lock includes this package and its transitive core packages at the same commit."
-    }
-  ]
+  "target_license": "MIT OR Apache-2.0 for the selected project-owned code; third-party dependencies retain their own licenses."
 }
