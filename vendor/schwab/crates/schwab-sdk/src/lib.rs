@@ -22,13 +22,16 @@ pub use market_data::MarketData;
 pub use trader::Trader;
 
 pub use schwab_rest::{
-    AccessToken, AccessTokenProvider, AccountsQuery, BoxFuture, BrokerIdentifier, CsvValues,
-    DecimalQuery, HttpMethod, HttpRequest, HttpResponse, HttpTransport, HttpTransportError,
-    InstrumentSearchQuery, MarketHoursQuery, MarketsQuery, MoversQuery, NormalizedOptionQuote,
+    AccessToken, AccessTokenProvider, AccountNumberHash, AccountResponse, AccountsQuery,
+    BalanceSnapshot, BoxFuture, BrokerIdentifier, CsvValues, DecimalQuery, HttpMethod, HttpRequest,
+    HttpResponse, HttpTransport, HttpTransportError, Instrument, InstrumentSearchQuery,
+    MarketHoursQuery, MarketsQuery, MoversQuery, NormalizedOptionQuote,
     NormalizedOptionQuoteReadResponse, OptionChainQuery, OptionExpirationQuery, OrdersQuery,
-    PathIdentifier, PriceHistoryQuery, QueryExtensions, QueryText, QuotesQuery, ReadAdmissionError,
-    ReadAdmissionPort, ReadApiError, ReadPriority, ReadResponseError, RestError, RestResponse,
-    SchwabHttpsTransport, TokenProviderError, TransactionsQuery, TypedReadResponse,
+    PathIdentifier, Position, PriceHistoryQuery, QueryExtensions, QueryText, QuotesQuery,
+    ReadAdmissionError, ReadAdmissionPort, ReadApiError, ReadPriority, ReadRequestError,
+    ReadResponseError, RestError, RestResponse, SchwabHttpsTransport, SecuritiesAccount,
+    StreamerInfo, TokenProviderError, TraderReadResponse, TransactionsQuery, TypedReadResponse,
+    UserPreferencesResponse, WireNumber,
 };
 
 use schwab_rest::SchwabRestClient;

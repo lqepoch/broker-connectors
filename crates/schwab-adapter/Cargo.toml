@@ -1,0 +1,24 @@
+[package]
+name = "schwab-adapter"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Read-only Schwab broker-port adapter"
+
+[dependencies]
+broker-ports.workspace = true
+chrono.workspace = true
+domain.workspace = true
+market-contracts.workspace = true
+schwab-sdk = { path = "../../vendor/schwab/crates/schwab-sdk" }
+schwab-streamer = { path = "../../vendor/schwab/crates/schwab-streamer" }
+url = "=2.5.8"
+zeroize.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true
+
+[lints]
+workspace = true

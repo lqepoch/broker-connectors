@@ -321,12 +321,12 @@
       "target_sha256": "9ff2f915370f0910e255806402e2656aab3767936263504dd14b2ca14342dd3f"
     },
     {
-      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adaptation": "Target-only public re-exports for account response DTOs and ReadRequestError; source pin and source bytes remain unchanged.",
       "source_git_blob": "61413279d286f4bdfda0fb982a74ab571d6d01a1",
       "source_path": "crates/schwab-sdk/src/lib.rs",
       "source_sha256": "474f0c6ae0ab5465d8da47244ff251fb5072d19c4da60a0f142b60eb462864cc",
       "target_path": "vendor/schwab/crates/schwab-sdk/src/lib.rs",
-      "target_sha256": "474f0c6ae0ab5465d8da47244ff251fb5072d19c4da60a0f142b60eb462864cc"
+      "target_sha256": "1a698e136e145f0cb1c2be03b33cae21a1a35fea07f27d57d510c914b96c1fae"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
