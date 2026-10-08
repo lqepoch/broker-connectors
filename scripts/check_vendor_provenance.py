@@ -21,6 +21,13 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def git_blob_sha1(path: Path) -> str:
+    """Calculate Git's SHA-1 blob object ID for the pinned upstream file."""
+    content = path.read_bytes()
+    header = f"blob {len(content)}\0".encode("ascii")
+    return hashlib.sha1(header + content).hexdigest()
+
+
 def checked_path(relative: str) -> Path:
     candidate = ROOT / relative
     if candidate.is_symlink():
@@ -99,6 +106,11 @@ def check_vendor(upstream: dict, project_paths: set[str]) -> None:
         if sha256(target) != entry.get("adapted_target_sha256"):
             raise ValueError(f"adapted source hash mismatch: {target_name}")
         require_hash(entry.get("source_file_sha256"), f"{repository} source {entry['source_path']}")
+        source_git_blob = entry.get("source_git_blob_sha1")
+        if source_git_blob is not None:
+            require_git_sha(source_git_blob, f"{repository} Git blob {entry['source_path']}")
+            if git_blob_sha1(target) != source_git_blob:
+                raise ValueError(f"pinned upstream Git blob mismatch: {target_name}")
 
     for entry in upstream.get("removed_source_files", []):
         require_hash(entry.get("source_file_sha256"), f"{repository} omitted {entry['source_path']}")
@@ -375,6 +387,26 @@ def main() -> None:
                 or expected_download not in sbom_item.get("downloadLocation", "")
             ):
                 raise ValueError(f"vendored package SBOM provenance mismatch: {key}")
+            formatting_configs = [
+                entry
+                for entry in upstream["source_files"]
+                if entry["source_path"] == "rustfmt.toml"
+            ]
+            if formatting_configs:
+                if len(formatting_configs) != 1:
+                    raise ValueError(f"multiple pinned formatter configs for {key}")
+                config = formatting_configs[0]
+                source_info = sbom_item.get("sourceInfo", "")
+                if (
+                    config["target_path"] != f"{upstream['target_root']}/rustfmt.toml"
+                    or "rustfmt.toml" not in upstream.get("source_archive_paths", [])
+                    or config.get("source_git_blob_sha1") is None
+                    or config["source_file_sha256"] != config["adapted_target_sha256"]
+                    or config["adapted_target_sha256"] not in source_info
+                    or config["source_git_blob_sha1"] not in source_info
+                    or upstream["source_archive_sha256"] not in source_info
+                ):
+                    raise ValueError(f"vendored formatter config provenance missing from SBOM: {key}")
 
     check_reviewed_dependency_licenses(document)
 

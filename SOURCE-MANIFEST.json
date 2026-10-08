@@ -50,7 +50,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "50c6527b0eea7922b1e3dfc693b62b98cd668fa8ab5dc4ef5f80f873405e4af6",
+      "sha256": "476863e70aa6bc584aea23bb6c293de08f232462595324a68ded42b38e8a5234",
       "target_path": "SBOM.spdx.json"
     },
     {
@@ -219,12 +219,12 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "2988afe9fb7a350e027444d3bd4ea369d039884727cd1d19ef146a9a940eeab2",
+      "sha256": "7b48bfc1fa078b994bc9ff6b060b0b017a5503a5d12aa4b687f552bd2634ba4f",
       "target_path": "scripts/check_vendor_provenance.py"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "015897e65e15938898ca6e55f0618ad19992e7ec3185b254de232741ec87fbd9",
+      "sha256": "6d7ec7dc861e78e8cfc5fa7c81378bb82691445f505df6aeef9220405c227986",
       "target_path": "scripts/generate_spdx_sbom.py"
     },
     {
@@ -269,7 +269,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "162437a1bad7c39528186919865e45c67eb75e0dc3957cfb913abc05f4fb91fa",
+      "sha256": "35988f7d58e19074a651b0953380e78386a04e4fc768728c1c90deb44fb1a863",
       "target_path": "vendor/ibapi/UPSTREAM.md"
     }
   ],
@@ -481,7 +481,8 @@
       "adaptations": [
         "Active Cargo manifest retains the async feature only and removes upstream development, examples, and packaging targets.",
         "The read-only adapter keeps the SDK Client private and exposes only exact option contract-details catalog lookup.",
-        "Five trailing-whitespace-only source edits are bound to source/target hashes and 1-based lines in LOCAL-CHANGES.json; no SDK protocol behavior changed."
+        "Five trailing-whitespace-only source edits are bound to source/target hashes and 1-based lines in LOCAL-CHANGES.json; no SDK protocol behavior changed.",
+        "Preserves the pinned upstream rustfmt.toml so workspace formatting checks use the vendored source formatter settings without reformatting upstream files."
       ],
       "license": "MIT",
       "license_files": [
@@ -512,9 +513,10 @@
       "source_archive_paths": [
         "Cargo.toml",
         "LICENSE",
+        "rustfmt.toml",
         "src/"
       ],
-      "source_archive_sha256": "063f22b4b640fd2fddcddb100eaa02f39031e81c1ee09500769bfa5e44cf8647",
+      "source_archive_sha256": "91b49f2c57e423258d20b1f427682d622b78de011eacbb75fcb4296ceacb3532",
       "source_commit": "3e73f2f1cfac151c10e403a3e7d779272134445f",
       "source_files": [
         {
@@ -530,6 +532,14 @@
           "source_file_sha256": "a871ee487f4cc317c9312ed0ee91fb3718fe8bf8436259e5d8a9d54ce71a5bbf",
           "source_path": "LICENSE",
           "target_path": "vendor/ibapi/LICENSE"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes; scopes workspace formatting to the vendored source.",
+          "adapted_target_sha256": "ebdb640eee8312fc86d59249c5b43fb150f62375358f0216c2fa1bb7ef9514d2",
+          "source_file_sha256": "ebdb640eee8312fc86d59249c5b43fb150f62375358f0216c2fa1bb7ef9514d2",
+          "source_git_blob_sha1": "0a4312322c11cec08f41dd1ffc976fb3e4b1c395",
+          "source_path": "rustfmt.toml",
+          "target_path": "vendor/ibapi/rustfmt.toml"
         },
         {
           "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
