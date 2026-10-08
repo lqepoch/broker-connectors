@@ -1,6 +1,6 @@
 # Broker Connectors Contributor Rules
 
-This public workspace contains provider protocol adapters and provider-neutral read ports. Keep market reads, account reads, and execution authority separate. The library must not create a second OMS, account-state authority, quote store, persistence layer, or runtime scheduler.
+This public workspace contains provider protocol adapters, provider-neutral read ports, and a separate provider-neutral execution software contract. Keep market reads, account reads, and execution authority separate. The library must not create a second OMS, account-state authority, quote store, persistence layer, or runtime scheduler.
 
 ## Safety Boundaries
 
@@ -9,8 +9,13 @@ This public workspace contains provider protocol adapters and provider-neutral r
 - Credentials must be injected through an explicit provider boundary, redacted from `Debug`/errors/logs, and zeroized when owned by this crate.
 - Market source/feed, provider timestamps, local receive time, generation, sequence, and encoding evidence remain explicit. Unknown entitlement stays unknown; no automatic IEX/indicative fallback is allowed. Received MessagePack application frames may travel only in the bounded ordered record lane; outbound authentication frames and credential material are never captured.
 - Raw frame capture is limited to 1 MiB per frame, 16 MiB and 1,024 frame records process-wide. Each normalized event carries frame SHA-256, canonical generation, frame sequence, and 1-based ordinal/count. Unknown, malformed, provider-error, quote-coalesced, or otherwise incomplete input must fail closed and cannot be represented as a complete archive.
-- Execution write transport remains absent until a frozen unforgeable authorization contract and separate review authorize it. Parsing or building an order is not a send capability.
+- Execution write transport and provider execution adapters remain absent. `broker-execution` defines only a typed software port; downstream callers cannot construct `Accepted`, and its non-default `offline-fake` feature accepts synthetic inputs and is not an actual broker. A Paper route is descriptive, not authority. Parsing or building an order is not a send capability.
 - New public types and critical invariants use English first, followed by Simplified Chinese.
+
+The current item-scoped `dead_code` allowances in `broker-execution` preserve the Accepted state
+and request-binding validator for a future reviewed in-crate provider adapter. The default build
+contains no writer; the opt-in `offline-fake` feature is the only current constructor. Remove these
+allowances once a reviewed adapter exercises the acceptance path without enabling the fake.
 
 ## Validation
 

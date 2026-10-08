@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/broker-ports", "crates/alpaca-stream"]
+members = ["crates/broker-ports", "crates/broker-execution", "crates/alpaca-stream"]
 resolver = "3"
 
 [workspace.package]

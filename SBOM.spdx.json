@@ -1,13 +1,13 @@
 {
   "SPDXID": "SPDXRef-DOCUMENT",
   "creationInfo": {
-    "created": "2026-10-08T07:59:54Z",
+    "created": "2026-10-08T08:49:59Z",
     "creators": [
       "Tool: scripts/generate_spdx_sbom.py"
     ]
   },
   "dataLicense": "CC0-1.0",
-  "documentNamespace": "https://spdx.org/spdxdocs/broker-connectors-9f1dd9cf6844b4b53cd74fefe9a429a6376e196677a5cdd9f0ee8c108e9e399c",
+  "documentNamespace": "https://spdx.org/spdxdocs/broker-connectors-d29f0c7feca0602987ca5d59fab48ad9e0cf161d7f1bc95c310bc24b3de09a26",
   "name": "broker-connectors Cargo workspace",
   "packages": [
     {
@@ -113,7 +113,17 @@
       "versionInfo": "0.12.1"
     },
     {
-      "SPDXID": "SPDXRef-Package-6-broker-ports-0.1.0",
+      "SPDXID": "SPDXRef-Package-6-broker-execution-0.1.0",
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://github.com/lqepoch/broker-connectors",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "broker-execution",
+      "versionInfo": "0.1.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-7-broker-ports-0.1.0",
       "copyrightText": "NOASSERTION",
       "downloadLocation": "https://github.com/lqepoch/broker-connectors",
       "filesAnalyzed": false,
@@ -123,7 +133,7 @@
       "versionInfo": "0.1.0"
     },
     {
-      "SPDXID": "SPDXRef-Package-7-bytes-1.12.1",
+      "SPDXID": "SPDXRef-Package-8-bytes-1.12.1",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -146,7 +156,7 @@
       "versionInfo": "1.12.1"
     },
     {
-      "SPDXID": "SPDXRef-Package-8-cc-1.6.0",
+      "SPDXID": "SPDXRef-Package-9-cc-1.6.0",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -169,7 +179,7 @@
       "versionInfo": "1.6.0"
     },
     {
-      "SPDXID": "SPDXRef-Package-9-cfg-if-1.0.5",
+      "SPDXID": "SPDXRef-Package-10-cfg-if-1.0.5",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -192,7 +202,7 @@
       "versionInfo": "1.0.5"
     },
     {
-      "SPDXID": "SPDXRef-Package-10-chacha20-0.10.2",
+      "SPDXID": "SPDXRef-Package-11-chacha20-0.10.2",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -215,7 +225,7 @@
       "versionInfo": "0.10.2"
     },
     {
-      "SPDXID": "SPDXRef-Package-11-chrono-0.4.45",
+      "SPDXID": "SPDXRef-Package-12-chrono-0.4.45",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -238,7 +248,7 @@
       "versionInfo": "0.4.45"
     },
     {
-      "SPDXID": "SPDXRef-Package-12-const-oid-0.10.2",
+      "SPDXID": "SPDXRef-Package-13-const-oid-0.10.2",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -261,7 +271,7 @@
       "versionInfo": "0.10.2"
     },
     {
-      "SPDXID": "SPDXRef-Package-13-core-foundation-0.10.1",
+      "SPDXID": "SPDXRef-Package-14-core-foundation-0.10.1",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -284,7 +294,7 @@
       "versionInfo": "0.10.1"
     },
     {
-      "SPDXID": "SPDXRef-Package-14-core-foundation-sys-0.8.7",
+      "SPDXID": "SPDXRef-Package-15-core-foundation-sys-0.8.7",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -307,7 +317,7 @@
       "versionInfo": "0.8.7"
     },
     {
-      "SPDXID": "SPDXRef-Package-15-cpufeatures-0.2.17",
+      "SPDXID": "SPDXRef-Package-16-cpufeatures-0.2.17",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -330,7 +340,7 @@
       "versionInfo": "0.2.17"
     },
     {
-      "SPDXID": "SPDXRef-Package-16-cpufeatures-0.3.1",
+      "SPDXID": "SPDXRef-Package-17-cpufeatures-0.3.1",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -353,7 +363,7 @@
       "versionInfo": "0.3.1"
     },
     {
-      "SPDXID": "SPDXRef-Package-17-crypto-common-0.1.7",
+      "SPDXID": "SPDXRef-Package-18-crypto-common-0.1.7",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -376,7 +386,7 @@
       "versionInfo": "0.1.7"
     },
     {
-      "SPDXID": "SPDXRef-Package-18-crypto-common-0.2.2",
+      "SPDXID": "SPDXRef-Package-19-crypto-common-0.2.2",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -399,7 +409,7 @@
       "versionInfo": "0.2.2"
     },
     {
-      "SPDXID": "SPDXRef-Package-19-data-encoding-2.11.1",
+      "SPDXID": "SPDXRef-Package-20-data-encoding-2.11.1",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -422,7 +432,7 @@
       "versionInfo": "2.11.1"
     },
     {
-      "SPDXID": "SPDXRef-Package-20-digest-0.10.7",
+      "SPDXID": "SPDXRef-Package-21-digest-0.10.7",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -445,7 +455,7 @@
       "versionInfo": "0.10.7"
     },
     {
-      "SPDXID": "SPDXRef-Package-21-digest-0.11.3",
+      "SPDXID": "SPDXRef-Package-22-digest-0.11.3",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -468,7 +478,7 @@
       "versionInfo": "0.11.3"
     },
     {
-      "SPDXID": "SPDXRef-Package-22-domain-0.1.0",
+      "SPDXID": "SPDXRef-Package-23-domain-0.1.0",
       "copyrightText": "NOASSERTION",
       "downloadLocation": "NOASSERTION",
       "filesAnalyzed": false,
@@ -478,7 +488,7 @@
       "versionInfo": "0.1.0"
     },
     {
-      "SPDXID": "SPDXRef-Package-23-exact-decimal-0.1.0",
+      "SPDXID": "SPDXRef-Package-24-exact-decimal-0.1.0",
       "copyrightText": "NOASSERTION",
       "downloadLocation": "NOASSERTION",
       "filesAnalyzed": false,
@@ -488,7 +498,7 @@
       "versionInfo": "0.1.0"
     },
     {
-      "SPDXID": "SPDXRef-Package-24-find-msvc-tools-0.1.14",
+      "SPDXID": "SPDXRef-Package-25-find-msvc-tools-0.1.14",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -511,7 +521,7 @@
       "versionInfo": "0.1.14"
     },
     {
-      "SPDXID": "SPDXRef-Package-25-futures-core-0.3.34",
+      "SPDXID": "SPDXRef-Package-26-futures-core-0.3.34",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -534,7 +544,7 @@
       "versionInfo": "0.3.34"
     },
     {
-      "SPDXID": "SPDXRef-Package-26-futures-macro-0.3.34",
+      "SPDXID": "SPDXRef-Package-27-futures-macro-0.3.34",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -557,7 +567,7 @@
       "versionInfo": "0.3.34"
     },
     {
-      "SPDXID": "SPDXRef-Package-27-futures-sink-0.3.34",
+      "SPDXID": "SPDXRef-Package-28-futures-sink-0.3.34",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -580,7 +590,7 @@
       "versionInfo": "0.3.34"
     },
     {
-      "SPDXID": "SPDXRef-Package-28-futures-task-0.3.34",
+      "SPDXID": "SPDXRef-Package-29-futures-task-0.3.34",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -603,7 +613,7 @@
       "versionInfo": "0.3.34"
     },
     {
-      "SPDXID": "SPDXRef-Package-29-futures-util-0.3.34",
+      "SPDXID": "SPDXRef-Package-30-futures-util-0.3.34",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -626,7 +636,7 @@
       "versionInfo": "0.3.34"
     },
     {
-      "SPDXID": "SPDXRef-Package-30-generic-array-0.14.7",
+      "SPDXID": "SPDXRef-Package-31-generic-array-0.14.7",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -649,7 +659,7 @@
       "versionInfo": "0.14.7"
     },
     {
-      "SPDXID": "SPDXRef-Package-31-getrandom-0.2.17",
+      "SPDXID": "SPDXRef-Package-32-getrandom-0.2.17",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -672,7 +682,7 @@
       "versionInfo": "0.2.17"
     },
     {
-      "SPDXID": "SPDXRef-Package-32-getrandom-0.4.3",
+      "SPDXID": "SPDXRef-Package-33-getrandom-0.4.3",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -695,7 +705,7 @@
       "versionInfo": "0.4.3"
     },
     {
-      "SPDXID": "SPDXRef-Package-33-http-1.5.0",
+      "SPDXID": "SPDXRef-Package-34-http-1.5.0",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -718,7 +728,7 @@
       "versionInfo": "1.5.0"
     },
     {
-      "SPDXID": "SPDXRef-Package-34-httparse-1.10.1",
+      "SPDXID": "SPDXRef-Package-35-httparse-1.10.1",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -741,7 +751,7 @@
       "versionInfo": "1.10.1"
     },
     {
-      "SPDXID": "SPDXRef-Package-35-hybrid-array-0.4.15",
+      "SPDXID": "SPDXRef-Package-36-hybrid-array-0.4.15",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -764,7 +774,7 @@
       "versionInfo": "0.4.15"
     },
     {
-      "SPDXID": "SPDXRef-Package-36-itoa-1.0.18",
+      "SPDXID": "SPDXRef-Package-37-itoa-1.0.18",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -787,7 +797,7 @@
       "versionInfo": "1.0.18"
     },
     {
-      "SPDXID": "SPDXRef-Package-37-libc-0.2.190",
+      "SPDXID": "SPDXRef-Package-38-libc-0.2.190",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -810,7 +820,7 @@
       "versionInfo": "0.2.190"
     },
     {
-      "SPDXID": "SPDXRef-Package-38-log-0.4.34",
+      "SPDXID": "SPDXRef-Package-39-log-0.4.34",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -833,7 +843,7 @@
       "versionInfo": "0.4.34"
     },
     {
-      "SPDXID": "SPDXRef-Package-39-market-contracts-0.1.0",
+      "SPDXID": "SPDXRef-Package-40-market-contracts-0.1.0",
       "copyrightText": "NOASSERTION",
       "downloadLocation": "NOASSERTION",
       "filesAnalyzed": false,
@@ -843,7 +853,7 @@
       "versionInfo": "0.1.0"
     },
     {
-      "SPDXID": "SPDXRef-Package-40-memchr-2.8.3",
+      "SPDXID": "SPDXRef-Package-41-memchr-2.8.3",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -866,7 +876,7 @@
       "versionInfo": "2.8.3"
     },
     {
-      "SPDXID": "SPDXRef-Package-41-mio-1.2.4",
+      "SPDXID": "SPDXRef-Package-42-mio-1.2.4",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -889,7 +899,7 @@
       "versionInfo": "1.2.4"
     },
     {
-      "SPDXID": "SPDXRef-Package-42-num-traits-0.2.19",
+      "SPDXID": "SPDXRef-Package-43-num-traits-0.2.19",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -912,7 +922,7 @@
       "versionInfo": "0.2.19"
     },
     {
-      "SPDXID": "SPDXRef-Package-43-once-cell-1.21.4",
+      "SPDXID": "SPDXRef-Package-44-once-cell-1.21.4",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -935,7 +945,7 @@
       "versionInfo": "1.21.4"
     },
     {
-      "SPDXID": "SPDXRef-Package-44-openssl-probe-0.2.1",
+      "SPDXID": "SPDXRef-Package-45-openssl-probe-0.2.1",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -958,7 +968,7 @@
       "versionInfo": "0.2.1"
     },
     {
-      "SPDXID": "SPDXRef-Package-45-pin-project-lite-0.2.17",
+      "SPDXID": "SPDXRef-Package-46-pin-project-lite-0.2.17",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -981,7 +991,7 @@
       "versionInfo": "0.2.17"
     },
     {
-      "SPDXID": "SPDXRef-Package-46-proc-macro2-1.0.107",
+      "SPDXID": "SPDXRef-Package-47-proc-macro2-1.0.107",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1004,7 +1014,7 @@
       "versionInfo": "1.0.107"
     },
     {
-      "SPDXID": "SPDXRef-Package-47-quote-1.0.47",
+      "SPDXID": "SPDXRef-Package-48-quote-1.0.47",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1027,7 +1037,7 @@
       "versionInfo": "1.0.47"
     },
     {
-      "SPDXID": "SPDXRef-Package-48-r-efi-6.0.0",
+      "SPDXID": "SPDXRef-Package-49-r-efi-6.0.0",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1050,7 +1060,7 @@
       "versionInfo": "6.0.0"
     },
     {
-      "SPDXID": "SPDXRef-Package-49-rand-0.10.3",
+      "SPDXID": "SPDXRef-Package-50-rand-0.10.3",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1073,7 +1083,7 @@
       "versionInfo": "0.10.3"
     },
     {
-      "SPDXID": "SPDXRef-Package-50-rand-core-0.10.1",
+      "SPDXID": "SPDXRef-Package-51-rand-core-0.10.1",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1096,7 +1106,7 @@
       "versionInfo": "0.10.1"
     },
     {
-      "SPDXID": "SPDXRef-Package-51-ring-0.17.14",
+      "SPDXID": "SPDXRef-Package-52-ring-0.17.14",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1119,7 +1129,7 @@
       "versionInfo": "0.17.14"
     },
     {
-      "SPDXID": "SPDXRef-Package-52-rmp-0.8.15",
+      "SPDXID": "SPDXRef-Package-53-rmp-0.8.15",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1142,7 +1152,7 @@
       "versionInfo": "0.8.15"
     },
     {
-      "SPDXID": "SPDXRef-Package-53-rmpv-1.3.1",
+      "SPDXID": "SPDXRef-Package-54-rmpv-1.3.1",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1165,7 +1175,7 @@
       "versionInfo": "1.3.1"
     },
     {
-      "SPDXID": "SPDXRef-Package-54-rustls-0.23.45",
+      "SPDXID": "SPDXRef-Package-55-rustls-0.23.45",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1188,7 +1198,7 @@
       "versionInfo": "0.23.45"
     },
     {
-      "SPDXID": "SPDXRef-Package-55-rustls-native-certs-0.8.4",
+      "SPDXID": "SPDXRef-Package-56-rustls-native-certs-0.8.4",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1211,7 +1221,7 @@
       "versionInfo": "0.8.4"
     },
     {
-      "SPDXID": "SPDXRef-Package-56-rustls-pki-types-1.15.1",
+      "SPDXID": "SPDXRef-Package-57-rustls-pki-types-1.15.1",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1234,7 +1244,7 @@
       "versionInfo": "1.15.1"
     },
     {
-      "SPDXID": "SPDXRef-Package-57-rustls-webpki-0.103.15",
+      "SPDXID": "SPDXRef-Package-58-rustls-webpki-0.103.15",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1257,7 +1267,7 @@
       "versionInfo": "0.103.15"
     },
     {
-      "SPDXID": "SPDXRef-Package-58-schannel-0.1.29",
+      "SPDXID": "SPDXRef-Package-59-schannel-0.1.29",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1280,7 +1290,7 @@
       "versionInfo": "0.1.29"
     },
     {
-      "SPDXID": "SPDXRef-Package-59-security-framework-3.7.0",
+      "SPDXID": "SPDXRef-Package-60-security-framework-3.7.0",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1303,7 +1313,7 @@
       "versionInfo": "3.7.0"
     },
     {
-      "SPDXID": "SPDXRef-Package-60-security-framework-sys-2.17.0",
+      "SPDXID": "SPDXRef-Package-61-security-framework-sys-2.17.0",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1326,7 +1336,7 @@
       "versionInfo": "2.17.0"
     },
     {
-      "SPDXID": "SPDXRef-Package-61-serde-1.0.229",
+      "SPDXID": "SPDXRef-Package-62-serde-1.0.229",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1349,7 +1359,7 @@
       "versionInfo": "1.0.229"
     },
     {
-      "SPDXID": "SPDXRef-Package-62-serde-core-1.0.229",
+      "SPDXID": "SPDXRef-Package-63-serde-core-1.0.229",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1372,7 +1382,7 @@
       "versionInfo": "1.0.229"
     },
     {
-      "SPDXID": "SPDXRef-Package-63-serde-derive-1.0.229",
+      "SPDXID": "SPDXRef-Package-64-serde-derive-1.0.229",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1395,7 +1405,7 @@
       "versionInfo": "1.0.229"
     },
     {
-      "SPDXID": "SPDXRef-Package-64-serde-json-1.0.151",
+      "SPDXID": "SPDXRef-Package-65-serde-json-1.0.151",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1418,7 +1428,7 @@
       "versionInfo": "1.0.151"
     },
     {
-      "SPDXID": "SPDXRef-Package-65-sha1-0.11.0",
+      "SPDXID": "SPDXRef-Package-66-sha1-0.11.0",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1441,7 +1451,7 @@
       "versionInfo": "0.11.0"
     },
     {
-      "SPDXID": "SPDXRef-Package-66-sha2-0.10.9",
+      "SPDXID": "SPDXRef-Package-67-sha2-0.10.9",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1464,7 +1474,7 @@
       "versionInfo": "0.10.9"
     },
     {
-      "SPDXID": "SPDXRef-Package-67-shlex-2.0.1",
+      "SPDXID": "SPDXRef-Package-68-shlex-2.0.1",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1487,7 +1497,7 @@
       "versionInfo": "2.0.1"
     },
     {
-      "SPDXID": "SPDXRef-Package-68-slab-0.4.12",
+      "SPDXID": "SPDXRef-Package-69-slab-0.4.12",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1510,7 +1520,7 @@
       "versionInfo": "0.4.12"
     },
     {
-      "SPDXID": "SPDXRef-Package-69-socket2-0.6.5",
+      "SPDXID": "SPDXRef-Package-70-socket2-0.6.5",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1533,7 +1543,7 @@
       "versionInfo": "0.6.5"
     },
     {
-      "SPDXID": "SPDXRef-Package-70-subtle-2.6.1",
+      "SPDXID": "SPDXRef-Package-71-subtle-2.6.1",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1556,7 +1566,7 @@
       "versionInfo": "2.6.1"
     },
     {
-      "SPDXID": "SPDXRef-Package-71-syn-3.0.6",
+      "SPDXID": "SPDXRef-Package-72-syn-3.0.6",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1579,7 +1589,7 @@
       "versionInfo": "3.0.6"
     },
     {
-      "SPDXID": "SPDXRef-Package-72-thiserror-2.0.21",
+      "SPDXID": "SPDXRef-Package-73-thiserror-2.0.21",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1602,7 +1612,7 @@
       "versionInfo": "2.0.21"
     },
     {
-      "SPDXID": "SPDXRef-Package-73-thiserror-impl-2.0.21",
+      "SPDXID": "SPDXRef-Package-74-thiserror-impl-2.0.21",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1625,7 +1635,7 @@
       "versionInfo": "2.0.21"
     },
     {
-      "SPDXID": "SPDXRef-Package-74-tokio-1.53.1",
+      "SPDXID": "SPDXRef-Package-75-tokio-1.53.1",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1648,7 +1658,7 @@
       "versionInfo": "1.53.1"
     },
     {
-      "SPDXID": "SPDXRef-Package-75-tokio-macros-2.7.2",
+      "SPDXID": "SPDXRef-Package-76-tokio-macros-2.7.2",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1671,7 +1681,7 @@
       "versionInfo": "2.7.2"
     },
     {
-      "SPDXID": "SPDXRef-Package-76-tokio-rustls-0.26.6",
+      "SPDXID": "SPDXRef-Package-77-tokio-rustls-0.26.6",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1694,7 +1704,7 @@
       "versionInfo": "0.26.6"
     },
     {
-      "SPDXID": "SPDXRef-Package-77-tokio-tungstenite-0.30.0",
+      "SPDXID": "SPDXRef-Package-78-tokio-tungstenite-0.30.0",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1717,7 +1727,7 @@
       "versionInfo": "0.30.0"
     },
     {
-      "SPDXID": "SPDXRef-Package-78-tungstenite-0.30.0",
+      "SPDXID": "SPDXRef-Package-79-tungstenite-0.30.0",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1740,7 +1750,7 @@
       "versionInfo": "0.30.0"
     },
     {
-      "SPDXID": "SPDXRef-Package-79-typenum-1.20.1",
+      "SPDXID": "SPDXRef-Package-80-typenum-1.20.1",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1763,7 +1773,7 @@
       "versionInfo": "1.20.1"
     },
     {
-      "SPDXID": "SPDXRef-Package-80-unicode-ident-1.0.26",
+      "SPDXID": "SPDXRef-Package-81-unicode-ident-1.0.26",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1786,7 +1796,7 @@
       "versionInfo": "1.0.26"
     },
     {
-      "SPDXID": "SPDXRef-Package-81-untrusted-0.9.0",
+      "SPDXID": "SPDXRef-Package-82-untrusted-0.9.0",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1809,7 +1819,7 @@
       "versionInfo": "0.9.0"
     },
     {
-      "SPDXID": "SPDXRef-Package-82-version-check-0.9.5",
+      "SPDXID": "SPDXRef-Package-83-version-check-0.9.5",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1832,7 +1842,7 @@
       "versionInfo": "0.9.5"
     },
     {
-      "SPDXID": "SPDXRef-Package-83-wasi-0.11.1-wasi-snapshot-preview1",
+      "SPDXID": "SPDXRef-Package-84-wasi-0.11.1-wasi-snapshot-preview1",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1855,7 +1865,7 @@
       "versionInfo": "0.11.1+wasi-snapshot-preview1"
     },
     {
-      "SPDXID": "SPDXRef-Package-84-windows-link-0.2.1",
+      "SPDXID": "SPDXRef-Package-85-windows-link-0.2.1",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1878,7 +1888,7 @@
       "versionInfo": "0.2.1"
     },
     {
-      "SPDXID": "SPDXRef-Package-85-windows-sys-0.52.0",
+      "SPDXID": "SPDXRef-Package-86-windows-sys-0.52.0",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1901,7 +1911,7 @@
       "versionInfo": "0.52.0"
     },
     {
-      "SPDXID": "SPDXRef-Package-86-windows-sys-0.61.2",
+      "SPDXID": "SPDXRef-Package-87-windows-sys-0.61.2",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1924,7 +1934,7 @@
       "versionInfo": "0.61.2"
     },
     {
-      "SPDXID": "SPDXRef-Package-87-windows-targets-0.52.6",
+      "SPDXID": "SPDXRef-Package-88-windows-targets-0.52.6",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1947,7 +1957,7 @@
       "versionInfo": "0.52.6"
     },
     {
-      "SPDXID": "SPDXRef-Package-88-windows-aarch64-gnullvm-0.52.6",
+      "SPDXID": "SPDXRef-Package-89-windows-aarch64-gnullvm-0.52.6",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1970,7 +1980,7 @@
       "versionInfo": "0.52.6"
     },
     {
-      "SPDXID": "SPDXRef-Package-89-windows-aarch64-msvc-0.52.6",
+      "SPDXID": "SPDXRef-Package-90-windows-aarch64-msvc-0.52.6",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -1993,7 +2003,7 @@
       "versionInfo": "0.52.6"
     },
     {
-      "SPDXID": "SPDXRef-Package-90-windows-i686-gnu-0.52.6",
+      "SPDXID": "SPDXRef-Package-91-windows-i686-gnu-0.52.6",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -2016,7 +2026,7 @@
       "versionInfo": "0.52.6"
     },
     {
-      "SPDXID": "SPDXRef-Package-91-windows-i686-gnullvm-0.52.6",
+      "SPDXID": "SPDXRef-Package-92-windows-i686-gnullvm-0.52.6",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -2039,7 +2049,7 @@
       "versionInfo": "0.52.6"
     },
     {
-      "SPDXID": "SPDXRef-Package-92-windows-i686-msvc-0.52.6",
+      "SPDXID": "SPDXRef-Package-93-windows-i686-msvc-0.52.6",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -2062,7 +2072,7 @@
       "versionInfo": "0.52.6"
     },
     {
-      "SPDXID": "SPDXRef-Package-93-windows-x86-64-gnu-0.52.6",
+      "SPDXID": "SPDXRef-Package-94-windows-x86-64-gnu-0.52.6",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -2085,7 +2095,7 @@
       "versionInfo": "0.52.6"
     },
     {
-      "SPDXID": "SPDXRef-Package-94-windows-x86-64-gnullvm-0.52.6",
+      "SPDXID": "SPDXRef-Package-95-windows-x86-64-gnullvm-0.52.6",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -2108,7 +2118,7 @@
       "versionInfo": "0.52.6"
     },
     {
-      "SPDXID": "SPDXRef-Package-95-windows-x86-64-msvc-0.52.6",
+      "SPDXID": "SPDXRef-Package-96-windows-x86-64-msvc-0.52.6",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -2131,7 +2141,7 @@
       "versionInfo": "0.52.6"
     },
     {
-      "SPDXID": "SPDXRef-Package-96-zeroize-1.9.0",
+      "SPDXID": "SPDXRef-Package-97-zeroize-1.9.0",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -2154,7 +2164,7 @@
       "versionInfo": "1.9.0"
     },
     {
-      "SPDXID": "SPDXRef-Package-97-zmij-1.0.23",
+      "SPDXID": "SPDXRef-Package-98-zmij-1.0.23",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -2184,844 +2194,854 @@
       "spdxElementId": "SPDXRef-DOCUMENT"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-6-broker-ports-0.1.0",
+      "relatedSpdxElement": "SPDXRef-Package-6-broker-execution-0.1.0",
       "relationshipType": "DESCRIBES",
       "spdxElementId": "SPDXRef-DOCUMENT"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-11-chrono-0.4.45",
+      "relatedSpdxElement": "SPDXRef-Package-7-broker-ports-0.1.0",
+      "relationshipType": "DESCRIBES",
+      "spdxElementId": "SPDXRef-DOCUMENT"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-12-chrono-0.4.45",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-1-alpaca-stream-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-29-futures-util-0.3.34",
+      "relatedSpdxElement": "SPDXRef-Package-30-futures-util-0.3.34",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-1-alpaca-stream-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-39-market-contracts-0.1.0",
+      "relatedSpdxElement": "SPDXRef-Package-40-market-contracts-0.1.0",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-1-alpaca-stream-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-53-rmpv-1.3.1",
+      "relatedSpdxElement": "SPDXRef-Package-54-rmpv-1.3.1",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-1-alpaca-stream-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-6-broker-ports-0.1.0",
+      "relatedSpdxElement": "SPDXRef-Package-67-sha2-0.10.9",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-1-alpaca-stream-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-66-sha2-0.10.9",
+      "relatedSpdxElement": "SPDXRef-Package-7-broker-ports-0.1.0",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-1-alpaca-stream-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-74-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-75-tokio-1.53.1",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-1-alpaca-stream-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-77-tokio-tungstenite-0.30.0",
+      "relatedSpdxElement": "SPDXRef-Package-78-tokio-tungstenite-0.30.0",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-1-alpaca-stream-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-96-zeroize-1.9.0",
+      "relatedSpdxElement": "SPDXRef-Package-97-zeroize-1.9.0",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-1-alpaca-stream-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-16-cpufeatures-0.3.1",
+      "relatedSpdxElement": "SPDXRef-Package-10-cfg-if-1.0.5",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-10-chacha20-0.10.2"
+      "spdxElementId": "SPDXRef-Package-11-chacha20-0.10.2"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-50-rand-core-0.10.1",
+      "relatedSpdxElement": "SPDXRef-Package-17-cpufeatures-0.3.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-10-chacha20-0.10.2"
+      "spdxElementId": "SPDXRef-Package-11-chacha20-0.10.2"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-9-cfg-if-1.0.5",
+      "relatedSpdxElement": "SPDXRef-Package-51-rand-core-0.10.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-10-chacha20-0.10.2"
+      "spdxElementId": "SPDXRef-Package-11-chacha20-0.10.2"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-42-num-traits-0.2.19",
+      "relatedSpdxElement": "SPDXRef-Package-43-num-traits-0.2.19",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-11-chrono-0.4.45"
+      "spdxElementId": "SPDXRef-Package-12-chrono-0.4.45"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-61-serde-1.0.229",
+      "relatedSpdxElement": "SPDXRef-Package-62-serde-1.0.229",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-11-chrono-0.4.45"
+      "spdxElementId": "SPDXRef-Package-12-chrono-0.4.45"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-14-core-foundation-sys-0.8.7",
+      "relatedSpdxElement": "SPDXRef-Package-15-core-foundation-sys-0.8.7",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-13-core-foundation-0.10.1"
+      "spdxElementId": "SPDXRef-Package-14-core-foundation-0.10.1"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relatedSpdxElement": "SPDXRef-Package-38-libc-0.2.190",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-13-core-foundation-0.10.1"
+      "spdxElementId": "SPDXRef-Package-14-core-foundation-0.10.1"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relatedSpdxElement": "SPDXRef-Package-38-libc-0.2.190",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-15-cpufeatures-0.2.17"
+      "spdxElementId": "SPDXRef-Package-16-cpufeatures-0.2.17"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relatedSpdxElement": "SPDXRef-Package-38-libc-0.2.190",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-16-cpufeatures-0.3.1"
+      "spdxElementId": "SPDXRef-Package-17-cpufeatures-0.3.1"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-30-generic-array-0.14.7",
+      "relatedSpdxElement": "SPDXRef-Package-31-generic-array-0.14.7",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-17-crypto-common-0.1.7"
+      "spdxElementId": "SPDXRef-Package-18-crypto-common-0.1.7"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-79-typenum-1.20.1",
+      "relatedSpdxElement": "SPDXRef-Package-80-typenum-1.20.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-17-crypto-common-0.1.7"
+      "spdxElementId": "SPDXRef-Package-18-crypto-common-0.1.7"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-35-hybrid-array-0.4.15",
+      "relatedSpdxElement": "SPDXRef-Package-36-hybrid-array-0.4.15",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-18-crypto-common-0.2.2"
+      "spdxElementId": "SPDXRef-Package-19-crypto-common-0.2.2"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-17-crypto-common-0.1.7",
+      "relatedSpdxElement": "SPDXRef-Package-18-crypto-common-0.1.7",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-20-digest-0.10.7"
+      "spdxElementId": "SPDXRef-Package-21-digest-0.10.7"
     },
     {
       "relatedSpdxElement": "SPDXRef-Package-4-block-buffer-0.10.4",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-20-digest-0.10.7"
+      "spdxElementId": "SPDXRef-Package-21-digest-0.10.7"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-12-const-oid-0.10.2",
+      "relatedSpdxElement": "SPDXRef-Package-13-const-oid-0.10.2",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-21-digest-0.11.3"
+      "spdxElementId": "SPDXRef-Package-22-digest-0.11.3"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-18-crypto-common-0.2.2",
+      "relatedSpdxElement": "SPDXRef-Package-19-crypto-common-0.2.2",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-21-digest-0.11.3"
+      "spdxElementId": "SPDXRef-Package-22-digest-0.11.3"
     },
     {
       "relatedSpdxElement": "SPDXRef-Package-5-block-buffer-0.12.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-21-digest-0.11.3"
+      "spdxElementId": "SPDXRef-Package-22-digest-0.11.3"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-23-exact-decimal-0.1.0",
+      "relatedSpdxElement": "SPDXRef-Package-24-exact-decimal-0.1.0",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-22-domain-0.1.0"
+      "spdxElementId": "SPDXRef-Package-23-domain-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-46-proc-macro2-1.0.107",
+      "relatedSpdxElement": "SPDXRef-Package-47-proc-macro2-1.0.107",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-26-futures-macro-0.3.34"
+      "spdxElementId": "SPDXRef-Package-27-futures-macro-0.3.34"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-47-quote-1.0.47",
+      "relatedSpdxElement": "SPDXRef-Package-48-quote-1.0.47",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-26-futures-macro-0.3.34"
+      "spdxElementId": "SPDXRef-Package-27-futures-macro-0.3.34"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-71-syn-3.0.6",
+      "relatedSpdxElement": "SPDXRef-Package-72-syn-3.0.6",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-26-futures-macro-0.3.34"
+      "spdxElementId": "SPDXRef-Package-27-futures-macro-0.3.34"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-25-futures-core-0.3.34",
+      "relatedSpdxElement": "SPDXRef-Package-26-futures-core-0.3.34",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-29-futures-util-0.3.34"
+      "spdxElementId": "SPDXRef-Package-30-futures-util-0.3.34"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-26-futures-macro-0.3.34",
+      "relatedSpdxElement": "SPDXRef-Package-27-futures-macro-0.3.34",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-29-futures-util-0.3.34"
+      "spdxElementId": "SPDXRef-Package-30-futures-util-0.3.34"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-27-futures-sink-0.3.34",
+      "relatedSpdxElement": "SPDXRef-Package-28-futures-sink-0.3.34",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-29-futures-util-0.3.34"
+      "spdxElementId": "SPDXRef-Package-30-futures-util-0.3.34"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-28-futures-task-0.3.34",
+      "relatedSpdxElement": "SPDXRef-Package-29-futures-task-0.3.34",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-29-futures-util-0.3.34"
+      "spdxElementId": "SPDXRef-Package-30-futures-util-0.3.34"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-45-pin-project-lite-0.2.17",
+      "relatedSpdxElement": "SPDXRef-Package-46-pin-project-lite-0.2.17",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-29-futures-util-0.3.34"
+      "spdxElementId": "SPDXRef-Package-30-futures-util-0.3.34"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-68-slab-0.4.12",
+      "relatedSpdxElement": "SPDXRef-Package-69-slab-0.4.12",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-29-futures-util-0.3.34"
+      "spdxElementId": "SPDXRef-Package-30-futures-util-0.3.34"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-79-typenum-1.20.1",
+      "relatedSpdxElement": "SPDXRef-Package-80-typenum-1.20.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-30-generic-array-0.14.7"
+      "spdxElementId": "SPDXRef-Package-31-generic-array-0.14.7"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-82-version-check-0.9.5",
+      "relatedSpdxElement": "SPDXRef-Package-83-version-check-0.9.5",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-30-generic-array-0.14.7"
+      "spdxElementId": "SPDXRef-Package-31-generic-array-0.14.7"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relatedSpdxElement": "SPDXRef-Package-10-cfg-if-1.0.5",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-31-getrandom-0.2.17"
+      "spdxElementId": "SPDXRef-Package-32-getrandom-0.2.17"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-83-wasi-0.11.1-wasi-snapshot-preview1",
+      "relatedSpdxElement": "SPDXRef-Package-38-libc-0.2.190",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-31-getrandom-0.2.17"
+      "spdxElementId": "SPDXRef-Package-32-getrandom-0.2.17"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-9-cfg-if-1.0.5",
+      "relatedSpdxElement": "SPDXRef-Package-84-wasi-0.11.1-wasi-snapshot-preview1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-31-getrandom-0.2.17"
+      "spdxElementId": "SPDXRef-Package-32-getrandom-0.2.17"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relatedSpdxElement": "SPDXRef-Package-10-cfg-if-1.0.5",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-32-getrandom-0.4.3"
+      "spdxElementId": "SPDXRef-Package-33-getrandom-0.4.3"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-48-r-efi-6.0.0",
+      "relatedSpdxElement": "SPDXRef-Package-38-libc-0.2.190",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-32-getrandom-0.4.3"
+      "spdxElementId": "SPDXRef-Package-33-getrandom-0.4.3"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-50-rand-core-0.10.1",
+      "relatedSpdxElement": "SPDXRef-Package-49-r-efi-6.0.0",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-32-getrandom-0.4.3"
+      "spdxElementId": "SPDXRef-Package-33-getrandom-0.4.3"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-9-cfg-if-1.0.5",
+      "relatedSpdxElement": "SPDXRef-Package-51-rand-core-0.10.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-32-getrandom-0.4.3"
+      "spdxElementId": "SPDXRef-Package-33-getrandom-0.4.3"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-36-itoa-1.0.18",
+      "relatedSpdxElement": "SPDXRef-Package-37-itoa-1.0.18",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-33-http-1.5.0"
+      "spdxElementId": "SPDXRef-Package-34-http-1.5.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-7-bytes-1.12.1",
+      "relatedSpdxElement": "SPDXRef-Package-8-bytes-1.12.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-33-http-1.5.0"
+      "spdxElementId": "SPDXRef-Package-34-http-1.5.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-79-typenum-1.20.1",
+      "relatedSpdxElement": "SPDXRef-Package-80-typenum-1.20.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-35-hybrid-array-0.4.15"
+      "spdxElementId": "SPDXRef-Package-36-hybrid-array-0.4.15"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-11-chrono-0.4.45",
-      "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-39-market-contracts-0.1.0"
-    },
-    {
-      "relatedSpdxElement": "SPDXRef-Package-22-domain-0.1.0",
-      "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-39-market-contracts-0.1.0"
-    },
-    {
-      "relatedSpdxElement": "SPDXRef-Package-23-exact-decimal-0.1.0",
-      "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-39-market-contracts-0.1.0"
-    },
-    {
-      "relatedSpdxElement": "SPDXRef-Package-61-serde-1.0.229",
-      "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-39-market-contracts-0.1.0"
-    },
-    {
-      "relatedSpdxElement": "SPDXRef-Package-64-serde-json-1.0.151",
-      "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-39-market-contracts-0.1.0"
-    },
-    {
-      "relatedSpdxElement": "SPDXRef-Package-66-sha2-0.10.9",
-      "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-39-market-contracts-0.1.0"
-    },
-    {
-      "relatedSpdxElement": "SPDXRef-Package-72-thiserror-2.0.21",
-      "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-39-market-contracts-0.1.0"
-    },
-    {
-      "relatedSpdxElement": "SPDXRef-Package-30-generic-array-0.14.7",
+      "relatedSpdxElement": "SPDXRef-Package-31-generic-array-0.14.7",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-4-block-buffer-0.10.4"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relatedSpdxElement": "SPDXRef-Package-12-chrono-0.4.45",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-41-mio-1.2.4"
+      "spdxElementId": "SPDXRef-Package-40-market-contracts-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-83-wasi-0.11.1-wasi-snapshot-preview1",
+      "relatedSpdxElement": "SPDXRef-Package-23-domain-0.1.0",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-41-mio-1.2.4"
+      "spdxElementId": "SPDXRef-Package-40-market-contracts-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-86-windows-sys-0.61.2",
+      "relatedSpdxElement": "SPDXRef-Package-24-exact-decimal-0.1.0",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-41-mio-1.2.4"
+      "spdxElementId": "SPDXRef-Package-40-market-contracts-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-62-serde-1.0.229",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-40-market-contracts-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-65-serde-json-1.0.151",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-40-market-contracts-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-67-sha2-0.10.9",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-40-market-contracts-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-73-thiserror-2.0.21",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-40-market-contracts-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-38-libc-0.2.190",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-42-mio-1.2.4"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-84-wasi-0.11.1-wasi-snapshot-preview1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-42-mio-1.2.4"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-87-windows-sys-0.61.2",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-42-mio-1.2.4"
     },
     {
       "relatedSpdxElement": "SPDXRef-Package-2-autocfg-1.5.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-42-num-traits-0.2.19"
+      "spdxElementId": "SPDXRef-Package-43-num-traits-0.2.19"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-80-unicode-ident-1.0.26",
+      "relatedSpdxElement": "SPDXRef-Package-81-unicode-ident-1.0.26",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-46-proc-macro2-1.0.107"
+      "spdxElementId": "SPDXRef-Package-47-proc-macro2-1.0.107"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-46-proc-macro2-1.0.107",
+      "relatedSpdxElement": "SPDXRef-Package-47-proc-macro2-1.0.107",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-47-quote-1.0.47"
+      "spdxElementId": "SPDXRef-Package-48-quote-1.0.47"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-10-chacha20-0.10.2",
-      "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-49-rand-0.10.3"
-    },
-    {
-      "relatedSpdxElement": "SPDXRef-Package-32-getrandom-0.4.3",
-      "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-49-rand-0.10.3"
-    },
-    {
-      "relatedSpdxElement": "SPDXRef-Package-50-rand-core-0.10.1",
-      "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-49-rand-0.10.3"
-    },
-    {
-      "relatedSpdxElement": "SPDXRef-Package-35-hybrid-array-0.4.15",
+      "relatedSpdxElement": "SPDXRef-Package-36-hybrid-array-0.4.15",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-5-block-buffer-0.12.1"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-31-getrandom-0.2.17",
+      "relatedSpdxElement": "SPDXRef-Package-11-chacha20-0.10.2",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-51-ring-0.17.14"
+      "spdxElementId": "SPDXRef-Package-50-rand-0.10.3"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relatedSpdxElement": "SPDXRef-Package-33-getrandom-0.4.3",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-51-ring-0.17.14"
+      "spdxElementId": "SPDXRef-Package-50-rand-0.10.3"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-8-cc-1.6.0",
+      "relatedSpdxElement": "SPDXRef-Package-51-rand-core-0.10.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-51-ring-0.17.14"
+      "spdxElementId": "SPDXRef-Package-50-rand-0.10.3"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-81-untrusted-0.9.0",
+      "relatedSpdxElement": "SPDXRef-Package-10-cfg-if-1.0.5",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-51-ring-0.17.14"
+      "spdxElementId": "SPDXRef-Package-52-ring-0.17.14"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-85-windows-sys-0.52.0",
+      "relatedSpdxElement": "SPDXRef-Package-32-getrandom-0.2.17",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-51-ring-0.17.14"
+      "spdxElementId": "SPDXRef-Package-52-ring-0.17.14"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-9-cfg-if-1.0.5",
+      "relatedSpdxElement": "SPDXRef-Package-38-libc-0.2.190",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-51-ring-0.17.14"
+      "spdxElementId": "SPDXRef-Package-52-ring-0.17.14"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-42-num-traits-0.2.19",
+      "relatedSpdxElement": "SPDXRef-Package-82-untrusted-0.9.0",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-52-rmp-0.8.15"
+      "spdxElementId": "SPDXRef-Package-52-ring-0.17.14"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-52-rmp-0.8.15",
+      "relatedSpdxElement": "SPDXRef-Package-86-windows-sys-0.52.0",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-53-rmpv-1.3.1"
+      "spdxElementId": "SPDXRef-Package-52-ring-0.17.14"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-43-once-cell-1.21.4",
+      "relatedSpdxElement": "SPDXRef-Package-9-cc-1.6.0",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-54-rustls-0.23.45"
+      "spdxElementId": "SPDXRef-Package-52-ring-0.17.14"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-56-rustls-pki-types-1.15.1",
+      "relatedSpdxElement": "SPDXRef-Package-43-num-traits-0.2.19",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-54-rustls-0.23.45"
+      "spdxElementId": "SPDXRef-Package-53-rmp-0.8.15"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-57-rustls-webpki-0.103.15",
+      "relatedSpdxElement": "SPDXRef-Package-53-rmp-0.8.15",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-54-rustls-0.23.45"
+      "spdxElementId": "SPDXRef-Package-54-rmpv-1.3.1"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-70-subtle-2.6.1",
+      "relatedSpdxElement": "SPDXRef-Package-44-once-cell-1.21.4",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-54-rustls-0.23.45"
+      "spdxElementId": "SPDXRef-Package-55-rustls-0.23.45"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-96-zeroize-1.9.0",
+      "relatedSpdxElement": "SPDXRef-Package-57-rustls-pki-types-1.15.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-54-rustls-0.23.45"
+      "spdxElementId": "SPDXRef-Package-55-rustls-0.23.45"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-44-openssl-probe-0.2.1",
+      "relatedSpdxElement": "SPDXRef-Package-58-rustls-webpki-0.103.15",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-55-rustls-native-certs-0.8.4"
+      "spdxElementId": "SPDXRef-Package-55-rustls-0.23.45"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-56-rustls-pki-types-1.15.1",
+      "relatedSpdxElement": "SPDXRef-Package-71-subtle-2.6.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-55-rustls-native-certs-0.8.4"
+      "spdxElementId": "SPDXRef-Package-55-rustls-0.23.45"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-58-schannel-0.1.29",
+      "relatedSpdxElement": "SPDXRef-Package-97-zeroize-1.9.0",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-55-rustls-native-certs-0.8.4"
+      "spdxElementId": "SPDXRef-Package-55-rustls-0.23.45"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-59-security-framework-3.7.0",
+      "relatedSpdxElement": "SPDXRef-Package-45-openssl-probe-0.2.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-55-rustls-native-certs-0.8.4"
+      "spdxElementId": "SPDXRef-Package-56-rustls-native-certs-0.8.4"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-96-zeroize-1.9.0",
+      "relatedSpdxElement": "SPDXRef-Package-57-rustls-pki-types-1.15.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-56-rustls-pki-types-1.15.1"
+      "spdxElementId": "SPDXRef-Package-56-rustls-native-certs-0.8.4"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-51-ring-0.17.14",
+      "relatedSpdxElement": "SPDXRef-Package-59-schannel-0.1.29",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-57-rustls-webpki-0.103.15"
+      "spdxElementId": "SPDXRef-Package-56-rustls-native-certs-0.8.4"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-56-rustls-pki-types-1.15.1",
+      "relatedSpdxElement": "SPDXRef-Package-60-security-framework-3.7.0",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-57-rustls-webpki-0.103.15"
+      "spdxElementId": "SPDXRef-Package-56-rustls-native-certs-0.8.4"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-81-untrusted-0.9.0",
+      "relatedSpdxElement": "SPDXRef-Package-97-zeroize-1.9.0",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-57-rustls-webpki-0.103.15"
+      "spdxElementId": "SPDXRef-Package-57-rustls-pki-types-1.15.1"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-86-windows-sys-0.61.2",
+      "relatedSpdxElement": "SPDXRef-Package-52-ring-0.17.14",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-58-schannel-0.1.29"
+      "spdxElementId": "SPDXRef-Package-58-rustls-webpki-0.103.15"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-13-core-foundation-0.10.1",
+      "relatedSpdxElement": "SPDXRef-Package-57-rustls-pki-types-1.15.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-59-security-framework-3.7.0"
+      "spdxElementId": "SPDXRef-Package-58-rustls-webpki-0.103.15"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-14-core-foundation-sys-0.8.7",
+      "relatedSpdxElement": "SPDXRef-Package-82-untrusted-0.9.0",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-59-security-framework-3.7.0"
+      "spdxElementId": "SPDXRef-Package-58-rustls-webpki-0.103.15"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-87-windows-sys-0.61.2",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-59-schannel-0.1.29"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-23-domain-0.1.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-6-broker-execution-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-14-core-foundation-0.10.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-60-security-framework-3.7.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-15-core-foundation-sys-0.8.7",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-60-security-framework-3.7.0"
     },
     {
       "relatedSpdxElement": "SPDXRef-Package-3-bitflags-2.13.2",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-59-security-framework-3.7.0"
+      "spdxElementId": "SPDXRef-Package-60-security-framework-3.7.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relatedSpdxElement": "SPDXRef-Package-38-libc-0.2.190",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-59-security-framework-3.7.0"
+      "spdxElementId": "SPDXRef-Package-60-security-framework-3.7.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-60-security-framework-sys-2.17.0",
+      "relatedSpdxElement": "SPDXRef-Package-61-security-framework-sys-2.17.0",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-59-security-framework-3.7.0"
+      "spdxElementId": "SPDXRef-Package-60-security-framework-3.7.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-22-domain-0.1.0",
+      "relatedSpdxElement": "SPDXRef-Package-15-core-foundation-sys-0.8.7",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-6-broker-ports-0.1.0"
+      "spdxElementId": "SPDXRef-Package-61-security-framework-sys-2.17.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-39-market-contracts-0.1.0",
+      "relatedSpdxElement": "SPDXRef-Package-38-libc-0.2.190",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-6-broker-ports-0.1.0"
+      "spdxElementId": "SPDXRef-Package-61-security-framework-sys-2.17.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-66-sha2-0.10.9",
+      "relatedSpdxElement": "SPDXRef-Package-63-serde-core-1.0.229",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-6-broker-ports-0.1.0"
+      "spdxElementId": "SPDXRef-Package-62-serde-1.0.229"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-74-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-64-serde-derive-1.0.229",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-6-broker-ports-0.1.0"
+      "spdxElementId": "SPDXRef-Package-62-serde-1.0.229"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-14-core-foundation-sys-0.8.7",
+      "relatedSpdxElement": "SPDXRef-Package-64-serde-derive-1.0.229",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-60-security-framework-sys-2.17.0"
+      "spdxElementId": "SPDXRef-Package-63-serde-core-1.0.229"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relatedSpdxElement": "SPDXRef-Package-47-proc-macro2-1.0.107",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-60-security-framework-sys-2.17.0"
+      "spdxElementId": "SPDXRef-Package-64-serde-derive-1.0.229"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-62-serde-core-1.0.229",
+      "relatedSpdxElement": "SPDXRef-Package-48-quote-1.0.47",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-61-serde-1.0.229"
+      "spdxElementId": "SPDXRef-Package-64-serde-derive-1.0.229"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-63-serde-derive-1.0.229",
+      "relatedSpdxElement": "SPDXRef-Package-72-syn-3.0.6",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-61-serde-1.0.229"
+      "spdxElementId": "SPDXRef-Package-64-serde-derive-1.0.229"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-63-serde-derive-1.0.229",
+      "relatedSpdxElement": "SPDXRef-Package-37-itoa-1.0.18",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-62-serde-core-1.0.229"
+      "spdxElementId": "SPDXRef-Package-65-serde-json-1.0.151"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-46-proc-macro2-1.0.107",
+      "relatedSpdxElement": "SPDXRef-Package-41-memchr-2.8.3",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-63-serde-derive-1.0.229"
+      "spdxElementId": "SPDXRef-Package-65-serde-json-1.0.151"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-47-quote-1.0.47",
+      "relatedSpdxElement": "SPDXRef-Package-62-serde-1.0.229",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-63-serde-derive-1.0.229"
+      "spdxElementId": "SPDXRef-Package-65-serde-json-1.0.151"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-71-syn-3.0.6",
+      "relatedSpdxElement": "SPDXRef-Package-63-serde-core-1.0.229",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-63-serde-derive-1.0.229"
+      "spdxElementId": "SPDXRef-Package-65-serde-json-1.0.151"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-36-itoa-1.0.18",
+      "relatedSpdxElement": "SPDXRef-Package-98-zmij-1.0.23",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-64-serde-json-1.0.151"
+      "spdxElementId": "SPDXRef-Package-65-serde-json-1.0.151"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-40-memchr-2.8.3",
+      "relatedSpdxElement": "SPDXRef-Package-10-cfg-if-1.0.5",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-64-serde-json-1.0.151"
+      "spdxElementId": "SPDXRef-Package-66-sha1-0.11.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-61-serde-1.0.229",
+      "relatedSpdxElement": "SPDXRef-Package-17-cpufeatures-0.3.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-64-serde-json-1.0.151"
+      "spdxElementId": "SPDXRef-Package-66-sha1-0.11.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-62-serde-core-1.0.229",
+      "relatedSpdxElement": "SPDXRef-Package-22-digest-0.11.3",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-64-serde-json-1.0.151"
+      "spdxElementId": "SPDXRef-Package-66-sha1-0.11.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-97-zmij-1.0.23",
+      "relatedSpdxElement": "SPDXRef-Package-10-cfg-if-1.0.5",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-64-serde-json-1.0.151"
+      "spdxElementId": "SPDXRef-Package-67-sha2-0.10.9"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-16-cpufeatures-0.3.1",
+      "relatedSpdxElement": "SPDXRef-Package-16-cpufeatures-0.2.17",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-65-sha1-0.11.0"
+      "spdxElementId": "SPDXRef-Package-67-sha2-0.10.9"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-21-digest-0.11.3",
+      "relatedSpdxElement": "SPDXRef-Package-21-digest-0.10.7",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-65-sha1-0.11.0"
+      "spdxElementId": "SPDXRef-Package-67-sha2-0.10.9"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-9-cfg-if-1.0.5",
+      "relatedSpdxElement": "SPDXRef-Package-23-domain-0.1.0",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-65-sha1-0.11.0"
+      "spdxElementId": "SPDXRef-Package-7-broker-ports-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-15-cpufeatures-0.2.17",
+      "relatedSpdxElement": "SPDXRef-Package-40-market-contracts-0.1.0",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-66-sha2-0.10.9"
+      "spdxElementId": "SPDXRef-Package-7-broker-ports-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-20-digest-0.10.7",
+      "relatedSpdxElement": "SPDXRef-Package-67-sha2-0.10.9",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-66-sha2-0.10.9"
+      "spdxElementId": "SPDXRef-Package-7-broker-ports-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-9-cfg-if-1.0.5",
+      "relatedSpdxElement": "SPDXRef-Package-75-tokio-1.53.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-66-sha2-0.10.9"
+      "spdxElementId": "SPDXRef-Package-7-broker-ports-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relatedSpdxElement": "SPDXRef-Package-38-libc-0.2.190",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-69-socket2-0.6.5"
+      "spdxElementId": "SPDXRef-Package-70-socket2-0.6.5"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-86-windows-sys-0.61.2",
+      "relatedSpdxElement": "SPDXRef-Package-87-windows-sys-0.61.2",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-69-socket2-0.6.5"
+      "spdxElementId": "SPDXRef-Package-70-socket2-0.6.5"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-46-proc-macro2-1.0.107",
+      "relatedSpdxElement": "SPDXRef-Package-47-proc-macro2-1.0.107",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-71-syn-3.0.6"
+      "spdxElementId": "SPDXRef-Package-72-syn-3.0.6"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-47-quote-1.0.47",
+      "relatedSpdxElement": "SPDXRef-Package-48-quote-1.0.47",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-71-syn-3.0.6"
+      "spdxElementId": "SPDXRef-Package-72-syn-3.0.6"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-80-unicode-ident-1.0.26",
+      "relatedSpdxElement": "SPDXRef-Package-81-unicode-ident-1.0.26",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-71-syn-3.0.6"
+      "spdxElementId": "SPDXRef-Package-72-syn-3.0.6"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-73-thiserror-impl-2.0.21",
+      "relatedSpdxElement": "SPDXRef-Package-74-thiserror-impl-2.0.21",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-72-thiserror-2.0.21"
+      "spdxElementId": "SPDXRef-Package-73-thiserror-2.0.21"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-46-proc-macro2-1.0.107",
+      "relatedSpdxElement": "SPDXRef-Package-47-proc-macro2-1.0.107",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-73-thiserror-impl-2.0.21"
+      "spdxElementId": "SPDXRef-Package-74-thiserror-impl-2.0.21"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-47-quote-1.0.47",
+      "relatedSpdxElement": "SPDXRef-Package-48-quote-1.0.47",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-73-thiserror-impl-2.0.21"
+      "spdxElementId": "SPDXRef-Package-74-thiserror-impl-2.0.21"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-71-syn-3.0.6",
+      "relatedSpdxElement": "SPDXRef-Package-72-syn-3.0.6",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-73-thiserror-impl-2.0.21"
+      "spdxElementId": "SPDXRef-Package-74-thiserror-impl-2.0.21"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relatedSpdxElement": "SPDXRef-Package-38-libc-0.2.190",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-74-tokio-1.53.1"
+      "spdxElementId": "SPDXRef-Package-75-tokio-1.53.1"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-41-mio-1.2.4",
+      "relatedSpdxElement": "SPDXRef-Package-42-mio-1.2.4",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-74-tokio-1.53.1"
+      "spdxElementId": "SPDXRef-Package-75-tokio-1.53.1"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-45-pin-project-lite-0.2.17",
+      "relatedSpdxElement": "SPDXRef-Package-46-pin-project-lite-0.2.17",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-74-tokio-1.53.1"
+      "spdxElementId": "SPDXRef-Package-75-tokio-1.53.1"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-69-socket2-0.6.5",
+      "relatedSpdxElement": "SPDXRef-Package-70-socket2-0.6.5",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-74-tokio-1.53.1"
+      "spdxElementId": "SPDXRef-Package-75-tokio-1.53.1"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-7-bytes-1.12.1",
+      "relatedSpdxElement": "SPDXRef-Package-76-tokio-macros-2.7.2",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-74-tokio-1.53.1"
+      "spdxElementId": "SPDXRef-Package-75-tokio-1.53.1"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-75-tokio-macros-2.7.2",
+      "relatedSpdxElement": "SPDXRef-Package-8-bytes-1.12.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-74-tokio-1.53.1"
+      "spdxElementId": "SPDXRef-Package-75-tokio-1.53.1"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-86-windows-sys-0.61.2",
+      "relatedSpdxElement": "SPDXRef-Package-87-windows-sys-0.61.2",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-74-tokio-1.53.1"
+      "spdxElementId": "SPDXRef-Package-75-tokio-1.53.1"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-46-proc-macro2-1.0.107",
+      "relatedSpdxElement": "SPDXRef-Package-47-proc-macro2-1.0.107",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-75-tokio-macros-2.7.2"
+      "spdxElementId": "SPDXRef-Package-76-tokio-macros-2.7.2"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-47-quote-1.0.47",
+      "relatedSpdxElement": "SPDXRef-Package-48-quote-1.0.47",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-75-tokio-macros-2.7.2"
+      "spdxElementId": "SPDXRef-Package-76-tokio-macros-2.7.2"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-71-syn-3.0.6",
+      "relatedSpdxElement": "SPDXRef-Package-72-syn-3.0.6",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-75-tokio-macros-2.7.2"
+      "spdxElementId": "SPDXRef-Package-76-tokio-macros-2.7.2"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-54-rustls-0.23.45",
+      "relatedSpdxElement": "SPDXRef-Package-55-rustls-0.23.45",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-76-tokio-rustls-0.26.6"
+      "spdxElementId": "SPDXRef-Package-77-tokio-rustls-0.26.6"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-74-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-75-tokio-1.53.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-76-tokio-rustls-0.26.6"
+      "spdxElementId": "SPDXRef-Package-77-tokio-rustls-0.26.6"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-29-futures-util-0.3.34",
+      "relatedSpdxElement": "SPDXRef-Package-30-futures-util-0.3.34",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-77-tokio-tungstenite-0.30.0"
+      "spdxElementId": "SPDXRef-Package-78-tokio-tungstenite-0.30.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-38-log-0.4.34",
+      "relatedSpdxElement": "SPDXRef-Package-39-log-0.4.34",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-77-tokio-tungstenite-0.30.0"
+      "spdxElementId": "SPDXRef-Package-78-tokio-tungstenite-0.30.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-54-rustls-0.23.45",
+      "relatedSpdxElement": "SPDXRef-Package-55-rustls-0.23.45",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-77-tokio-tungstenite-0.30.0"
+      "spdxElementId": "SPDXRef-Package-78-tokio-tungstenite-0.30.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-55-rustls-native-certs-0.8.4",
+      "relatedSpdxElement": "SPDXRef-Package-56-rustls-native-certs-0.8.4",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-77-tokio-tungstenite-0.30.0"
+      "spdxElementId": "SPDXRef-Package-78-tokio-tungstenite-0.30.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-56-rustls-pki-types-1.15.1",
+      "relatedSpdxElement": "SPDXRef-Package-57-rustls-pki-types-1.15.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-77-tokio-tungstenite-0.30.0"
+      "spdxElementId": "SPDXRef-Package-78-tokio-tungstenite-0.30.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-74-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-75-tokio-1.53.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-77-tokio-tungstenite-0.30.0"
+      "spdxElementId": "SPDXRef-Package-78-tokio-tungstenite-0.30.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-76-tokio-rustls-0.26.6",
+      "relatedSpdxElement": "SPDXRef-Package-77-tokio-rustls-0.26.6",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-77-tokio-tungstenite-0.30.0"
+      "spdxElementId": "SPDXRef-Package-78-tokio-tungstenite-0.30.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-78-tungstenite-0.30.0",
+      "relatedSpdxElement": "SPDXRef-Package-79-tungstenite-0.30.0",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-77-tokio-tungstenite-0.30.0"
+      "spdxElementId": "SPDXRef-Package-78-tokio-tungstenite-0.30.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-19-data-encoding-2.11.1",
+      "relatedSpdxElement": "SPDXRef-Package-20-data-encoding-2.11.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+      "spdxElementId": "SPDXRef-Package-79-tungstenite-0.30.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-33-http-1.5.0",
+      "relatedSpdxElement": "SPDXRef-Package-34-http-1.5.0",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+      "spdxElementId": "SPDXRef-Package-79-tungstenite-0.30.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-34-httparse-1.10.1",
+      "relatedSpdxElement": "SPDXRef-Package-35-httparse-1.10.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+      "spdxElementId": "SPDXRef-Package-79-tungstenite-0.30.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-38-log-0.4.34",
+      "relatedSpdxElement": "SPDXRef-Package-39-log-0.4.34",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+      "spdxElementId": "SPDXRef-Package-79-tungstenite-0.30.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-49-rand-0.10.3",
+      "relatedSpdxElement": "SPDXRef-Package-50-rand-0.10.3",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+      "spdxElementId": "SPDXRef-Package-79-tungstenite-0.30.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-54-rustls-0.23.45",
+      "relatedSpdxElement": "SPDXRef-Package-55-rustls-0.23.45",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+      "spdxElementId": "SPDXRef-Package-79-tungstenite-0.30.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-56-rustls-pki-types-1.15.1",
+      "relatedSpdxElement": "SPDXRef-Package-57-rustls-pki-types-1.15.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+      "spdxElementId": "SPDXRef-Package-79-tungstenite-0.30.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-65-sha1-0.11.0",
+      "relatedSpdxElement": "SPDXRef-Package-66-sha1-0.11.0",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+      "spdxElementId": "SPDXRef-Package-79-tungstenite-0.30.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-7-bytes-1.12.1",
+      "relatedSpdxElement": "SPDXRef-Package-73-thiserror-2.0.21",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+      "spdxElementId": "SPDXRef-Package-79-tungstenite-0.30.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-72-thiserror-2.0.21",
+      "relatedSpdxElement": "SPDXRef-Package-8-bytes-1.12.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+      "spdxElementId": "SPDXRef-Package-79-tungstenite-0.30.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-24-find-msvc-tools-0.1.14",
+      "relatedSpdxElement": "SPDXRef-Package-88-windows-targets-0.52.6",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-8-cc-1.6.0"
+      "spdxElementId": "SPDXRef-Package-86-windows-sys-0.52.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-67-shlex-2.0.1",
+      "relatedSpdxElement": "SPDXRef-Package-85-windows-link-0.2.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-8-cc-1.6.0"
+      "spdxElementId": "SPDXRef-Package-87-windows-sys-0.61.2"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-87-windows-targets-0.52.6",
+      "relatedSpdxElement": "SPDXRef-Package-89-windows-aarch64-gnullvm-0.52.6",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-85-windows-sys-0.52.0"
+      "spdxElementId": "SPDXRef-Package-88-windows-targets-0.52.6"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-84-windows-link-0.2.1",
+      "relatedSpdxElement": "SPDXRef-Package-90-windows-aarch64-msvc-0.52.6",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-86-windows-sys-0.61.2"
+      "spdxElementId": "SPDXRef-Package-88-windows-targets-0.52.6"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-88-windows-aarch64-gnullvm-0.52.6",
+      "relatedSpdxElement": "SPDXRef-Package-91-windows-i686-gnu-0.52.6",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-87-windows-targets-0.52.6"
+      "spdxElementId": "SPDXRef-Package-88-windows-targets-0.52.6"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-89-windows-aarch64-msvc-0.52.6",
+      "relatedSpdxElement": "SPDXRef-Package-92-windows-i686-gnullvm-0.52.6",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-87-windows-targets-0.52.6"
+      "spdxElementId": "SPDXRef-Package-88-windows-targets-0.52.6"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-90-windows-i686-gnu-0.52.6",
+      "relatedSpdxElement": "SPDXRef-Package-93-windows-i686-msvc-0.52.6",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-87-windows-targets-0.52.6"
+      "spdxElementId": "SPDXRef-Package-88-windows-targets-0.52.6"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-91-windows-i686-gnullvm-0.52.6",
+      "relatedSpdxElement": "SPDXRef-Package-94-windows-x86-64-gnu-0.52.6",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-87-windows-targets-0.52.6"
+      "spdxElementId": "SPDXRef-Package-88-windows-targets-0.52.6"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-92-windows-i686-msvc-0.52.6",
+      "relatedSpdxElement": "SPDXRef-Package-95-windows-x86-64-gnullvm-0.52.6",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-87-windows-targets-0.52.6"
+      "spdxElementId": "SPDXRef-Package-88-windows-targets-0.52.6"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-93-windows-x86-64-gnu-0.52.6",
+      "relatedSpdxElement": "SPDXRef-Package-96-windows-x86-64-msvc-0.52.6",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-87-windows-targets-0.52.6"
+      "spdxElementId": "SPDXRef-Package-88-windows-targets-0.52.6"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-94-windows-x86-64-gnullvm-0.52.6",
+      "relatedSpdxElement": "SPDXRef-Package-25-find-msvc-tools-0.1.14",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-87-windows-targets-0.52.6"
+      "spdxElementId": "SPDXRef-Package-9-cc-1.6.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-95-windows-x86-64-msvc-0.52.6",
+      "relatedSpdxElement": "SPDXRef-Package-68-shlex-2.0.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-87-windows-targets-0.52.6"
+      "spdxElementId": "SPDXRef-Package-9-cc-1.6.0"
     }
   ],
   "spdxVersion": "SPDX-2.3"
