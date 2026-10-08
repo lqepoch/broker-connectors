@@ -269,7 +269,7 @@
       "target_sha256": "49de96c54856f42575b2280090e0fcb524163fe86210420400ace9664e125722"
     },
     {
-      "adaptation": "Uses checked integer conversions in synthetic response generation and adds scoped readability allowances for contiguous fixture cases.",
+      "adaptation": "Uses checked integer conversions in synthetic response generation, adds scoped readability allowances for contiguous fixture cases, and keeps redaction assertion failure messages constant so protected fixture values cannot be echoed.",
       "change_categories": [
         "tests"
       ],
@@ -277,7 +277,7 @@
       "source_path": "crates/schwab-rest/src/read_response_tests.rs",
       "source_sha256": "9eb74db8e6cd36c2375d1f5d544703f953c91819243ae0418b8e11740c5eb6a2",
       "target_path": "vendor/schwab/crates/schwab-rest/src/read_response_tests.rs",
-      "target_sha256": "d641d6e3b4164d1a33e083be588bc50faa6f14500c13cf07713053ff1f7807a7"
+      "target_sha256": "d4c7e5b9d6bdb05a7d48e583bc32e417d5e644d20c13b38403d8625564165163"
     },
     {
       "adaptation": "Adds must_use annotations and documents malformed-input and request-bound errors on validated request constructors.",

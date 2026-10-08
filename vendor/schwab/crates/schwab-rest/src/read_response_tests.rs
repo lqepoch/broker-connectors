@@ -1329,7 +1329,7 @@ fn response_model_goldens_preserve_exact_values_and_passthrough_fields() {
         ] {
             assert!(
                 !diagnostic.contains(secret),
-                "leaked {secret}: {diagnostic}"
+                "redaction must not expose protected fixture values"
             );
         }
     }
