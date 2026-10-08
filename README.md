@@ -1,6 +1,6 @@
 # broker-connectors
 
-This public Rust workspace owns broker protocol adapters and provider-neutral read ports. It starts with the audited Alpaca options WebSocket protocol and a bounded market-data port. The provider stream emits validated contracts from the frozen [`trading-core`](https://github.com/lqepoch/trading-core) revision `4230418f7fe25f70e3011fed2ba7eb59c7e4d875`.
+This public Rust workspace owns broker protocol adapters and provider-neutral read ports. It starts with the audited Alpaca options WebSocket protocol and a bounded market-data port. The provider stream emits validated contracts from the frozen [`trading-core`](https://github.com/lqepoch/trading-core) revision `0a2eaff08d45e8abc1a0137dab17d5d3ef5553c8`.
 
 The current slice is read-only. It does not read credentials from dotenv, connect to Alpaca during tests, call OAuth, qualify provider symbols as complete contracts, compute Greeks, or submit orders. `opra` and `indicative` are explicit options WebSocket feeds; this slice has no stock SIP or historical REST adapter. The market-data port exposes one bounded, ordered `MarketDataItem` lane, so controls and market records cannot be reordered by a downstream two-queue `select!`. Its sequence is adapter delivery order, not an upstream provider sequence or a promise of raw cross-channel wire order. A successful socket send is not a subscription acknowledgement, and local protocol tests do not establish account entitlement or provider availability.
 

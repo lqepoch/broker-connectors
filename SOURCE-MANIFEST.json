@@ -183,5 +183,16 @@
   ],
   "source_license_status": "The source repository is private and this commit has no repository-wide open-source license. Repository-owner authorization covers only the source paths enumerated here and permits this selected project-owned code to be published in this repository under MIT OR Apache-2.0.",
   "source_repository": "lqepoch/schwab_auto_bot",
-  "target_license": "MIT OR Apache-2.0 for the selected project-owned code; third-party dependencies retain their own licenses."
+  "target_license": "MIT OR Apache-2.0 for the selected project-owned code; third-party dependencies retain their own licenses.",
+  "shared_contract_dependencies": [
+    {
+      "repository": "lqepoch/trading-core",
+      "commit": "0a2eaff08d45e8abc1a0137dab17d5d3ef5553c8",
+      "git_tree": "fc8ec06ec05965ac23331b119047a80cb731a6bb",
+      "package": "market-contracts",
+      "package_version": "0.1.0",
+      "license": "MIT OR Apache-2.0",
+      "lockfile": "Cargo.lock includes this package and its transitive core packages at the same commit."
+    }
+  ]
 }

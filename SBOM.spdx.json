@@ -1,13 +1,13 @@
 {
   "SPDXID": "SPDXRef-DOCUMENT",
   "creationInfo": {
-    "created": "2026-10-08T06:38:04Z",
+    "created": "2026-10-08T07:27:24Z",
     "creators": [
       "Tool: scripts/generate_spdx_sbom.py"
     ]
   },
   "dataLicense": "CC0-1.0",
-  "documentNamespace": "https://spdx.org/spdxdocs/broker-connectors-3b85c901d5525fade3cace4fb53b5b62e525f9a449a4c247e6adecebe1a0ef53",
+  "documentNamespace": "https://spdx.org/spdxdocs/broker-connectors-cfe705e75de78f48979d0a2a651bb103898f3c1fa15b11d625b5a4019a7d4c36",
   "name": "broker-connectors Cargo workspace",
   "packages": [
     {
