@@ -1,0 +1,68 @@
+use super::*;
+use crate::testdata::builders::config::config_response;
+use crate::testdata::builders::ResponseProtoEncoder;
+
+#[test]
+fn test_decode_config_proto_populated() {
+    let bytes = config_response()
+        .read_only_api(true)
+        .socket_port(4002)
+        .trusted_ip("127.0.0.1")
+        .bypass_bond_warning(true)
+        .seek_price_improvement(true)
+        .auto_logoff_time("23:59")
+        .message(1, "Order Warning", false)
+        .encode_proto();
+
+    let config = decode_config_proto(prost::Message::decode(&bytes[..]).expect("fixture must decode")).unwrap();
+
+    let api = config.api.expect("api present");
+    let settings = api.settings.expect("settings present");
+    assert_eq!(settings.read_only_api, Some(true));
+    assert_eq!(settings.socket_port, Some(4002));
+    assert_eq!(settings.trusted_ips, vec!["127.0.0.1".to_string()]);
+    assert_eq!(api.precautions.expect("precautions present").bypass_bond_warning, Some(true));
+
+    let orders = config.orders.expect("orders present");
+    assert_eq!(orders.smart_routing.expect("smart routing present").seek_price_improvement, Some(true));
+
+    assert_eq!(
+        config.lock_and_exit.expect("lock_and_exit present").auto_logoff_time,
+        Some("23:59".to_string())
+    );
+
+    assert_eq!(config.messages.len(), 1);
+    assert_eq!(config.messages[0].id, Some(1));
+    assert_eq!(config.messages[0].title, Some("Order Warning".to_string()));
+    assert_eq!(config.messages[0].enabled, Some(false));
+}
+
+#[test]
+fn test_decode_config_proto_empty() {
+    let config = decode_config_proto(proto::ConfigResponse::default()).unwrap();
+
+    assert_eq!(config, Config::default());
+    assert!(config.api.is_none());
+    assert!(config.orders.is_none());
+    assert!(config.lock_and_exit.is_none());
+    assert!(config.messages.is_empty());
+}
+
+#[test]
+fn test_decode_update_config_proto_populated() {
+    let bytes = crate::testdata::builders::config::update_config_response()
+        .status("warning")
+        .message("please confirm")
+        .changed_field("socketPort")
+        .error("bad value")
+        .warning(131, "Confirm Mandatory Cap Price")
+        .encode_proto();
+    let response = decode_update_config_proto(prost::Message::decode(&bytes[..]).expect("fixture must decode")).unwrap();
+    assert_eq!(response.status.as_deref(), Some("warning"));
+    assert_eq!(response.message.as_deref(), Some("please confirm"));
+    assert_eq!(response.changed_fields, vec!["socketPort".to_string()]);
+    assert_eq!(response.errors, vec!["bad value".to_string()]);
+    assert_eq!(response.warnings.len(), 1);
+    assert_eq!(response.warnings[0].message_id, Some(131));
+    assert_eq!(response.warnings[0].title.as_deref(), Some("Confirm Mandatory Cap Price"));
+}

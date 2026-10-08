@@ -1,0 +1,20 @@
+[package]
+name = "ibkr-read"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Bounded read-only IBKR option contract catalog adapter"
+
+[dependencies]
+domain.workspace = true
+futures-util.workspace = true
+ibapi = { workspace = true, features = ["async"] }
+tokio.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["io-util"] }
+
+[lints]
+workspace = true

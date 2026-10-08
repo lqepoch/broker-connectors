@@ -1,0 +1,1228 @@
+use std::sync::Arc;
+
+use crate::common::test_utils::helpers::{
+    assert_request, assert_tws_error_message, create_blocking_test_client, create_blocking_test_client_with_ordered_proto_responses,
+    decode_request_proto, proto_error_response, proto_response, request_message_count,
+};
+use crate::contracts::{ComboLeg, Contract, Currency, Exchange, LegAction, OptionRight, SecurityIdType, SecurityType, Symbol};
+use crate::messages::IncomingMessages;
+use crate::orders::{Action, ExecutionFilterSide, ExecutionSide, ExerciseOptions, OcaType, OrderCondition, OrderStatusKind, TimeInForce};
+use crate::proto;
+use crate::stubs::MessageBusStub;
+use crate::testdata::builders::orders::{
+    all_open_orders_request, auto_open_orders_request, cancel_order_request, commission_report, completed_order, completed_orders_end,
+    completed_orders_request, execution_data, executions_request, global_cancel_request, next_valid_order_id_request, open_order,
+    open_orders_request, order_bound, order_status, place_order_request,
+};
+use crate::testdata::builders::{ResponseEncoder, ResponseProtoEncoder};
+
+use super::*;
+use crate::client::ids::{OrderId, REQUEST_ID_FLOOR};
+use crate::orders::builder::{BracketPrices, TrailBy};
+use crate::orders::common::order_builder;
+
+#[test]
+fn place_order() {
+    let message_bus = Arc::new(MessageBusStub::with_ordered_responses(vec![
+        proto_response(
+            IncomingMessages::OpenOrder,
+            open_order().status(OrderStatusKind::PreSubmitted).encode_proto(),
+        ),
+        proto_response(
+            IncomingMessages::OrderStatus,
+            order_status().status(OrderStatusKind::PreSubmitted).remaining(100.0).encode_proto(),
+        ),
+        proto_response(IncomingMessages::ExecutionData, execution_data().encode_proto()),
+        proto_response(IncomingMessages::OpenOrder, open_order().status(OrderStatusKind::Filled).encode_proto()),
+        proto_response(
+            IncomingMessages::OrderStatus,
+            order_status()
+                .status(OrderStatusKind::Filled)
+                .filled(100.0)
+                .remaining(0.0)
+                .average_fill_price(Some(196.52))
+                .last_fill_price(Some(196.52))
+                .encode_proto(),
+        ),
+        proto_response(IncomingMessages::OpenOrder, open_order().status(OrderStatusKind::Filled).encode_proto()),
+        proto_response(IncomingMessages::CommissionsReport, commission_report().encode_proto()),
+    ]));
+
+    let client = Client::stubbed(message_bus.clone(), server_versions::SIZE_RULES);
+
+    let contract = Contract {
+        symbol: Symbol::from("TSLA"),
+        security_type: SecurityType::Stock,
+        exchange: Exchange::from("SMART"),
+        currency: Currency::from("USD"),
+        ..Contract::default()
+    };
+
+    let order_id = 13;
+    let order = order_builder::market_order(Action::Buy, 100.0);
+
+    let result = client.place_order(order_id, &contract, &order);
+
+    assert_eq!(request_message_count(&message_bus), 1);
+    assert_request(
+        &message_bus,
+        0,
+        &place_order_request().order_id(order_id).contract(&contract).order(&order),
+    );
+
+    assert!(result.is_ok(), "failed to place order: {}", result.err().unwrap());
+
+    let notifications = result.unwrap();
+
+    if let Some(Ok(PlaceOrder::OpenOrder(open_order))) = notifications.next_data() {
+        assert_eq!(open_order.order_id, 13, "open_order.order_id");
+        assert_eq!(open_order.order_state.status, OrderStatusKind::PreSubmitted, "order_state.status");
+    } else {
+        assert!(false, "message[0] expected an open order notification");
+    }
+
+    if let Some(Ok(PlaceOrder::OrderStatus(order_status))) = notifications.next_data() {
+        assert_eq!(order_status.order_id, 13, "order_status.order_id");
+        assert_eq!(order_status.status, OrderStatusKind::PreSubmitted, "order_status.status");
+        assert_eq!(order_status.filled, 0.0, "order_status.filled");
+        assert_eq!(order_status.remaining, 100.0, "order_status.remaining");
+        assert_eq!(order_status.average_fill_price, Some(0.0), "order_status.average_fill_price");
+        assert_eq!(order_status.perm_id, 1376327563, "order_status.perm_id");
+        assert_eq!(order_status.parent_id, 0, "order_status.parent_id");
+        assert_eq!(order_status.last_fill_price, Some(0.0), "order_status.last_fill_price");
+        assert_eq!(order_status.client_id, 100, "order_status.client_id");
+        assert_eq!(order_status.why_held, "", "order_status.why_held");
+        assert_eq!(order_status.market_cap_price, Some(0.0), "order_status.market_cap_price");
+    } else {
+        assert!(false, "message[1] expected order status notification");
+    }
+
+    if let Some(Ok(PlaceOrder::ExecutionData(exec_data))) = notifications.next_data() {
+        assert_eq!(exec_data.execution.order_id, 13, "execution.order_id");
+        assert_eq!(exec_data.execution.shares, 100.0, "execution.shares");
+        assert_eq!(exec_data.execution.price, 196.52, "execution.price");
+        assert_eq!(exec_data.contract.symbol, Symbol::from("TSLA"), "contract.symbol");
+    } else {
+        assert!(false, "message[2] expected execution notification");
+    }
+
+    assert!(
+        matches!(notifications.next_data(), Some(Ok(PlaceOrder::OpenOrder(_)))),
+        "message[3] expected an open order notification"
+    );
+
+    if let Some(Ok(PlaceOrder::OrderStatus(order_status))) = notifications.next_data() {
+        assert_eq!(order_status.status, OrderStatusKind::Filled, "order_status.status");
+        assert_eq!(order_status.filled, 100.0, "order_status.filled");
+        assert_eq!(order_status.remaining, 0.0, "order_status.remaining");
+    } else {
+        assert!(false, "message[4] expected order status notification");
+    }
+
+    assert!(
+        matches!(notifications.next_data(), Some(Ok(PlaceOrder::OpenOrder(_)))),
+        "message[5] expected an open order notification"
+    );
+
+    if let Some(Ok(PlaceOrder::CommissionReport(report))) = notifications.next_data() {
+        assert_eq!(report.execution_id, "00025b46.63f8f39c.01.01", "report.execution_id");
+        assert_eq!(report.commission, 1.0, "report.commission");
+        assert_eq!(report.currency, "USD", "report.currency");
+    } else {
+        assert!(false, "message[6] expected a commission report notification");
+    }
+}
+
+// Drives the real place_order path and decodes the captured wire bytes to confirm
+// hedge_max_size rides the outbound PlaceOrderRequest proto (docs/rules/testing/exercise-production-code.md).
+#[test]
+fn place_order_encodes_hedge_max_size() {
+    let message_bus = Arc::new(MessageBusStub::with_ordered_responses(vec![]));
+    let client = Client::stubbed(message_bus.clone(), server_versions::HEDGE_MAX_SIZE);
+
+    let contract = Contract::stock("TSLA").build();
+    let mut order = order_builder::market_order(Action::Buy, 100.0);
+    order.hedge_max_size = Some(500);
+
+    let _subscription = client.place_order(20, &contract, &order).expect("place_order should succeed");
+
+    assert_eq!(request_message_count(&message_bus), 1);
+    let request: crate::proto::PlaceOrderRequest = decode_request_proto(&message_bus, 0);
+    let proto_order = request.order.expect("request carries an order");
+    assert_eq!(proto_order.hedge_max_size, Some(500));
+}
+
+// Placing an order with hedge_max_size against a server below the gate is rejected
+// before anything is sent (docs/rules/testing/exercise-production-code.md — real verify path).
+#[test]
+fn place_order_rejects_hedge_max_size_below_gate() {
+    let message_bus = Arc::new(MessageBusStub::with_ordered_responses(vec![]));
+    let client = Client::stubbed(message_bus.clone(), server_versions::HEDGE_MAX_SIZE - 1);
+
+    let contract = Contract::stock("TSLA").build();
+    let mut order = order_builder::market_order(Action::Buy, 100.0);
+    order.hedge_max_size = Some(500);
+
+    match client.place_order(20, &contract, &order) {
+        Err(Error::ServerVersion(required, _, _)) => assert_eq!(required, server_versions::HEDGE_MAX_SIZE),
+        Err(other) => panic!("expected ServerVersion error, got {other:?}"),
+        Ok(_) => panic!("expected place_order to be rejected below the hedge_max_size gate"),
+    }
+    assert_eq!(request_message_count(&message_bus), 0);
+}
+
+#[test]
+fn cancel_order() {
+    let message_bus = Arc::new(MessageBusStub::with_ordered_responses(vec![proto_response(
+        IncomingMessages::OrderStatus,
+        order_status()
+            .order_id(41)
+            .status(OrderStatusKind::Cancelled)
+            .remaining(100.0)
+            .perm_id(71270927)
+            .encode_proto(),
+    )]));
+
+    let client = Client::stubbed(message_bus.clone(), server_versions::SIZE_RULES);
+
+    let order_id = 41;
+    let results = client.cancel_order(order_id, "");
+
+    assert_eq!(request_message_count(&message_bus), 1);
+    assert_request(&message_bus, 0, &cancel_order_request().order_id(order_id));
+
+    assert!(results.is_ok(), "failed to cancel order: {}", results.err().unwrap());
+
+    let results = results.unwrap();
+
+    if let Some(Ok(CancelOrder::OrderStatus(order_status))) = results.next_data() {
+        assert_eq!(order_status.order_id, 41, "order_status.order_id");
+        assert_eq!(order_status.status, OrderStatusKind::Cancelled, "order_status.status");
+        assert_eq!(order_status.filled, 0.0, "order_status.filled");
+        assert_eq!(order_status.remaining, 100.0, "order_status.remaining");
+        assert_eq!(order_status.average_fill_price, Some(0.0), "order_status.average_fill_price");
+        assert_eq!(order_status.perm_id, 71270927, "order_status.perm_id");
+        assert_eq!(order_status.parent_id, 0, "order_status.parent_id");
+        assert_eq!(order_status.last_fill_price, Some(0.0), "order_status.last_fill_price");
+        assert_eq!(order_status.client_id, 100, "order_status.client_id");
+        assert_eq!(order_status.why_held, "", "order_status.why_held");
+        assert_eq!(order_status.market_cap_price, Some(0.0), "order_status.market_cap_price");
+    }
+}
+
+#[test]
+fn cancel_order_delivers_202_as_non_terminal_notice() {
+    // The cancellation confirmation (202) must arrive as a Notice and leave
+    // the stream open: the OrderStatus frame queued behind it still arrives.
+    let order_id = 41;
+    let message_bus = Arc::new(MessageBusStub::with_ordered_responses(vec![
+        proto_error_response(order_id, crate::messages::ORDER_CANCELLED_CODE, "Order Canceled - reason:"),
+        proto_response(
+            IncomingMessages::OrderStatus,
+            order_status().order_id(order_id).status(OrderStatusKind::Cancelled).encode_proto(),
+        ),
+    ]));
+
+    let client = Client::stubbed(message_bus, server_versions::SIZE_RULES);
+    let subscription = client.cancel_order(order_id, "").expect("cancel_order failed");
+
+    match subscription.next() {
+        Some(Ok(crate::subscriptions::SubscriptionItem::Notice(notice))) => {
+            assert!(notice.is_cancellation(), "expected cancellation notice, got {notice:?}");
+        }
+        other => panic!("expected non-terminal cancellation Notice, got {other:?}"),
+    }
+
+    match subscription.next() {
+        Some(Ok(crate::subscriptions::SubscriptionItem::Data(CancelOrder::OrderStatus(status)))) => {
+            assert_eq!(status.status, OrderStatusKind::Cancelled);
+        }
+        other => panic!("expected OrderStatus after the 202 notice, got {other:?}"),
+    }
+}
+
+#[test]
+fn global_cancel() {
+    let message_bus = Arc::new(MessageBusStub::with_responses(vec![]));
+    let client = Client::stubbed(message_bus.clone(), server_versions::SIZE_RULES);
+
+    let results = client.global_cancel();
+
+    assert_eq!(request_message_count(&message_bus), 1);
+    assert_request(&message_bus, 0, &global_cancel_request());
+    assert!(results.is_ok(), "failed to cancel order: {}", results.err().unwrap());
+}
+
+#[test]
+fn cancel_order_cme_tagging() {
+    let message_bus = Arc::new(MessageBusStub::with_ordered_responses(vec![proto_response(
+        IncomingMessages::OrderStatus,
+        order_status()
+            .order_id(41)
+            .status(OrderStatusKind::Cancelled)
+            .remaining(100.0)
+            .perm_id(71270927)
+            .encode_proto(),
+    )]));
+
+    let client = Client::stubbed(message_bus.clone(), server_versions::CME_TAGGING_FIELDS);
+
+    let order_id = 41;
+    let results = client.cancel_order(order_id, "");
+
+    assert_request(&message_bus, 0, &cancel_order_request().order_id(order_id));
+    assert!(results.is_ok(), "failed to cancel order: {}", results.err().unwrap());
+}
+
+#[test]
+fn global_cancel_cme_tagging() {
+    let message_bus = Arc::new(MessageBusStub::with_responses(vec![]));
+    let client = Client::stubbed(message_bus.clone(), server_versions::CME_TAGGING_FIELDS);
+
+    let results = client.global_cancel();
+
+    assert_request(&message_bus, 0, &global_cancel_request());
+    assert!(results.is_ok(), "failed to cancel order: {}", results.err().unwrap());
+}
+
+#[test]
+fn next_valid_order_id() {
+    let next_valid_id_proto = crate::proto::NextValidId { order_id: Some(43) };
+    let message_bus = Arc::new(MessageBusStub::with_ordered_responses(vec![proto_response(
+        IncomingMessages::NextValidId,
+        prost::Message::encode_to_vec(&next_valid_id_proto),
+    )]));
+    let client = Client::stubbed(message_bus.clone(), server_versions::SIZE_RULES);
+
+    let results = client.next_valid_order_id();
+
+    assert_request(&message_bus, 0, &next_valid_order_id_request());
+
+    assert!(results.is_ok(), "failed to request next order id: {}", results.err().unwrap());
+    assert_eq!(43, results.unwrap(), "next order id");
+}
+
+// The server only knows about IDs it has seen: an ID allocated locally but not
+// yet transmitted is invisible to it, so its answer can sit at or below the
+// local counter. That answer must not rewind the generator.
+#[test]
+fn next_valid_order_id_below_allocated_mark_does_not_rewind() {
+    let (client, _bus) = create_blocking_test_client_with_ordered_proto_responses(vec![proto_response(
+        IncomingMessages::NextValidId,
+        prost::Message::encode_to_vec(&crate::proto::NextValidId { order_id: Some(5) }),
+    )]);
+
+    let allocated = client.next_order_id();
+    let server_value = client.next_valid_order_id().expect("next_valid_order_id");
+
+    assert_eq!(server_value, 5, "the server's value is still returned verbatim");
+    assert_eq!(client.next_order_id(), allocated + 1, "generator must not rewind below an allocated ID");
+}
+
+#[test]
+fn completed_orders() {
+    let _ = env_logger::try_init();
+
+    let message_bus = Arc::new(MessageBusStub::with_ordered_responses(vec![
+        proto_response(
+            IncomingMessages::CompletedOrder,
+            completed_order().trail_stop_price(Some(150.25)).encode_proto(),
+        ),
+        proto_response(IncomingMessages::CompletedOrdersEnd, completed_orders_end().encode_proto()),
+    ]));
+
+    let client = Client::stubbed(message_bus.clone(), server_versions::SIZE_RULES);
+
+    let api_only = true;
+    let results = client.completed_orders(api_only);
+
+    assert_request(&message_bus, 0, &completed_orders_request().api_only(api_only));
+
+    assert!(results.is_ok(), "failed to request completed orders: {}", results.err().unwrap());
+
+    let results = results.unwrap();
+    if let Some(Ok(Orders::OrderData(order_data))) = results.next_data() {
+        assert_eq!(order_data.contract.symbol, Symbol::from("AAPL"), "contract.symbol");
+        assert_eq!(order_data.contract.security_type, SecurityType::Stock, "contract.security_type");
+        assert_eq!(order_data.order.action, Action::Buy, "order.action");
+        assert_eq!(order_data.order.total_quantity, 100.0, "order.total_quantity");
+        assert_eq!(order_data.order.trail_stop_price, Some(150.25), "order.trail_stop_price");
+        assert_eq!(
+            order_data.order.shareholder, "Not an insider or substantial shareholder",
+            "order.shareholder"
+        );
+        assert_eq!(order_data.order_state.status, OrderStatusKind::Filled, "order_state.status");
+        assert_eq!(
+            order_data.order_state.completed_time, "20231122 10:30:00 America/Los_Angeles",
+            "order_state.completed_time"
+        );
+        assert_eq!(order_data.order_state.completed_status, "Filled", "order_state.completed_status");
+    } else {
+        assert!(false, "expected order data");
+    }
+}
+
+#[test]
+fn open_orders() {
+    let message_bus = Arc::new(MessageBusStub::with_responses(vec![
+        crate::testdata::builders::orders::open_order_end().encode_pipe()
+    ]));
+    let client = Client::stubbed(message_bus.clone(), server_versions::SIZE_RULES);
+
+    let results = client.open_orders();
+
+    assert_request(&message_bus, 0, &open_orders_request());
+    assert!(results.is_ok(), "failed to request open orders: {}", results.err().unwrap());
+}
+
+#[test]
+fn all_open_orders() {
+    let message_bus = Arc::new(MessageBusStub::with_responses(vec![
+        crate::testdata::builders::orders::open_order_end().encode_pipe()
+    ]));
+    let client = Client::stubbed(message_bus.clone(), server_versions::SIZE_RULES);
+
+    let results = client.all_open_orders();
+
+    assert_request(&message_bus, 0, &all_open_orders_request());
+    assert!(results.is_ok(), "failed to request all open orders: {}", results.err().unwrap());
+}
+
+#[test]
+fn auto_open_orders() {
+    let message_bus = Arc::new(MessageBusStub::with_responses(vec![
+        crate::testdata::builders::orders::open_order_end().encode_pipe()
+    ]));
+    let client = Client::stubbed(message_bus.clone(), server_versions::SIZE_RULES);
+
+    let api_only = true;
+    let results = client.auto_open_orders(api_only);
+
+    assert_request(&message_bus, 0, &auto_open_orders_request().auto_bind(api_only));
+    assert!(results.is_ok(), "failed to request auto open orders: {}", results.err().unwrap());
+}
+
+#[test]
+fn executions() {
+    let message_bus = Arc::new(MessageBusStub::with_responses(vec![
+        crate::testdata::builders::orders::execution_data_end().encode_pipe(),
+    ]));
+    let client = Client::stubbed(message_bus.clone(), server_versions::SIZE_RULES);
+
+    let filter = ExecutionFilter {
+        client_id: Some(100),
+        account_code: "xyz".to_owned(),
+        time: "yyyymmdd hh:mm:ss EST".to_owned(),
+        symbol: "TSLA".to_owned(),
+        security_type: "STK".to_owned(),
+        exchange: "ISLAND".to_owned(),
+        side: Some(ExecutionFilterSide::Buy),
+        ..Default::default()
+    };
+    let expected_filter = ExecutionFilter {
+        client_id: Some(100),
+        account_code: "xyz".to_owned(),
+        time: "yyyymmdd hh:mm:ss EST".to_owned(),
+        symbol: "TSLA".to_owned(),
+        security_type: "STK".to_owned(),
+        exchange: "ISLAND".to_owned(),
+        side: Some(ExecutionFilterSide::Buy),
+        ..Default::default()
+    };
+    let results = client.executions(filter);
+
+    assert_request(
+        &message_bus,
+        0,
+        &executions_request()
+            .request_id(crate::common::test_utils::helpers::TEST_REQ_ID_FIRST)
+            .filter(expected_filter),
+    );
+
+    assert!(results.is_ok(), "failed to request executions: {}", results.err().unwrap());
+}
+
+#[test]
+fn encode_limit_order() {
+    let message_bus = Arc::new(MessageBusStub::with_responses(vec![]));
+    let client = Client::stubbed(message_bus.clone(), server_versions::SIZE_RULES);
+
+    let order_id = 12;
+    let contract = Contract {
+        security_type: SecurityType::Future,
+        exchange: Exchange::from("EUREX"),
+        currency: Currency::from("EUR"),
+        local_symbol: "FGBL MAR 23".to_owned(),
+        last_trade_date_or_contract_month: "202303".to_owned(),
+        ..Contract::default()
+    };
+    let order = order_builder::limit_order(Action::Buy, 10.0, 500.00);
+
+    let results = client.place_order(order_id, &contract, &order);
+
+    assert_request(
+        &message_bus,
+        0,
+        &place_order_request().order_id(order_id).contract(&contract).order(&order),
+    );
+
+    assert!(results.is_ok(), "failed to place order: {}", results.err().unwrap());
+}
+
+#[test]
+fn encode_combo_market_order() {
+    let message_bus = Arc::new(MessageBusStub::with_responses(vec![]));
+    let client = Client::stubbed(message_bus.clone(), server_versions::SIZE_RULES);
+
+    let order_id = 12; // get next order id
+    let contract = {
+        let leg_1 = ComboLeg {
+            contract_id: 55928698, //WTI future June 2017
+            ratio: 1,
+            action: LegAction::Buy,
+            exchange: "IPE".to_owned(),
+            ..ComboLeg::default()
+        };
+
+        let leg_2 = ComboLeg {
+            contract_id: 55850663, //COIL future June 2017
+            ratio: 1,
+            action: LegAction::Sell,
+            exchange: "IPE".to_owned(),
+            ..ComboLeg::default()
+        };
+
+        Contract {
+            symbol: Symbol::from("WTI"), // WTI,COIL spread. Symbol can be defined as first leg symbol ("WTI") or currency ("USD").
+            security_type: SecurityType::Spread,
+            currency: Currency::from("USD"),
+            exchange: Exchange::from("SMART"),
+            combo_legs: vec![leg_1, leg_2],
+            ..Contract::default()
+        }
+    };
+    let order = order_builder::non_guaranteed(order_builder::combo_market_order(Action::Sell, 150.0));
+
+    let results = client.place_order(order_id, &contract, &order);
+
+    assert_request(
+        &message_bus,
+        0,
+        &place_order_request().order_id(order_id).contract(&contract).order(&order),
+    );
+
+    assert!(results.is_ok(), "failed to place order: {}", results.err().unwrap());
+}
+
+#[test]
+fn exercise_options() {
+    let message_bus = Arc::new(MessageBusStub::with_ordered_responses(vec![proto_response(
+        IncomingMessages::OpenOrder,
+        open_order()
+            .symbol("ES")
+            .security_type("FOP")
+            .last_trade_date_or_contract_month("20250919")
+            .strike(5800.0)
+            .right("C")
+            .multiplier("50")
+            .exchange("CME")
+            .local_symbol("ESU5C5800")
+            .trading_class("ES")
+            .total_quantity(1.0)
+            .encode_proto(),
+    )]));
+
+    let client = Client::stubbed(message_bus.clone(), server_versions::SIZE_RULES);
+
+    let contract = Contract {
+        symbol: Symbol::from("ES"),
+        security_type: SecurityType::FuturesOption,
+        exchange: Exchange::from("CME"),
+        currency: Currency::from("USD"),
+        last_trade_date_or_contract_month: "20250919".to_string(),
+        strike: 5800.0,
+        right: Some(OptionRight::Call),
+        ..Default::default()
+    };
+
+    let subscription = client
+        .exercise_options(&contract)
+        .exercise(1)
+        .submit()
+        .expect("failed to exercise options");
+
+    let exercise_response = subscription.next_data();
+    assert!(
+        matches!(exercise_response, Some(Ok(ExerciseOptions::OpenOrder(_)))),
+        "Expected ExerciseOptions::OpenOrder, got {:?}",
+        exercise_response
+    );
+
+    assert_eq!(request_message_count(&message_bus), 1);
+}
+
+#[test]
+fn submit_order() {
+    let message_bus = Arc::new(MessageBusStub::with_responses(vec![]));
+    let client = Client::stubbed(message_bus.clone(), server_versions::SIZE_RULES);
+
+    let contract = Contract {
+        symbol: Symbol::from("AAPL"),
+        security_type: SecurityType::Stock,
+        exchange: Exchange::from("SMART"),
+        currency: Currency::from("USD"),
+        ..Contract::default()
+    };
+
+    let order_id = 42;
+    let order = order_builder::market_order(Action::Buy, 200.0);
+
+    let result = client.submit_order(order_id, &contract, &order);
+
+    assert_request(
+        &message_bus,
+        0,
+        &place_order_request().order_id(order_id).contract(&contract).order(&order),
+    );
+
+    assert!(result.is_ok(), "failed to submit order: {}", result.err().unwrap());
+}
+
+#[test]
+fn order_update_stream() {
+    let message_bus = Arc::new(MessageBusStub::with_ordered_responses(vec![
+        proto_response(
+            IncomingMessages::OpenOrder,
+            open_order().status(OrderStatusKind::PreSubmitted).encode_proto(),
+        ),
+        proto_response(
+            IncomingMessages::OrderStatus,
+            order_status().status(OrderStatusKind::PreSubmitted).remaining(100.0).encode_proto(),
+        ),
+        proto_response(IncomingMessages::ExecutionData, execution_data().encode_proto()),
+        proto_response(IncomingMessages::CommissionsReport, commission_report().encode_proto()),
+    ]));
+
+    let client = Client::stubbed(message_bus, server_versions::SIZE_RULES);
+
+    let stream = client.order_update_stream();
+    assert!(stream.is_ok(), "failed to create order update stream: {}", stream.err().unwrap());
+
+    let notifications = stream.unwrap();
+
+    if let Some(Ok(OrderUpdate::OpenOrder(open_order))) = notifications.next_data() {
+        assert_eq!(open_order.order_id, 13, "open_order.order_id");
+        assert_eq!(open_order.contract.symbol, Symbol::from("TSLA"), "contract.symbol");
+        assert_eq!(open_order.order.action, Action::Buy, "order.action");
+        assert_eq!(open_order.order.total_quantity, 100.0, "order.total_quantity");
+        assert_eq!(open_order.order_state.status, OrderStatusKind::PreSubmitted, "order_state.status");
+    } else {
+        assert!(false, "expected open order notification");
+    }
+
+    if let Some(Ok(OrderUpdate::OrderStatus(status))) = notifications.next_data() {
+        assert_eq!(status.order_id, 13, "order_status.order_id");
+        assert_eq!(status.status, OrderStatusKind::PreSubmitted, "order_status.status");
+        assert_eq!(status.filled, 0.0, "order_status.filled");
+        assert_eq!(status.remaining, 100.0, "order_status.remaining");
+    } else {
+        assert!(false, "expected order status notification");
+    }
+
+    if let Some(Ok(OrderUpdate::ExecutionData(exec_data))) = notifications.next_data() {
+        assert_eq!(exec_data.execution.order_id, 13, "execution.order_id");
+        assert_eq!(exec_data.execution.shares, 100.0, "execution.shares");
+        assert_eq!(exec_data.execution.price, 196.52, "execution.price");
+        assert_eq!(exec_data.execution.side, ExecutionSide::Bought, "execution.side");
+    } else {
+        assert!(false, "expected execution data notification");
+    }
+
+    if let Some(Ok(OrderUpdate::CommissionReport(report))) = notifications.next_data() {
+        assert_eq!(report.execution_id, "00025b46.63f8f39c.01.01", "report.execution_id");
+        assert_eq!(report.commission, 1.0, "report.commission");
+        assert_eq!(report.currency, "USD", "report.currency");
+    } else {
+        assert!(false, "expected commission report notification");
+    }
+}
+
+#[test]
+fn order_update_stream_survives_unknown_status() {
+    // Regression test for #774: a status string this crate does not model
+    // must arrive as OrderStatusKind::Unknown, not terminate the stream —
+    // the frame queued behind it still arrives.
+    let message_bus = Arc::new(MessageBusStub::with_ordered_responses(vec![
+        proto_response(
+            IncomingMessages::OrderStatus,
+            order_status()
+                .order_id(1)
+                .status(OrderStatusKind::Unknown("PendingReplace".into()))
+                .encode_proto(),
+        ),
+        proto_response(
+            IncomingMessages::OrderStatus,
+            order_status().order_id(1).status(OrderStatusKind::Filled).encode_proto(),
+        ),
+    ]));
+    let client = Client::stubbed(message_bus, server_versions::SIZE_RULES);
+    let stream = client.order_update_stream().expect("failed to create stream");
+
+    match stream.next_data() {
+        Some(Ok(OrderUpdate::OrderStatus(s))) => {
+            assert_eq!(s.status, OrderStatusKind::Unknown("PendingReplace".into()));
+        }
+        other => panic!("expected OrderStatus with Unknown status, got {other:?}"),
+    }
+    match stream.next_data() {
+        Some(Ok(OrderUpdate::OrderStatus(s))) => {
+            assert_eq!(s.status, OrderStatusKind::Filled);
+        }
+        other => panic!("stream did not survive the unknown status, got {other:?}"),
+    }
+}
+
+#[test]
+fn order_update_stream_survives_unknown_condition() {
+    // #827: an OpenOrder carrying a condition type this crate does not model
+    // arrives as OrderCondition::Unknown and the frame queued behind it still arrives.
+    let unknown = proto::OrderCondition {
+        r#type: Some(2),
+        is_conjunction_connection: Some(true),
+        ..Default::default()
+    };
+    let message_bus = Arc::new(MessageBusStub::with_ordered_responses(vec![
+        proto_response(
+            IncomingMessages::OpenOrder,
+            open_order().order_id(1).conditions(vec![unknown]).encode_proto(),
+        ),
+        proto_response(IncomingMessages::OpenOrder, open_order().order_id(2).encode_proto()),
+    ]));
+    let client = Client::stubbed(message_bus, server_versions::SIZE_RULES);
+    let stream = client.order_update_stream().expect("failed to create stream");
+
+    match stream.next_data() {
+        Some(Ok(OrderUpdate::OpenOrder(o))) => match &o.order.conditions[..] {
+            [OrderCondition::Unknown(c)] => assert_eq!(c.condition_type, 2),
+            other => panic!("expected one Unknown condition, got {other:?}"),
+        },
+        other => panic!("expected OpenOrder, got {other:?}"),
+    }
+    match stream.next_data() {
+        Some(Ok(OrderUpdate::OpenOrder(o))) => assert_eq!(o.order_id, 2),
+        other => panic!("stream did not survive the unknown condition, got {other:?}"),
+    }
+}
+
+#[test]
+fn order_update_stream_survives_unknown_sec_type() {
+    // SecurityType is open: an OpenOrder frame whose contract carries a
+    // sec_type this crate does not model arrives as SecurityType::Other and
+    // the frame queued behind it still arrives.
+    let message_bus = Arc::new(MessageBusStub::with_ordered_responses(vec![
+        proto_response(
+            IncomingMessages::OpenOrder,
+            open_order().order_id(1).security_type("NOTASECTYPE").encode_proto(),
+        ),
+        proto_response(IncomingMessages::OpenOrder, open_order().order_id(1).security_type("STK").encode_proto()),
+    ]));
+    let client = Client::stubbed(message_bus, server_versions::SIZE_RULES);
+    let stream = client.order_update_stream().expect("failed to create stream");
+
+    match stream.next_data() {
+        Some(Ok(OrderUpdate::OpenOrder(o))) => {
+            assert_eq!(o.contract.security_type, SecurityType::Other("NOTASECTYPE".into()));
+        }
+        other => panic!("expected OpenOrder with Other sec_type, got {other:?}"),
+    }
+    match stream.next_data() {
+        Some(Ok(OrderUpdate::OpenOrder(o))) => {
+            assert_eq!(o.contract.security_type, SecurityType::Stock);
+        }
+        other => panic!("stream did not survive the unknown sec_type, got {other:?}"),
+    }
+}
+
+#[test]
+fn order_update_stream_survives_unknown_tif() {
+    // TimeInForce is open: an OpenOrder frame carrying a tif this crate
+    // does not model arrives as TimeInForce::Unknown and the frame queued
+    // behind it still arrives.
+    let message_bus = Arc::new(MessageBusStub::with_ordered_responses(vec![
+        proto_response(IncomingMessages::OpenOrder, open_order().order_id(1).tif("NOTATIF").encode_proto()),
+        proto_response(IncomingMessages::OpenOrder, open_order().order_id(1).tif("GTC").encode_proto()),
+    ]));
+    let client = Client::stubbed(message_bus, server_versions::SIZE_RULES);
+    let stream = client.order_update_stream().expect("failed to create stream");
+
+    match stream.next_data() {
+        Some(Ok(OrderUpdate::OpenOrder(o))) => {
+            assert_eq!(o.order.tif, TimeInForce::Unknown("NOTATIF".into()));
+        }
+        other => panic!("expected OpenOrder with Unknown tif, got {other:?}"),
+    }
+    match stream.next_data() {
+        Some(Ok(OrderUpdate::OpenOrder(o))) => {
+            assert_eq!(o.order.tif, TimeInForce::GoodTillCanceled);
+        }
+        other => panic!("stream did not survive the unknown tif, got {other:?}"),
+    }
+}
+
+#[test]
+fn order_update_stream_survives_unknown_security_id_type() {
+    // SecurityIdType is open: a contract carrying an identifier scheme this
+    // crate does not model arrives as SecurityIdType::Unknown and the frame
+    // queued behind it still arrives (#840).
+    let message_bus = Arc::new(MessageBusStub::with_ordered_responses(vec![
+        proto_response(
+            IncomingMessages::OpenOrder,
+            open_order().order_id(1).security_id_type("WKN").encode_proto(),
+        ),
+        proto_response(IncomingMessages::OpenOrder, open_order().order_id(2).encode_proto()),
+    ]));
+    let client = Client::stubbed(message_bus, server_versions::SIZE_RULES);
+    let stream = client.order_update_stream().expect("failed to create stream");
+
+    match stream.next_data() {
+        Some(Ok(OrderUpdate::OpenOrder(o))) => {
+            assert_eq!(o.contract.security_id_type, Some(SecurityIdType::Unknown("WKN".into())));
+        }
+        other => panic!("expected OpenOrder with Unknown security_id_type, got {other:?}"),
+    }
+    match stream.next_data() {
+        Some(Ok(OrderUpdate::OpenOrder(o))) => assert_eq!(o.order_id, 2),
+        other => panic!("stream did not survive the unknown security_id_type, got {other:?}"),
+    }
+}
+
+#[test]
+fn order_update_stream_ends_on_empty_action() {
+    // action is required: an OpenOrder frame with an empty action fails
+    // decode with Error::Parse, which terminates the subscription — the
+    // frame queued behind it is never delivered. The survives_unknown_tif
+    // test above uses the same two-frame stub and does receive its second
+    // frame, so the None here comes from termination, not an empty stub.
+    let message_bus = Arc::new(MessageBusStub::with_ordered_responses(vec![
+        proto_response(IncomingMessages::OpenOrder, open_order().order_id(1).action("").encode_proto()),
+        proto_response(IncomingMessages::OpenOrder, open_order().order_id(1).action("SELL").encode_proto()),
+    ]));
+    let client = Client::stubbed(message_bus, server_versions::SIZE_RULES);
+    let stream = client.order_update_stream().expect("failed to create stream");
+
+    match stream.next_data() {
+        Some(Err(Error::Parse(_, _, msg))) => assert!(msg.contains("action"), "expected the field name in the error, got {msg}"),
+        other => panic!("expected Error::Parse for the empty action, got {other:?}"),
+    }
+    assert!(stream.next_data().is_none(), "stream should end after a decode error");
+}
+
+#[test]
+fn order_update_stream_already_subscribed() {
+    let message_bus = Arc::new(MessageBusStub::with_responses(vec![]));
+    let client = Client::stubbed(message_bus, server_versions::SIZE_RULES);
+
+    // Create first subscription
+    let stream1 = client.order_update_stream();
+    assert!(stream1.is_ok(), "failed to create first order update stream");
+
+    // Try to create second subscription - should fail
+    let stream2 = client.order_update_stream();
+    assert!(stream2.is_err(), "second order update stream should fail");
+
+    match stream2.err().unwrap() {
+        Error::AlreadySubscribed => {}
+        other => assert!(false, "expected AlreadySubscribed error, got: {:?}", other),
+    }
+}
+
+// Covers the `Client::order` delegate only. Field-by-field builder semantics are
+// asserted in orders/builder/tests.rs against a mock client; what is unique here
+// is that the entry point binds the real `Client` and the given contract.
+#[test]
+fn order_entry_point_builds_order() {
+    let (client, _) = create_blocking_test_client();
+    let contract = Contract::stock("AAPL").build();
+
+    let order = client.order(&contract).buy(100).limit(50.0).build().expect("build failed");
+
+    assert_eq!(order.action, Action::Buy);
+    assert_eq!(order.limit_price, Some(50.0));
+}
+
+// Drives the real `OrderBuilder::analyze`. A rejected what-if order arrives as
+// a routed `Err`; before #735 the read
+// discarded it and the caller saw `UnexpectedEndOfStream`.
+#[test]
+fn analyze_surfaces_rejected_what_if_order() {
+    let (client, _bus) = create_blocking_test_client_with_ordered_proto_responses(vec![proto_error_response(
+        9000,
+        201,
+        "Order rejected - reason:Insufficient buying power",
+    )]);
+    let contract = Contract::stock("AAPL").build();
+
+    let err = client
+        .order(&contract)
+        .buy(100)
+        .limit(50.0)
+        .analyze()
+        .expect_err("a rejected what-if order must surface the rejection");
+    assert_tws_error_message(err, 201, "Insufficient buying power");
+}
+
+// Happy path for the real `OrderBuilder::analyze`, replacing the mock-client
+// shadow that carried its own copy of the method (and its own copy of the bug
+// #735 fixed). Asserts both halves of the contract: the OrderState comes back
+// from the OpenOrder whose id matches, and the request went out what-if.
+#[test]
+fn analyze_returns_order_state_for_the_matching_order() {
+    let (client, bus) = create_blocking_test_client_with_ordered_proto_responses(vec![proto_response(
+        IncomingMessages::OpenOrder,
+        open_order().order_id(9090).status(OrderStatusKind::PreSubmitted).encode_proto(),
+    )]);
+    client.raise_next_order_id(OrderId::from(9090));
+    let contract = Contract::stock("AAPL").build();
+
+    let state = client.order(&contract).buy(100).limit(50.0).analyze().expect("analyze should succeed");
+    assert_eq!(state.status, OrderStatusKind::PreSubmitted);
+
+    let request: crate::proto::PlaceOrderRequest = decode_request_proto(&bus, 0);
+    assert_eq!(request.order.expect("request carries an order").what_if, Some(true));
+}
+
+#[test]
+fn analyze_reports_end_of_stream_when_no_order_arrives() {
+    let (client, _bus) = create_blocking_test_client_with_ordered_proto_responses(vec![]);
+    let contract = Contract::stock("AAPL").build();
+
+    let result = client.order(&contract).buy(100).limit(50.0).analyze();
+    assert!(matches!(result, Err(Error::UnexpectedEndOfStream)), "got {result:?}");
+}
+
+// The `submit` family, against `Client::stubbed` rather than a mock client that
+// carried its own copy of each method. The shadows dated from before the
+// builder had a real seam to test against; #735 moved `analyze` off its shadow
+// after one of them turned out to carry the very bug the PR was fixing.
+
+#[test]
+fn submit_assigns_the_next_order_id_and_sends_the_order() {
+    let (client, bus) = create_blocking_test_client();
+    client.raise_next_order_id(OrderId::from(9100));
+    let contract = Contract::stock("AAPL").build();
+
+    let order_id = client.order(&contract).buy(100).limit(50.0).submit().expect("submit should succeed");
+    assert_eq!(order_id.value(), 9100);
+
+    assert_eq!(request_message_count(&bus), 1);
+    let request: crate::proto::PlaceOrderRequest = decode_request_proto(&bus, 0);
+    assert_eq!(request.order_id, Some(9100));
+    let order = request.order.expect("request carries an order");
+    assert_eq!(order.action.as_deref(), Some("BUY"));
+    assert_eq!(order.order_type.as_deref(), Some("LMT"));
+    assert_eq!(order.lmt_price, Some(50.0));
+    assert!(!order.what_if.unwrap_or_default(), "submit is not a what-if order");
+}
+
+#[test]
+fn submit_rejects_an_invalid_order_before_sending() {
+    let (client, bus) = create_blocking_test_client();
+    let contract = Contract::stock("AAPL").build();
+
+    let err = client
+        .order(&contract)
+        .buy(-100)
+        .market()
+        .submit()
+        .expect_err("a negative quantity is invalid");
+    assert!(err.to_string().contains("Invalid quantity"), "got {err}");
+    assert_eq!(request_message_count(&bus), 0, "an invalid order must not reach the wire");
+}
+
+#[test]
+fn submit_all_reserves_three_ids_and_wires_the_bracket() {
+    let (client, bus) = create_blocking_test_client();
+    client.raise_next_order_id(OrderId::from(9200));
+    let contract = Contract::stock("AAPL").build();
+
+    let ids = client
+        .order(&contract)
+        .buy(100)
+        .good_till_canceled()
+        .bracket()
+        .entry_limit(50.0)
+        .take_profit(55.0)
+        .stop_loss(45.0)
+        .submit_all()
+        .expect("bracket submission should succeed");
+
+    assert_eq!((ids.parent.value(), ids.take_profit.value(), ids.stop_loss.value()), (9200, 9201, 9202));
+    assert_eq!(request_message_count(&bus), 3);
+
+    let orders: Vec<crate::proto::Order> = (0..3)
+        .map(|i| {
+            decode_request_proto::<crate::proto::PlaceOrderRequest>(&bus, i)
+                .order
+                .expect("request carries an order")
+        })
+        .collect();
+
+    // Parent first, then the two children pointing back at it. A proto field
+    // at its default is omitted on the wire, so read them through unwrap_or_default.
+    assert_eq!(
+        orders.iter().map(|o| o.parent_id.unwrap_or_default()).collect::<Vec<_>>(),
+        vec![0, 9200, 9200]
+    );
+
+    // Only the last order transmits, so TWS receives the trio atomically.
+    assert_eq!(
+        orders.iter().map(|o| o.transmit.unwrap_or_default()).collect::<Vec<_>>(),
+        vec![false, false, true]
+    );
+
+    // Time in force propagates from the parent builder to all three.
+    for order in &orders {
+        assert_eq!(order.tif.as_deref(), Some("GTC"));
+    }
+
+    assert_eq!(orders[1].action.as_deref(), Some("SELL"));
+    assert_eq!(orders[1].lmt_price, Some(55.0));
+    assert_eq!(orders[2].order_type.as_deref(), Some("STP"));
+    assert_eq!(orders[2].aux_price, Some(45.0));
+}
+
+#[test]
+fn submit_oca_orders_numbers_each_order_and_keeps_the_group() {
+    let (client, bus) = create_blocking_test_client();
+    client.raise_next_order_id(OrderId::from(9300));
+    let apple = Contract::stock("AAPL").build();
+    let microsoft = Contract::stock("MSFT").build();
+
+    let first = client
+        .order(&apple)
+        .buy(100)
+        .limit(50.0)
+        .oca_group("TestOCA", OcaType::CancelWithBlock)
+        .build_order()
+        .expect("order should build");
+    let second = client
+        .order(&microsoft)
+        .buy(100)
+        .limit(45.0)
+        .oca_group("TestOCA", OcaType::CancelWithBlock)
+        .build_order()
+        .expect("order should build");
+
+    let ids = client
+        .submit_oca_orders(vec![(apple, first), (microsoft, second)])
+        .expect("OCA submission should succeed");
+
+    assert_eq!(ids.iter().map(|id| id.value()).collect::<Vec<_>>(), vec![9300, 9301]);
+    assert_eq!(request_message_count(&bus), 2);
+
+    for i in 0..2 {
+        let request: crate::proto::PlaceOrderRequest = decode_request_proto(&bus, i);
+        let order = request.order.expect("request carries an order");
+        assert_eq!(order.oca_group.as_deref(), Some("TestOCA"));
+        assert_eq!(order.oca_type, Some(1));
+    }
+}
+
+#[test]
+fn build_order_does_not_reach_the_wire() {
+    let (client, bus) = create_blocking_test_client();
+    let contract = Contract::stock("AAPL").build();
+
+    let order = client
+        .order(&contract)
+        .sell(100)
+        .trailing_stop(TrailBy::Percent(5.0), 95.0)
+        .build_order()
+        .expect("order should build");
+
+    assert_eq!(order.order_type, "TRAIL");
+    assert_eq!(order.trailing_percent, Some(5.0));
+    assert_eq!(order.trail_stop_price, Some(95.0));
+    assert_eq!(request_message_count(&bus), 0);
+}
+
+#[test]
+fn submit_carries_algo_parameters_to_the_wire() {
+    // The mock-client shadow asserted this against a captured `Order` struct;
+    // at the real seam the assertion is what TWS receives.
+    let (client, bus) = create_blocking_test_client();
+    let contract = Contract::stock("AAPL").build();
+
+    client
+        .order(&contract)
+        .buy(100)
+        .limit(50.0)
+        .algo("VWAP")
+        .algo_param("startTime", "09:30:00")
+        .algo_param("endTime", "16:00:00")
+        .submit()
+        .expect("submit should succeed");
+
+    let order = decode_request_proto::<crate::proto::PlaceOrderRequest>(&bus, 0)
+        .order
+        .expect("request carries an order");
+    assert_eq!(order.algo_strategy.as_deref(), Some("VWAP"));
+    assert_eq!(order.algo_params.get("startTime").map(String::as_str), Some("09:30:00"));
+    assert_eq!(order.algo_params.get("endTime").map(String::as_str), Some("16:00:00"));
+}
+
+#[test]
+fn submit_rejects_a_non_finite_price_before_sending() {
+    let (client, bus) = create_blocking_test_client();
+    let contract = Contract::stock("AAPL").build();
+
+    let err = client.order(&contract).buy(100).limit(f64::NAN).submit().expect_err("NaN is not a price");
+    assert!(err.to_string().contains("Invalid price"), "got {err}");
+    assert_eq!(request_message_count(&bus), 0);
+}
+
+#[test]
+fn order_update_stream_delivers_order_binding() {
+    let message_bus = Arc::new(MessageBusStub::with_ordered_responses(vec![proto_response(
+        IncomingMessages::OrderBound,
+        order_bound().encode_proto(),
+    )]));
+    let client = Client::stubbed(message_bus, server_versions::PROTOBUF_REST_MESSAGES_3);
+    let stream = client.order_update_stream().unwrap();
+    let Some(Ok(OrderUpdate::OrderBound(bound))) = stream.next_data() else {
+        panic!("expected an order binding notification");
+    };
+    assert_eq!(
+        bound,
+        crate::orders::OrderBound {
+            perm_id: 9_876_543_210,
+            client_id: 0,
+            order_id: 42
+        }
+    );
+}
+
+#[test]
+fn preset_legs_submit_one_request_with_attached_ids() {
+    let (client, bus) = crate::common::test_utils::helpers::create_blocking_test_client_with_version(server_versions::ATTACHED_ORDERS);
+    client.raise_next_order_id(OrderId::from(9400));
+    let contract = Contract::stock("AAPL").build();
+
+    let ids = client
+        .order(&contract)
+        .buy(100)
+        .limit(50.0)
+        .preset_stop_loss()
+        .preset_profit_taker()
+        .submit()
+        .expect("submission should succeed");
+
+    assert_eq!(ids.parent.value(), 9400);
+    assert_eq!(ids.stop_loss.map(|id| id.value()), Some(9401));
+    assert_eq!(ids.profit_taker.map(|id| id.value()), Some(9402));
+
+    // One request: TWS creates the children from the parent.
+    assert_eq!(request_message_count(&bus), 1);
+    let request = decode_request_proto::<crate::proto::PlaceOrderRequest>(&bus, 0);
+    assert_eq!(request.order_id, Some(9400));
+    assert_eq!(
+        request.attached_orders,
+        Some(crate::proto::AttachedOrders {
+            sl_order_id: Some(9401),
+            sl_order_type: Some("PRESET".to_string()),
+            pt_order_id: Some(9402),
+            pt_order_type: Some("PRESET".to_string()),
+        })
+    );
+}
+
+#[test]
+fn preset_legs_rejected_below_attached_orders_gate() {
+    let (client, bus) = crate::common::test_utils::helpers::create_blocking_test_client_with_version(server_versions::ATTACHED_ORDERS - 1);
+    let contract = Contract::stock("AAPL").build();
+
+    let result = client.order(&contract).buy(100).limit(50.0).preset_stop_loss().submit();
+
+    match result {
+        Err(Error::ServerVersion(required, _, _)) => assert_eq!(required, server_versions::ATTACHED_ORDERS),
+        other => panic!("expected ServerVersion error, got {other:?}"),
+    }
+    assert_eq!(request_message_count(&bus), 0);
+}
+
+/// Order ids in the request range are refused before anything is sent: their
+/// frames would route as a request's (#789).
+#[test]
+fn order_entry_points_reject_request_range_ids() {
+    let floor = REQUEST_ID_FLOOR;
+    let (client, message_bus) = create_blocking_test_client();
+    let contract = Contract::stock("AAPL").build();
+    let order = order_builder::market_order(Action::Buy, 100.0);
+    let with_parent = crate::orders::Order {
+        parent_id: floor,
+        ..order.clone()
+    };
+    let rejected = |result: Result<(), Error>, what: &str| assert!(matches!(result, Err(Error::OrderIdInRequestRange { .. })), "{what}: {result:?}");
+
+    rejected(client.place_order(floor, &contract, &order).map(|_| ()), "place_order");
+    rejected(client.place_order(1, &contract, &with_parent).map(|_| ()), "place_order parent_id");
+    rejected(client.submit_order(floor, &contract, &order), "submit_order");
+    rejected(client.cancel_order(floor, "").map(|_| ()), "cancel_order");
+
+    client.raise_next_order_id(OrderId::from(floor));
+    rejected(client.exercise_options(&contract).exercise(1).submit().map(|_| ()), "exercise_options");
+
+    assert_eq!(request_message_count(&message_bus), 0, "nothing reaches the wire");
+}
+
+/// A server answer in the request range is refused, and does not raise the
+/// local order-id generator into it (#789).
+#[test]
+fn next_valid_order_id_rejects_request_range() {
+    let (client, _bus) = create_blocking_test_client_with_ordered_proto_responses(vec![proto_response(
+        IncomingMessages::NextValidId,
+        prost::Message::encode_to_vec(&crate::proto::NextValidId {
+            order_id: Some(REQUEST_ID_FLOOR),
+        }),
+    )]);
+
+    let result = client.next_valid_order_id();
+    assert!(
+        matches!(result, Err(Error::OrderIdInRequestRange { order_id }) if order_id == REQUEST_ID_FLOOR),
+        "{result:?}"
+    );
+    assert!(client.next_order_id() < REQUEST_ID_FLOOR, "generator raised into the request range");
+}
+
+/// The order methods take `impl Into<OrderId>`: ids from `BracketOrderIds`
+/// and `AttachedOrderIds` pass straight in, as do plain `i32`s.
+#[test]
+fn order_methods_accept_typed_order_ids() {
+    let (client, message_bus) = create_blocking_test_client();
+    let contract = Contract::stock("AAPL").build();
+    let ids = crate::orders::BracketOrderIds::new(41, 42, 43);
+    let order = order_builder::market_order(Action::Buy, 100.0);
+
+    client.submit_order(ids.parent, &contract, &order).expect("submit_order");
+    let _cancel = client.cancel_order(ids.take_profit, "").expect("cancel_order");
+    let _placed = client.place_order(ids.stop_loss, &contract, &order).expect("place_order");
+
+    let placed_id = |index| decode_request_proto::<crate::proto::PlaceOrderRequest>(&message_bus, index).order_id;
+    assert_eq!(placed_id(0), Some(41), "submit_order");
+    assert_request(&message_bus, 1, &cancel_order_request().order_id(42));
+    assert_eq!(placed_id(2), Some(43), "place_order");
+
+    assert_eq!(order_builder::market_f_hedge(ids.parent, Action::Sell).parent_id, 41);
+    let bracket = order_builder::bracket_order(
+        ids.parent,
+        Action::Buy,
+        100.0,
+        BracketPrices {
+            entry: 50.0,
+            take_profit: 55.0,
+            stop_loss: 45.0,
+        },
+    )
+    .unwrap();
+    assert_eq!(bracket[1].parent_id, 41, "bracket_order");
+}

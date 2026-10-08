@@ -25,6 +25,14 @@ Alpaca lists this Rust SDK as community-made; it is not maintained or supported
 by Alpaca. Source hashes and local security patches are recorded in
 `vendor/alpaca-rust/UPSTREAM.md` and `SOURCE-MANIFEST.json`.
 
+The read-only `ibkr-read` adapter vendors the MIT-licensed `ibapi` source from
+`wboayue/rust-ibapi` commit `3e73f2f1cfac151c10e403a3e7d779272134445f`.
+The exact upstream `LICENSE` text is retained at `vendor/ibapi/LICENSE`.
+This source commit is not the upstream `v5.0.0` tag commit. The whitespace-only
+local source change record, exact source tree and archive digest are recorded in
+`vendor/ibapi/UPSTREAM.md` and `SOURCE-MANIFEST.json`. The upstream SDK is an
+unofficial community project and is not maintained or supported by IBKR.
+
 The exact transitive registry package `webpki-root-certs 1.0.9` declares
 `CDLA-Permissive-2.0`. Its actual package `LICENSE` text is retained at
 `licenses/webpki-root-certs-1.0.9/LICENSE` with SHA-256

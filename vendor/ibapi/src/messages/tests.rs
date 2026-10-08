@@ -1,0 +1,1545 @@
+use prost::Message;
+
+use super::*;
+use crate::common::test_utils::helpers;
+
+// Table-driven test data structures
+struct EncodeLengthTestCase {
+    message: &'static str,
+    expected_length: usize,
+}
+
+struct ResponseMessageParseTestCase {
+    name: &'static str,
+    input: &'static str,
+    field_index: usize,
+    parse_type: ParseType,
+    expected: ParseResult,
+}
+
+enum ParseType {
+    Int,
+    Double,
+    String,
+}
+
+enum ParseResult {
+    Int(i32),
+    Double(f64),
+    String(String),
+    Error,
+}
+
+// Test data that can be shared between sync and async tests
+fn encode_length_test_cases() -> Vec<EncodeLengthTestCase> {
+    vec![
+        EncodeLengthTestCase {
+            message: "hello",
+            expected_length: 9, // 4 bytes for length + 5 bytes for "hello"
+        },
+        EncodeLengthTestCase {
+            message: "",
+            expected_length: 4, // 4 bytes for length + 0 bytes for empty string
+        },
+        EncodeLengthTestCase {
+            message: "a\0b\0c",
+            expected_length: 9, // 4 bytes for length + 5 bytes for "a\0b\0c"
+        },
+    ]
+}
+
+fn response_message_parse_test_cases() -> Vec<ResponseMessageParseTestCase> {
+    vec![
+        ResponseMessageParseTestCase {
+            name: "parse_valid_int",
+            input: "1\0123\0456\0",
+            field_index: 1,
+            parse_type: ParseType::Int,
+            expected: ParseResult::Int(123),
+        },
+        ResponseMessageParseTestCase {
+            name: "parse_invalid_int",
+            input: "1\0abc\0456\0",
+            field_index: 1,
+            parse_type: ParseType::Int,
+            expected: ParseResult::Error,
+        },
+        ResponseMessageParseTestCase {
+            name: "parse_double",
+            input: "1\03.14567\0456\0",
+            field_index: 1,
+            parse_type: ParseType::Double,
+            expected: ParseResult::Double(3.14567),
+        },
+        ResponseMessageParseTestCase {
+            name: "parse_double_zero",
+            input: "1\00\0456\0",
+            field_index: 1,
+            parse_type: ParseType::Double,
+            expected: ParseResult::Double(0.0),
+        },
+        ResponseMessageParseTestCase {
+            name: "parse_string",
+            input: "1\0hello world\0456\0",
+            field_index: 1,
+            parse_type: ParseType::String,
+            expected: ParseResult::String("hello world".to_string()),
+        },
+    ]
+}
+
+#[test]
+fn test_incoming_message_from_i32() {
+    assert_eq!(IncomingMessages::from(1), IncomingMessages::TickPrice);
+    assert_eq!(IncomingMessages::from(2), IncomingMessages::TickSize);
+    assert_eq!(IncomingMessages::from(3), IncomingMessages::OrderStatus);
+    assert_eq!(IncomingMessages::from(4), IncomingMessages::Error);
+    assert_eq!(IncomingMessages::from(5), IncomingMessages::OpenOrder);
+    assert_eq!(IncomingMessages::from(6), IncomingMessages::AccountValue);
+    assert_eq!(IncomingMessages::from(7), IncomingMessages::PortfolioValue);
+    assert_eq!(IncomingMessages::from(8), IncomingMessages::AccountUpdateTime);
+    assert_eq!(IncomingMessages::from(9), IncomingMessages::NextValidId);
+    assert_eq!(IncomingMessages::from(10), IncomingMessages::ContractData);
+    assert_eq!(IncomingMessages::from(11), IncomingMessages::ExecutionData);
+    assert_eq!(IncomingMessages::from(12), IncomingMessages::MarketDepth);
+    assert_eq!(IncomingMessages::from(13), IncomingMessages::MarketDepthL2);
+    assert_eq!(IncomingMessages::from(14), IncomingMessages::NewsBulletins);
+    assert_eq!(IncomingMessages::from(15), IncomingMessages::ManagedAccounts);
+    assert_eq!(IncomingMessages::from(16), IncomingMessages::ReceiveFA);
+    assert_eq!(IncomingMessages::from(17), IncomingMessages::HistoricalData);
+    assert_eq!(IncomingMessages::from(18), IncomingMessages::BondContractData);
+    assert_eq!(IncomingMessages::from(19), IncomingMessages::ScannerParameters);
+    assert_eq!(IncomingMessages::from(20), IncomingMessages::ScannerData);
+    assert_eq!(IncomingMessages::from(21), IncomingMessages::TickOptionComputation);
+    assert_eq!(IncomingMessages::from(45), IncomingMessages::TickGeneric);
+    assert_eq!(IncomingMessages::from(46), IncomingMessages::TickString);
+    assert_eq!(IncomingMessages::from(47), IncomingMessages::TickEFP);
+    assert_eq!(IncomingMessages::from(49), IncomingMessages::CurrentTime);
+    assert_eq!(IncomingMessages::from(50), IncomingMessages::RealTimeBars);
+    assert_eq!(IncomingMessages::from(51), IncomingMessages::FundamentalData);
+    assert_eq!(IncomingMessages::from(52), IncomingMessages::ContractDataEnd);
+    assert_eq!(IncomingMessages::from(53), IncomingMessages::OpenOrderEnd);
+    assert_eq!(IncomingMessages::from(54), IncomingMessages::AccountDownloadEnd);
+    assert_eq!(IncomingMessages::from(55), IncomingMessages::ExecutionDataEnd);
+    assert_eq!(IncomingMessages::from(56), IncomingMessages::DeltaNeutralValidation);
+    assert_eq!(IncomingMessages::from(57), IncomingMessages::TickSnapshotEnd);
+    assert_eq!(IncomingMessages::from(58), IncomingMessages::MarketDataType);
+    assert_eq!(IncomingMessages::from(59), IncomingMessages::CommissionsReport);
+    assert_eq!(IncomingMessages::from(61), IncomingMessages::Position);
+    assert_eq!(IncomingMessages::from(62), IncomingMessages::PositionEnd);
+    assert_eq!(IncomingMessages::from(63), IncomingMessages::AccountSummary);
+    assert_eq!(IncomingMessages::from(64), IncomingMessages::AccountSummaryEnd);
+    assert_eq!(IncomingMessages::from(65), IncomingMessages::VerifyMessageApi);
+    assert_eq!(IncomingMessages::from(66), IncomingMessages::VerifyCompleted);
+    assert_eq!(IncomingMessages::from(67), IncomingMessages::DisplayGroupList);
+    assert_eq!(IncomingMessages::from(68), IncomingMessages::DisplayGroupUpdated);
+    assert_eq!(IncomingMessages::from(69), IncomingMessages::VerifyAndAuthMessageApi);
+    assert_eq!(IncomingMessages::from(70), IncomingMessages::VerifyAndAuthCompleted);
+    assert_eq!(IncomingMessages::from(71), IncomingMessages::PositionMulti);
+    assert_eq!(IncomingMessages::from(72), IncomingMessages::PositionMultiEnd);
+    assert_eq!(IncomingMessages::from(73), IncomingMessages::AccountUpdateMulti);
+    assert_eq!(IncomingMessages::from(74), IncomingMessages::AccountUpdateMultiEnd);
+    assert_eq!(IncomingMessages::from(75), IncomingMessages::SecurityDefinitionOptionParameter);
+    assert_eq!(IncomingMessages::from(76), IncomingMessages::SecurityDefinitionOptionParameterEnd);
+    assert_eq!(IncomingMessages::from(77), IncomingMessages::SoftDollarTier);
+    assert_eq!(IncomingMessages::from(78), IncomingMessages::FamilyCodes);
+    assert_eq!(IncomingMessages::from(79), IncomingMessages::SymbolSamples);
+    assert_eq!(IncomingMessages::from(80), IncomingMessages::MktDepthExchanges);
+    assert_eq!(IncomingMessages::from(81), IncomingMessages::TickReqParams);
+    assert_eq!(IncomingMessages::from(82), IncomingMessages::SmartComponents);
+    assert_eq!(IncomingMessages::from(83), IncomingMessages::NewsArticle);
+    assert_eq!(IncomingMessages::from(84), IncomingMessages::TickNews);
+    assert_eq!(IncomingMessages::from(85), IncomingMessages::NewsProviders);
+    assert_eq!(IncomingMessages::from(86), IncomingMessages::HistoricalNews);
+    assert_eq!(IncomingMessages::from(87), IncomingMessages::HistoricalNewsEnd);
+    assert_eq!(IncomingMessages::from(88), IncomingMessages::HeadTimestamp);
+    assert_eq!(IncomingMessages::from(89), IncomingMessages::HistogramData);
+    assert_eq!(IncomingMessages::from(90), IncomingMessages::HistoricalDataUpdate);
+    assert_eq!(IncomingMessages::from(91), IncomingMessages::RerouteMktDataReq);
+    assert_eq!(IncomingMessages::from(92), IncomingMessages::RerouteMktDepthReq);
+    assert_eq!(IncomingMessages::from(93), IncomingMessages::MarketRule);
+    assert_eq!(IncomingMessages::from(94), IncomingMessages::PnL);
+    assert_eq!(IncomingMessages::from(95), IncomingMessages::PnLSingle);
+    assert_eq!(IncomingMessages::from(96), IncomingMessages::HistoricalTick);
+    assert_eq!(IncomingMessages::from(97), IncomingMessages::HistoricalTickBidAsk);
+    assert_eq!(IncomingMessages::from(98), IncomingMessages::HistoricalTickLast);
+    assert_eq!(IncomingMessages::from(99), IncomingMessages::TickByTick);
+    assert_eq!(IncomingMessages::from(100), IncomingMessages::OrderBound);
+    assert_eq!(IncomingMessages::from(101), IncomingMessages::CompletedOrder);
+    assert_eq!(IncomingMessages::from(102), IncomingMessages::CompletedOrdersEnd);
+    assert_eq!(IncomingMessages::from(103), IncomingMessages::ReplaceFAEnd);
+    assert_eq!(IncomingMessages::from(104), IncomingMessages::WshMetaData);
+    assert_eq!(IncomingMessages::from(105), IncomingMessages::WshEventData);
+    assert_eq!(IncomingMessages::from(106), IncomingMessages::HistoricalSchedule);
+    assert_eq!(IncomingMessages::from(107), IncomingMessages::UserInfo);
+    assert_eq!(IncomingMessages::from(108), IncomingMessages::HistoricalDataEnd);
+    assert_eq!(IncomingMessages::from(109), IncomingMessages::CurrentTimeInMillis);
+    assert_eq!(IncomingMessages::from(110), IncomingMessages::ConfigResponse);
+    assert_eq!(IncomingMessages::from(111), IncomingMessages::UpdateConfigResponse);
+    assert_eq!(IncomingMessages::from(112), IncomingMessages::NotValid);
+}
+
+#[test]
+fn test_routes_by_request_id() {
+    // Sample of the allow-list — full registration check happens via
+    // request_id() round-trips, not exhaustive enumeration here.
+    assert!(routes_by_request_id(IncomingMessages::ContractData));
+    // Bond queries answer with BondContractData; unrouted, every row was dropped.
+    assert!(routes_by_request_id(IncomingMessages::BondContractData));
+    assert!(routes_by_request_id(IncomingMessages::TickByTick));
+    assert!(routes_by_request_id(IncomingMessages::SymbolSamples));
+    assert!(routes_by_request_id(IncomingMessages::ExecutionData));
+    assert!(routes_by_request_id(IncomingMessages::HeadTimestamp));
+    assert!(routes_by_request_id(IncomingMessages::HistoricalData));
+    assert!(routes_by_request_id(IncomingMessages::HistoricalSchedule));
+    assert!(routes_by_request_id(IncomingMessages::ContractDataEnd));
+    assert!(routes_by_request_id(IncomingMessages::RealTimeBars));
+    assert!(routes_by_request_id(IncomingMessages::ExecutionDataEnd));
+
+    // Error has its own envelope; shared messages route by message type.
+    assert!(!routes_by_request_id(IncomingMessages::Error));
+    // FundamentalData is retained as a known variant but no longer routes:
+    // the fundamental-data feature was removed in TWS 10.47.
+    assert!(!routes_by_request_id(IncomingMessages::FundamentalData));
+    assert!(!routes_by_request_id(IncomingMessages::ManagedAccounts));
+    assert!(!routes_by_request_id(IncomingMessages::NextValidId));
+    assert!(!routes_by_request_id(IncomingMessages::CurrentTime));
+    assert!(!routes_by_request_id(IncomingMessages::NotValid));
+}
+
+#[test]
+fn test_text_request_id_field() {
+    // Field-1 messages (request_id immediately after message-type tag).
+    assert_eq!(text_request_id_field(IncomingMessages::ContractData), Some(1));
+    assert_eq!(text_request_id_field(IncomingMessages::BondContractData), Some(1));
+    assert_eq!(text_request_id_field(IncomingMessages::TickByTick), Some(1));
+
+    // Field-2 messages (request_id after a version field).
+    assert_eq!(text_request_id_field(IncomingMessages::TickPrice), Some(2));
+    assert_eq!(text_request_id_field(IncomingMessages::ContractDataEnd), Some(2));
+    // MarketDataType is declared by the `TickTypes` decoder — without an entry
+    // the tick never reaches the subscription that asked for it.
+    assert_eq!(text_request_id_field(IncomingMessages::MarketDataType), Some(2));
+
+    // Shared and unrouted messages get None.
+    assert_eq!(text_request_id_field(IncomingMessages::ManagedAccounts), None);
+    assert_eq!(text_request_id_field(IncomingMessages::Error), None);
+    assert_eq!(text_request_id_field(IncomingMessages::NotValid), None);
+    // FundamentalData no longer routes (feature removed in TWS 10.47).
+    assert_eq!(text_request_id_field(IncomingMessages::FundamentalData), None);
+}
+
+#[test]
+fn test_notice() {
+    let message = helpers::proto_error_response(-1, 2107, "HMDS data farm connection is inactive.");
+
+    let notice = Notice::from(&message);
+
+    assert_eq!(notice.code, 2107);
+    assert_eq!(notice.message, "HMDS data farm connection is inactive.");
+    assert_eq!(format!("{notice}"), "[2107] HMDS data farm connection is inactive.");
+}
+
+#[test]
+fn test_encode_length() {
+    for test_case in encode_length_test_cases() {
+        let encoded = encode_length(test_case.message);
+        assert_eq!(encoded.len(), test_case.expected_length, "Failed for message: {:?}", test_case.message);
+
+        // Verify the length bytes are correct
+        let length_bytes = &encoded[0..4];
+        let length = u32::from_be_bytes([length_bytes[0], length_bytes[1], length_bytes[2], length_bytes[3]]);
+        assert_eq!(
+            length as usize,
+            test_case.message.len(),
+            "Incorrect length encoding for message: {:?}",
+            test_case.message
+        );
+    }
+}
+
+#[test]
+fn test_response_message_parsing() {
+    for test_case in response_message_parse_test_cases() {
+        let mut message = ResponseMessage::from(test_case.input);
+        message.i = test_case.field_index;
+
+        match (&test_case.parse_type, &test_case.expected) {
+            (ParseType::Int, ParseResult::Int(expected)) => match message.next_int() {
+                Ok(val) => assert_eq!(val, *expected, "Test '{}' failed", test_case.name),
+                Err(e) => panic!("Test '{}' failed: expected {:?}, got error: {:?}", test_case.name, expected, e),
+            },
+            (ParseType::Int, ParseResult::Error) => {
+                assert!(message.next_int().is_err(), "Test '{}' failed: expected error", test_case.name);
+            }
+            (ParseType::Double, ParseResult::Double(expected)) => match message.next_double() {
+                Ok(val) => assert!(
+                    (val - expected).abs() < f64::EPSILON,
+                    "Test '{}' failed: expected {:?}, got {:?}",
+                    test_case.name,
+                    expected,
+                    val
+                ),
+                Err(e) => panic!("Test '{}' failed: expected {:?}, got error: {:?}", test_case.name, expected, e),
+            },
+            (ParseType::String, ParseResult::String(expected)) => match message.next_string() {
+                Ok(val) => assert_eq!(val, *expected, "Test '{}' failed", test_case.name),
+                Err(e) => panic!("Test '{}' failed: expected {:?}, got error: {:?}", test_case.name, expected, e),
+            },
+            _ => panic!("Test case type mismatch"),
+        }
+    }
+}
+
+#[test]
+fn test_response_message_boundary_conditions() {
+    // Test reading past end of message
+    let mut message = ResponseMessage::from("1\02\0");
+    message.i = 3; // Beyond the last field
+
+    assert!(message.next_int().is_err());
+    assert!(message.next_double().is_err());
+    assert!(message.next_string().is_err());
+}
+
+#[test]
+fn test_response_message_peek_operations() {
+    let message = ResponseMessage::from("1\0123\0abc\0456\0");
+
+    // Test peek_int
+    assert_eq!(message.peek_int(1).unwrap(), 123);
+    assert_eq!(message.peek_int(3).unwrap(), 456);
+    assert!(message.peek_int(2).is_err()); // "abc" is not an int
+    assert!(message.peek_int(4).is_err()); // Out of bounds (only 4 fields, indices 0-3)
+}
+
+#[test]
+fn peek_int_rejects_proto_framed_message() {
+    // Per docs/rules/wire/proto-aware-accessors.md, text-index accessors must be
+    // proto-aware. peek_int defensively returns Err(UnexpectedWireFormat) on a
+    // proto-framed message even if the caller passes a valid text-field index —
+    // production callers already gate on raw_bytes().is_none() before invoking, so
+    // the guard is unreachable in correct paths but catches misuse. Same variant
+    // as require_proto's opposite-direction guard: a framing mismatch is never
+    // the skippable UnexpectedResponse.
+    let proto_msg = ResponseMessage::from_protobuf(5, vec![0x08, 0x7B]);
+    assert!(matches!(proto_msg.peek_int(0), Err(crate::Error::UnexpectedWireFormat(_))));
+    assert!(matches!(proto_msg.peek_int(1), Err(crate::Error::UnexpectedWireFormat(_))));
+}
+
+#[test]
+fn test_text_framed_message_has_no_order_id_or_execution_id() {
+    // order_id() and execution_id() require proto-framed payloads; a
+    // text-framed message (raw_bytes = None) returns None regardless of the
+    // historical text-layout field positions.
+    let open_order = ResponseMessage::from("5\0123\0field2\0field3\0");
+    assert_eq!(open_order.order_id(), None);
+    assert_eq!(open_order.execution_id(), None);
+
+    let commission_message = ResponseMessage::from("59\0field1\0exec123\0");
+    assert_eq!(commission_message.execution_id(), None);
+}
+
+#[test]
+fn test_execution_id_protobuf_commissions_report() {
+    let bytes = crate::proto::CommissionAndFeesReport {
+        exec_id: Some("exec-proto-1".into()),
+        ..Default::default()
+    }
+    .encode_to_vec();
+    let message = ResponseMessage::from_protobuf(IncomingMessages::CommissionsReport as i32, bytes);
+    assert_eq!(message.execution_id(), Some("exec-proto-1".to_string()));
+}
+
+#[test]
+fn test_execution_id_protobuf_execution_data() {
+    let bytes = crate::proto::ExecutionDetails {
+        req_id: Some(7),
+        contract: None,
+        execution: Some(crate::proto::Execution {
+            exec_id: Some("exec-proto-2".into()),
+            ..Default::default()
+        }),
+    }
+    .encode_to_vec();
+    let message = ResponseMessage::from_protobuf(IncomingMessages::ExecutionData as i32, bytes);
+    assert_eq!(message.execution_id(), Some("exec-proto-2".to_string()));
+}
+
+#[test]
+fn test_execution_id_protobuf_unknown_message_type_returns_none() {
+    let message = ResponseMessage::from_protobuf(IncomingMessages::OpenOrder as i32, Vec::new());
+    assert_eq!(message.execution_id(), None);
+}
+
+#[test]
+fn test_order_id_protobuf_open_order() {
+    let bytes = crate::proto::OpenOrder {
+        order_id: Some(42),
+        ..Default::default()
+    }
+    .encode_to_vec();
+    let message = ResponseMessage::from_protobuf(IncomingMessages::OpenOrder as i32, bytes);
+    assert_eq!(message.order_id(), Some(42));
+}
+
+#[test]
+fn test_order_id_protobuf_order_status() {
+    let bytes = crate::proto::OrderStatus {
+        order_id: Some(99),
+        status: Some("Filled".into()),
+        ..Default::default()
+    }
+    .encode_to_vec();
+    let message = ResponseMessage::from_protobuf(IncomingMessages::OrderStatus as i32, bytes);
+    assert_eq!(message.order_id(), Some(99));
+}
+
+#[test]
+fn test_order_id_protobuf_execution_data_nested() {
+    // ExecutionData carries order_id nested under `execution.order_id`,
+    // not at proto tag 1 (which is req_id).
+    let bytes = crate::proto::ExecutionDetails {
+        req_id: Some(7),
+        contract: None,
+        execution: Some(crate::proto::Execution {
+            order_id: Some(123),
+            ..Default::default()
+        }),
+    }
+    .encode_to_vec();
+    let message = ResponseMessage::from_protobuf(IncomingMessages::ExecutionData as i32, bytes);
+    assert_eq!(message.order_id(), Some(123));
+    assert_eq!(message.request_id(), Some(7));
+}
+
+#[test]
+fn test_order_id_protobuf_execution_data_end() {
+    // ExecutionDetailsEnd carries `req_id` at proto tag 1; order_id() returns
+    // that value because routing keys this message family by order_id and the
+    // proto schema overloads the field.
+    let bytes = crate::proto::ExecutionDetailsEnd { req_id: Some(55) }.encode_to_vec();
+    let message = ResponseMessage::from_protobuf(IncomingMessages::ExecutionDataEnd as i32, bytes);
+    assert_eq!(message.order_id(), Some(55));
+}
+
+#[test]
+fn test_request_id_protobuf_tag1() {
+    // HistoricalDataEnd-shaped envelope: just req_id at tag 1.
+    let bytes = ProtoIdEnvelope { id: Some(314) }.encode_to_vec();
+    let message = ResponseMessage::from_protobuf(IncomingMessages::HistoricalDataEnd as i32, bytes);
+    assert_eq!(message.request_id(), Some(314));
+}
+
+#[test]
+fn test_request_id_protobuf_message_type_without_request_id_returns_none() {
+    // ManagedAccounts is a shared message — not in routes_by_request_id, so
+    // request_id() returns None even if the proto payload carried an int @ tag 1.
+    let bytes = ProtoIdEnvelope { id: Some(42) }.encode_to_vec();
+    let message = ResponseMessage::from_protobuf(IncomingMessages::ManagedAccounts as i32, bytes);
+    assert_eq!(message.request_id(), None);
+}
+
+#[test]
+fn test_request_message_index() {
+    let message = RequestMessage {
+        fields: vec!["field0".to_string(), "field1".to_string(), "field2".to_string()],
+    };
+
+    assert_eq!(message[0], "field0");
+    assert_eq!(message[1], "field1");
+    assert_eq!(message[2], "field2");
+}
+
+#[test]
+#[should_panic]
+fn test_request_message_index_out_of_bounds() {
+    let message = RequestMessage {
+        fields: vec!["field0".to_string()],
+    };
+
+    let _ = &message[1]; // Should panic
+}
+
+#[test]
+fn test_response_message_is_shutdown() {
+    let shutdown_message = ResponseMessage::from("-2\0");
+    assert!(shutdown_message.is_shutdown());
+
+    let normal_message = ResponseMessage::from("1\0");
+    assert!(!normal_message.is_shutdown());
+}
+
+#[test]
+fn test_response_message_encode_decode_roundtrip() {
+    let original = ResponseMessage::from("1\0test\0123\03.456\0");
+    let encoded = original.encode();
+    let decoded = ResponseMessage::from(&encoded);
+
+    assert_eq!(original.fields, decoded.fields);
+}
+
+// Tests for error conditions and edge cases
+#[test]
+fn test_response_message_next_methods_edge_cases() {
+    struct TestCase {
+        name: &'static str,
+        input: &'static str,
+        test_fn: fn(&mut ResponseMessage) -> bool,
+    }
+
+    let test_cases = vec![
+        TestCase {
+            name: "empty_message",
+            input: "",
+            test_fn: |msg| msg.next_int().is_err(),
+        },
+        TestCase {
+            name: "single_null_terminator",
+            input: "\0",
+            test_fn: |msg| {
+                msg.i = 0;
+                let result = msg.next_string();
+                result.is_ok() && result.unwrap().is_empty()
+            },
+        },
+        TestCase {
+            name: "multiple_null_terminators",
+            input: "\0\0\0",
+            test_fn: |msg| {
+                msg.i = 0;
+                let result = msg.next_string();
+                result.is_ok() && result.unwrap().is_empty()
+            },
+        },
+        TestCase {
+            name: "malformed_int",
+            input: "not_an_int\0",
+            test_fn: |msg| {
+                msg.i = 0;
+                msg.next_int().is_err()
+            },
+        },
+        TestCase {
+            name: "malformed_double",
+            input: "not_a_double\0",
+            test_fn: |msg| {
+                msg.i = 0;
+                msg.next_double().is_err()
+            },
+        },
+        TestCase {
+            name: "overflow_int",
+            input: "99999999999999999999\0",
+            test_fn: |msg| {
+                msg.i = 0;
+                msg.next_int().is_err()
+            },
+        },
+    ];
+
+    for test_case in test_cases {
+        let mut message = ResponseMessage::from(test_case.input);
+        assert!((test_case.test_fn)(&mut message), "Test '{}' failed", test_case.name);
+    }
+}
+
+#[test]
+fn test_channel_mappings_completeness() {
+    use super::shared_channel_configuration::CHANNEL_MAPPINGS;
+
+    // Verify that each mapping has at least one response
+    for mapping in CHANNEL_MAPPINGS {
+        assert!(
+            !mapping.responses.is_empty(),
+            "Channel mapping for {:?} has no responses",
+            mapping.request
+        );
+    }
+
+    // Test specific known mappings
+    let mappings = CHANNEL_MAPPINGS;
+
+    // Find RequestPositions mapping
+    let positions_mapping = mappings
+        .iter()
+        .find(|m| matches!(m.request, OutgoingMessages::RequestPositions))
+        .expect("RequestPositions mapping should exist");
+
+    assert_eq!(positions_mapping.responses.len(), 2);
+    assert!(positions_mapping.responses.contains(&IncomingMessages::Position));
+    assert!(positions_mapping.responses.contains(&IncomingMessages::PositionEnd));
+
+    // Find RequestAccountData mapping
+    let account_data_mapping = mappings
+        .iter()
+        .find(|m| matches!(m.request, OutgoingMessages::RequestAccountData))
+        .expect("RequestAccountData mapping should exist");
+
+    assert_eq!(account_data_mapping.responses.len(), 4);
+    assert!(account_data_mapping.responses.contains(&IncomingMessages::AccountValue));
+    assert!(account_data_mapping.responses.contains(&IncomingMessages::PortfolioValue));
+    assert!(account_data_mapping.responses.contains(&IncomingMessages::AccountDownloadEnd));
+    assert!(account_data_mapping.responses.contains(&IncomingMessages::AccountUpdateTime));
+}
+
+#[test]
+fn test_exclusive_one_shot_response_types() {
+    use super::shared_channel_configuration::exclusive_one_shot_response_types;
+
+    let one_shot = exclusive_one_shot_response_types();
+
+    // Genuine one-shots (single terminating response) are eligible for fail-fast.
+    for included in [
+        IncomingMessages::NextValidId,
+        IncomingMessages::MarketRule,
+        IncomingMessages::ManagedAccounts,
+        IncomingMessages::FamilyCodes,
+    ] {
+        assert!(one_shot.contains(&included), "{included:?} should be a one-shot error response type");
+    }
+
+    // Streaming channels are excluded so an unrelated error never terminates a
+    // live subscription — including NewsBulletins, which streams without an
+    // `*End` marker. MarketDataType and WshEventData are not in the table at all
+    // (their callers use request-id-keyed channels).
+    for excluded in [
+        IncomingMessages::OpenOrder,
+        IncomingMessages::OrderStatus,
+        IncomingMessages::Position,
+        IncomingMessages::PositionMulti,
+        IncomingMessages::AccountValue,
+        IncomingMessages::NewsBulletins,
+        IncomingMessages::MarketDataType,
+        IncomingMessages::WshEventData,
+    ] {
+        assert!(!one_shot.contains(&excluded), "{excluded:?} is streaming and must not be fail-fast");
+    }
+}
+
+#[test]
+fn test_is_one_shot_request() {
+    use super::shared_channel_configuration::{is_one_shot_request, CHANNEL_MAPPINGS};
+
+    // Every mapping's flag round-trips through the request-side lookup.
+    for mapping in CHANNEL_MAPPINGS {
+        assert_eq!(
+            is_one_shot_request(mapping.request),
+            mapping.one_shot,
+            "{:?} lookup should match its mapping's one_shot flag",
+            mapping.request
+        );
+    }
+
+    // A request without a shared-channel mapping is not one-shot.
+    assert!(!is_one_shot_request(OutgoingMessages::RequestMarketData));
+}
+
+#[test]
+fn test_notice_edge_cases() {
+    struct TestCase {
+        name: &'static str,
+        code: i32,
+        msg: &'static str,
+    }
+
+    let test_cases = vec![
+        TestCase {
+            name: "normal_error",
+            code: 2107,
+            msg: "HMDS data farm connection is inactive.",
+        },
+        TestCase {
+            name: "empty_message",
+            code: 1000,
+            msg: "",
+        },
+        TestCase {
+            name: "negative_code",
+            code: -500,
+            msg: "Negative error code",
+        },
+    ];
+
+    for test_case in test_cases {
+        let message = helpers::proto_error_response(-1, test_case.code, test_case.msg);
+        let notice = Notice::from(&message);
+
+        assert_eq!(notice.code, test_case.code, "Test '{}' failed: wrong error code", test_case.name);
+        assert_eq!(notice.message, test_case.msg, "Test '{}' failed: wrong error message", test_case.name);
+    }
+}
+
+#[test]
+fn test_notice_is_cancellation() {
+    // Code 202 = order cancelled
+    let cancellation = Notice {
+        request_id: None,
+        code: 202,
+        message: "Order Cancelled - reason:".to_string(),
+        error_time: None,
+        advanced_order_reject_json: String::new(),
+    };
+    assert!(cancellation.is_cancellation());
+    assert!(cancellation.is_informational());
+    assert!(!cancellation.is_error());
+
+    // Other codes are not cancellations
+    let error = Notice {
+        request_id: None,
+        code: 200,
+        message: "No security definition found".to_string(),
+        error_time: None,
+        advanced_order_reject_json: String::new(),
+    };
+    assert!(!error.is_cancellation());
+}
+
+#[test]
+fn test_notice_is_warning() {
+    // Boundaries from the constant; 2176 and 2187 are the post-2169 codes IB
+    // shipped that motivated widening the band (#805).
+    let warning_codes = [*WARNING_CODE_RANGE.start(), 2107, 2119, 2150, 2176, 2187, *WARNING_CODE_RANGE.end()];
+    for code in warning_codes {
+        let notice = helpers::test_notice(code, "");
+        assert!(notice.is_warning(), "Code {} should be a warning", code);
+        assert!(notice.is_informational());
+        assert!(!notice.is_error());
+    }
+
+    // Code 0 — a frame whose error_code field was absent on the wire — is a
+    // warning even without a "Warning:" line (the undecodable-frame fallback
+    // has an empty message).
+    for msg in ["Warning: Approaching max rate of 50 messages per second (42)", ""] {
+        let notice = Notice {
+            request_id: None,
+            code: 0,
+            message: msg.to_string(),
+            error_time: None,
+            advanced_order_reject_json: String::new(),
+        };
+        assert!(notice.is_warning(), "code 0 with message {msg:?} should be a warning");
+        assert!(notice.is_informational());
+        assert!(!notice.is_error());
+    }
+
+    // Codes outside WARNING_CODE_RANGE are not warnings, nor is the advisory
+    // 2188 inside it.
+    let non_warning_codes = [*WARNING_CODE_RANGE.start() - 1, *WARNING_CODE_RANGE.end() + 1, 200, 202, 1000, 2188];
+    for code in non_warning_codes {
+        let notice = helpers::test_notice(code, "");
+        assert!(!notice.is_warning(), "Code {} should not be a warning", code);
+    }
+}
+
+#[test]
+fn test_notice_classifies_order_message_warning_from_text() {
+    let warning = Notice {
+        request_id: Some(402000003),
+        code: 399,
+        message: "Order Message:\nSELL 1 ES DEC'26\nWarning: Your order will not be placed at the exchange until 2026-08-17 08:30:00 US/Central."
+            .to_string(),
+        error_time: None,
+        advanced_order_reject_json: String::new(),
+    };
+    let rejection = Notice {
+        message: "Order Message:\nOrder cannot be transmitted".to_string(),
+        ..warning.clone()
+    };
+
+    assert!(warning.is_warning());
+    assert_eq!(warning.category(), NoticeCategory::Warning);
+    assert!(!warning.is_error());
+    assert!(!rejection.is_warning());
+    assert_eq!(rejection.category(), NoticeCategory::OrderRejection);
+    assert!(rejection.is_error());
+}
+
+#[test]
+fn test_notice_is_system_message() {
+    // System message codes: 1100, 1101, 1102, 1300
+    let system_codes = [
+        (1100, "Connectivity between IB and TWS has been lost."),
+        (1101, "Connectivity restored, data lost."),
+        (1102, "Connectivity restored, data maintained."),
+        (1300, "Socket port has been reset."),
+    ];
+    for (code, msg) in system_codes {
+        let notice = Notice {
+            request_id: None,
+            code,
+            message: msg.to_string(),
+            error_time: None,
+            advanced_order_reject_json: String::new(),
+        };
+        assert!(notice.is_system_message(), "Code {} should be a system message", code);
+        assert!(notice.is_informational());
+        assert!(!notice.is_error());
+    }
+
+    // Non-system codes
+    let non_system_codes = [200, 202, 1099, 1103, 1299, 1301, 2100];
+    for code in non_system_codes {
+        let notice = Notice {
+            request_id: None,
+            code,
+            message: format!("Non-system message with code {}", code),
+            error_time: None,
+            advanced_order_reject_json: String::new(),
+        };
+        assert!(!notice.is_system_message(), "Code {} should not be a system message", code);
+    }
+}
+
+#[test]
+fn test_notice_is_informational() {
+    // Informational includes cancellations, warnings, and system messages
+    let informational_codes = [202, 1100, 1101, 1102, 1300, *WARNING_CODE_RANGE.start(), 2107, *WARNING_CODE_RANGE.end()];
+    for code in informational_codes {
+        let notice = helpers::test_notice(code, "");
+        assert!(notice.is_informational(), "Code {} should be informational", code);
+        assert!(!notice.is_error(), "Code {} should not be an error", code);
+    }
+
+    // Non-informational (actual errors)
+    let error_codes = [100, 200, 201, 316, 321, 354, 502, 10000];
+    for code in error_codes {
+        let notice = helpers::test_notice(code, "");
+        assert!(!notice.is_informational(), "Code {} should not be informational", code);
+        assert!(notice.is_error(), "Code {} should be an error", code);
+    }
+}
+
+#[test]
+fn test_notice_is_error() {
+    // Code 200 = actual error
+    let error = Notice {
+        request_id: None,
+        code: 200,
+        message: "No security definition found".to_string(),
+        error_time: None,
+        advanced_order_reject_json: String::new(),
+    };
+    assert!(error.is_error());
+    assert!(!error.is_informational());
+
+    // Code 202 = cancellation, not error
+    let cancellation = Notice {
+        request_id: None,
+        code: 202,
+        message: "Order Cancelled".to_string(),
+        error_time: None,
+        advanced_order_reject_json: String::new(),
+    };
+    assert!(!cancellation.is_error());
+    assert!(cancellation.is_informational());
+
+    // Code 1100 = system message, not error
+    let system_msg = Notice {
+        request_id: None,
+        code: 1100,
+        message: "Connectivity lost".to_string(),
+        error_time: None,
+        advanced_order_reject_json: String::new(),
+    };
+    assert!(!system_msg.is_error());
+    assert!(system_msg.is_informational());
+
+    // Code 2107 = warning, not error
+    let warning = Notice {
+        request_id: None,
+        code: 2107,
+        message: "HMDS data farm connection is inactive.".to_string(),
+        error_time: None,
+        advanced_order_reject_json: String::new(),
+    };
+    assert!(!warning.is_error());
+    assert!(warning.is_informational());
+}
+
+#[test]
+fn test_notice_is_order_rejection() {
+    let start = *ORDER_REJECTION_CODE_RANGE.start();
+    let end = *ORDER_REJECTION_CODE_RANGE.end();
+
+    for code in [201, 203, 355, end - 1, end] {
+        assert!(
+            helpers::test_notice(code, "").is_order_rejection(),
+            "code {code} should be order rejection"
+        );
+    }
+
+    // Codes inside the band that an earlier category claims are covered by
+    // test_notice_category_predicates_are_disjoint.
+    for code in [start - 1, end + 1, 100, *WARNING_CODE_RANGE.start(), SYSTEM_MESSAGE_CODES[0], 10000] {
+        assert!(
+            !helpers::test_notice(code, "").is_order_rejection(),
+            "code {code} should not be order rejection"
+        );
+    }
+}
+
+#[test]
+fn test_notice_is_request_error() {
+    for &code in REQUEST_ERROR_CODES {
+        let notice = helpers::test_notice(code, "");
+        assert!(notice.is_request_error(), "code {code} should be a request error");
+        assert!(
+            ORDER_REJECTION_CODE_RANGE.contains(&code),
+            "code {code} outside the band it is carved from"
+        );
+        assert!(notice.is_error(), "code {code} should be terminal");
+    }
+    for code in [201, 202, 317, 355, 399, 502, 2104, 10000] {
+        assert!(
+            !helpers::test_notice(code, "").is_request_error(),
+            "code {code} should not be a request error"
+        );
+    }
+}
+
+/// Every category predicate is `category() == X`: at most one is true, and it
+/// names the category. `Error` has no predicate of its own.
+#[test]
+fn test_notice_category_predicates_are_disjoint() {
+    let messages = ["", "Order Message:\nWarning: outside RTH"];
+    for code in -10..=11000 {
+        for message in messages {
+            let notice = Notice::synthesized(code, message.to_string());
+            let hits: Vec<NoticeCategory> = [
+                (notice.is_cancellation(), NoticeCategory::Cancellation),
+                (notice.is_data_advisory(), NoticeCategory::DataAdvisory),
+                (notice.is_warning(), NoticeCategory::Warning),
+                (notice.is_system_message(), NoticeCategory::SystemMessage),
+                (notice.is_request_error(), NoticeCategory::RequestError),
+                (notice.is_order_rejection(), NoticeCategory::OrderRejection),
+            ]
+            .into_iter()
+            .filter_map(|(hit, category)| hit.then_some(category))
+            .collect();
+            let expected: Vec<NoticeCategory> = match notice.category() {
+                NoticeCategory::Error => vec![],
+                category => vec![category],
+            };
+            assert_eq!(hits, expected, "code {code} message {message:?}");
+        }
+    }
+}
+
+#[test]
+fn test_notice_category_partition() {
+    let cases: &[(i32, NoticeCategory)] = &[
+        (ORDER_CANCELLED_CODE, NoticeCategory::Cancellation), // 202 — precedence over OrderRejection
+        (0, NoticeCategory::Warning),                         // code-less frame: error_code absent on the wire
+        (*WARNING_CODE_RANGE.start(), NoticeCategory::Warning),
+        (*WARNING_CODE_RANGE.end(), NoticeCategory::Warning),
+        (SYSTEM_MESSAGE_CODES[0], NoticeCategory::SystemMessage),
+        (SYSTEM_MESSAGE_CODES[3], NoticeCategory::SystemMessage),
+        (*WARNING_CODE_RANGE.end() + 1, NoticeCategory::Error),
+        (*ORDER_REJECTION_CODE_RANGE.start(), NoticeCategory::OrderRejection), // 200 — also answers orders
+        (201, NoticeCategory::OrderRejection),                                 // hard rejection
+        (316, NoticeCategory::RequestError),                                   // depth HALTED
+        (320, NoticeCategory::OrderRejection),                                 // answers invalid attached orders (#842)
+        (321, NoticeCategory::OrderRejection),                                 // server error validating a request
+        (354, NoticeCategory::RequestError),                                   // market data not subscribed
+        (366, NoticeCategory::RequestError),                                   // no historical query
+        (355, NoticeCategory::OrderRejection),                                 // order size vs market rule
+        (*ORDER_REJECTION_CODE_RANGE.end(), NoticeCategory::OrderRejection),   // 399
+        (317, NoticeCategory::DataAdvisory),                                   // precedence over the 200..=399 band (#806)
+        (2188, NoticeCategory::DataAdvisory),                                  // precedence over the 21xx band
+        (10089, NoticeCategory::DataAdvisory),
+        (10090, NoticeCategory::DataAdvisory),
+        (10091, NoticeCategory::DataAdvisory),
+        (10167, NoticeCategory::DataAdvisory),
+        (100, NoticeCategory::Error),
+        (502, NoticeCategory::Error),
+        (10000, NoticeCategory::Error),
+    ];
+
+    for &(code, expected) in cases {
+        assert_eq!(helpers::test_notice(code, "").category(), expected, "code {code} miscategorised");
+    }
+}
+
+#[test]
+fn test_connectivity_status_from_code_table() {
+    // Derive expectations from the code constants, per
+    // docs/rules/testing/derive-from-constants.md: each farm-code set maps to its
+    // status; everything else maps to None.
+    let cases: &[(&[i32], ConnectivityStatus)] = &[
+        (&FARM_OK_CODES, ConnectivityStatus::Ok),
+        (&FARM_BROKEN_CODES, ConnectivityStatus::Broken),
+        (&FARM_INACTIVE_CODES, ConnectivityStatus::Inactive),
+        (&FARM_CONNECTING_CODES, ConnectivityStatus::Connecting),
+    ];
+    for &(codes, expected) in cases {
+        for &code in codes {
+            assert_eq!(ConnectivityStatus::from_code(code), Some(expected), "code {code} misclassified");
+        }
+    }
+
+    // Non-farm codes — including warning-band neighbors and the range boundaries —
+    // carry no connectivity status.
+    for code in [*WARNING_CODE_RANGE.start(), 2120, *WARNING_CODE_RANGE.end(), 500, 202, 1100] {
+        assert_eq!(ConnectivityStatus::from_code(code), None, "code {code} should have no status");
+    }
+}
+
+#[test]
+fn test_connectivity_status_delegates() {
+    // The accessor is a thin wrapper over from_code; assert delegation without
+    // re-asserting the whole table.
+    let code = FARM_BROKEN_CODES[0];
+    assert_eq!(helpers::test_notice(code, "").connectivity_status(), ConnectivityStatus::from_code(code));
+    assert_eq!(helpers::test_notice(500, "").connectivity_status(), None);
+}
+
+#[test]
+fn test_connectivity_status_subset_of_warning() {
+    // Additive contract: every farm code is still a Warning under the existing
+    // partition — connectivity_status refines, it doesn't repartition.
+    let all_farm = FARM_OK_CODES
+        .iter()
+        .chain(&FARM_BROKEN_CODES)
+        .chain(&FARM_INACTIVE_CODES)
+        .chain(&FARM_CONNECTING_CODES);
+    for &code in all_farm {
+        let notice = helpers::test_notice(code, "");
+        assert!(notice.is_warning(), "farm code {code} should be a warning");
+        assert_eq!(
+            notice.category(),
+            NoticeCategory::Warning,
+            "farm code {code} should categorise as Warning"
+        );
+        assert!(WARNING_CODE_RANGE.contains(&code), "farm code {code} should be inside WARNING_CODE_RANGE");
+    }
+}
+
+#[test]
+fn test_notice_data_advisory() {
+    // Data advisories are informational: TWS proceeds with the request and
+    // data follows, so they must not be classified as errors. Exact lists win
+    // over ranges: every advisory categorises as DataAdvisory whatever band it
+    // is numerically inside (317 in 200..=399, 2188 in the 21xx band).
+    for &code in DATA_ADVISORY_CODES {
+        let notice = helpers::test_notice(code, "");
+        assert!(notice.is_data_advisory(), "code {code} should be a data advisory");
+        assert!(notice.is_informational(), "code {code} should be informational");
+        assert!(!notice.is_error(), "code {code} should not be an error");
+        assert_eq!(notice.category(), NoticeCategory::DataAdvisory, "code {code} miscategorised");
+
+        // Adding an advisory must not classify a whole band.
+        for neighbor in [code - 1, code + 1] {
+            if DATA_ADVISORY_CODES.contains(&neighbor) {
+                continue;
+            }
+            assert!(
+                !helpers::test_notice(neighbor, "").is_data_advisory(),
+                "code {neighbor} should not be a data advisory"
+            );
+        }
+    }
+}
+
+#[test]
+fn test_handshake_synthetic_constants_pinned() {
+    // Hard pin the wire values — these are part of the public API and may not
+    // shift silently. Negative codes never collide with TWS-emitted codes (TWS
+    // uses 0+); -2 is taken by `ResponseMessage::is_shutdown`.
+    assert_eq!(HANDSHAKE_UNKNOWN_FRAME_CODE, -3);
+    assert_eq!(HANDSHAKE_DECODE_FAILURE_CODE, -4);
+    assert_ne!(HANDSHAKE_UNKNOWN_FRAME_CODE, HANDSHAKE_DECODE_FAILURE_CODE);
+}
+
+#[test]
+fn test_is_handshake_synthetic() {
+    assert!(helpers::test_notice(HANDSHAKE_UNKNOWN_FRAME_CODE, "").is_handshake_synthetic());
+    assert!(helpers::test_notice(HANDSHAKE_DECODE_FAILURE_CODE, "").is_handshake_synthetic());
+
+    // TWS-emitted codes must not pass the predicate.
+    for code in [
+        0,
+        ORDER_CANCELLED_CODE,
+        *WARNING_CODE_RANGE.start(),
+        *WARNING_CODE_RANGE.end(),
+        SYSTEM_MESSAGE_CODES[0],
+        *ORDER_REJECTION_CODE_RANGE.start(),
+        *ORDER_REJECTION_CODE_RANGE.end(),
+        -2, // shutdown sentinel — distinct sentinel, must not be confused with handshake-synthetic
+        -1,
+        UNKNOWN_MESSAGE_TYPE_CODE, // synthesized, but not handshake-specific
+        100,
+    ] {
+        assert!(
+            !helpers::test_notice(code, "").is_handshake_synthetic(),
+            "code {code} should not be flagged handshake-synthetic"
+        );
+    }
+}
+
+#[test]
+fn test_is_client_synthesized() {
+    for code in [
+        HANDSHAKE_UNKNOWN_FRAME_CODE,
+        HANDSHAKE_DECODE_FAILURE_CODE,
+        UNKNOWN_MESSAGE_TYPE_CODE,
+        SUBSCRIPTION_LAG_CODE,
+        NOTICE_STREAM_LAG_CODE,
+        TRANSPORT_RECONNECT_CODE,
+        // Any negative code, named or not.
+        -1,
+        -2,
+        i32::MIN,
+    ] {
+        assert!(helpers::test_notice(code, "").is_client_synthesized(), "code {code}");
+    }
+
+    // TWS-emitted codes, including the code-less 0.
+    for code in [
+        0,
+        ORDER_CANCELLED_CODE,
+        *WARNING_CODE_RANGE.start(),
+        *WARNING_CODE_RANGE.end(),
+        SYSTEM_MESSAGE_CODES[0],
+        *ORDER_REJECTION_CODE_RANGE.start(),
+        10000,
+    ] {
+        assert!(!helpers::test_notice(code, "").is_client_synthesized(), "code {code}");
+    }
+}
+
+#[test]
+fn test_all_incoming_message_conversions() {
+    // Test boundary values and ensure all message types are covered
+    let test_cases = vec![
+        (0, IncomingMessages::NotValid),
+        (1, IncomingMessages::TickPrice),
+        (108, IncomingMessages::HistoricalDataEnd),
+        (109, IncomingMessages::CurrentTimeInMillis),
+        (110, IncomingMessages::ConfigResponse),
+        (111, IncomingMessages::UpdateConfigResponse),
+        (112, IncomingMessages::NotValid),
+        (i32::MAX, IncomingMessages::NotValid),
+        (i32::MIN, IncomingMessages::NotValid),
+        (-1, IncomingMessages::NotValid),
+    ];
+
+    for (value, expected) in test_cases {
+        assert_eq!(IncomingMessages::from(value), expected, "Failed for value {}", value);
+    }
+}
+
+#[test]
+fn test_outgoing_message_display() {
+    // Test Display implementation for OutgoingMessages
+    let test_cases = vec![
+        (OutgoingMessages::RequestMarketData, "1"),
+        (OutgoingMessages::CancelMarketData, "2"),
+        (OutgoingMessages::PlaceOrder, "3"),
+        (OutgoingMessages::CancelOrder, "4"),
+        (OutgoingMessages::RequestOpenOrders, "5"),
+        (OutgoingMessages::RequestIds, "8"),
+        (OutgoingMessages::RequestCurrentTime, "49"),
+        (OutgoingMessages::RequestAccountSummary, "62"),
+        (OutgoingMessages::RequestPnL, "92"),
+        (OutgoingMessages::RequestUserInfo, "104"),
+    ];
+
+    for (msg, expected) in test_cases {
+        assert_eq!(format!("{}", msg), expected);
+    }
+}
+
+#[test]
+fn test_encode_length_edge_cases() {
+    // Test with various sizes
+    let x255 = "x".repeat(255);
+    let x256 = "x".repeat(256);
+    let x1000 = "x".repeat(1000);
+
+    let test_cases = vec![
+        ("", 4),                // Empty string
+        ("x", 5),               // Single character
+        (x255.as_str(), 259),   // 255 characters
+        (x256.as_str(), 260),   // 256 characters
+        (x1000.as_str(), 1004), // 1000 characters
+    ];
+
+    for (input, expected_len) in test_cases {
+        let encoded = encode_length(input);
+        assert_eq!(encoded.len(), expected_len);
+
+        // Verify the encoded length is correct
+        let length_bytes = &encoded[0..4];
+        let decoded_length = u32::from_be_bytes([length_bytes[0], length_bytes[1], length_bytes[2], length_bytes[3]]);
+        assert_eq!(decoded_length as usize, input.len());
+    }
+}
+
+#[test]
+fn test_response_message_access_patterns() {
+    let message = ResponseMessage::from("5\0123\0field2\0field3\0field4\0");
+
+    // Test message_type
+    assert_eq!(message.message_type(), IncomingMessages::OpenOrder);
+
+    // Test multiple peeks don't change state
+    assert_eq!(message.peek_int(1).unwrap(), 123);
+    assert_eq!(message.peek_int(1).unwrap(), 123);
+
+    assert_eq!(message.fields.len(), 5);
+}
+
+#[test]
+fn test_message_type_is_resolved_once_at_construction() {
+    // Text framing keeps the discriminant in fields[0] — the handshake reader
+    // walks the cursor from index 0 — and `kind` is derived from it.
+    let text = ResponseMessage::from("5\0123\0");
+    assert_eq!(text.message_type(), IncomingMessages::OpenOrder);
+    assert_eq!(text.fields[0], "5", "text framing keeps the id as a readable field");
+
+    // Proto framing carries the id out of band, so there are no text fields at
+    // all and nothing re-parses a string to answer message_type().
+    let proto = ResponseMessage::from_protobuf(IncomingMessages::OpenOrder as i32, vec![0x08, 0x2a]);
+    assert_eq!(proto.message_type(), IncomingMessages::OpenOrder);
+    assert!(proto.fields.is_empty(), "a proto frame allocates no text fields");
+
+    // An unparseable or absent discriminant is NotValid with no id. It used to
+    // be -1 here and 0 from Default - two encodings, and -1 is NotValid's own
+    // discriminant.
+    for message in [ResponseMessage::from("nonsense\0"), ResponseMessage::from(""), ResponseMessage::default()] {
+        assert_eq!(message.message_type(), IncomingMessages::NotValid);
+        assert_eq!(message.message_id(), None);
+    }
+    // An unrecognized id that did parse is kept.
+    assert_eq!(ResponseMessage::from("-1\0").message_id(), Some(-1));
+}
+
+#[test]
+fn test_response_message_fields_modification() {
+    // Test that ResponseMessage handles field modification correctly
+    let mut message = ResponseMessage::from("1\02\03\0");
+    assert_eq!(message.fields.len(), 3);
+    assert_eq!(message.fields[0], "1");
+    assert_eq!(message.fields[1], "2");
+    assert_eq!(message.fields[2], "3");
+
+    // Test that we can read fields correctly after creation
+    message.i = 0;
+    assert_eq!(message.next_int().unwrap(), 1);
+    assert_eq!(message.next_int().unwrap(), 2);
+    assert_eq!(message.next_int().unwrap(), 3);
+}
+
+#[test]
+fn test_incoming_messages_equality() {
+    // Test that IncomingMessages enum variants are properly comparable
+    assert_eq!(IncomingMessages::TickPrice, IncomingMessages::TickPrice);
+    assert_ne!(IncomingMessages::TickPrice, IncomingMessages::TickSize);
+
+    // Test with from conversion
+    assert_eq!(IncomingMessages::from(1), IncomingMessages::TickPrice);
+    assert_eq!(IncomingMessages::from(2), IncomingMessages::TickSize);
+    assert_ne!(IncomingMessages::from(1), IncomingMessages::from(2));
+}
+
+// Additional tests for comprehensive FromStr coverage of OutgoingMessages
+#[test]
+fn test_outgoing_messages_from_str_comprehensive() {
+    use std::str::FromStr;
+
+    // Table-driven test for all OutgoingMessages variants
+    let test_cases = vec![
+        ("1", OutgoingMessages::RequestMarketData),
+        ("2", OutgoingMessages::CancelMarketData),
+        ("3", OutgoingMessages::PlaceOrder),
+        ("4", OutgoingMessages::CancelOrder),
+        ("5", OutgoingMessages::RequestOpenOrders),
+        ("6", OutgoingMessages::RequestAccountData),
+        ("7", OutgoingMessages::RequestExecutions),
+        ("8", OutgoingMessages::RequestIds),
+        ("9", OutgoingMessages::RequestContractData),
+        ("10", OutgoingMessages::RequestMarketDepth),
+        ("11", OutgoingMessages::CancelMarketDepth),
+        ("12", OutgoingMessages::RequestNewsBulletins),
+        ("13", OutgoingMessages::CancelNewsBulletin),
+        ("14", OutgoingMessages::ChangeServerLog),
+        ("15", OutgoingMessages::RequestAutoOpenOrders),
+        ("16", OutgoingMessages::RequestAllOpenOrders),
+        ("17", OutgoingMessages::RequestManagedAccounts),
+        ("18", OutgoingMessages::RequestFA),
+        ("19", OutgoingMessages::ReplaceFA),
+        ("20", OutgoingMessages::RequestHistoricalData),
+        ("21", OutgoingMessages::ExerciseOptions),
+        ("22", OutgoingMessages::RequestScannerSubscription),
+        ("23", OutgoingMessages::CancelScannerSubscription),
+        ("24", OutgoingMessages::RequestScannerParameters),
+        ("25", OutgoingMessages::CancelHistoricalData),
+        ("49", OutgoingMessages::RequestCurrentTime),
+        ("50", OutgoingMessages::RequestRealTimeBars),
+        ("51", OutgoingMessages::CancelRealTimeBars),
+        ("52", OutgoingMessages::RequestFundamentalData),
+        ("53", OutgoingMessages::CancelFundamentalData),
+        ("54", OutgoingMessages::ReqCalcImpliedVolat),
+        ("55", OutgoingMessages::ReqCalcOptionPrice),
+        ("56", OutgoingMessages::CancelImpliedVolatility),
+        ("57", OutgoingMessages::CancelOptionPrice),
+        ("58", OutgoingMessages::RequestGlobalCancel),
+        ("59", OutgoingMessages::RequestMarketDataType),
+        ("61", OutgoingMessages::RequestPositions),
+        ("62", OutgoingMessages::RequestAccountSummary),
+        ("63", OutgoingMessages::CancelAccountSummary),
+        ("64", OutgoingMessages::CancelPositions),
+        ("65", OutgoingMessages::VerifyRequest),
+        ("66", OutgoingMessages::VerifyMessage),
+        ("67", OutgoingMessages::QueryDisplayGroups),
+        ("68", OutgoingMessages::SubscribeToGroupEvents),
+        ("69", OutgoingMessages::UpdateDisplayGroup),
+        ("70", OutgoingMessages::UnsubscribeFromGroupEvents),
+        ("71", OutgoingMessages::StartApi),
+        ("72", OutgoingMessages::VerifyAndAuthRequest),
+        ("73", OutgoingMessages::VerifyAndAuthMessage),
+        ("74", OutgoingMessages::RequestPositionsMulti),
+        ("75", OutgoingMessages::CancelPositionsMulti),
+        ("76", OutgoingMessages::RequestAccountUpdatesMulti),
+        ("77", OutgoingMessages::CancelAccountUpdatesMulti),
+        ("78", OutgoingMessages::RequestSecurityDefinitionOptionalParameters),
+        ("79", OutgoingMessages::RequestSoftDollarTiers),
+        ("80", OutgoingMessages::RequestFamilyCodes),
+        ("81", OutgoingMessages::RequestMatchingSymbols),
+        ("82", OutgoingMessages::RequestMktDepthExchanges),
+        ("83", OutgoingMessages::RequestSmartComponents),
+        ("84", OutgoingMessages::RequestNewsArticle),
+        ("85", OutgoingMessages::RequestNewsProviders),
+        ("86", OutgoingMessages::RequestHistoricalNews),
+        ("87", OutgoingMessages::RequestHeadTimestamp),
+        ("88", OutgoingMessages::RequestHistogramData),
+        ("89", OutgoingMessages::CancelHistogramData),
+        ("90", OutgoingMessages::CancelHeadTimestamp),
+        ("91", OutgoingMessages::RequestMarketRule),
+        ("92", OutgoingMessages::RequestPnL),
+        ("93", OutgoingMessages::CancelPnL),
+        ("94", OutgoingMessages::RequestPnLSingle),
+        ("95", OutgoingMessages::CancelPnLSingle),
+        ("96", OutgoingMessages::RequestHistoricalTicks),
+        ("97", OutgoingMessages::RequestTickByTickData),
+        ("98", OutgoingMessages::CancelTickByTickData),
+        ("99", OutgoingMessages::RequestCompletedOrders),
+        ("100", OutgoingMessages::RequestWshMetaData),
+        ("101", OutgoingMessages::CancelWshMetaData),
+        ("102", OutgoingMessages::RequestWshEventData),
+        ("103", OutgoingMessages::CancelWshEventData),
+        ("104", OutgoingMessages::RequestUserInfo),
+        ("105", OutgoingMessages::RequestCurrentTimeInMillis),
+        ("106", OutgoingMessages::CancelContractData),
+        ("107", OutgoingMessages::CancelHistoricalTicks),
+        ("108", OutgoingMessages::ReqConfig),
+        ("109", OutgoingMessages::UpdateConfig),
+    ];
+
+    for (input, expected) in test_cases {
+        let result = OutgoingMessages::from_str(input).unwrap();
+        assert_eq!(result, expected, "Failed to parse '{}' as {:?}", input, expected);
+    }
+
+    // Test invalid cases
+    assert!(OutgoingMessages::from_str("110").is_err());
+    assert!(OutgoingMessages::from_str("999").is_err());
+    assert!(OutgoingMessages::from_str("-1").is_err());
+    assert!(OutgoingMessages::from_str("abc").is_err());
+    assert!(OutgoingMessages::from_str("").is_err());
+}
+
+#[test]
+fn test_routes_by_request_id_comprehensive() {
+    // Confirm the allow-list covers a representative slice across domains.
+    assert!(routes_by_request_id(IncomingMessages::MarketDepthL2));
+    assert!(routes_by_request_id(IncomingMessages::TickReqParams));
+    assert!(routes_by_request_id(IncomingMessages::TickSnapshotEnd));
+
+    // Shared/global messages are deliberately omitted.
+    assert!(!routes_by_request_id(IncomingMessages::ManagedAccounts));
+    assert!(!routes_by_request_id(IncomingMessages::NextValidId));
+    assert!(!routes_by_request_id(IncomingMessages::CurrentTime));
+}
+
+#[test]
+fn test_response_message_error_paths() {
+    // Test empty message type detection
+    let empty_msg = ResponseMessage::default();
+    assert_eq!(empty_msg.message_type(), IncomingMessages::NotValid);
+}
+
+#[test]
+fn test_response_message_special_double_values() {
+    // Test parsing empty as 0.0
+    let mut msg = ResponseMessage::from("test\0\0");
+    msg.i = 1;
+    let result = msg.next_double().unwrap();
+    assert_eq!(result, 0.0);
+
+    // Test parsing "0" as 0.0
+    let mut msg = ResponseMessage::from("test\00\0");
+    msg.i = 1;
+    let result = msg.next_double().unwrap();
+    assert_eq!(result, 0.0);
+
+    // Test parsing "0.0" as 0.0
+    let mut msg = ResponseMessage::from("test\00.0\0");
+    msg.i = 1;
+    let result = msg.next_double().unwrap();
+    assert_eq!(result, 0.0);
+}
+
+#[cfg(test)]
+mod from_str_tests {
+    use super::*;
+    use std::str::FromStr;
+
+    #[test]
+    fn test_outgoing_messages_from_str() {
+        // Test some common message types
+        assert_eq!(OutgoingMessages::from_str("1").unwrap(), OutgoingMessages::RequestMarketData);
+        assert_eq!(OutgoingMessages::from_str("17").unwrap(), OutgoingMessages::RequestManagedAccounts);
+        assert_eq!(OutgoingMessages::from_str("49").unwrap(), OutgoingMessages::RequestCurrentTime);
+        assert_eq!(OutgoingMessages::from_str("61").unwrap(), OutgoingMessages::RequestPositions);
+
+        // Test error cases
+        assert!(OutgoingMessages::from_str("999").is_err());
+        assert!(OutgoingMessages::from_str("abc").is_err());
+        assert!(OutgoingMessages::from_str("").is_err());
+    }
+
+    #[test]
+    fn test_outgoing_messages_roundtrip() {
+        // Test that we can convert to string and back
+        let msg = OutgoingMessages::RequestCurrentTime;
+        let as_string = msg.to_string();
+        let parsed = OutgoingMessages::from_str(&as_string).unwrap();
+        assert_eq!(parsed, OutgoingMessages::RequestCurrentTime);
+
+        // Test with another message type
+        let msg = OutgoingMessages::RequestManagedAccounts;
+        let as_string = msg.to_string();
+        let parsed = OutgoingMessages::from_str(&as_string).unwrap();
+        assert_eq!(parsed, OutgoingMessages::RequestManagedAccounts);
+    }
+
+    #[test]
+    fn test_incoming_messages_from_str() {
+        // Test some common message types
+        assert_eq!(IncomingMessages::from_str("4").unwrap(), IncomingMessages::Error);
+        assert_eq!(IncomingMessages::from_str("15").unwrap(), IncomingMessages::ManagedAccounts);
+        assert_eq!(IncomingMessages::from_str("49").unwrap(), IncomingMessages::CurrentTime);
+        assert_eq!(IncomingMessages::from_str("61").unwrap(), IncomingMessages::Position);
+
+        // Test NotValid for unknown values
+        assert_eq!(IncomingMessages::from_str("999").unwrap(), IncomingMessages::NotValid);
+        assert_eq!(IncomingMessages::from_str("0").unwrap(), IncomingMessages::NotValid);
+        assert_eq!(IncomingMessages::from_str("-1").unwrap(), IncomingMessages::NotValid);
+
+        // Test error cases for non-numeric strings
+        assert!(IncomingMessages::from_str("abc").is_err());
+        assert!(IncomingMessages::from_str("").is_err());
+        assert!(IncomingMessages::from_str("1.5").is_err());
+    }
+
+    #[test]
+    fn test_incoming_messages_roundtrip() {
+        // Test with CurrentTime message
+        let n = 49;
+        let msg = IncomingMessages::from(n);
+        let as_string = n.to_string();
+        let parsed = IncomingMessages::from_str(&as_string).unwrap();
+        assert_eq!(parsed, msg);
+
+        // Test with ManagedAccounts message
+        let n = 15;
+        let msg = IncomingMessages::from(n);
+        let as_string = n.to_string();
+        let parsed = IncomingMessages::from_str(&as_string).unwrap();
+        assert_eq!(parsed, msg);
+
+        // Test with NotValid (unknown value)
+        let n = 999;
+        let msg = IncomingMessages::from(n);
+        let as_string = n.to_string();
+        let parsed = IncomingMessages::from_str(&as_string).unwrap();
+        assert_eq!(parsed, msg);
+        assert_eq!(parsed, IncomingMessages::NotValid);
+    }
+}
+
+#[test]
+fn expect_type_narrows_or_rejects() {
+    // Sibling of `require_proto`: narrows the type rather than the framing, and
+    // rejects with the same terminating variant.
+    let message = ResponseMessage::from(&format!("{}\0payload\0", IncomingMessages::FamilyCodes as i32));
+
+    let matched = message.expect_type(IncomingMessages::FamilyCodes).expect("matching type passes through");
+    assert_eq!(matched.message_type(), IncomingMessages::FamilyCodes);
+
+    let err = message.expect_type(IncomingMessages::UserInfo).expect_err("mismatched type is rejected");
+    assert!(matches!(err, Error::UnexpectedResponse(_)), "got {err:?}");
+}
+
+#[test]
+fn test_log_level_follows_category() {
+    // Farm OK/inactive/connecting, 1102 (restored, data maintained) and the
+    // cancellation confirmation: info.
+    for code in FARM_OK_CODES
+        .into_iter()
+        .chain(FARM_INACTIVE_CODES)
+        .chain(FARM_CONNECTING_CODES)
+        .chain([CONNECTIVITY_RESTORED_DATA_MAINTAINED_CODE, ORDER_CANCELLED_CODE])
+    {
+        assert_eq!(Notice::synthesized(code, String::new()).log_level(), log::Level::Info, "code {code}");
+    }
+    // Broken farms, the rest of the warning band, code-less frames (0), every
+    // data advisory, and 1101: warn. The advisories are the point - 317 and the
+    // 10xxx codes used to log at error while 2188 logged at warn, the same
+    // category twice.
+    for code in [
+        0,
+        *WARNING_CODE_RANGE.start(),
+        *WARNING_CODE_RANGE.end(),
+        CONNECTIVITY_RESTORED_DATA_LOST_CODE,
+    ]
+    .into_iter()
+    .chain(FARM_BROKEN_CODES)
+    .chain(DATA_ADVISORY_CODES.iter().copied())
+    {
+        assert_eq!(Notice::synthesized(code, String::new()).log_level(), log::Level::Warn, "code {code}");
+    }
+    // 399 grades by its text: a `Warning:` line warns, anything else is a rejection.
+    let order_warning = Notice::synthesized(ORDER_MESSAGE_CODE, "Order Message:\nWarning: outside RTH".into());
+    assert_eq!(order_warning.log_level(), log::Level::Warn);
+    assert_eq!(Notice::synthesized(ORDER_MESSAGE_CODE, "rejected".into()).log_level(), log::Level::Error);
+    // Connectivity lost, socket reset, request errors (316, 354), order
+    // rejections (200, 201) and errors: error.
+    for code in [
+        CONNECTIVITY_LOST_CODE,
+        SOCKET_PORT_RESET_CODE,
+        200,
+        201,
+        316,
+        354,
+        *WARNING_CODE_RANGE.end() + 1,
+        10000,
+    ] {
+        assert_eq!(Notice::synthesized(code, String::new()).log_level(), log::Level::Error, "code {code}");
+    }
+}
+
+#[test]
+fn test_unknown_message_type_notice_names_the_id_or_its_absence() {
+    let notice = unknown_message_type_notice(&ResponseMessage::from("9999\0"));
+    assert_eq!(notice.code, UNKNOWN_MESSAGE_TYPE_CODE);
+    assert!(notice.message.contains("message id 9999"), "{:?}", notice.message);
+
+    // Unreachable off the wire (parse_raw_message always yields an id), but
+    // the notice must not invent one.
+    let notice = unknown_message_type_notice(&ResponseMessage::default());
+    assert_eq!(notice.code, UNKNOWN_MESSAGE_TYPE_CODE);
+    assert!(notice.message.contains("no message id"), "{:?}", notice.message);
+}

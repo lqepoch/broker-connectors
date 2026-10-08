@@ -1,0 +1,70 @@
+//! Subscription types for sync/async streaming data.
+//!
+//! ## Canonical paths
+//!
+//! - **Async `Subscription` / extensions** — `ibapi::Subscription`,
+//!   `ibapi::subscriptions::SubscriptionItemStreamExt`. The crate-root and
+//!   `subscriptions::*` re-exports resolve to the async implementation
+//!   whenever the `async` feature is on (which is the default).
+//! - **Blocking (sync) `Subscription` / iterators** — `ibapi::client::blocking::Subscription`
+//!   (and `SubscriptionIter`, `SubscriptionOwnedIter`, etc.). The labelled
+//!   `blocking` submodule is the canonical sync-explicit path. When only
+//!   `sync` is enabled, `ibapi::Subscription` also resolves to the blocking
+//!   form.
+//!
+//! The `subscriptions::sync` and `subscriptions::r#async` submodules where
+//! the impls live are `#[doc(hidden)]`: still reachable as paths for
+//! crate-internal use, but intentionally absent from the docs.rs navigation.
+//! Prefer the canonical spellings above. Raw-identifier syntax
+//! (`subscriptions::r#async::Subscription`) is the giveaway that the spelling
+//! is non-canonical.
+
+use log::{debug, warn};
+
+use crate::errors::Error;
+
+/// Report a cancel that never reached TWS.
+///
+/// A send is refused while the session is down, and a session that is down or
+/// gone takes its subscriptions with it - there is nothing left to cancel, so
+/// this is not worth a warning. The local registration is cleared either way.
+pub(crate) fn log_cancel_error(what: &str, error: &Error) {
+    match error {
+        Error::ConnectionReset | Error::Shutdown => debug!("{what} cancel not sent, session is down: class={}", error.diagnostic_class()),
+        _ => warn!("error cancelling {what}: class={}", error.diagnostic_class()),
+    }
+}
+
+pub(crate) mod common;
+pub(crate) use common::{DecoderContext, StreamDecoder};
+pub use common::{Drained, SubscriptionItem};
+
+#[doc(hidden)]
+#[cfg(feature = "sync")]
+pub mod sync;
+
+#[doc(hidden)]
+#[cfg(feature = "async")]
+pub mod r#async;
+
+pub(crate) mod notice_stream;
+#[cfg(feature = "sync")]
+pub use notice_stream::sync_impl::NoticeStreamIter;
+
+// Top-level `NoticeStream` mirrors the `Subscription` policy: prefer the async
+// implementation when both features are enabled. The sync version is also
+// available at `client::blocking::NoticeStream`.
+#[cfg(feature = "async")]
+pub use notice_stream::async_impl::NoticeStream;
+#[cfg(all(feature = "sync", not(feature = "async")))]
+pub use notice_stream::sync_impl::NoticeStream;
+
+// Re-export the appropriate subscription types based on feature
+#[cfg(feature = "sync")]
+pub use sync::{FilterData, SubscriptionItemIterExt, SubscriptionIter, SubscriptionOwnedIter, SubscriptionTimeoutIter, SubscriptionTryIter};
+
+#[cfg(all(feature = "sync", not(feature = "async")))]
+pub use sync::Subscription;
+
+#[cfg(feature = "async")]
+pub use r#async::{FilterDataStream, Subscription, SubscriptionItemStreamExt};

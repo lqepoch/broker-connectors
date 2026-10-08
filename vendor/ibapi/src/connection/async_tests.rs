@@ -1,0 +1,618 @@
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
+
+use tokio::sync::Semaphore;
+
+use time_tz::timezones;
+
+use super::*;
+use crate::client::ids::RequestId;
+use crate::client::r#async::Client;
+use crate::common::test_utils::helpers::{
+    binary_text, error_frame, handshake_frames, handshake_response_frame, managed_accounts_frame, next_valid_id_frame, TEST_ACCOUNT,
+};
+use crate::messages::IncomingMessages;
+use crate::server_versions;
+use crate::transport::common::MAX_RECONNECT_ATTEMPTS;
+use crate::transport::r#async::{AsyncIo, AsyncMessageBus, AsyncReconnect, AsyncStream, AsyncTcpMessageBus, MemoryStream, ShutdownSignal};
+
+const CLIENT_ID: i32 = 100;
+const SERVER_VERSION: i32 = server_versions::PROTOBUF_REST_MESSAGES_3;
+
+fn push_handshake(stream: &MemoryStream) {
+    push_handshake_in_zone(stream, "EST");
+}
+
+fn push_handshake_in_zone(stream: &MemoryStream, zone: &str) {
+    for frame in handshake_frames(SERVER_VERSION, zone, 90) {
+        stream.push_inbound(frame);
+    }
+}
+
+#[tokio::test]
+async fn establish_connection_rejects_pre_protobuf_server() {
+    let stream = MemoryStream::default();
+    let connection = AsyncConnection::stubbed(stream.clone(), CLIENT_ID);
+
+    let too_old = server_versions::PROTOBUF_REST_MESSAGES_3 - 1;
+    stream.push_inbound(handshake_response_frame(too_old, "EST"));
+
+    let err = connection.establish_connection().await.expect_err("must reject old server");
+    match err {
+        crate::errors::Error::ServerVersion(required, got, ref msg) => {
+            assert_eq!(required, server_versions::PROTOBUF_REST_MESSAGES_3);
+            assert_eq!(got, too_old);
+            assert!(msg.contains("protobuf"), "message should mention protobuf: {msg}");
+        }
+        other => panic!("expected Error::ServerVersion, got {other:?}"),
+    }
+
+    // We must not have sent the StartApi request: only the handshake bytes reach the wire.
+    let captured = stream.captured();
+    let expected = connection.connection_handler.format_handshake();
+    assert_eq!(captured, expected, "no bytes should follow the handshake when version check fails");
+}
+
+#[tokio::test]
+async fn establish_connection_populates_metadata() {
+    let stream = MemoryStream::default();
+    let connection = AsyncConnection::stubbed(stream.clone(), CLIENT_ID);
+    push_handshake(&stream);
+
+    connection.establish_connection().await.expect("establish_connection failed");
+
+    assert_eq!(connection.client_id, CLIENT_ID);
+    assert_eq!(connection.server_version(), SERVER_VERSION);
+
+    let metadata = connection.connection_metadata().await;
+    assert_eq!(metadata.next_order_id, 90);
+    assert_eq!(metadata.managed_accounts, TEST_ACCOUNT);
+    assert_eq!(metadata.time_zone, Some(timezones::db::america::NEW_YORK));
+}
+
+#[tokio::test]
+async fn establish_connection_tolerates_unknown_time_zone() {
+    let stream = MemoryStream::default();
+    let connection = AsyncConnection::stubbed(stream.clone(), CLIENT_ID);
+    push_handshake_in_zone(&stream, "Bogus Standard Time");
+
+    connection.establish_connection().await.expect("unknown zone must not fail the handshake");
+
+    let metadata = connection.connection_metadata().await;
+    assert_eq!(metadata.time_zone, None);
+    assert_eq!(metadata.connection_time, None);
+    assert_eq!(metadata.managed_accounts, TEST_ACCOUNT);
+}
+
+#[tokio::test]
+async fn disconnect_completes() {
+    let client = make_client().await;
+
+    tokio::time::timeout(Duration::from_secs(2), client.disconnect())
+        .await
+        .expect("disconnect did not complete in time");
+
+    assert!(!client.is_connected());
+}
+
+#[tokio::test]
+async fn disconnect_is_idempotent() {
+    let client = make_client().await;
+
+    tokio::time::timeout(Duration::from_secs(2), async {
+        client.disconnect().await;
+        client.disconnect().await;
+    })
+    .await
+    .expect("repeated disconnect did not complete in time");
+
+    assert!(!client.is_connected());
+}
+
+async fn make_client() -> Client {
+    let stream = MemoryStream::default();
+    let connection = AsyncConnection::stubbed(stream.clone(), CLIENT_ID);
+    push_handshake(&stream);
+    connection.establish_connection().await.expect("establish_connection failed");
+    let server_version = connection.server_version();
+
+    let bus = Arc::new(AsyncTcpMessageBus::new(connection).expect("AsyncTcpMessageBus::new"));
+    bus.clone()
+        .process_messages(server_version, Duration::from_secs(0))
+        .expect("process_messages");
+
+    Client::stubbed(bus, server_version)
+}
+
+/// Async mirror of `handshake_callbacks_and_notice_stream_survive_reconnect`
+/// (sync) — drive `establish_connection` twice and assert the startup callback
+/// fires both times AND any 21xx farm-status notices reach a `broadcast::Receiver`
+/// subscribed pre-handshake. The broadcaster lives on `AsyncConnection`, so
+/// the same receiver survives reconnects.
+#[tokio::test]
+async fn handshake_callbacks_and_notice_stream_survive_reconnect() {
+    let stream = MemoryStream::default();
+    let mut connection = AsyncConnection::stubbed(stream.clone(), CLIENT_ID);
+
+    let startup_count = Arc::new(Mutex::new(0_usize));
+    let startup_count_clone = startup_count.clone();
+
+    connection.startup_callback = Some(Arc::new(move |_msg: crate::connection::common::StartupMessage| {
+        *startup_count_clone.lock().unwrap() += 1;
+    }));
+
+    // Subscribe to the per-connection broadcaster BEFORE the handshake — same
+    // shape as ClientBuilder::connect_with_notice_stream's pre-bind.
+    let mut notice_rx = connection.notice_broadcaster.subscribe();
+
+    // OpenOrderEnd is a unit marker (no payload to decode), so the typed
+    // callback fires regardless of wire framing.
+    let handshake_bytes = handshake_response_frame(SERVER_VERSION, "EST");
+    stream.push_inbound(handshake_bytes.clone());
+    stream.push_inbound(binary_text(IncomingMessages::OpenOrderEnd as i32, "1\0"));
+    stream.push_inbound(error_frame(-1, 2104, "farm OK"));
+    stream.push_inbound(next_valid_id_frame(90));
+    stream.push_inbound(managed_accounts_frame(TEST_ACCOUNT));
+
+    connection.establish_connection().await.expect("first establish_connection failed");
+    assert_eq!(*startup_count.lock().unwrap(), 1, "startup callback should fire on first handshake");
+    let n1 = notice_rx.try_recv().expect("first farm-status notice should be on the stream");
+    assert_eq!(n1.code, 2104);
+
+    stream.push_inbound(handshake_bytes);
+    stream.push_inbound(binary_text(IncomingMessages::OpenOrderEnd as i32, "1\0"));
+    stream.push_inbound(error_frame(-1, 2106, "HMDS farm OK"));
+    stream.push_inbound(next_valid_id_frame(91));
+    stream.push_inbound(managed_accounts_frame(TEST_ACCOUNT));
+
+    connection.establish_connection().await.expect("second establish_connection failed");
+    assert_eq!(*startup_count.lock().unwrap(), 2, "startup callback should fire on reconnect handshake");
+    let n2 = notice_rx.try_recv().expect("second farm-status notice should be on the same stream");
+    assert_eq!(n2.code, 2106);
+}
+
+/// Debug impl is wired up — print and check the client id is in the output.
+#[test]
+fn debug_impl_formats_connection() {
+    let stream = MemoryStream::default();
+    let connection = AsyncConnection::stubbed(stream, CLIENT_ID);
+    let rendered = format!("{connection:?}");
+    assert!(rendered.contains("AsyncConnection"), "{rendered}");
+    assert!(rendered.contains(&CLIENT_ID.to_string()), "{rendered}");
+}
+
+/// A closed stream surfaces `Io(UnexpectedEof)` from `read_message`, which
+/// `handshake` must translate to `Error::ConnectionRejected` — the
+/// user-visible signal for a host allow-list mismatch.
+#[tokio::test]
+async fn handshake_unexpected_eof_returns_connection_rejected() {
+    let stream = MemoryStream::default();
+    let connection = AsyncConnection::stubbed(stream.clone(), CLIENT_ID);
+
+    // EOF before any handshake response: read_message → UnexpectedEof.
+    stream.close();
+
+    let err = connection.handshake().await.expect_err("must surface rejection error");
+    match err {
+        crate::errors::Error::ConnectionRejected(ref msg) => {
+            assert!(msg.contains("server may be rejecting"), "unexpected message: {msg}");
+        }
+        other => panic!("expected Error::ConnectionRejected, got {other:?}"),
+    }
+}
+
+/// Reconnect succeeds once the socket stops failing. The Fibonacci backoff
+/// loop counts down `reconnect_failures` (3 here), then `establish_connection`
+/// replays the handshake against the pre-queued inbound frames.
+#[tokio::test]
+async fn reconnect_succeeds_after_transient_failures() {
+    let stream = MemoryStream::default();
+    let connection = AsyncConnection::stubbed(stream.clone(), CLIENT_ID);
+
+    // Initial connection.
+    push_handshake(&stream);
+    connection.establish_connection().await.expect("initial establish_connection failed");
+    assert_eq!(connection.server_version(), SERVER_VERSION);
+
+    // Fail 3 reconnect attempts, then succeed; queue a fresh handshake for the
+    // post-reconnect establish_connection replay.
+    stream.set_reconnect_failures(3);
+    push_handshake(&stream);
+
+    connection.reconnect().await.expect("reconnect must succeed after transient failures");
+    // Handshake replay updates the server-version cache.
+    assert_eq!(connection.server_version(), SERVER_VERSION);
+}
+
+#[tokio::test]
+async fn reconnect_retries_after_transient_handshake_failure() {
+    let stream = MemoryStream::default();
+    let connection = AsyncConnection::stubbed(stream.clone(), CLIENT_ID);
+
+    push_handshake(&stream);
+    connection.establish_connection().await.expect("initial establish_connection failed");
+
+    let too_old = server_versions::PROTOBUF_REST_MESSAGES_3 - 1;
+    stream.push_inbound(handshake_response_frame(too_old, "EST"));
+    push_handshake(&stream);
+
+    connection.reconnect().await.expect("reconnect must retry a failed handshake");
+
+    assert_eq!(connection.server_version(), SERVER_VERSION);
+    let metadata = connection.connection_metadata().await;
+    assert_eq!(metadata.next_order_id, 90);
+    assert_eq!(metadata.managed_accounts, TEST_ACCOUNT);
+}
+
+/// When the socket refuses reconnects through every Fibonacci attempt, the
+/// loop exits with the *last attempt's* error — not a generic
+/// `Error::ConnectionFailed` that hides the cause. Pre-arming with exactly
+/// `MAX_RECONNECT_ATTEMPTS` failures binds the test to the loop's exit
+/// condition (rather than a hardcoded count).
+#[tokio::test]
+async fn reconnect_returns_last_error_after_exhausting_attempts() {
+    let stream = MemoryStream::default();
+    let connection = AsyncConnection::stubbed(stream.clone(), CLIENT_ID);
+
+    push_handshake(&stream);
+    connection.establish_connection().await.expect("initial establish_connection failed");
+
+    stream.set_reconnect_failures(MAX_RECONNECT_ATTEMPTS as usize);
+
+    let err = connection.reconnect().await.expect_err("must give up after MAX_RECONNECT_ATTEMPTS");
+    assert!(
+        matches!(&err, crate::errors::Error::Simple(msg) if msg == "simulated reconnect failure"),
+        "got {err:?}"
+    );
+}
+
+/// During a reconnect, any caller of `connection_metadata()` must see cleared
+/// state rather than the prior session's `server_version` / `next_order_id` /
+/// `managed_accounts`. Without `reset_connection_metadata()` in the reconnect
+/// path, stale values are observable until the new handshake completes.
+#[tokio::test]
+async fn reconnect_clears_metadata_while_waiting_for_handshake() {
+    let stream = MemoryStream::default();
+    let connection = AsyncConnection::stubbed(stream.clone(), CLIENT_ID);
+
+    push_handshake(&stream);
+    connection.establish_connection().await.expect("initial establish_connection failed");
+
+    let metadata = connection.connection_metadata().await;
+    assert_eq!(metadata.server_version, SERVER_VERSION);
+    assert_eq!(metadata.next_order_id, 90);
+    assert_eq!(metadata.managed_accounts, TEST_ACCOUNT);
+
+    let initial_capture_len = stream.captured().len();
+
+    // Spawn reconnect with no handshake responses queued: the task will write
+    // the new handshake magic and block on the first read.
+    let connection = Arc::new(connection);
+    let conn_for_task = Arc::clone(&connection);
+    let reconnect_task = tokio::spawn(async move { conn_for_task.reconnect().await });
+
+    // Wait until the reconnect's handshake bytes appear on the wire. By that
+    // point `reset_connection_metadata()` has already run.
+    tokio::time::timeout(Duration::from_secs(2), async {
+        loop {
+            if stream.captured().len() > initial_capture_len {
+                break;
+            }
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .expect("reconnect must reach handshake-write phase");
+
+    let metadata = connection.connection_metadata().await;
+    assert_eq!(metadata.client_id, CLIENT_ID);
+    assert_eq!(metadata.server_version, 0);
+    assert_eq!(metadata.next_order_id, 0);
+    assert_eq!(metadata.managed_accounts, "");
+    assert!(metadata.connection_time.is_none());
+    assert!(metadata.time_zone.is_none());
+
+    // Release: feed the reconnect handshake responses.
+    push_handshake(&stream);
+
+    reconnect_task.await.expect("reconnect task panicked").expect("reconnect failed");
+
+    let metadata = connection.connection_metadata().await;
+    assert_eq!(metadata.server_version, SERVER_VERSION);
+    assert_eq!(metadata.next_order_id, 90);
+    assert_eq!(metadata.managed_accounts, TEST_ACCOUNT);
+    assert_eq!(metadata.time_zone, Some(timezones::db::america::NEW_YORK));
+}
+
+/// Socket for the shutdown-during-reconnect tests. Reads and writes delegate
+/// to a `MemoryStream` and the backoff wait goes through the production
+/// `ShutdownSignal`, so the loop spends its time exactly where the shutdown
+/// has to be observed. `reconnect` either fails immediately (TWS stays down)
+/// or waits for the test to release it and then succeeds.
+///
+/// Cloning yields another handle to the same state, so the test keeps one
+/// while the connection owns the other.
+#[derive(Clone, Debug)]
+struct TestSocket {
+    stream: MemoryStream,
+    state: Arc<SocketState>,
+}
+
+#[derive(Debug)]
+struct SocketState {
+    sleep_started: AtomicBool,
+    reconnect_started: AtomicBool,
+    /// `Some`: `reconnect` waits on the gate, then succeeds. `None`: it fails
+    /// immediately.
+    gate: Option<Semaphore>,
+}
+
+impl TestSocket {
+    fn unreachable(stream: MemoryStream) -> Self {
+        Self::new(stream, None)
+    }
+
+    fn gated(stream: MemoryStream) -> Self {
+        Self::new(stream, Some(Semaphore::new(0)))
+    }
+
+    fn new(stream: MemoryStream, gate: Option<Semaphore>) -> Self {
+        Self {
+            stream,
+            state: Arc::new(SocketState {
+                sleep_started: AtomicBool::new(false),
+                reconnect_started: AtomicBool::new(false),
+                gate,
+            }),
+        }
+    }
+
+    /// Let the pending `reconnect` complete.
+    fn release(&self) {
+        self.state.gate.as_ref().expect("socket has no gate").add_permits(1);
+    }
+
+    fn sleep_started(&self) -> bool {
+        self.state.sleep_started.load(Ordering::SeqCst)
+    }
+
+    fn reconnect_started(&self) -> bool {
+        self.state.reconnect_started.load(Ordering::SeqCst)
+    }
+}
+
+#[async_trait::async_trait]
+impl AsyncIo for TestSocket {
+    async fn read_message(&self) -> Result<Vec<u8>, Error> {
+        self.stream.read_message().await
+    }
+
+    async fn write_all(&self, buf: &[u8]) -> Result<(), Error> {
+        self.stream.write_all(buf).await
+    }
+}
+
+#[async_trait::async_trait]
+impl AsyncReconnect for TestSocket {
+    async fn reconnect(&self) -> Result<(), Error> {
+        self.state.reconnect_started.store(true, Ordering::SeqCst);
+        match &self.state.gate {
+            Some(gate) => {
+                gate.acquire().await.expect("gate closed").forget();
+                Ok(())
+            }
+            None => Err(Error::Simple("simulated connect failure".into())),
+        }
+    }
+
+    async fn sleep(&self, duration: Duration, shutdown: &ShutdownSignal) {
+        self.state.sleep_started.store(true, Ordering::SeqCst);
+        shutdown.sleep(duration).await
+    }
+}
+
+impl AsyncStream for TestSocket {}
+
+/// Poll `condition` until it holds, failing rather than hanging.
+async fn wait_for(label: &str, condition: impl Fn() -> bool) {
+    tokio::time::timeout(Duration::from_secs(10), async {
+        while !condition() {
+            tokio::time::sleep(Duration::from_millis(5)).await;
+        }
+    })
+    .await
+    .unwrap_or_else(|_| panic!("timed out waiting for {label}"));
+}
+
+/// A shutdown requested while `reconnect` is waiting out its backoff must end
+/// the wait and return `Error::Shutdown`, not run the whole Fibonacci
+/// schedule. With `max_reconnect_attempts = None` the pre-fix loop never
+/// returned at all, so the timeout is what fails a regression.
+#[tokio::test]
+async fn reconnect_returns_shutdown_while_waiting_out_backoff() {
+    let socket = TestSocket::unreachable(MemoryStream::default());
+    let mut connection = AsyncConnection::stubbed(socket.clone(), CLIENT_ID);
+    connection.max_reconnect_attempts = None;
+
+    let connection = Arc::new(connection);
+    let shutdown = connection.shutdown_signal();
+
+    let conn_for_task = Arc::clone(&connection);
+    let reconnect_task = tokio::spawn(async move { conn_for_task.reconnect().await });
+
+    // The first backoff delay is a second; request shutdown well inside it.
+    wait_for("reconnect backoff to start", || socket.sleep_started()).await;
+    let requested_at = Instant::now();
+    shutdown.request();
+
+    let result = tokio::time::timeout(Duration::from_secs(5), reconnect_task)
+        .await
+        .expect("reconnect did not return")
+        .expect("reconnect task panicked");
+
+    assert!(matches!(result, Err(Error::Shutdown)), "expected Error::Shutdown, got {result:?}");
+    // The wait is against a 1 s backoff, so a few hundred milliseconds is
+    // slack enough under load while still failing a non-interruptible wait.
+    assert!(
+        requested_at.elapsed() < Duration::from_millis(250),
+        "reconnect waited out the backoff: {:?}",
+        requested_at.elapsed()
+    );
+    assert!(!socket.reconnect_started(), "reconnect must not attempt a connect after shutdown");
+}
+
+/// A shutdown requested while a connect is in flight must still stop the
+/// dispatcher task, even though that connect then succeeds. `notify_waiters`
+/// dropped such a request on the floor - the loop had left its `select!`, so
+/// nothing was registered to wake - and the task, its bus and the TWS session
+/// stayed alive.
+#[tokio::test]
+async fn dispatcher_task_finishes_when_shutdown_requested_during_reconnect() {
+    let stream = MemoryStream::default();
+    let socket = TestSocket::gated(stream.clone());
+    let connection = AsyncConnection::stubbed(socket.clone(), CLIENT_ID);
+
+    push_handshake(&stream);
+    connection.establish_connection().await.expect("establish_connection failed");
+    let server_version = connection.server_version();
+
+    let bus = Arc::new(AsyncTcpMessageBus::new(connection).expect("AsyncTcpMessageBus::new"));
+    bus.clone()
+        .process_messages(server_version, Duration::from_millis(0))
+        .expect("process_messages");
+    let message_bus: &dyn AsyncMessageBus = bus.as_ref();
+
+    // Break the read: the dispatcher enters reconnect, waits out its backoff
+    // and blocks on the gated connect.
+    stream.close();
+    wait_for("reconnect to start", || socket.reconnect_started()).await;
+
+    // Request shutdown the way `Client::drop` does, then let the connect and
+    // its handshake replay succeed.
+    message_bus.request_shutdown_sync();
+    push_handshake(&stream);
+    socket.release();
+
+    // ensure_shutdown awaits the dispatcher's JoinHandle.
+    tokio::time::timeout(Duration::from_secs(10), message_bus.ensure_shutdown())
+        .await
+        .expect("dispatcher task did not finish");
+    assert!(!message_bus.is_connected());
+}
+
+/// Async mirror of `in_flight_subscription_is_reset_before_the_reconnect_completes`:
+/// a subscription in flight when the connection drops must be failed with
+/// `Error::ConnectionReset` before the reconnect runs, not after it. The
+/// timeout is what fails a regression, which would otherwise hang until the
+/// gate opens.
+///
+/// The session stays disconnected for that whole window, so a caller that
+/// polls `is_connected` before registering a request cannot create one in a
+/// window where the channels are about to be cleared.
+#[tokio::test]
+async fn in_flight_subscription_is_reset_before_the_reconnect_completes() {
+    let stream = MemoryStream::default();
+    let socket = TestSocket::gated(stream.clone());
+    let connection = AsyncConnection::stubbed(socket.clone(), CLIENT_ID);
+
+    push_handshake(&stream);
+    connection.establish_connection().await.expect("establish_connection failed");
+    let server_version = connection.server_version();
+
+    let bus = Arc::new(AsyncTcpMessageBus::new(connection).expect("AsyncTcpMessageBus::new"));
+    bus.clone()
+        .process_messages(server_version, Duration::from_millis(0))
+        .expect("process_messages");
+    let message_bus: &dyn AsyncMessageBus = bus.as_ref();
+
+    let mut subscription = message_bus
+        .send_request(RequestId::nth(0), b"req-bytes".to_vec())
+        .await
+        .expect("send_request");
+
+    // Break the read: the dispatcher enters reconnect and blocks on the gated
+    // connect, which only `release` below completes.
+    stream.close();
+    wait_for("reconnect to start", || socket.reconnect_started()).await;
+
+    let item = tokio::time::timeout(Duration::from_secs(5), subscription.next())
+        .await
+        .expect("subscription was not notified during the reconnect")
+        .expect("subscription channel closed");
+    assert!(matches!(item, Err(Error::ConnectionReset)), "expected ConnectionReset, got {item:?}");
+    assert!(!message_bus.is_connected(), "session reported connected during the reconnect");
+
+    // Let the connect and its handshake replay succeed.
+    stream.reopen();
+    push_handshake(&stream);
+    socket.release();
+
+    wait_for("session to report connected", || message_bus.is_connected()).await;
+
+    message_bus.request_shutdown_sync();
+    tokio::time::timeout(Duration::from_secs(10), message_bus.ensure_shutdown())
+        .await
+        .expect("dispatcher task did not finish");
+}
+
+/// How many times `request` has been written to the stream.
+fn count_writes(stream: &MemoryStream, request: &[u8]) -> usize {
+    let captured = stream.captured();
+    captured.windows(request.len()).filter(|window| *window == request).count()
+}
+
+/// Async mirror of `one_shot_request_is_retried_after_the_reconnect`: a
+/// one-shot in flight when the connection drops is retried, not failed. The
+/// reset wakes it, `wait_connected` holds the retry until the handshake has
+/// replayed, and the resend is answered on the new session.
+#[tokio::test]
+async fn one_shot_request_is_retried_after_the_reconnect() {
+    let stream = MemoryStream::default();
+    let socket = TestSocket::gated(stream.clone());
+    let connection = AsyncConnection::stubbed(socket.clone(), CLIENT_ID);
+
+    push_handshake(&stream);
+    connection.establish_connection().await.expect("establish_connection failed");
+    let server_version = connection.server_version();
+
+    let bus = Arc::new(AsyncTcpMessageBus::new(connection).expect("AsyncTcpMessageBus::new"));
+    bus.clone()
+        .process_messages(server_version, Duration::from_millis(0))
+        .expect("process_messages");
+    let client = Arc::new(Client::stubbed(bus.clone(), server_version));
+
+    let request = crate::accounts::common::encoders::encode_request_managed_accounts().expect("encode");
+    let caller = Arc::clone(&client);
+    let call = tokio::spawn(async move { caller.managed_accounts().await });
+
+    wait_for("the first request", || count_writes(&stream, &request) == 1).await;
+
+    // Break the connection while the one-shot is waiting for its answer.
+    stream.close();
+    wait_for("reconnect to start", || socket.reconnect_started()).await;
+
+    // Nothing was resent into the reconnect: the retry is parked in
+    // `wait_connected`.
+    assert_eq!(count_writes(&stream, &request), 1, "the retry must not write while disconnected");
+
+    stream.reopen();
+    push_handshake(&stream);
+    socket.release();
+
+    wait_for("the retried request", || count_writes(&stream, &request) == 2).await;
+    stream.push_inbound(managed_accounts_frame(TEST_ACCOUNT));
+
+    let accounts = tokio::time::timeout(Duration::from_secs(10), call)
+        .await
+        .expect("managed_accounts did not return")
+        .expect("caller task panicked")
+        .expect("managed_accounts failed");
+    assert_eq!(accounts, vec![TEST_ACCOUNT.to_string()]);
+
+    let message_bus: &dyn AsyncMessageBus = bus.as_ref();
+    message_bus.request_shutdown_sync();
+    tokio::time::timeout(Duration::from_secs(10), message_bus.ensure_shutdown())
+        .await
+        .expect("dispatcher task did not finish");
+}

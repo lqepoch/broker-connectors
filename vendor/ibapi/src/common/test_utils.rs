@@ -1,0 +1,634 @@
+//! Test utilities shared across all modules for testing
+
+#[cfg(test)]
+#[allow(dead_code)] // These utilities will be used by other modules
+pub mod helpers {
+    use crate::stubs::MessageBusStub;
+    use crate::{server_versions, Client};
+    use std::sync::Arc;
+
+    fn result_class<T>(result: &Result<T, crate::Error>) -> &'static str {
+        match result {
+            Ok(_) => "success",
+            Err(_) => "error",
+        }
+    }
+
+    /// Creates a test client with an empty message bus
+    pub fn create_test_client() -> (Client, Arc<MessageBusStub>) {
+        create_test_client_with_version(server_versions::SIZE_RULES)
+    }
+
+    /// Creates a test client with a specific server version
+    pub fn create_test_client_with_version(server_version: i32) -> (Client, Arc<MessageBusStub>) {
+        let message_bus = Arc::new(MessageBusStub::with_responses(vec![]));
+        let client = Client::stubbed(message_bus.clone(), server_version);
+        (client, message_bus)
+    }
+
+    /// Creates a test client with specified response messages
+    pub fn create_test_client_with_responses(responses: Vec<String>) -> (Client, Arc<MessageBusStub>) {
+        let message_bus = Arc::new(MessageBusStub::with_responses(responses));
+        let client = Client::stubbed(message_bus.clone(), server_versions::SIZE_RULES);
+        (client, message_bus)
+    }
+
+    /// Creates a test client with specified response messages and server version
+    pub fn create_test_client_with_responses_and_version(responses: Vec<String>, server_version: i32) -> (Client, Arc<MessageBusStub>) {
+        let message_bus = Arc::new(MessageBusStub::with_responses(responses));
+        let client = Client::stubbed(message_bus.clone(), server_version);
+        (client, message_bus)
+    }
+
+    /// Creates a test client backed by [`MessageBusStub::with_ordered_responses`].
+    /// Pairs with [`proto_response`] for proto-framed fixtures.
+    pub fn create_test_client_with_ordered_proto_responses(responses: Vec<crate::messages::ResponseMessage>) -> (Client, Arc<MessageBusStub>) {
+        let message_bus = Arc::new(MessageBusStub::with_ordered_responses(responses));
+        let client = Client::stubbed(message_bus.clone(), server_versions::SIZE_RULES);
+        (client, message_bus)
+    }
+
+    #[cfg(feature = "sync")]
+    pub fn create_blocking_test_client() -> (crate::client::blocking::Client, Arc<MessageBusStub>) {
+        create_blocking_test_client_with_version(server_versions::SIZE_RULES)
+    }
+
+    #[cfg(feature = "sync")]
+    pub fn create_blocking_test_client_with_version(server_version: i32) -> (crate::client::blocking::Client, Arc<MessageBusStub>) {
+        create_blocking_test_client_with_responses_and_version(vec![], server_version)
+    }
+
+    #[cfg(feature = "sync")]
+    pub fn create_blocking_test_client_with_responses(responses: Vec<String>) -> (crate::client::blocking::Client, Arc<MessageBusStub>) {
+        create_blocking_test_client_with_responses_and_version(responses, server_versions::SIZE_RULES)
+    }
+
+    #[cfg(feature = "sync")]
+    pub fn create_blocking_test_client_with_responses_and_version(
+        responses: Vec<String>,
+        server_version: i32,
+    ) -> (crate::client::blocking::Client, Arc<MessageBusStub>) {
+        let message_bus = Arc::new(MessageBusStub::with_responses(responses));
+        let client = crate::client::blocking::Client::stubbed(message_bus.clone(), server_version);
+        (client, message_bus)
+    }
+
+    /// Sync sibling of [`create_test_client_with_ordered_proto_responses`].
+    #[cfg(feature = "sync")]
+    pub fn create_blocking_test_client_with_ordered_proto_responses(
+        responses: Vec<crate::messages::ResponseMessage>,
+    ) -> (crate::client::blocking::Client, Arc<MessageBusStub>) {
+        let message_bus = Arc::new(MessageBusStub::with_ordered_responses(responses));
+        let client = crate::client::blocking::Client::stubbed(message_bus.clone(), server_versions::SIZE_RULES);
+        (client, message_bus)
+    }
+
+    /// Asserts that the nth request message has the expected protobuf message ID
+    pub fn assert_request_msg_id(message_bus: &MessageBusStub, index: usize, expected: crate::messages::OutgoingMessages) {
+        let request_messages = message_bus.request_messages.read().unwrap();
+        assert!(
+            request_messages.len() > index,
+            "Expected at least {} request messages, got {}",
+            index + 1,
+            request_messages.len()
+        );
+        assert_proto_msg_id(&request_messages[index], expected);
+    }
+
+    /// Gets request message count from the message bus
+    pub fn request_message_count(message_bus: &MessageBusStub) -> usize {
+        message_bus.request_messages.read().unwrap().len()
+    }
+
+    /// Decodes a protobuf request message (skips the msg_id header)
+    pub fn decode_request_proto<T: prost::Message + Default>(message_bus: &MessageBusStub, index: usize) -> T {
+        let request_messages = message_bus.request_messages.read().unwrap();
+        T::decode(&request_messages[index][crate::messages::MESSAGE_ID_LEN..]).unwrap()
+    }
+
+    /// Asserts that the nth request matches the expected message id AND decodes to `expected`.
+    /// Strict counterpart to `assert_request_msg_id`, which only checks the 4-byte header.
+    pub fn assert_request_proto<T>(message_bus: &MessageBusStub, index: usize, expected_msg_id: crate::messages::OutgoingMessages, expected: &T)
+    where
+        T: prost::Message + Default + PartialEq,
+    {
+        assert_request_msg_id(message_bus, index, expected_msg_id);
+        let actual: T = decode_request_proto(message_bus, index);
+        if &actual != expected {
+            panic!("request body mismatch");
+        }
+    }
+
+    /// Builder-aware variant of [`assert_request_proto`]: pulls the expected message id and
+    /// proto body from the builder's `RequestEncoder` impl, so tests don't repeat the msg id.
+    pub fn assert_request<B: crate::testdata::builders::RequestEncoder>(message_bus: &MessageBusStub, index: usize, expected: &B) {
+        assert_request_proto(message_bus, index, B::MSG_ID, &expected.to_proto());
+    }
+
+    /// Build a text-format `ResponseMessage` for use with
+    /// [`MessageBusStub::with_ordered_responses`]. Accepts pipe-delimited
+    /// builder output (`encode_pipe()`) or raw NUL-delimited literals.
+    pub fn text_response(s: impl Into<String>) -> crate::messages::ResponseMessage {
+        crate::messages::ResponseMessage::from(&s.into().replace('|', "\0"))
+    }
+
+    /// Build a proto-framed `ResponseMessage` for use with
+    /// [`MessageBusStub::with_ordered_responses`]. Pairs with
+    /// `Builder::encode_proto()`.
+    pub fn proto_response(msg_type: crate::messages::IncomingMessages, bytes: Vec<u8>) -> crate::messages::ResponseMessage {
+        crate::messages::ResponseMessage::from_protobuf(msg_type as i32, bytes)
+    }
+
+    /// Build a proto-framed wire payload (4-byte BE `msg_id + PROTOBUF_MSG_ID`
+    /// followed by `proto.encode_to_vec()`). For `MemoryStream::push_inbound`
+    /// and `spawn_handshake_listener` fixtures that need raw bytes, not a
+    /// parsed `ResponseMessage`.
+    pub fn binary_proto<M: prost::Message>(msg_id: i32, proto: &M) -> Vec<u8> {
+        crate::messages::encode_protobuf_message(msg_id, &proto.encode_to_vec())
+    }
+
+    /// A message id that maps to no [`IncomingMessages`](crate::messages::IncomingMessages)
+    /// variant — what a mis-framed read produces once the length prefix has
+    /// slipped. Assertions on the resulting diagnostic name this value, so it
+    /// lives here rather than being spelled at each site.
+    pub const UNKNOWN_MESSAGE_ID: i32 = 9799;
+
+    /// Proto-framed wire payload whose message id maps to no known kind, for
+    /// driving the unroutable-frame reporting. Payload is filler — nothing
+    /// decodes it, because nothing can route it.
+    pub fn unknown_message_frame() -> Vec<u8> {
+        crate::messages::encode_protobuf_message(UNKNOWN_MESSAGE_ID, &[0x08, 0x64])
+    }
+
+    /// `NextValidId` proto-framed handshake frame.
+    pub fn next_valid_id_frame(order_id: i32) -> Vec<u8> {
+        binary_proto(
+            crate::messages::IncomingMessages::NextValidId as i32,
+            &crate::proto::NextValidId { order_id: Some(order_id) },
+        )
+    }
+
+    /// `ManagedAccounts` proto-framed handshake frame.
+    pub fn managed_accounts_frame(accounts: &str) -> Vec<u8> {
+        binary_proto(
+            crate::messages::IncomingMessages::ManagedAccounts as i32,
+            &crate::proto::ManagedAccounts {
+                accounts_list: Some(accounts.to_string()),
+            },
+        )
+    }
+
+    /// Build a `proto::ErrorMessage` envelope with `error_time` and
+    /// `advanced_order_reject_json` defaulted (set those fields on the returned
+    /// struct when a test needs them). `None` for `request_id` / `code`
+    /// expresses a request-less / code-less frame — the fields are optional on
+    /// the wire and IB Gateway omits both on informational notices.
+    pub fn error_envelope(request_id: Option<i32>, code: Option<i32>, msg: impl Into<String>) -> crate::proto::ErrorMessage {
+        crate::proto::ErrorMessage {
+            id: request_id,
+            error_time: None,
+            error_code: code,
+            error_msg: Some(msg.into()),
+            advanced_order_reject_json: None,
+        }
+    }
+
+    /// Proto-framed `Error` [`ResponseMessage`](crate::messages::ResponseMessage)
+    /// for `MessageBusStub::with_ordered_responses` fixtures.
+    pub fn proto_error_response(request_id: i32, code: i32, msg: impl Into<String>) -> crate::messages::ResponseMessage {
+        proto_response(
+            crate::messages::IncomingMessages::Error,
+            prost::Message::encode_to_vec(&error_envelope(Some(request_id), Some(code), msg)),
+        )
+    }
+
+    /// Proto-framed `Error` wire payload (`[4-byte BE msg_id][proto bytes]`)
+    /// for `MemoryStream::push_inbound` / `spawn_handshake_listener` fixtures.
+    pub fn error_frame(request_id: i32, code: i32, msg: impl Into<String>) -> Vec<u8> {
+        binary_proto(
+            crate::messages::IncomingMessages::Error as i32,
+            &error_envelope(Some(request_id), Some(code), msg),
+        )
+    }
+
+    /// Binary-text wire payload: `[4-byte BE msg_id][payload]`. `payload` is
+    /// passed through verbatim — NUL-delimit the fields yourself, or use
+    /// [`body`] for the pipe-delimited shorthand.
+    pub fn binary_text(msg_id: i32, payload: &str) -> Vec<u8> {
+        let mut data = Vec::with_capacity(4 + payload.len());
+        data.extend_from_slice(&msg_id.to_be_bytes());
+        data.extend_from_slice(payload.as_bytes());
+        data
+    }
+
+    /// Build a binary-text-payload response body from a pipe-delimited test input.
+    /// `"msg_id|f1|f2|..."` → `[4-byte BE msg_id][f1\0f2\0...]`. Pipes are
+    /// stand-ins for NULs so test inputs stay readable. For `Error` frames,
+    /// use [`error_frame`] — they ship as protobuf post-floor-213 and the
+    /// binary-text-payload path defaults to an empty Notice.
+    pub fn body(text: &str) -> Vec<u8> {
+        let fields: Vec<&str> = text.split_terminator('|').collect();
+        let msg_id: i32 = fields[0].parse().expect("body() fixture must start with a numeric msg_id");
+        debug_assert_ne!(
+            msg_id,
+            crate::messages::IncomingMessages::Error as i32,
+            "Error frames must use error_frame() — protobuf-framed since PR-D1"
+        );
+        let payload: String = fields[1..].iter().map(|f| format!("{f}\0")).collect();
+        binary_text(msg_id, &payload)
+    }
+
+    /// Raw-text handshake response frame: `"<sv>\0<connection-time>\0"`.
+    /// For tests that interleave extra frames into the handshake; otherwise
+    /// use [`handshake_frames`].
+    pub fn handshake_response_frame(server_version: i32, zone: &str) -> Vec<u8> {
+        format!("{server_version}\020240120 12:00:00 {zone}\0").into_bytes()
+    }
+
+    /// Connect-time frames a server sends: [`handshake_response_frame`], then
+    /// `NextValidId` and `ManagedAccounts` (for [`TEST_ACCOUNT`]).
+    pub fn handshake_frames(server_version: i32, zone: &str, next_order_id: i32) -> Vec<Vec<u8>> {
+        vec![
+            handshake_response_frame(server_version, zone),
+            next_valid_id_frame(next_order_id),
+            managed_accounts_frame(TEST_ACCOUNT),
+        ]
+    }
+
+    /// Message text of the farm-OK informational notice (code 2104).
+    pub const FARM_OK_MSG: &str = "Market data farm connection is OK:usfarm";
+
+    /// Farm-OK notice frame scoped to `RequestId::nth(42)`.
+    pub fn farm_ok_frame_42() -> Vec<u8> {
+        error_frame(crate::client::ids::RequestId::nth(42).raw(), 2104, FARM_OK_MSG)
+    }
+
+    /// Farm-OK notice frame with no request id (`-1`), i.e. unrouted.
+    pub fn farm_ok_frame_unrouted() -> Vec<u8> {
+        error_frame(-1, 2104, FARM_OK_MSG)
+    }
+
+    /// Proto-framed ExecutionData frame. `request_id` is at proto tag 1; the
+    /// dispatcher's `order_id` / `execution_id` accessors read the nested
+    /// `execution.{order_id, exec_id}` sub-message via `ExecutionDetailsMinimal`.
+    pub fn execution_data_frame(request_id: i32, order_id: i32, execution_id: &str) -> Vec<u8> {
+        use crate::testdata::builders::ResponseProtoEncoder;
+        let response = crate::testdata::builders::orders::execution_data()
+            .request_id(request_id)
+            .order_id(order_id)
+            .execution_id(execution_id);
+        binary_proto(crate::messages::IncomingMessages::ExecutionData as i32, &response.to_proto())
+    }
+
+    /// Stub [`StreamDecoder`](crate::subscriptions::StreamDecoder) that
+    /// accepts `HistogramData` and decodes every frame to a unit value. For
+    /// tests that care about routing/notices, not payloads.
+    #[derive(Debug)]
+    pub struct NoticeTestData;
+
+    impl crate::subscriptions::StreamDecoder<NoticeTestData> for NoticeTestData {
+        const RESPONSE_MESSAGE_IDS: &'static [crate::messages::IncomingMessages] = &[crate::messages::IncomingMessages::HistogramData];
+
+        fn decode(_context: &crate::subscriptions::DecoderContext, _msg: &crate::messages::ResponseMessage) -> Result<NoticeTestData, crate::Error> {
+            Ok(NoticeTestData)
+        }
+    }
+
+    /// [`NoticeSink`](crate::transport::common::NoticeSink) that captures
+    /// every delivered notice.
+    #[derive(Default)]
+    pub struct CapturingSink {
+        notices: std::sync::Mutex<Vec<crate::messages::Notice>>,
+    }
+
+    impl CapturingSink {
+        /// Snapshot of every notice delivered so far.
+        pub fn notices(&self) -> Vec<crate::messages::Notice> {
+            self.notices.lock().unwrap().clone()
+        }
+        /// Most recently delivered notice, if any.
+        pub fn last(&self) -> Option<crate::messages::Notice> {
+            self.notices.lock().unwrap().last().cloned()
+        }
+        /// Number of notices delivered so far.
+        pub fn count(&self) -> usize {
+            self.notices.lock().unwrap().len()
+        }
+    }
+
+    impl crate::transport::common::NoticeSink for CapturingSink {
+        fn deliver(&self, notice: crate::messages::Notice) {
+            self.notices.lock().unwrap().push(notice);
+        }
+    }
+
+    /// A request-less IB notice for tests (no error_time / advanced-reject
+    /// payload). Field-for-field [`Notice::synthesized`](crate::messages::Notice::synthesized);
+    /// named separately so TWS-code tests don't read as client-sentinel tests.
+    pub fn test_notice(code: i32, message: impl Into<String>) -> crate::messages::Notice {
+        crate::messages::Notice::synthesized(code, message.into())
+    }
+
+    /// Common test constants that can be used across modules
+    pub mod constants {
+        /// Test account identifiers
+        pub const TEST_ACCOUNT: &str = "DU1234567";
+        pub const TEST_ACCOUNT_2: &str = "DU7654321";
+        pub const TEST_ACCOUNT_3: &str = "DU9876543";
+
+        /// Test model codes
+        pub const TEST_MODEL_CODE: &str = "TARGET2024";
+        pub const TEST_MODEL_CODE_2: &str = "GROWTH2024";
+
+        /// Test contract IDs
+        pub const TEST_CONTRACT_ID: i32 = 1001;
+        pub const TEST_CONTRACT_ID_2: i32 = 2002;
+
+        /// Test order IDs
+        pub const TEST_ORDER_ID: i32 = 5001;
+        pub const TEST_ORDER_ID_2: i32 = 5002;
+
+        /// Test ticker IDs
+        pub const TEST_TICKER_ID: i32 = 100;
+        pub const TEST_TICKER_ID_2: i32 = 200;
+
+        /// First request_id assigned by `Client::mint_request_id()`: the
+        /// request-range floor (`client::ids::REQUEST_ID_FLOOR`).
+        pub const TEST_REQ_ID_FIRST: i32 = crate::client::ids::REQUEST_ID_FLOOR;
+
+        /// Order-id seed of `Client::stubbed`; any value below the request-id
+        /// floor works.
+        pub const TEST_ORDER_ID_SEED: i32 = 9000;
+    }
+
+    /// Re-export constants at module level for easier access
+    pub use constants::*;
+
+    /// The raw msg_id header of an encoded message, `None` if too short to hold one.
+    fn wire_msg_id(bytes: &[u8]) -> Option<i32> {
+        bytes
+            .split_first_chunk::<{ crate::messages::MESSAGE_ID_LEN }>()
+            .map(|(header, _)| i32::from_be_bytes(*header))
+    }
+
+    /// Asserts the msg_id header of a protobuf-encoded message matches the expected OutgoingMessages variant + `PROTOBUF_MSG_ID` offset.
+    pub fn assert_proto_msg_id(bytes: &[u8], expected: crate::messages::OutgoingMessages) {
+        assert_eq!(wire_msg_id(bytes), Some(expected as i32 + crate::messages::PROTOBUF_MSG_ID));
+    }
+
+    /// Counts how many messages in `messages` carry the given protobuf message id (variant + `PROTOBUF_MSG_ID` offset).
+    pub fn count_proto_msgs(messages: &[Vec<u8>], expected: crate::messages::OutgoingMessages) -> usize {
+        let target = Some(expected as i32 + crate::messages::PROTOBUF_MSG_ID);
+        messages.iter().filter(|m| wire_msg_id(m) == target).count()
+    }
+
+    /// Builds an `Error::Notice` carrying a synthesized [`Notice`](crate::messages::Notice)
+    /// — no wire timestamp, no advanced-order-reject JSON. Test-only sugar for the
+    /// `Error::Notice(Notice::synthesized(code, msg))` shape used by Result-path tests
+    /// (production code never builds these; the wire path goes through
+    /// `From<ResponseMessage> for Error`).
+    pub fn tws_error_notice(code: i32, message: impl Into<String>) -> crate::Error {
+        crate::Error::Notice(crate::messages::Notice::synthesized(code, message.into()))
+    }
+
+    /// Asserts that `err` is `Error::Notice(notice)` where `notice.code == expected_code`
+    /// and `notice.message` contains `expected_substring`.
+    pub fn assert_tws_error_message(err: crate::Error, expected_code: i32, expected_substring: &str) {
+        match err {
+            crate::Error::Notice(notice) => {
+                assert_eq!(notice.code, expected_code, "wrong error code");
+                assert!(
+                    notice.message.contains(expected_substring),
+                    "TWS notice text mismatch: received {} bytes, expected marker {} bytes",
+                    notice.message.len(),
+                    expected_substring.len()
+                );
+            }
+            _ => panic!("expected Error::Notice(code={expected_code}), got error"),
+        }
+    }
+
+    /// Asserts that a decoder rejected a malformed decimal wire field, naming the
+    /// offending value in the error.
+    ///
+    /// Used by the per-decoder "is this field wired to `parse_optional_decimal`"
+    /// tests. The helper's own semantics are covered exhaustively in
+    /// `src/proto/decoders_tests.rs`; these call sites only prove the wiring, so
+    /// they all want this one assertion rather than their own `matches!`.
+    pub fn assert_decimal_parse_error<T>(result: Result<T, crate::Error>, offending_value: &str) {
+        match result {
+            Err(crate::Error::Parse(_, value, msg)) => {
+                assert!(
+                    value == offending_value,
+                    "offending wire-value length mismatch: expected {} bytes, got {} bytes",
+                    offending_value.len(),
+                    value.len()
+                );
+                assert!(
+                    msg.contains("invalid decimal wire value"),
+                    "unexpected parse diagnostic length: {} bytes",
+                    msg.len()
+                );
+            }
+            other => panic!(
+                "expected Error::Parse for a {}-byte wire value, got {}",
+                offending_value.len(),
+                result_class(&other)
+            ),
+        }
+    }
+
+    /// Asserts that a decoder failed on an absent required field, via
+    /// `proto::decoders::required`: `Error::Parse` naming the field and the
+    /// message that should have carried it.
+    pub fn assert_missing_field<T>(result: Result<T, crate::Error>, field: &str, message: &str) {
+        match result {
+            Err(crate::Error::Parse(_, name, reason)) => {
+                assert!(
+                    name == field,
+                    "missing-field name length mismatch: expected {} bytes, got {} bytes",
+                    field.len(),
+                    name.len()
+                );
+                let expected_reason = format!("missing in {message}");
+                assert!(
+                    reason == expected_reason,
+                    "missing-field diagnostic length mismatch: expected {} bytes, got {} bytes",
+                    expected_reason.len(),
+                    reason.len()
+                );
+            }
+            other => panic!(
+                "expected a missing-field parse error ({}-byte field, {}-byte message), got {}",
+                field.len(),
+                message.len(),
+                result_class(&other)
+            ),
+        }
+    }
+
+    /// Asserts that a proto-only decoder rejects a text-framed frame of the type
+    /// it handles, with [`Error::UnexpectedWireFormat`](crate::Error::UnexpectedWireFormat).
+    ///
+    /// One assertion for every `*_rejects_text_framing` test. The 22 of them
+    /// spelled it four ways (`expect_err` + `matches!`, `unwrap_err` + `matches!`,
+    /// a `match` with `panic!`, and three different panic messages), which is why
+    /// #731's rename of a single variant produced ~600 test-side lines.
+    ///
+    /// `expected` is checked against the frame's own leading discriminant before
+    /// the decoder runs. That is not ceremony: `require_proto` fails on framing
+    /// without reading the type, so a fixture naming the wrong message id passes
+    /// the assertion anyway — #738 found exactly that in four fixtures (`87` for
+    /// `MarketRule`, which is 93; a literal `"newsProviders"` that parses as no
+    /// discriminant at all). A fixture field no assertion depends on will be
+    /// wrong eventually.
+    pub fn assert_rejects_text_framing<T>(
+        expected: crate::messages::IncomingMessages,
+        text_frame: &str,
+        decode: impl FnOnce(&crate::messages::ResponseMessage) -> Result<T, crate::Error>,
+    ) {
+        let message = crate::messages::ResponseMessage::from(text_frame);
+        assert_eq!(
+            message.message_type(),
+            expected,
+            "fixture is framed as the wrong message type; the decoder never reads it"
+        );
+
+        match decode(&message) {
+            Err(crate::Error::UnexpectedWireFormat(_)) => {}
+            other => panic!(
+                "expected Error::UnexpectedWireFormat for a text-framed {expected:?}, got {}",
+                result_class(&other)
+            ),
+        }
+    }
+}
+
+/// Generic round-trip / reject-unknown helpers for typed wire enums built with `impl_wire_enum!`.
+#[cfg(test)]
+#[allow(dead_code)] // Consumers grow as the typed-status sweep lands.
+pub mod wire_enum {
+    /// Assert `Display`, `FromStr`, and `ToField` agree on a hand-written
+    /// `(variant, wire)` table. One helper covers every trait impl generated
+    /// by `impl_wire_enum!` — independent verification (the table is not
+    /// derived from `as_str()`, so a typo in either direction surfaces).
+    pub fn check_wire_enum_round_trip<T>(table: &[(T, &'static str)])
+    where
+        T: std::fmt::Display + std::fmt::Debug + PartialEq + std::str::FromStr<Err = crate::Error> + crate::ToField,
+    {
+        for (variant, wire) in table {
+            assert_eq!(variant.to_string(), *wire, "Display for {variant:?}");
+            assert_eq!(&T::from_str(wire).unwrap(), variant, "FromStr({wire})");
+            assert_eq!(variant.to_field(), *wire, "ToField for {variant:?}");
+        }
+    }
+
+    /// Assert every input string in `unknowns` produces `Err(Error::Parse(..))`.
+    pub fn check_wire_enum_rejects_unknown<T>(unknowns: &[&str])
+    where
+        T: std::str::FromStr<Err = crate::Error>,
+    {
+        for &s in unknowns {
+            let err = T::from_str(s);
+            let result_class = if err.is_ok() { "success" } else { "error" };
+            assert!(
+                matches!(err, Err(crate::Error::Parse(_, _, _))),
+                "expected Parse error for a {}-byte input, got {}",
+                s.len(),
+                result_class
+            );
+        }
+    }
+
+    /// Codes probed for the completeness half of [`check_wire_code_round_trip`].
+    /// Wide enough to cover any code IB would plausibly add to one of these
+    /// enums — the largest in use is `TriggerMethod::Midpoint` at 8 — and the
+    /// negative end guards a `From<i32>` that reaches for `.abs()` or `as u32`.
+    const PROBE_CODES: std::ops::RangeInclusive<i32> = -8..=64;
+
+    /// Assert `From<i32>`, `From<T> for i32`, and `ToField` agree on a
+    /// hand-written `(variant, code)` table for an integer-coded wire enum,
+    /// **and that the table lists every code the enum models**.
+    ///
+    /// The completeness half is what the `_every_wire_code` in the callers'
+    /// names claims, and the reason this takes `unknown`: `From<i32>` is total,
+    /// so every code outside the table has to land on `unknown(code)`. A
+    /// variant added without a table row is modeled, so the probe finds it —
+    /// the gap `all_tifs_covers_every_variant` closes for the string enums
+    /// (docs/rules/wire/enum-typing.md).
+    ///
+    /// Listing `Unknown(code)` rows in the table is still useful — only those
+    /// exercise `Into<i32>` and `ToField` on the payload variant — and costs
+    /// nothing: a listed code is skipped by the probe that would re-derive it.
+    pub fn check_wire_code_round_trip<T>(table: &[(T, i32)], unknown: fn(i32) -> T)
+    where
+        T: From<i32> + Into<i32> + Copy + PartialEq + std::fmt::Debug + crate::ToField,
+    {
+        for &(variant, code) in table {
+            assert_eq!(T::from(code), variant, "From({code})");
+            assert_eq!(variant.into(), code, "i32::from({variant:?})");
+            assert_eq!(variant.to_field(), code.to_string(), "ToField for {variant:?}");
+        }
+
+        for code in PROBE_CODES {
+            if table.iter().any(|&(_, listed)| listed == code) {
+                continue;
+            }
+            assert_eq!(
+                T::from(code),
+                unknown(code),
+                "code {code} is modeled by a variant the table does not list"
+            );
+        }
+    }
+}
+
+/// Walking the crate's own source, for the gates that check a hand-listed roster
+/// against the tree.
+#[cfg(test)]
+pub mod source_scan {
+    use std::path::Path;
+
+    /// Hand every production `.rs` file under `src/` to `visit` as
+    /// `(path, contents)`.
+    ///
+    /// **What counts as production source is defined here and nowhere else.**
+    /// `tests.rs` and `*_tests.rs` are skipped: they hold test-only decoders and
+    /// fixtures that exist to exercise the drivers, not to decode a wire
+    /// message, and a roster gate that counted them would report failures no
+    /// production change could fix. `response_message_ids_tests` is the one gate
+    /// that depends on this definition, since #749 replaced the other — the
+    /// one-shot pairing roster — with a trait the compiler enumerates.
+    ///
+    /// Takes a visitor rather than returning a `Vec` so a caller looking for
+    /// several things reads each file once.
+    pub fn visit_production_sources(visit: &mut impl FnMut(&Path, &str)) {
+        visit_dir(&Path::new(env!("CARGO_MANIFEST_DIR")).join("src"), visit);
+    }
+
+    fn visit_dir(dir: &Path, visit: &mut impl FnMut(&Path, &str)) {
+        let entries = std::fs::read_dir(dir).unwrap_or_else(|e| panic!("read_dir {}: {e}", dir.display()));
+
+        for entry in entries.flatten() {
+            let path = entry.path();
+            // `file_type()` reuses what `readdir` already returned; `is_dir()`
+            // would re-`stat` every entry.
+            if entry.file_type().is_ok_and(|t| t.is_dir()) {
+                visit_dir(&path, visit);
+                continue;
+            }
+
+            let name = path.file_name().and_then(|n| n.to_str()).unwrap_or_default();
+            if !name.ends_with(".rs") || name == "tests.rs" || name.ends_with("_tests.rs") {
+                continue;
+            }
+
+            let contents = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("read {}: {e}", path.display()));
+            visit(&path, &contents);
+        }
+    }
+}
+
+#[cfg(test)]
+#[path = "test_utils_tests.rs"]
+mod tests;

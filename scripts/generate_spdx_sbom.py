@@ -11,6 +11,7 @@ import sys
 import tomllib
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 from urllib.parse import quote
 
 
@@ -30,17 +31,38 @@ def run_metadata() -> dict:
     return json.loads(result.stdout)
 
 
-def vendored_alpaca_pin() -> tuple[str, dict[str, str]]:
+def vendored_package_sources() -> dict[str, dict[str, Any]]:
     document = json.loads(
         (ROOT / "SOURCE-MANIFEST.json").read_text(encoding="utf-8")
     )
     upstreams = document.get("vendored_upstreams", [])
-    if len(upstreams) != 1:
-        raise ValueError("expected one pinned vendored Alpaca Rust upstream")
-    upstream = upstreams[0]
-    return upstream["source_commit"], {
-        package["name"]: package["source_path"] for package in upstream["packages"]
-    }
+    if not upstreams:
+        raise ValueError("no pinned vendored upstreams are recorded")
+    sources = {}
+    for upstream in upstreams:
+        formatting_config = next(
+            (
+                entry
+                for entry in upstream["source_files"]
+                if entry["source_path"] == "rustfmt.toml"
+            ),
+            None,
+        )
+        for package in upstream["packages"]:
+            name = package["name"]
+            if name in sources:
+                raise ValueError(f"vendored package has multiple source pins: {name}")
+            sources[name] = {
+                "repository": upstream["source_repository"],
+                "commit": upstream["source_commit"],
+                "source_path": package["source_path"],
+                "target_root": upstream.get("target_root", "vendor/alpaca-rust"),
+                "source_archive_sha256": upstream.get("source_archive_sha256"),
+                "formatting_config": formatting_config,
+                "local_change_record_path": upstream.get("local_change_record_path"),
+                "local_change_record_sha256": upstream.get("local_change_record_sha256"),
+            }
+    return sources
 
 
 def reviewed_dependency_licenses() -> dict[tuple[str, str], dict[str, str]]:
@@ -64,7 +86,7 @@ def cargo_purl(name: str, version: str) -> str:
 
 def main() -> None:
     metadata = run_metadata()
-    alpaca_revision, alpaca_package_paths = vendored_alpaca_pin()
+    vendored_sources = vendored_package_sources()
     lock_path = ROOT / "Cargo.lock"
     lock_digest = hashlib.sha256(lock_path.read_bytes()).hexdigest()
     lock = tomllib.loads(lock_path.read_text(encoding="utf-8"))
@@ -99,11 +121,14 @@ def main() -> None:
             download = f"https://crates.io/crates/{quote(name, safe='._-')}/{quote(version, safe='._-+')}"
         elif source and source.startswith("git+"):
             download = "NOASSERTION"
-        elif name in alpaca_package_paths:
-            upstream_path = alpaca_package_paths[name]
+        elif name in vendored_sources:
+            origin = vendored_sources[name]
+            source_path = origin["source_path"]
+            path = "" if source_path == "." else source_path.lstrip("./")
             download = (
-                "https://github.com/wmzhai/alpaca-rust/tree/"
-                f"{alpaca_revision}/{upstream_path}"
+                f"https://github.com/{origin['repository']}/tree/{origin['commit']}"
+                f"/{path}" if path else
+                f"https://github.com/{origin['repository']}/tree/{origin['commit']}"
             )
         elif package["id"] in root_ids:
             download = "https://github.com/lqepoch/broker-connectors"
@@ -129,12 +154,35 @@ def main() -> None:
                 "referenceType": "purl",
                 "referenceLocator": cargo_purl(name, version),
             }]
-        elif name in alpaca_package_paths:
-            item["sourceInfo"] = (
-                "Vendored from wmzhai/alpaca-rust at commit "
-                f"{alpaca_revision}; narrowly patched source and exclusions are "
-                "documented in vendor/alpaca-rust/UPSTREAM.md and SOURCE-MANIFEST.json."
+        elif name in vendored_sources:
+            origin = vendored_sources[name]
+            source_info = (
+                f"Vendored from {origin['repository']}@{origin['commit']}; "
+                f"package source path: {'repository root' if source_path == '.' else source_path}. "
+                "Local adaptations and "
+                f"source-file hashes are documented in {origin['target_root']}/UPSTREAM.md "
+                "and SOURCE-MANIFEST.json."
             )
+            archive_sha256 = origin.get("source_archive_sha256")
+            if archive_sha256:
+                source_info += f" Pinned source archive SHA-256: {archive_sha256}."
+            change_record_path = origin.get("local_change_record_path")
+            change_record_hash = origin.get("local_change_record_sha256")
+            if change_record_path and change_record_hash:
+                source_info += (
+                    f" Local source-change record: {change_record_path}; "
+                    f"SHA-256 {change_record_hash}."
+                )
+            formatting_config = origin.get("formatting_config")
+            if formatting_config:
+                source_info += (
+                    " Vendored formatter configuration is copied from upstream path "
+                    f"{formatting_config['source_path']} to {formatting_config['target_path']} "
+                    f"with SHA-256 {formatting_config['adapted_target_sha256']} and Git blob "
+                    f"{formatting_config['source_git_blob_sha1']}; it scopes formatting to "
+                    "the vendored source."
+                )
+            item["sourceInfo"] = source_info
         reviewed_license = license_exceptions.get((name, version))
         if reviewed_license:
             item["licenseComments"] = (

@@ -1,0 +1,125 @@
+use crate::messages::ResponseMessage;
+use crate::Error;
+
+use crate::contracts::{ContractDescription, ContractDetails, MarketRule, OptionChain, SmartComponent};
+
+// `TickOptionComputation` (msg 21, gate 206 PROTOBUF_MARKET_DATA) is decoded
+// in `market_data/realtime/common/decoders` and routed here via the narrow
+// re-export below — same proto, same `OptionComputation` struct, no point
+// duplicating the decoder.
+pub(crate) use crate::market_data::realtime::common::decoders::decode_tick_option_computation;
+
+// All originating outgoing-request gates for ContractData / SymbolSamples /
+// MarketRule / SecurityDefinitionOptionParameter are <= the connection floor,
+// so the server always emits proto framing for these messages — text-framed
+// arrival is rejected via `ResponseMessage::require_proto`, which raises
+// `Error::UnexpectedWireFormat` (docs/rules/wire/proto-only-decoding.md).
+
+pub(in crate::contracts) fn decode_contract_details(message: &ResponseMessage) -> Result<ContractDetails, Error> {
+    decode_contract_data_proto(message.require_proto()?)
+}
+
+/// TWS answers a bond query with `BondContractData` (msg 18): the same
+/// `ContractData` proto as other securities, decoded with C#'s bond-only
+/// handling of the last trade date (`EDecoderUtils.SetLastTradeDate`).
+pub(in crate::contracts) fn decode_bond_contract_details(message: &ResponseMessage) -> Result<ContractDetails, Error> {
+    let mut details = decode_contract_data_proto(message.require_proto()?)?;
+    split_bond_last_trade_date(&mut details);
+    Ok(details)
+}
+
+/// A bond's `last_trade_date_or_contract_month` carries `maturity [time [zone]]`,
+/// split on `-` if present, otherwise on whitespace. The contract field itself
+/// is left as sent, as C# does for bonds.
+fn split_bond_last_trade_date(details: &mut ContractDetails) {
+    let raw = &details.contract.last_trade_date_or_contract_month;
+    let parts: Vec<String> = if raw.contains('-') {
+        raw.split('-').map(str::to_string).collect()
+    } else {
+        raw.split_whitespace().map(str::to_string).collect()
+    };
+    if let Some(maturity) = parts.first() {
+        details.maturity = maturity.clone();
+    }
+    if let Some(time) = parts.get(1) {
+        details.last_trade_time = time.clone();
+    }
+    if let Some(zone) = parts.get(2) {
+        details.time_zone_id = zone.clone();
+    }
+}
+
+pub(in crate::contracts) fn decode_option_chain(message: &ResponseMessage) -> Result<OptionChain, Error> {
+    decode_option_chain_proto(message.require_proto()?)
+}
+
+// === Protobuf decoders ===
+
+use crate::proto::decoders::DecodeProto;
+
+use crate::contracts::PriceIncrement;
+
+pub(crate) fn decode_contract_data_proto(bytes: &[u8]) -> Result<ContractDetails, Error> {
+    let p = crate::proto::ContractData::decode_proto(bytes)?;
+    let proto_contract = crate::proto::decoders::required(p.contract.as_ref(), "contract", "ContractData")?;
+    let proto_details = crate::proto::decoders::required(p.contract_details.as_ref(), "contract_details", "ContractData")?;
+    crate::proto::decoders::decode_contract_details(proto_contract, proto_details)
+}
+
+pub(crate) fn decode_symbol_samples_proto(p: crate::proto::SymbolSamples) -> Result<Vec<ContractDescription>, Error> {
+    p.contract_descriptions
+        .into_iter()
+        .map(|d| {
+            let contract = d
+                .contract
+                .as_ref()
+                .map(crate::proto::decoders::decode_contract)
+                .transpose()?
+                .unwrap_or_default();
+            Ok(ContractDescription {
+                contract,
+                derivative_security_types: d.derivative_sec_types,
+            })
+        })
+        .collect()
+}
+
+pub(crate) fn decode_market_rule_proto(p: crate::proto::MarketRule) -> Result<MarketRule, Error> {
+    Ok(MarketRule {
+        market_rule_id: p.market_rule_id.unwrap_or_default(),
+        price_increments: p
+            .price_increments
+            .into_iter()
+            .map(|pi| PriceIncrement {
+                low_edge: pi.low_edge.unwrap_or_default(),
+                increment: pi.increment.unwrap_or_default(),
+            })
+            .collect(),
+    })
+}
+
+pub(crate) fn decode_option_chain_proto(bytes: &[u8]) -> Result<OptionChain, Error> {
+    let p = crate::proto::SecDefOptParameter::decode_proto(bytes)?;
+    Ok(OptionChain {
+        exchange: p.exchange.unwrap_or_default(),
+        underlying_contract_id: p.underlying_con_id.unwrap_or_default(),
+        trading_class: p.trading_class.unwrap_or_default(),
+        multiplier: p.multiplier.unwrap_or_default(),
+        expirations: p.expirations,
+        strikes: p.strikes,
+    })
+}
+
+pub(crate) fn decode_smart_components_proto(p: crate::proto::SmartComponents) -> Result<Vec<SmartComponent>, Error> {
+    Ok(p.smart_components
+        .into_iter()
+        .map(|c| SmartComponent {
+            bit_number: c.bit_number.unwrap_or_default(),
+            exchange: c.exchange.unwrap_or_default(),
+            exchange_letter: c.exchange_letter.unwrap_or_default(),
+        })
+        .collect())
+}
+
+#[cfg(test)]
+mod tests;

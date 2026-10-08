@@ -1,0 +1,372 @@
+use super::*;
+use crate::common::test_utils::helpers::tws_error_notice;
+use crate::market_data::historical::HistoricalParseError;
+use crate::messages::ResponseMessage;
+use crate::orders::builder::ValidationError;
+use crate::proto::decoders::DecodeProto;
+use crate::transport::routing::DecodedError;
+use std::error::Error as StdError;
+use std::io;
+use std::sync::{Mutex, PoisonError};
+use time::macros::format_description;
+use time::Time;
+
+fn parse_time_error() -> time::error::Parse {
+    Time::parse("2021-13-01", format_description!("[year]-[month]-[day]")).unwrap_err()
+}
+
+fn protobuf_decode_error() -> Error {
+    crate::proto::TickPrice::decode_proto(&[0xff, 0xff]).unwrap_err()
+}
+
+#[test]
+fn error_debug() {
+    let error = Error::Simple("test error".to_string());
+    assert_eq!(format!("{error:?}"), "Simple(\"test error\")");
+}
+
+#[test]
+fn error_display() {
+    let cases = vec![
+        (Error::Io(io::Error::new(io::ErrorKind::NotFound, "file not found")), "file not found"),
+        (Error::ParseInt("123x".parse::<i32>().unwrap_err()), "invalid digit found in string"),
+        (
+            Error::FromUtf8(String::from_utf8(vec![0, 159, 146, 150]).unwrap_err()),
+            "invalid utf-8 sequence of 1 bytes from index 1",
+        ),
+        (Error::ParseTime(parse_time_error()), "the 'month' component could not be parsed"),
+        (Error::Poison("test poison".to_string()), "test poison"),
+        (Error::NotImplemented, "not implemented"),
+        (
+            Error::Parse(1, "value".to_string(), "message".to_string()),
+            "parse error: 1 - value - message",
+        ),
+        (
+            Error::ServerVersion(2, 1, "old version".to_string()),
+            "server version 2 required, got 1: old version",
+        ),
+        (Error::Simple("simple error".to_string()), "error occurred: simple error"),
+        (Error::InvalidArgument("bad arg".to_string()), "InvalidArgument: bad arg"),
+        (Error::ConnectionFailed, "ConnectionFailed"),
+        (Error::ConnectionReset, "ConnectionReset"),
+        (Error::Cancelled, "Cancelled"),
+        (Error::Shutdown, "Shutdown"),
+        (Error::EndOfStream, "EndOfStream"),
+        (Error::UnexpectedEndOfStream, "UnexpectedEndOfStream"),
+        (
+            Error::BufferLimitExceeded { limit: 5 },
+            "subscription buffer limit exceeded (5 unread items)",
+        ),
+        (tws_error_notice(200, "No security found"), "[200] No security found"),
+        (Error::AlreadySubscribed, "AlreadySubscribed"),
+        (
+            Error::OrderIdInRequestRange { order_id: 7 },
+            "order id 7 is at or above 1500000000, which is reserved for request ids",
+        ),
+        (
+            Error::AccountUpdatesInUse {
+                active: AccountId("DU1".into()),
+                requested: AccountId("DU2".into()),
+            },
+            "account updates already streaming DU1; cancel it before requesting DU2",
+        ),
+        (
+            Error::HistoricalParseError(HistoricalParseError::BarSize("bogus".to_string())),
+            "HistoricalParseError: Invalid BarSize input 'bogus'",
+        ),
+    ];
+
+    for (error, expected) in cases {
+        assert_eq!(error.to_string(), expected);
+    }
+}
+
+#[test]
+fn unsupported_timezone_display_contains_alias_and_helpers() {
+    let error = Error::UnsupportedTimeZone("US/Foo".to_string());
+    let rendered = error.to_string();
+    assert!(rendered.contains("US/Foo"));
+    assert!(rendered.contains("register_timezone_alias"));
+    assert!(rendered.contains("IBAPI_TIMEZONE_ALIASES"));
+}
+
+#[test]
+fn unexpected_response_display_includes_safe_message_summary() {
+    let marker = "SYNTHETIC_ACCOUNT_SECRET_7842";
+    let msg = ResponseMessage::from(&format!("4\02\0-1\0200\0{marker}\0"));
+    let error = Error::unexpected_response(&msg);
+    let rendered = error.to_string();
+    assert!(rendered.starts_with("UnexpectedResponse:"));
+    assert!(!rendered.contains(marker), "diagnostics must omit decoded payloads");
+}
+
+#[test]
+fn unexpected_wire_format_display_includes_safe_message_summary() {
+    let msg = ResponseMessage::from("50\0\09000\0");
+    let error = Error::unexpected_wire_format(&msg);
+    assert_eq!(
+        error.to_string(),
+        "UnexpectedWireFormat: message_type=RealTimeBars message_id=Some(50) payload_bytes=6"
+    );
+}
+
+#[test]
+fn unexpected_wire_format_survives_clone() {
+    // `clone_preserves_payloaded_variants` only compares Display, which a
+    // collapse to Error::Simple would survive. This pins the discriminant,
+    // which is what the dispatcher matches on.
+    let msg = ResponseMessage::from("50\0\09000\0");
+    assert!(matches!(Error::unexpected_wire_format(&msg).clone(), Error::UnexpectedWireFormat(_)));
+}
+
+#[test]
+fn error_source_returns_none_for_simple() {
+    let error = Error::Simple("test error".to_string());
+    assert!(error.source().is_none());
+}
+
+#[test]
+fn from_io_error() {
+    let error: Error = io::Error::other("io error").into();
+    assert!(matches!(error, Error::Io(_)));
+}
+
+#[test]
+fn from_parse_int_error() {
+    let error: Error = "abc".parse::<i32>().unwrap_err().into();
+    assert!(matches!(error, Error::ParseInt(_)));
+}
+
+#[test]
+fn from_utf8_error() {
+    let error: Error = String::from_utf8(vec![0, 159, 146, 150]).unwrap_err().into();
+    assert!(matches!(error, Error::FromUtf8(_)));
+}
+
+#[test]
+fn from_parse_time_error() {
+    let error: Error = parse_time_error().into();
+    assert!(matches!(error, Error::ParseTime(_)));
+}
+
+#[test]
+fn from_poison_error() {
+    let error: Error = PoisonError::new(Mutex::new(())).into();
+    assert!(matches!(error, Error::Poison(_)));
+}
+
+#[test]
+fn from_historical_parse_error() {
+    fn parse(s: &str) -> Result<crate::market_data::historical::BarSize, Error> {
+        Ok(s.parse()?)
+    }
+    let error = parse("bogus").unwrap_err();
+    assert!(matches!(error, Error::HistoricalParseError(HistoricalParseError::BarSize(ref s)) if s == "bogus"));
+}
+
+#[test]
+fn decode_proto_failure_builds_protobuf_decode() {
+    let error = protobuf_decode_error();
+    assert!(matches!(error, Error::ProtobufDecode(_)));
+    assert!(error.to_string().contains("protobuf decode error"));
+}
+
+#[test]
+fn protobuf_decode_has_no_source() {
+    // The decode detail is already in Display; returning it from source() too
+    // would print it twice in error-chain reports.
+    let error = protobuf_decode_error();
+    let Error::ProtobufDecode(ref inner) = error else {
+        panic!("expected ProtobufDecode, got {error:?}");
+    };
+    assert!(error.source().is_none());
+    assert!(inner.source().is_none());
+    assert!(error.to_string().ends_with(&inner.to_string()));
+}
+
+#[test]
+fn error_types_are_send_sync_static() {
+    crate::tests::assert_send_and_sync::<Error>();
+    crate::tests::assert_send_and_sync::<ProtobufDecodeError>();
+    let _: Box<dyn StdError + Send + Sync + 'static> = Box::new(protobuf_decode_error());
+}
+
+#[test]
+fn from_decoded_error_moves_into_notice_variant() {
+    let decoded = DecodedError {
+        request_id: 42,
+        error_code: 321,
+        error_message: "rejected".to_string(),
+        error_time: None,
+        advanced_order_reject_json: String::new(),
+    };
+    let error: Error = decoded.into();
+    assert!(matches!(error, Error::Notice(ref n) if n.code == 321 && n.message == "rejected"));
+}
+
+#[test]
+fn from_validation_error_covers_every_variant() {
+    let cases: Vec<(ValidationError, &str)> = vec![
+        (ValidationError::InvalidQuantity(-1.0), "Invalid quantity: -1"),
+        (ValidationError::InvalidPrice(f64::NAN), "Invalid price: NaN"),
+        (ValidationError::MissingRequiredField("contract"), "Missing required field: contract"),
+        (
+            ValidationError::InvalidCombination("opposing legs".to_string()),
+            "Invalid combination: opposing legs",
+        ),
+        (
+            ValidationError::InvalidStopPrice { stop: 99.0, current: 100.0 },
+            "Invalid stop price 99 for current price 100",
+        ),
+        (
+            ValidationError::InvalidLimitPrice {
+                limit: 101.0,
+                current: 100.0,
+            },
+            "Invalid limit price 101 for current price 100",
+        ),
+        (
+            ValidationError::InvalidBracketOrder("missing parent".to_string()),
+            "Invalid bracket order: missing parent",
+        ),
+        (
+            ValidationError::InvalidPercentage {
+                field: "max_pct_vol",
+                value: 0.05,
+                min: 0.1,
+                max: 0.5,
+            },
+            "Invalid max_pct_vol: 0.05 (must be between 0.1 and 0.5)",
+        ),
+    ];
+
+    for (validation, expected_suffix) in cases {
+        let error: Error = validation.into();
+        match error {
+            Error::InvalidArgument(msg) => assert_eq!(msg, expected_suffix),
+            other => panic!("expected InvalidArgument, got {other:?}"),
+        }
+    }
+}
+
+#[test]
+fn clone_preserves_unit_variants() {
+    for variant in [
+        Error::NotImplemented,
+        Error::ConnectionFailed,
+        Error::ConnectionReset,
+        Error::Cancelled,
+        Error::Shutdown,
+        Error::EndOfStream,
+        Error::UnexpectedEndOfStream,
+        Error::AlreadySubscribed,
+    ] {
+        let cloned = variant.clone();
+        assert_eq!(variant.to_string(), cloned.to_string());
+    }
+}
+
+#[test]
+fn clone_preserves_payloaded_variants() {
+    let response = ResponseMessage::from("4\02\0-1\0200\0boom\0");
+    let originals = vec![
+        Error::Io(io::Error::other("io")),
+        Error::ParseInt("x".parse::<i32>().unwrap_err()),
+        Error::FromUtf8(String::from_utf8(vec![0xff]).unwrap_err()),
+        Error::Poison("p".into()),
+        Error::Parse(3, "v".into(), "m".into()),
+        Error::ServerVersion(10, 5, "feat".into()),
+        Error::Simple("s".into()),
+        Error::InvalidArgument("a".into()),
+        Error::UnsupportedTimeZone("US/Foo".into()),
+        Error::unexpected_response(&response),
+        Error::unexpected_wire_format(&response),
+        Error::InvalidFrame("frame length 0 is shorter than the 4-byte message id".into()),
+        tws_error_notice(404, "nope"),
+        Error::HistoricalParseError(HistoricalParseError::WhatToShow("Z".into())),
+        protobuf_decode_error(),
+        Error::ParseTime(parse_time_error()),
+        Error::AccountUpdatesInUse {
+            active: AccountId("DU1".into()),
+            requested: AccountId("DU2".into()),
+        },
+        Error::BufferLimitExceeded { limit: 5 },
+        Error::OrderIdInRequestRange { order_id: 7 },
+    ];
+
+    for original in originals {
+        let cloned = original.clone();
+        assert_eq!(original.to_string(), cloned.to_string());
+    }
+}
+
+#[test]
+fn clone_preserves_parse_time() {
+    let original = Error::ParseTime(parse_time_error());
+    assert!(matches!(original.clone(), Error::ParseTime(e) if e == parse_time_error()));
+}
+
+#[test]
+fn error_is_non_exhaustive() {
+    fn assert_non_exhaustive<T: StdError>() {}
+    assert_non_exhaustive::<Error>();
+}
+
+#[test]
+fn is_connection_lost_true_for_connection_variants() {
+    assert!(Error::ConnectionReset.is_connection_lost());
+
+    // The socket is still open, but the framing has desynchronized and there is
+    // no delimiter to re-anchor on — reconnecting is the only recovery, so the
+    // dispatchers must take their reconnect branch rather than shutting down.
+    assert!(Error::InvalidFrame("bad length".to_string()).is_connection_lost());
+
+    for kind in [
+        io::ErrorKind::ConnectionReset,
+        io::ErrorKind::ConnectionAborted,
+        io::ErrorKind::UnexpectedEof,
+        io::ErrorKind::BrokenPipe,
+    ] {
+        let error = Error::Io(io::Error::new(kind, "disconnected"));
+        assert!(error.is_connection_lost(), "{kind:?} should count as connection-lost");
+    }
+}
+
+#[test]
+fn is_connection_lost_false_for_non_connection() {
+    let cases = [
+        Error::Shutdown,
+        // Reconnection exhausted — terminal, not a recoverable mid-stream loss.
+        Error::ConnectionFailed,
+        Error::ConnectionRejected("allow-list mismatch".to_string()),
+        Error::Cancelled,
+        tws_error_notice(200, "No security found"),
+        Error::Io(io::Error::new(io::ErrorKind::NotFound, "missing")),
+        Error::Simple("boom".to_string()),
+        Error::Parse(1, "v".to_string(), "m".to_string()),
+    ];
+
+    for error in cases {
+        assert!(!error.is_connection_lost(), "{error:?} should not count as connection-lost");
+    }
+}
+
+#[test]
+fn is_read_timeout_only_for_no_data_yet() {
+    // Both dispatchers poll on this: a timed-out read means "nothing arrived",
+    // and must not be confused with the socket being gone.
+    for kind in [io::ErrorKind::WouldBlock, io::ErrorKind::TimedOut] {
+        let error = Error::Io(io::Error::new(kind, "no data"));
+        assert!(error.is_read_timeout(), "{kind:?} should count as a read timeout");
+        assert!(!error.is_connection_lost(), "{kind:?} must not also read as connection-lost");
+    }
+
+    for error in [
+        Error::Io(io::Error::new(io::ErrorKind::BrokenPipe, "gone")),
+        Error::Io(io::Error::other("other")),
+        Error::ConnectionReset,
+        Error::Cancelled,
+    ] {
+        assert!(!error.is_read_timeout(), "{error:?} should not count as a read timeout");
+    }
+}
