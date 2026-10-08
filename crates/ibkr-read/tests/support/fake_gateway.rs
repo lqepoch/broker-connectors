@@ -32,6 +32,7 @@ impl ContractFixture {
 
 #[derive(Clone, Debug)]
 pub(crate) enum ResponsePlan {
+    NoHandshakeResponse,
     RowsAndEnd(Vec<ContractFixture>),
     RowsThenEndAfterCancel(Vec<ContractFixture>),
     RowsWithoutEnd(Vec<ContractFixture>),
@@ -108,6 +109,14 @@ async fn serve(
 ) -> io::Result<()> {
     let (mut stream, _) = listener.accept().await?;
     read_client_handshake(&mut stream).await?;
+    if matches!(&plan, ResponsePlan::NoHandshakeResponse) {
+        let mut byte = [0u8; 1];
+        loop {
+            if stream.read(&mut byte).await? == 0 {
+                return Ok(());
+            }
+        }
+    }
     send_handshake(&mut stream).await?;
 
     let request = loop {
@@ -133,6 +142,7 @@ async fn serve(
     };
 
     match plan {
+        ResponsePlan::NoHandshakeResponse => unreachable!("handled before API handshake"),
         ResponsePlan::RowsAndEnd(rows) => {
             send_rows(&mut stream, request.request_id, &rows).await?;
             write_protocol_packet(

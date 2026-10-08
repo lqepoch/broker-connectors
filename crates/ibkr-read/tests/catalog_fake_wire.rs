@@ -224,6 +224,21 @@ async fn non_loopback_endpoints_are_rejected_before_connecting() {
 }
 
 #[tokio::test]
+async fn connect_timeout_closes_unresponsive_loopback_gateway() {
+    let gateway = FakeGateway::start(ResponsePlan::NoHandshakeResponse)
+        .await
+        .expect("start unresponsive synthetic gateway");
+    assert!(matches!(
+        IbkrCatalogAdapter::connect(gateway.address, 17, timeouts(Duration::from_millis(50)),)
+            .await,
+        Err(IbkrCatalogError::ConnectTimeout)
+    ));
+
+    let observation = gateway.finish().await.expect("finish local fake server");
+    assert!(observation.outbound_ids.is_empty());
+}
+
+#[tokio::test]
 async fn missing_end_times_out_cancels_and_poisons_the_session() {
     let gateway = FakeGateway::start(ResponsePlan::RowsWithoutEnd(vec![ContractFixture::exact(
         123_456,
