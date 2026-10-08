@@ -339,7 +339,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "5eb6a3f50348b945f44a5db2895b107055065a80360aa74ba235aa4dcddc1daa",
+      "sha256": "62f39171d2330144177453cd158c9ebc002a7a15cf79ba7ddebeff05c183a8d3",
       "target_path": "vendor/schwab/SOURCE-MANIFEST.json"
     },
     {
@@ -823,8 +823,8 @@
       "target_path": "vendor/schwab/crates/schwab-rest/src/read_response/validation/trader.rs"
     },
     {
-      "adaptation": "Uses checked integer conversions in synthetic response generation and adds scoped readability allowances for contiguous fixture cases.",
-      "adapted_target_sha256": "d641d6e3b4164d1a33e083be588bc50faa6f14500c13cf07713053ff1f7807a7",
+      "adaptation": "Uses checked integer conversions in synthetic response generation, adds scoped readability allowances for contiguous fixture cases, and keeps redaction assertion failure messages constant so protected fixture values cannot be echoed.",
+      "adapted_target_sha256": "d4c7e5b9d6bdb05a7d48e583bc32e417d5e644d20c13b38403d8625564165163",
       "change_categories": [
         "tests"
       ],
