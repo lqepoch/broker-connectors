@@ -1,6 +1,6 @@
 # broker-connectors
 
-This public Rust workspace owns broker protocol adapters and provider-neutral ports. It starts with the audited Alpaca options WebSocket protocol and bounded market-data contracts. Shared domain and market-contract types come from the frozen [`trading-core`](https://github.com/lqepoch/trading-core) revision `ebfe606b381011b4a7ad3dfdc673c8e8f6651a08`.
+This public Rust workspace owns broker protocol adapters and provider-neutral ports. It starts with the audited Alpaca options WebSocket protocol and bounded market-data contracts. Shared domain and market-contract types come from the frozen [`trading-core`](https://github.com/lqepoch/trading-core) revision `0d23c2e9f9e29c97d3f386c48cc47b9fd7909d7b` (tree `2dece30e7bf31c13899cf67508bdff5c235ebbab`).
 
 `broker-ports` now defines four read-only boundaries: market data, instrument catalog, account reads, and account events. The Alpaca options stream is the only implementation of the generic market-data port. IBKR has a provider-specific exact option-catalog wrapper, but it does not implement the generic catalog port because that port's query cannot carry the full OCC identity and explicit exchange/currency needed for a safe request. Schwab implements bounded account-summary and positions reads through `BrokerReadPort`; its order/fill reads remain unsupported, and the extracted Streamer is not a production market-data adapter. The account-event contract has no provider implementation. Admission namespace and policy provenance are not authorization grants: each adapter must receive its quota from the single trusted read-budget owner. Account rows remain adapter-associated types and must be mapped into the consuming engine's one account-state authority.
 
@@ -66,8 +66,8 @@ CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p ibkr-read --locked
 CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy -p ibkr-read --all-targets --locked -- -D warnings
 CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p schwab-rest -p schwab-sdk -p schwab-streamer -p schwab-adapter --locked --offline
 CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy -p schwab-rest -p schwab-sdk -p schwab-streamer -p schwab-adapter --all-targets --locked --offline -- -D warnings
-CARGO_BUILD_JOBS=2 cargo +1.99.0 test --workspace --locked
-CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy --workspace --all-targets --locked -- -D warnings
+CARGO_BUILD_JOBS=2 cargo +1.99.0 test --workspace --all-features --locked
+CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy --workspace --all-targets --all-features --locked -- -D warnings
 python3 scripts/generate_spdx_sbom.py
 python3 scripts/update_source_manifest_hashes.py
 python3 scripts/check_vendor_provenance.py

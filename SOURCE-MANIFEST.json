@@ -25,17 +25,17 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "0b6cd9f65cfe950afdf6596eac3de937bb43737adc3175b26947774535dd9cfb",
+      "sha256": "4d199ffc43a69bcd39f1978fa3baeacdc0544a1e2072ef33502eb2ba22e2191e",
       "target_path": "Cargo.lock"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "8b20c1b65c904d9f51c617919da876a2f42aba73b5f26983cd7dc3474ada06c3",
+      "sha256": "03400b11082a746ffb1024f2c29d388921f000929097bda93fca02e4e2e99a4b",
       "target_path": "Cargo.toml"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "788a77b880f27f8528e18fe4b7fb30952d2a5469564b212dd51c7d584773b17f",
+      "sha256": "006489f2d09ed95fe580528c57f08b02d3612b2bebfbf0f235b5fac273f52c39",
       "target_path": "DEPENDENCY-RESOLUTION.md"
     },
     {
@@ -45,12 +45,12 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "0daa658a19dd60acba7d4fdb3b1ca15ea7d6f92ddc0a674a1704ab1868ca06ca",
+      "sha256": "7bcb1fd38514597d0db180d991c77baf45d60af651b8748aeb75e2db117c8598",
       "target_path": "README.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "b95fe9cbb340ec841808bffe27868b45394f230ffb61a92000e3c50f65ec8143",
+      "sha256": "f5cc667033a475735d9b3b448288aab182dc42170368f618622491d97b1eb879",
       "target_path": "SBOM.spdx.json"
     },
     {
@@ -100,7 +100,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "4b00ee25d4b20e837a96edcaff8101edd2659af8919b10f2e5c4a1d01bbe755d",
+      "sha256": "c804dd4d0856adbd5361e58bc860ebe65b55c6816c0e10ed9e646687522cf140",
       "target_path": "crates/broker-execution/README.md"
     },
     {
@@ -354,8 +354,8 @@
   ],
   "shared_contract_dependencies": [
     {
-      "commit": "ebfe606b381011b4a7ad3dfdc673c8e8f6651a08",
-      "git_tree": "64f964908d00960740a33f29369b702b83f38526",
+      "commit": "0d23c2e9f9e29c97d3f386c48cc47b9fd7909d7b",
+      "git_tree": "2dece30e7bf31c13899cf67508bdff5c235ebbab",
       "license": "MIT OR Apache-2.0",
       "lockfile": "Cargo.lock includes this package and its transitive core packages at the same commit.",
       "package": "market-contracts",
@@ -363,8 +363,8 @@
       "repository": "lqepoch/trading-core"
     },
     {
-      "commit": "ebfe606b381011b4a7ad3dfdc673c8e8f6651a08",
-      "git_tree": "64f964908d00960740a33f29369b702b83f38526",
+      "commit": "0d23c2e9f9e29c97d3f386c48cc47b9fd7909d7b",
+      "git_tree": "2dece30e7bf31c13899cf67508bdff5c235ebbab",
       "license": "MIT OR Apache-2.0",
       "lockfile": "Cargo.lock resolves exact-decimal as the only normal transitive dependency of domain for broker-execution.",
       "package": "exact-decimal",
@@ -372,8 +372,8 @@
       "repository": "lqepoch/trading-core"
     },
     {
-      "commit": "ebfe606b381011b4a7ad3dfdc673c8e8f6651a08",
-      "git_tree": "64f964908d00960740a33f29369b702b83f38526",
+      "commit": "0d23c2e9f9e29c97d3f386c48cc47b9fd7909d7b",
+      "git_tree": "2dece30e7bf31c13899cf67508bdff5c235ebbab",
       "license": "MIT OR Apache-2.0",
       "lockfile": "Cargo.lock resolves domain and market-contracts from the same immutable trading-core revision.",
       "package": "domain",

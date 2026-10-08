@@ -473,7 +473,7 @@ dependencies = [
 [[package]]
 name = "domain"
 version = "0.1.0"
-source = "git+https://github.com/lqepoch/trading-core.git?rev=ebfe606b381011b4a7ad3dfdc673c8e8f6651a08#ebfe606b381011b4a7ad3dfdc673c8e8f6651a08"
+source = "git+https://github.com/lqepoch/trading-core.git?rev=0d23c2e9f9e29c97d3f386c48cc47b9fd7909d7b#0d23c2e9f9e29c97d3f386c48cc47b9fd7909d7b"
 dependencies = [
  "exact-decimal",
 ]
@@ -509,7 +509,7 @@ dependencies = [
 [[package]]
 name = "exact-decimal"
 version = "0.1.0"
-source = "git+https://github.com/lqepoch/trading-core.git?rev=ebfe606b381011b4a7ad3dfdc673c8e8f6651a08#ebfe606b381011b4a7ad3dfdc673c8e8f6651a08"
+source = "git+https://github.com/lqepoch/trading-core.git?rev=0d23c2e9f9e29c97d3f386c48cc47b9fd7909d7b#0d23c2e9f9e29c97d3f386c48cc47b9fd7909d7b"
 
 [[package]]
 name = "find-msvc-tools"
@@ -1098,7 +1098,7 @@ checksum = "4050469837a6ff301cd14c1f8f24f88549e6d548f24f64e2148eb0f72cebc51f"
 [[package]]
 name = "market-contracts"
 version = "0.1.0"
-source = "git+https://github.com/lqepoch/trading-core.git?rev=ebfe606b381011b4a7ad3dfdc673c8e8f6651a08#ebfe606b381011b4a7ad3dfdc673c8e8f6651a08"
+source = "git+https://github.com/lqepoch/trading-core.git?rev=0d23c2e9f9e29c97d3f386c48cc47b9fd7909d7b#0d23c2e9f9e29c97d3f386c48cc47b9fd7909d7b"
 dependencies = [
  "chrono",
  "domain",
