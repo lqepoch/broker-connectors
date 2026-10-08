@@ -258,6 +258,7 @@ struct EventProjector {
 
 struct PendingRawFrameLink {
     generation: u64,
+    capture_instance_id: Option<broker_ports::RawCaptureInstanceId>,
     frame_sha256: String,
     event_count: u32,
     seen_ordinals: BTreeSet<u32>,
@@ -388,6 +389,7 @@ impl EventProjector {
                     key,
                     PendingRawFrameLink {
                         generation,
+                        capture_instance_id: frame.capture_instance_id,
                         frame_sha256: frame.payload.sha256().to_owned(),
                         event_count: frame.event_count,
                         seen_ordinals: BTreeSet::new(),
@@ -403,6 +405,8 @@ impl EventProjector {
             provider: "alpaca".to_owned(),
             feed: expected_feed.to_owned(),
             entitlement: EntitlementState::Unknown,
+            capture_instance_id: frame.capture_instance_id,
+            wire_encoding: frame.wire_encoding,
             numeric_encoding: frame.numeric_encoding,
             generation,
             frame_sequence: frame.frame_sequence,
@@ -447,10 +451,12 @@ impl EventProjector {
         }
         let complete = pending.seen_ordinals.len()
             == usize::try_from(pending.event_count).map_err(|_| BrokerPortError::LimitExceeded)?;
+        let capture_instance_id = pending.capture_instance_id;
         if complete {
             self.pending_raw_frames.remove(&key);
         }
         Ok(Some(RawFrameReference {
+            capture_instance_id,
             generation,
             frame_sequence: ingest.raw_frame_sequence,
             event_ordinal: ingest.raw_frame_event_ordinal,
@@ -760,9 +766,11 @@ mod tests {
         payload: RawFramePayload,
     ) -> InboundRawMarketFrame {
         InboundRawMarketFrame {
+            capture_instance_id: None,
             generation: SessionGeneration::new(1),
             frame_sequence,
             received_at_utc: chrono::DateTime::<Utc>::from(SystemTime::now()),
+            wire_encoding: broker_ports::RawFrameWireEncoding::MessagePack,
             event_count,
             symbols,
             numeric_encoding: None,

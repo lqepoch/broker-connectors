@@ -30,6 +30,17 @@ wide pedantic suppression. Raw market frames stay in the ordered bounded lane,
 exclude outbound auth data, and retain exact bytes plus event correlation. They
 are not yet persisted or research-qualified by this workspace.
 
+The optional `broker-ports::RawFrameSink` contract is not a production storage
+implementation. Pre-decode capture ACKs bind the capture UUID, source generation,
+frame sequence, and exact byte hash. Post-decode finalization ACKs additionally
+bind a canonical bounded summary hash. A sink must await local durability of both
+the exact frame plus recovery metadata and the derived summary; it must not ACK
+ambiguous writes. The Alpaca adapter must not decode a frame until the pre-decode
+ACK matches, and must not publish correlated events until finalization matches.
+Sink failures, cancellation, saturation, or ACK mismatches poison the generation
+and stop it without retrying past the missing frame. Synthetic sink tests are
+contract tests only; they do not establish filesystem durability.
+
 `broker-execution` is a software contract only. Keep `offline-fake` opt-in and
 synthetic, preserve explicit bounds on both scripted outcomes and recorded
 commands, and do not treat a Paper route as permission or `Unknown` as retryable.

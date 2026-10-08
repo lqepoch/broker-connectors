@@ -611,9 +611,11 @@ where
             }
         };
         let frame = crate::InboundRawMarketFrame {
+            capture_instance_id: None,
             generation,
             frame_sequence: *frame_sequence,
             received_at_utc,
+            wire_encoding: broker_ports::RawFrameWireEncoding::MessagePack,
             event_count: analysis.event_count,
             symbols: analysis.symbols,
             numeric_encoding: analysis.numeric_encoding,

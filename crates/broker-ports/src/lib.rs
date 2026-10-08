@@ -20,6 +20,7 @@
 mod admission;
 mod catalog;
 mod event;
+mod raw_capture;
 mod read;
 
 pub use admission::{
@@ -36,6 +37,12 @@ pub use event::{
     BrokerEventGeneration, BrokerEventPayload, BrokerEventPort, BrokerEventSource,
     BrokerEventStream, BrokerEventStreamFuture, BrokerEventSubscriptionId,
     BrokerEventSubscriptionRequest, BrokerEventSubscriptionRequestError, MAX_BROKER_EVENT_BUFFER,
+};
+pub use raw_capture::{
+    MAX_RAW_FRAME_FINALIZATION_ITEMS, RawCaptureInstanceId, RawCaptureInstanceIdError,
+    RawFrameCapture, RawFrameCaptureAck, RawFrameCaptureRequestError, RawFrameFinalization,
+    RawFrameFinalizationAck, RawFrameFinalizationError, RawFrameSink, RawFrameSinkError,
+    RawFrameSinkFactory, RawFrameWireEncoding,
 };
 pub use read::{
     AccountReadRequest, AccountReadRequestError, BrokerReadError, BrokerReadPage,
@@ -349,6 +356,9 @@ pub enum RawFrameDisposition {
     /// The frame decoded and contained one or more supported market events.
     /// 帧已解码，且包含一个或多个受支持行情事件。
     DecodedMarketData,
+    /// A decoded subscription acknowledgement or other control frame with no market events.
+    /// 已解码订阅 ACK 或其它不含行情事件的控制帧。
+    ControlMessage,
     /// The frame included an unknown provider message type.
     /// 帧包含未知 provider 消息类型。
     UnknownMessage,
@@ -373,6 +383,12 @@ pub struct RawMarketFrame {
     /// Independently verified entitlement state; Alpaca stream currently reports unknown.
     /// 独立验证的 entitlement；当前 Alpaca stream 报告为 unknown。
     pub entitlement: EntitlementState,
+    /// Capture instance `UUIDv4` when a trusted pre-decode sink was configured.
+    /// 配置可信解码前 sink 时的捕获实例 `UUIDv4`。
+    pub capture_instance_id: Option<RawCaptureInstanceId>,
+    /// Exact wire encoding observed before decoding.
+    /// 解码前观察到的精确 wire 编码。
+    pub wire_encoding: RawFrameWireEncoding,
     /// Homogeneous encoding evidence for market prices in this frame, if known.
     /// 若已知，则为本帧行情价格的统一编码证据。
     pub numeric_encoding: Option<NumericEncodingV1>,
@@ -406,6 +422,8 @@ impl std::fmt::Debug for RawMarketFrame {
             .field("provider", &self.provider)
             .field("feed", &self.feed)
             .field("entitlement", &self.entitlement)
+            .field("capture_instance_id", &self.capture_instance_id)
+            .field("wire_encoding", &self.wire_encoding)
             .field("numeric_encoding", &self.numeric_encoding)
             .field("generation", &self.generation)
             .field("frame_sequence", &self.frame_sequence)
@@ -422,6 +440,9 @@ impl std::fmt::Debug for RawMarketFrame {
 /// 从一条规范化行情事件关联至其精确来源帧。
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RawFrameReference {
+    /// Capture instance `UUIDv4` when the source frame was durably captured.
+    /// 来源 frame 经耐久捕获时的捕获实例 `UUIDv4`。
+    pub capture_instance_id: Option<RawCaptureInstanceId>,
     /// Canonical port generation shared with the linked event envelope.
     /// 与关联事件信封共享的 canonical port 代次。
     pub generation: u64,

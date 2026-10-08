@@ -23,10 +23,19 @@ records process-wide. Exceeding a bound terminates that generation with a fixed
 failure. Unknown/provider-error frames that reach the lane retain diagnostic raw
 bytes and cannot qualify a complete event archive. In active market-data and
 subscription-handshake capture modes, a frame that fails decoding is also
-published as a `DecodeFailure` raw record. Capture currently decodes and
-analyzes the frame before publishing that in-memory record; it has no awaited
-durable capture sink or persistence acknowledgement. Durable Parquet storage and
-research qualification belong to the separately versioned market-data
+published as a `DecodeFailure` raw record. The optional `RawFrameSink` contract
+specifies an awaited matching pre-decode ACK followed by a matching post-decode
+finalization ACK before the adapter publishes the corresponding raw frame or
+normalized events. Both ACK phases bind the capture UUID, source generation,
+frame sequence, and exact frame SHA-256; finalization also binds a canonical
+decode-summary hash. ACK constructors only express the sink implementation's
+promise and do not prove an `fsync`. The Alpaca runner integration is a separate
+stage, and this workspace still has no production sink implementation. Sessions
+without an injected sink remain diagnostic-only and in-memory. A trusted sink
+owns one UUIDv4 per logical subscription, keeps it across reconnect generations,
+and creates a new ID after restart. A crash between the two ACKs leaves an
+unfinalized capture for the sink owner to quarantine. Durable Parquet storage
+and research qualification belong to the separately versioned market-data
 pipeline, not this adapter.
 
 The initial implementation reuses the audited source `schwab_auto_bot@c907d18bc31790ede4cf36a4312a6813467506f0` for `alpaca-stream` protocol/session mechanics, with source-level provenance in `SOURCE-MANIFEST.json`. New public package files use the project-authorized `MIT OR Apache-2.0` license; upstream dependency license terms remain separate and are recorded in the manifest/SBOM.
