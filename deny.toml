@@ -107,6 +107,10 @@ confidence-threshold = 0.8
 exceptions = [
     # Each entry is the crate and version constraint, and its specific allow
     # list
+    # This exact transitive Mozilla root-certificate data package is pinned by
+    # reqwest's rustls-platform-verifier; its license text and registry checksum
+    # are recorded in NOTICE and SOURCE-MANIFEST.json.
+    { allow = ["CDLA-Permissive-2.0"], crate = "webpki-root-certs@1.0.9" },
     #{ allow = ["Zlib"], crate = "adler32" },
 ]
 

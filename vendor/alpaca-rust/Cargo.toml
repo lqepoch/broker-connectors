@@ -1,0 +1,27 @@
+[workspace]
+members = [
+  "crates/alpaca-core",
+  "crates/alpaca-http",
+  "crates/alpaca-data",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.33.3"
+edition = "2024"
+rust-version = "1.99.0"
+authors = ["Weiming Zhai <wmzhai@gmail.com>"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/wmzhai/alpaca-rust"
+homepage = "https://wmzhai.github.io/alpaca-rust/"
+
+[workspace.dependencies]
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+reqwest = { version = "0.13", default-features = false, features = ["json", "query", "rustls"] }
+rust_decimal = { version = "1.41", default-features = false, features = ["serde-with-arbitrary-precision", "std"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["arbitrary_precision"] }
+thiserror = "2"
+tokio = { version = "1", features = ["macros", "process", "rt-multi-thread", "sync", "time"] }
+url = "2"
+zeroize = "1.9"

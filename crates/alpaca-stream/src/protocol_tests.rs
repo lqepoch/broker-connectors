@@ -147,7 +147,7 @@ fn decodes_standard_timestamp_extension_into_numeric_time() {
         i64::try_from(seconds).expect("synthetic seconds fit i64")
     );
     assert_eq!(quote.timestamp.nanosecond(), nanosecond);
-    assert!(quote.timestamp.as_rfc3339().is_empty());
+    assert_eq!(quote.timestamp.as_rfc3339(), "");
 }
 
 #[test]
@@ -190,7 +190,7 @@ fn quote_and_trade_timestamp_widths_preserve_nanoseconds_and_freshness() {
             };
             assert_eq!(timestamp.unix_seconds(), expected_seconds);
             assert_eq!(timestamp.nanosecond(), expected_nanosecond);
-            assert!(timestamp.as_rfc3339().is_empty());
+            assert_eq!(timestamp.as_rfc3339(), "");
 
             let source_seconds =
                 u64::try_from(expected_seconds).expect("synthetic source seconds are nonnegative");
@@ -455,7 +455,7 @@ fn bounded_pseudofuzz_inputs_never_panic_or_return_unbounded_messages() {
             "parser panicked for synthetic case {case_index}"
         );
         if let Ok(Ok(messages)) = decoded {
-            assert!(!messages.is_empty());
+            assert_ne!(messages, Vec::new());
             assert!(messages.len() <= MAX_FRAME_MESSAGES);
         }
     }

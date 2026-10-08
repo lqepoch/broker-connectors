@@ -1,0 +1,2 @@
+# Unified diff context lines represent empty context as one required space.
+vendor/alpaca-rust/LOCAL-PATCHES.patch whitespace=-blank-at-eol

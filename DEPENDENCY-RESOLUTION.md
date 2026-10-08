@@ -18,4 +18,20 @@ This probe used the pinned dependency manifests only. It did not inspect private
 Git history, change the Schwab dependency, or exercise a provider connection.
 `broker-execution` therefore stays separate from `broker-ports` and depends only
 on core `domain`; `scripts/check_broker_execution_dependency_firewall.py`
-checks that boundary on the public workspace.
+checks that boundary on the public workspace. This is historical resolver
+evidence from the engine probe and intentionally retains its original Rust
+1.98.1 command; this broker workspace now pins Rust 1.99.0 because the separate
+`alpaca-rest-read` consumer uses the pinned SDK, while `broker-execution` itself
+still declares MSRV 1.98.1.
+
+The pinned Alpaca REST stack's target-union dependency graph includes
+`webpki-root-certs 1.0.9`: the SDK enables reqwest 0.13.5's `rustls` feature,
+which includes `rustls-platform-verifier 0.7.1`, whose wasm32 target dependency
+is `webpki-root-certs`. This target-specific edge is retained in the SBOM even
+though it is not the root store used by the native Linux transport. Cargo
+declares the package license as `CDLA-Permissive-2.0`; its package `LICENSE`
+text, SHA-256, registry checksum, and target-specific dependency path are
+recorded in `NOTICE`, `SOURCE-MANIFEST.json`, and the SPDX package metadata.
+The deny policy contains an exact crate/version exception rather than a global
+license allowance. These Mozilla root certificate data do not attest broker
+identity, provider entitlement, or market-data source.
