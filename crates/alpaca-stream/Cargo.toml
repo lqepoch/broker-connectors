@@ -7,6 +7,10 @@ license.workspace = true
 repository.workspace = true
 description = "Bounded, read-only Alpaca OPRA/indicative options WebSocket protocol"
 
+[features]
+default = []
+offline-test-support = []
+
 [dependencies]
 chrono.workspace = true
 broker-ports.workspace = true

@@ -63,6 +63,17 @@ impl FreshnessClock for SystemFreshnessClock {
     }
 }
 
+#[cfg(any(test, feature = "offline-test-support"))]
+#[derive(Clone, Copy)]
+struct FixedFreshnessClock(SystemTime);
+
+#[cfg(any(test, feature = "offline-test-support"))]
+impl FreshnessClock for FixedFreshnessClock {
+    fn now(&self) -> SystemTime {
+        self.0
+    }
+}
+
 fn next_session_retry_seed() -> Option<u64> {
     NEXT_SESSION_RETRY_SEED
         .try_update(
@@ -126,6 +137,10 @@ pub enum SessionExit {
     /// The caller requested cancellation and the owned socket was closed.
     /// 调用方请求取消，且会话任务已关闭其拥有的 socket。
     Cancelled,
+    /// The reviewed offline fixture reached its local test-control terminal marker.
+    /// This state is not a provider protocol watermark or market-data completeness claim.
+    #[cfg(feature = "offline-test-support")]
+    FixtureEnd,
 }
 
 /// Stable, secret-free error categories returned by the session task.
@@ -270,6 +285,8 @@ enum AttemptEnd {
     Failed(AttemptFailure),
     Cancelled,
     ConsumersClosed,
+    #[cfg(feature = "offline-test-support")]
+    FixtureEnd,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -291,7 +308,7 @@ enum ReceiveFailure {
     Transport,
 }
 
-async fn run_session<P, C>(
+pub(crate) async fn run_session<P, C>(
     config: StreamConfig,
     credential_provider: P,
     connector: C,
@@ -319,6 +336,42 @@ where
         SessionRuntime {
             retry_seed,
             freshness_clock: SystemFreshnessClock,
+        },
+    )
+    .await
+}
+
+#[cfg(feature = "offline-test-support")]
+#[allow(clippy::too_many_arguments)] // Reuses the same explicit runtime inputs as the normal session entrypoint.
+pub(crate) async fn run_fixture_session<P, C>(
+    config: StreamConfig,
+    credential_provider: P,
+    connector: C,
+    shutdown: watch::Receiver<bool>,
+    consumers_closed: watch::Receiver<bool>,
+    publishers: LanePublishers,
+    raw_frame_sink: Option<Arc<dyn RawFrameSink>>,
+    freshness_time: SystemTime,
+) -> Result<SessionExit, StreamError>
+where
+    P: CredentialProvider,
+    C: SocketConnector,
+{
+    let Some(retry_seed) = next_session_retry_seed() else {
+        publishers.close().await;
+        return Err(StreamError::SequenceExhausted);
+    };
+    run_session_with_seed_and_clock(
+        config,
+        credential_provider,
+        connector,
+        shutdown,
+        consumers_closed,
+        publishers,
+        raw_frame_sink,
+        SessionRuntime {
+            retry_seed,
+            freshness_clock: FixedFreshnessClock(freshness_time),
         },
     )
     .await

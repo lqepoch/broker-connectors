@@ -15,7 +15,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "d251375b2237f7a1c00f5498282df503ca48143a295822b98dd8b6fd2c2db912",
+      "sha256": "ddae137a1feba49471cbc274f6a3ee4a0dbbc264fad6ade7853d314ecc234da2",
       "target_path": "AGENTS.md"
     },
     {
@@ -45,12 +45,12 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "bdb22945bddfbd0ced644a379d9b966c32e8abd37044ce4b44f3b6ce343b4d14",
+      "sha256": "990dbf965f79e641157a595d5b80d41954de26784f57534af59cc8757e53fd57",
       "target_path": "README.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "1e2c9e89e7a976b891f266bbc6912522800e9c1b21e7cfad17c8308fee2fff2b",
+      "sha256": "0dc2554c7eea6e702a08117765e25dc7ac6bcb943ca4094ab6ccf83689f2e0f4",
       "target_path": "SBOM.spdx.json"
     },
     {
@@ -90,7 +90,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "9f7323f019b503a2a4ef61bdb2b72b3d8e694bfd08f8b39c37b32bd74db2c97f",
+      "sha256": "eb9f72e475b4cb5c44c6fceb67f8422fc665e211b3e753f8cb94a615141ca9ec",
       "target_path": "crates/alpaca-stream/src/market_port.rs"
     },
     {
@@ -271,6 +271,16 @@
       "origin": "new project-owned code",
       "sha256": "1fe4fc2877acd9a3de98722de4530f7407c4e95867120285c2a0250540b61776",
       "target_path": "vendor/ibapi/UPSTREAM.md"
+    },
+    {
+      "origin": "Feature-gated local harness over the existing Alpaca session, raw sink ACK path, and event projector; fixed fixture only, no caller credentials or endpoint.",
+      "sha256": "19b5536d2d5d5d699ac3e32112971ebca5755c104f5b9d1b7e9212f98d05d70c",
+      "target_path": "crates/alpaca-stream/src/offline_test_support.rs"
+    },
+    {
+      "origin": "Negative and positive tests for the fixed offline fixture receipt, bounded completion, cancellation, identity preservation, and two-phase sink ACK matching; no provider calls.",
+      "sha256": "cf12e46c9de6f646a9541bf9840d568fae9099b60abf416328a54c5a5c445958",
+      "target_path": "crates/alpaca-stream/src/offline_test_support_tests.rs"
     }
   ],
   "reviewed_dependency_licenses": [
@@ -319,15 +329,15 @@
   "source_commit": "c907d18bc31790ede4cf36a4312a6813467506f0",
   "source_files": [
     {
-      "adaptation": "Adapted as a workspace member; dependencies are resolved only by the public workspace lockfile.",
-      "adapted_target_sha256": "69d619d14ef9467da09fcbb561ceb39ca08862ef57d166ad401b00de4b2a9045",
+      "adaptation": "Added the default-off offline-test-support feature; it adds no dependency and is available only to local synthetic capture tooling.",
+      "adapted_target_sha256": "484ebe5f7d140d10ab13ea571e4a21edd36ceb13e2b093285149cd8c6c039b2c",
       "source_blob_sha256": "930b598643789f6be404b42fe202990e4208c2f4529864515a9e6006af53002f",
       "source_path": "crates/alpaca-stream/Cargo.toml",
       "target_path": "crates/alpaca-stream/Cargo.toml"
     },
     {
-      "adaptation": "Updated for public scope, shared v1 contracts, numeric provenance, ACK limits, and archive completeness boundaries.",
-      "adapted_target_sha256": "50c299ffa399c80d08fc1d725bc9c7b0eb9046f956c4e6bf6834c87ac08d5cb0",
+      "adaptation": "Documents the default-off fixed offline fixture seam, receipt limitations, and cross-crate digest encoding; no live entitlement or provider-completion claim.",
+      "adapted_target_sha256": "29d29b8e31561756170ddad4496b417bb4b57b36762e7077939d5951a1359638",
       "source_blob_sha256": "5c6080b377e1e0a7ad9963a3fc6f095f88fdd16ebb0c55b92115a60d329c3e67",
       "source_path": "crates/alpaca-stream/README.md",
       "target_path": "crates/alpaca-stream/README.md"
@@ -375,8 +385,8 @@
       "target_path": "crates/alpaca-stream/src/lane_tests.rs"
     },
     {
-      "adaptation": "Adapted only as required by the public crate boundary and formatting; source provenance is retained at the immutable commit above.",
-      "adapted_target_sha256": "5eab96a3d6625f1412ed518c36e95ec31c841d440e16d8acf3bd54994125de81",
+      "adaptation": "Exports the fixed offline fixture module only under the default-off offline-test-support feature.",
+      "adapted_target_sha256": "95951386d192f7cad8f69330d63a8e42f7328c7502ef70cf63b25b0bdead4e95",
       "source_blob_sha256": "4058512ad44c4331ca5f6cca9373338226e494ce358ee8871304d988d6b61b54",
       "source_path": "crates/alpaca-stream/src/lib.rs",
       "target_path": "crates/alpaca-stream/src/lib.rs"
@@ -417,15 +427,15 @@
       "target_path": "crates/alpaca-stream/src/protocol_tests.rs"
     },
     {
-      "adaptation": "Updates atomic generation allocation for the pinned Rust toolchain.",
-      "adapted_target_sha256": "3845dd52046221bbdef5ea84dc1f4b4a766731bc4418d9896d1ad957d57e3f46",
+      "adaptation": "Adds cfg-gated local FixtureEnd outcome, crate-visible session entrypoint, and shared fixed freshness clock for the feature-only deterministic fixture; production uses its existing wall clock.",
+      "adapted_target_sha256": "436b3399a4eacf4576f9c0dac977ea17b53cdbf4d1aedbe649b62582426c1fae",
       "source_blob_sha256": "9f87e3a863969200d587b54df33fafd8370413e720a1f647200bbfa0d6269fad",
       "source_path": "crates/alpaca-stream/src/session.rs",
       "target_path": "crates/alpaca-stream/src/session.rs"
     },
     {
-      "adaptation": "Captures only bounded inbound market-data application frames; excludes outbound auth/subscription data, awaits predecode and postdecode sink acknowledgements, and preserves source-local capture identity through canonical projection.",
-      "adapted_target_sha256": "9c12fe8eb7d8b4b7bb0bbbfbadb32d630da637382f40ca3fe60430b839a328c4",
+      "adaptation": "Adds cfg-gated local FixtureEnd handling for the in-process feature harness; it is not a provider watermark or production protocol outcome.",
+      "adapted_target_sha256": "3a1bf995b00f469a51724e38e5da4aaee9c8156998feb9b8ceb38c493d0b99f7",
       "source_blob_sha256": "8c47578aedd8199f6ee039ed2cf638e1bde385393cc74576bae8625b338bc7b2",
       "source_path": "crates/alpaca-stream/src/session/runner.rs",
       "target_path": "crates/alpaca-stream/src/session/runner.rs"
@@ -438,8 +448,8 @@
       "target_path": "crates/alpaca-stream/src/session_diagnostic_tests.rs"
     },
     {
-      "adaptation": "Adds synthetic exact-byte raw-frame, unknown-message, and quote/trade ACK fixtures with fake transport only.",
-      "adapted_target_sha256": "341dcaa115efd91b709de3143246df5d7c4d7c925854e640719e29d01d342d47",
+      "adaptation": "Reuses the shared fixed freshness clock for existing deterministic protocol tests; no default runtime behavior change.",
+      "adapted_target_sha256": "e83e6e2409d3506c5d552a38ef01da614a344e99534b8d91ce5c183bdf7f1d69",
       "source_blob_sha256": "0b46d06196828466fdb146b647d6f911b41dc67cdc3b87f6042898a07cda80f6",
       "source_path": "crates/alpaca-stream/src/session_test_support.rs",
       "target_path": "crates/alpaca-stream/src/session_test_support.rs"
@@ -459,8 +469,8 @@
       "target_path": "crates/alpaca-stream/src/state.rs"
     },
     {
-      "adaptation": "Adapted only as required by the public crate boundary and formatting; source provenance is retained at the immutable commit above.",
-      "adapted_target_sha256": "b7e40a779b0fac8ba27d1a957d6e24a10283dc1366ec9fa05a2b6f2f31311bc8",
+      "adaptation": "Adds a cfg-gated FixtureEnd control frame available only to the default-off in-process offline fixture harness.",
+      "adapted_target_sha256": "6a548a560dd8b9933f1997bbaf9b2b7f0f008c6e539d1d0eb3476a96a2d8a017",
       "source_blob_sha256": "784be63df54d7dbace6b5f8c11ac5657a63eb665e94c4cb2fd218ff55cfbffda",
       "source_path": "crates/alpaca-stream/src/transport.rs",
       "target_path": "crates/alpaca-stream/src/transport.rs"

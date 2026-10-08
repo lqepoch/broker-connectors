@@ -88,6 +88,8 @@ where
                         .await;
                     return Err(StreamError::ConsumerClosed);
                 }
+                #[cfg(feature = "offline-test-support")]
+                AttemptEnd::FixtureEnd => return Ok(SessionExit::FixtureEnd),
                 AttemptEnd::Failed(failure) => {
                     self.publishers.invalidate_generation(generation).await;
                     self.transition(generation, InternalPhase::SessionLost, Some(failure.cause))?;
@@ -544,6 +546,15 @@ where
             Abort::Completed(Ok(Some(SocketFrame::Text))) => {
                 Err(self.protocol_violation(generation, ProtocolViolationReason::TextFrame))
             }
+            #[cfg(feature = "offline-test-support")]
+            Abort::Completed(Ok(Some(SocketFrame::FixtureEnd)))
+                if matches!(capture_mode, FrameCaptureMode::ActiveMarketData) =>
+            {
+                Err(AttemptEnd::FixtureEnd)
+            }
+            #[cfg(feature = "offline-test-support")]
+            Abort::Completed(Ok(Some(SocketFrame::FixtureEnd))) => Err(self
+                .protocol_violation(generation, ProtocolViolationReason::UnexpectedMarketMessage)),
             Abort::Completed(Ok(Some(SocketFrame::Binary(payload)))) => {
                 let mut memory_payload = Some(payload);
                 let received_at_utc =

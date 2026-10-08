@@ -31,6 +31,9 @@ mod state;
 mod transport;
 mod update;
 
+#[cfg(feature = "offline-test-support")]
+pub mod offline_test_support;
+
 pub use config::{
     DesiredSubscriptions, MAX_ACKNOWLEDGEMENT_TIMEOUT, MAX_CONNECT_TIMEOUT,
     MAX_DESIRED_SYMBOLS_PER_CHANNEL, MAX_OPTION_SYMBOL_BYTES, MAX_READY_AGE, MAX_READY_FUTURE_SKEW,

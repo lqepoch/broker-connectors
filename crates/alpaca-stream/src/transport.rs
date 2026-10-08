@@ -33,6 +33,9 @@ pub(crate) enum SocketFailure {
 pub(crate) enum SocketFrame {
     Binary(Vec<u8>),
     Text,
+    /// Local test-control terminal marker; it is never produced by a provider WebSocket.
+    #[cfg(feature = "offline-test-support")]
+    FixtureEnd,
 }
 
 pub(crate) trait StreamSocket: Send + 'static {

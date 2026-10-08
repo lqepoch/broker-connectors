@@ -5,6 +5,7 @@ This public workspace contains provider protocol adapters, provider-neutral read
 ## Safety Boundaries
 
 - Tests use synthetic payloads and fake transport only. Never read local credentials, call OAuth, or contact a provider/account during development or validation.
+- `alpaca-stream`'s `offline-test-support` feature is default-off and replays one fixed reviewed MessagePack fixture through the existing runner/projector using an in-process connector and fixed synthetic credentials. It accepts no URL, credential, arbitrary frame, or provider input. Its local `FixtureEnd` and receipt are test-control evidence only; they do not prove provider completion, OPRA entitlement, or production persistence. Keep `alpaca`/`opra` identity and `Unknown` entitlement unchanged.
 - Production endpoints are fixed, HTTPS/WSS allowlisted values. Do not accept arbitrary production base URLs or enable redirects on credential-bearing requests.
 - Credentials must be injected through an explicit provider boundary, redacted from `Debug`/errors/logs, and zeroized when owned by this crate.
 - Market source/feed, provider timestamps, local receive time, generation, sequence, and encoding evidence remain explicit. Unknown entitlement stays unknown; no automatic IEX/indicative fallback is allowed. Received MessagePack application frames may travel only in the bounded ordered record lane; outbound authentication frames and credential material are never captured.
