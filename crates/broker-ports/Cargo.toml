@@ -8,6 +8,7 @@ repository.workspace = true
 description = "Provider-neutral, read-only market-data port contracts"
 
 [dependencies]
+domain.workspace = true
 market-contracts.workspace = true
 sha2.workspace = true
 tokio.workspace = true

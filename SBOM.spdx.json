@@ -1,13 +1,13 @@
 {
   "SPDXID": "SPDXRef-DOCUMENT",
   "creationInfo": {
-    "created": "2026-10-08T07:27:24Z",
+    "created": "2026-10-08T07:59:54Z",
     "creators": [
       "Tool: scripts/generate_spdx_sbom.py"
     ]
   },
   "dataLicense": "CC0-1.0",
-  "documentNamespace": "https://spdx.org/spdxdocs/broker-connectors-cfe705e75de78f48979d0a2a651bb103898f3c1fa15b11d625b5a4019a7d4c36",
+  "documentNamespace": "https://spdx.org/spdxdocs/broker-connectors-9f1dd9cf6844b4b53cd74fefe9a429a6376e196677a5cdd9f0ee8c108e9e399c",
   "name": "broker-connectors Cargo workspace",
   "packages": [
     {
@@ -2652,6 +2652,11 @@
       "relatedSpdxElement": "SPDXRef-Package-60-security-framework-sys-2.17.0",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-59-security-framework-3.7.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-22-domain-0.1.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-6-broker-ports-0.1.0"
     },
     {
       "relatedSpdxElement": "SPDXRef-Package-39-market-contracts-0.1.0",

@@ -5,15 +5,43 @@
 //! Provider-neutral, read-only broker market-data port contracts.
 //!
 //! This crate depends on the frozen `trading-core::market-contracts` schema and
-//! contains no provider SDK, credential storage, account authority, execution
-//! transport, cache, retry loop, or scheduler.
+//! `trading-core::domain` values. It contains no provider SDK, credential storage,
+//! account authority, execution transport, cache, retry loop, or scheduler. The
+//! four read-only boundaries are market data, catalog, broker account reads,
+//! and broker account events. Execution remains blocked and has no trait here.
 //!
 //! # 简体中文
 //!
-//! 本 crate 提供供应商中立的只读券商行情端口合同。
+//! 本 crate 提供供应商中立的四类只读券商端口合同：行情、合约目录、账户读取和账户事件。
 //!
-//! 它依赖已冻结的 `trading-core::market-contracts` schema，不含供应商 SDK、凭证存储、账户权威、
-//! 执行传输、缓存、重试循环或调度器。
+//! 它复用已冻结的 `trading-core::market-contracts` schema 与 `trading-core::domain` 值，不含供应商
+//! SDK、凭证存储、账户权威、执行传输、缓存、重试循环或调度器。执行端口仍受阻且本 crate 没有定义。
+
+mod admission;
+mod catalog;
+mod event;
+mod read;
+
+pub use admission::{
+    MAX_READ_REQUEST_ID_BYTES, ReadAdmissionEvidence, ReadAdmissionNamespace,
+    ReadAdmissionProvenance, ReadAdmissionProvenanceError, ReadRequestId,
+};
+pub use catalog::{
+    InstrumentCatalogPort, MAX_CATALOG_PAGE_SIZE, MAX_CURSOR_BYTES, OpaquePageCursor,
+    OpaquePageCursorError, OptionCatalogPage, OptionCatalogPageError, OptionCatalogQuery,
+    OptionCatalogQueryError,
+};
+pub use event::{
+    BrokerEventContinuity, BrokerEventControl, BrokerEventEnvelope, BrokerEventEnvelopeError,
+    BrokerEventGeneration, BrokerEventPayload, BrokerEventPort, BrokerEventSource,
+    BrokerEventStream, BrokerEventStreamFuture, BrokerEventSubscriptionId,
+    BrokerEventSubscriptionRequest, BrokerEventSubscriptionRequestError, MAX_BROKER_EVENT_BUFFER,
+};
+pub use read::{
+    AccountReadRequest, AccountReadRequestError, BrokerReadError, BrokerReadPage,
+    BrokerReadPageError, BrokerReadPageRequest, BrokerReadPort, MAX_READ_PAGE_SIZE, ObservedRead,
+    ReadEvidence,
+};
 
 use std::future::Future;
 use std::pin::Pin;

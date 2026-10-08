@@ -12,6 +12,7 @@ repository = "https://github.com/lqepoch/broker-connectors"
 [workspace.dependencies]
 broker-ports = { path = "crates/broker-ports", version = "=0.1.0" }
 chrono = { version = "=0.4.45", default-features = false, features = ["std"] }
+domain = { git = "https://github.com/lqepoch/trading-core.git", rev = "0a2eaff08d45e8abc1a0137dab17d5d3ef5553c8", version = "=0.1.0" }
 futures-util = "=0.3.34"
 market-contracts = { git = "https://github.com/lqepoch/trading-core.git", rev = "0a2eaff08d45e8abc1a0137dab17d5d3ef5553c8", version = "=0.1.0" }
 rmpv = "=1.3.1"
