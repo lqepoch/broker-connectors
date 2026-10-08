@@ -37,8 +37,9 @@ change only diagnostics, test assertions, and recorder construction:
 `connection/sync.rs` and `connection/async.rs` log outbound request and
 handshake byte counts rather than raw frames; `connection/common.rs` logs
 message IDs and inbound byte counts rather than decoded text payloads;
-`common/test_utils.rs` uses stable result classes and byte counts rather than
-printing error values or protobuf bodies; transport, subscription and handshake
+`common/test_utils.rs` uses stable result classes and redacted size diagnostics
+rather than printing error values or protobuf bodies; a request-body mismatch
+uses a fixed classification with no body-derived diagnostics. Transport, subscription and handshake
 diagnostics use fixed error classes, message IDs and payload lengths rather
 than wire content. Both `transport/recorder.rs` and `transport/raw_capture.rs`
 keep their production capture paths disabled. Neither `IBAPI_RECORDING_DIR`

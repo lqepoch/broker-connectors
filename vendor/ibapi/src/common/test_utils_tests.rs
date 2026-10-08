@@ -99,7 +99,7 @@ fn assert_request_helper_resolves_msg_id_from_builder() {
 }
 
 #[test]
-#[should_panic(expected = "request 0 body mismatch")]
+#[should_panic(expected = "request body mismatch")]
 fn assert_request_helper_panics_on_body_mismatch() {
     use crate::testdata::builders::{positions::request_positions_multi, RequestEncoder};
 
@@ -159,7 +159,7 @@ fn assert_tws_error_message_panics_on_missing_substring() {
 }
 
 #[test]
-#[should_panic(expected = "request 0 body mismatch")]
+#[should_panic(expected = "request body mismatch")]
 fn assert_request_proto_panics_on_body_mismatch() {
     use crate::proto::AccountSummaryRequest;
     use prost::Message;

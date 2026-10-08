@@ -50,7 +50,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "aad01aeffbc2728ab06a18587b8617b77d4190ad517345af70160cc7a2e1a7cf",
+      "sha256": "b95fe9cbb340ec841808bffe27868b45394f230ffb61a92000e3c50f65ec8143",
       "target_path": "SBOM.spdx.json"
     },
     {
@@ -274,7 +274,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "99d89fea3ee9e7050d11605cc8175799060a97ee8ff74f87484723f6a4412a7f",
+      "sha256": "399a6a65690496c652e284a9913dadb4a130cbf641ef6e967d2e4e20cdd57d93",
       "target_path": "scripts/check_vendor_provenance.py"
     },
     {
@@ -319,12 +319,12 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "a6cf4ed0c9ac34dc62edef22bbf5093ddebcc83358c5ff77f16318ddb2520260",
+      "sha256": "f91fd8464510646d4641c8ff63ff0fbb0a2992586976beaa989108372479bc35",
       "target_path": "vendor/ibapi/LOCAL-CHANGES.json"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "85251874dcd7abf433c6a18ace1523b9400a8fe953e5558ce86ba05c9ad04792",
+      "sha256": "1fe4fc2877acd9a3de98722de4530f7407c4e95867120285c2a0250540b61776",
       "target_path": "vendor/ibapi/UPSTREAM.md"
     },
     {
@@ -1088,7 +1088,7 @@
         }
       ],
       "local_change_record_path": "vendor/ibapi/LOCAL-CHANGES.json",
-      "local_change_record_sha256": "a6cf4ed0c9ac34dc62edef22bbf5093ddebcc83358c5ff77f16318ddb2520260",
+      "local_change_record_sha256": "f91fd8464510646d4641c8ff63ff0fbb0a2992586976beaa989108372479bc35",
       "maintenance_status": "Unofficial community Rust TWS API client; the upstream project does not claim IBKR maintenance or support.",
       "manifest_target": "vendor/ibapi/Cargo.toml",
       "package_edition": "2021",
@@ -1423,15 +1423,15 @@
           "target_path": "vendor/ibapi/src/common/retry_tests.rs"
         },
         {
-          "adaptation": "Redacts payload-bearing assertion failures; protobuf body mismatches report byte lengths without Debug formatting.",
-          "adapted_target_sha256": "313df4a8a8356e9f80ed1524f90600ecc5ad284dca757ec5adf49d45ff2f6772",
+          "adaptation": "Redacts assertion failures; protobuf request mismatches use a fixed classification without body-derived diagnostics.",
+          "adapted_target_sha256": "5679872b511b85318a6a1dd8429ff67fafcbd08b0f15e213172468ee104d98e7",
           "source_file_sha256": "ee0b26ac992f353b33a9a3018b8aee63ecc49cee296a72c8dd0a1e80cc04e85a",
           "source_path": "src/common/test_utils.rs",
           "target_path": "vendor/ibapi/src/common/test_utils.rs"
         },
         {
-          "adaptation": "Tests synthetic account-marker removal from assertion panic text and safe error/notice/routed-item diagnostic summaries.",
-          "adapted_target_sha256": "0caf445a0775d6815d761815f47e75d3d037cd05d45d0501ab2eb03e07738201",
+          "adaptation": "Tests synthetic account-marker removal from assertion panic text, safe error/notice/routed-item summaries, and the fixed request-body mismatch classification.",
+          "adapted_target_sha256": "4cc2f74fe69d0b6ae623d0798c2d597fbcf99925180c0716d5d2c9692dec55d0",
           "source_file_sha256": "c4d351ffa711eaa9effa4ea21f441f68bcb340e1dc3e437b4e0cbc5198517dd6",
           "source_path": "src/common/test_utils_tests.rs",
           "target_path": "vendor/ibapi/src/common/test_utils_tests.rs"

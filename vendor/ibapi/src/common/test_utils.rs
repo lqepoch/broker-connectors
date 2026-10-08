@@ -115,11 +115,7 @@ pub mod helpers {
         assert_request_msg_id(message_bus, index, expected_msg_id);
         let actual: T = decode_request_proto(message_bus, index);
         if &actual != expected {
-            panic!(
-                "request {index} body mismatch (actual {} bytes, expected {} bytes)",
-                actual.encoded_len(),
-                expected.encoded_len()
-            );
+            panic!("request body mismatch");
         }
     }
 
