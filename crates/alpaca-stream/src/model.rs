@@ -62,15 +62,21 @@ pub struct IngestStamp {
 /// 在行情事件规范化前捕获的原始帧元数据。
 #[derive(Clone, Eq, PartialEq)]
 pub struct InboundRawMarketFrame {
-    /// Source-local generation that received the raw frame.
-    /// 接收原始帧的来源本地代次。
-    pub generation: SessionGeneration,
+    /// Exact source-local pre-decode identity, distinct from the later canonical generation.
+    /// 精确的解码前来源本地身份，与之后生成的 canonical 代次分开保存。
+    pub capture_key: Option<broker_ports::RawFrameCaptureKey>,
+    /// Source-local generation that received the raw frame, before canonical projection.
+    /// 接收原始帧的来源本地代次，且位于 canonical 投影之前。
+    pub source_generation: SessionGeneration,
     /// One-based frame sequence within this source generation.
     /// 来源代次内从 1 开始的帧序号。
     pub frame_sequence: u64,
     /// Wall-clock receipt time for the complete binary application frame.
     /// 完整二进制应用帧接收时的墙上时钟时间。
     pub received_at_utc: DateTime<Utc>,
+    /// Exact wire encoding observed before decoding.
+    /// 解码前观察到的精确 wire 编码。
+    pub wire_encoding: broker_ports::RawFrameWireEncoding,
     /// Count of quote/trade messages successfully decoded from the frame.
     /// 从帧中成功解码的 quote/trade 消息数量。
     pub event_count: u32,
@@ -92,9 +98,11 @@ impl std::fmt::Debug for InboundRawMarketFrame {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         formatter
             .debug_struct("InboundRawMarketFrame")
-            .field("generation", &self.generation)
+            .field("capture_key", &self.capture_key)
+            .field("source_generation", &self.source_generation)
             .field("frame_sequence", &self.frame_sequence)
             .field("received_at_utc", &self.received_at_utc)
+            .field("wire_encoding", &self.wire_encoding)
             .field("event_count", &self.event_count)
             .field("symbol_count", &self.symbols.len())
             .field("numeric_encoding", &self.numeric_encoding)

@@ -8,14 +8,15 @@
 //! endpoint/feed pairs, requires authentication and full subscription acknowledgement, bounds
 //! frames and delivery lanes, and starts a new generation after every lost session. Quote updates
 //! may coalesce by option contract; trade updates fail the session when their bounded lane fills.
-//! It does not call REST, persist frames, calculate volatility, run strategies, or submit orders.
+//! An injected `RawFrameSink` may durably capture inbound frames, but this crate owns no storage
+//! implementation. It does not call REST, calculate volatility, run strategies, or submit orders.
 //!
 //! 有界 Alpaca 期权 WebSocket 行情接入、`MessagePack` 解码与显式会话恢复。
 //!
 //! 本 crate 只拥有一个只读期权流。凭证通过 trait 注入；endpoint/feed 采用 allowlist；只有
 //! 认证成功、完整订阅回执和新鲜数据都到达后才进入 ready。Frame 与交付队列均有上限；报价
-//! 可以按期权合约合并，逐笔成交队列满时会结束当前 session。这里不调用 REST、不保存原始
-//! 帧、不计算波动率、不运行策略，也不提交订单。
+//! 可以按期权合约合并，逐笔成交队列满时会结束当前 session。可注入 `RawFrameSink` 捕获入站帧，
+//! 但本 crate 不实现存储；这里不调用 REST、不计算波动率、不运行策略，也不提交订单。
 
 mod config;
 mod credentials;

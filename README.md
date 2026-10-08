@@ -16,18 +16,36 @@ The shared v1 subscription ACK is channel-agnostic and caps each request at 32 `
 
 The ordered market-data lane can also carry the exact bytes of each received
 MessagePack application frame and link normalizable quote/trade events to that
-frame by SHA-256, generation, frame sequence, and 1-based event ordinal/count.
-Capture excludes outbound authentication and subscription frames. A frame is
-limited to 1 MiB; outstanding frame leases are limited to 16 MiB and 1,024
-records process-wide. Exceeding a bound terminates that generation with a fixed
-failure. Unknown/provider-error frames that reach the lane retain diagnostic raw
-bytes and cannot qualify a complete event archive. In active market-data and
-subscription-handshake capture modes, a frame that fails decoding is also
-published as a `DecodeFailure` raw record. Capture currently decodes and
-analyzes the frame before publishing that in-memory record; it has no awaited
-durable capture sink or persistence acknowledgement. Durable Parquet storage and
-research qualification belong to the separately versioned market-data
-pipeline, not this adapter.
+frame by SHA-256, canonical generation, frame sequence, and 1-based event ordinal/count.
+Capture excludes outbound authentication/subscription frames and starts only
+after authentication, for inbound subscription ACK and market application
+frames. A frame is limited to 1 MiB; outstanding frame leases are limited to 16
+MiB and 1,024 records process-wide. Exceeding a bound terminates that generation
+with a fixed failure. Unknown/provider-error frames retain diagnostic bytes and
+cannot qualify a complete event archive. They may retain parsed market-event
+counts and symbols, but the whole frame is quarantined and none of those events
+are published. Decode failures retain the exact bytes and are finalized with
+zero events, no symbols, and no numeric encoding. Mixed numeric encodings remain
+valid with no homogeneous encoding value. When a trusted
+`RawFrameSink` is injected, the runner awaits a matching pre-decode ACK, decodes,
+then awaits a matching post-decode finalization ACK before publishing the raw
+frame or normalized events. Both ACKs bind one `RawFrameCaptureKey` containing
+the capture UUID, source-local generation, sequence, and exact frame SHA-256;
+finalization also binds a canonical bounded summary hash. The `generation` on a
+published raw frame/event reference is the canonical port generation; its
+`capture_key` preserves the separate source-local lineage used by the MDP spool.
+This distinction keeps reconnect frames unique when sequence numbers and bytes
+repeat. Sink failure, timeout, cancellation, or ACK mismatch ends the
+generation without retry, decode, or event publication past that frame. ACK
+constructors only express the sink implementation's promise and do not prove
+`fsync`, entitlement, completeness, or Drive publication. `AlpacaOptionsMarketDataPort`
+uses `with_raw_frame_sink_factory` to request a distinct sink for each logical
+subscription. The trusted factory owns one UUIDv4 per subscription, stable across
+reconnect generations and replaced after restart. A crash between ACK phases
+leaves an unfinalized capture for the sink owner to quarantine. Without an
+injected sink, sessions remain explicitly in-memory diagnostic mode. This
+workspace does not yet implement the production MDP spool; durable Parquet
+storage and research qualification remain MDP responsibilities.
 
 The initial implementation reuses the audited source `schwab_auto_bot@c907d18bc31790ede4cf36a4312a6813467506f0` for `alpaca-stream` protocol/session mechanics, with source-level provenance in `SOURCE-MANIFEST.json`. New public package files use the project-authorized `MIT OR Apache-2.0` license; upstream dependency license terms remain separate and are recorded in the manifest/SBOM.
 

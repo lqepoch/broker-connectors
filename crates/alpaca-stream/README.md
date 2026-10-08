@@ -10,17 +10,48 @@ shortest-round-tripping decimal projection, are marked with the corresponding
 binary-float encoding, and carry the SHA-256 of the raw frame. The adapter does
 not claim that the projection is an exact provider decimal token.
 
-The canonical `MarketDataItem` lane can also carry each received market-data
-application frame once, with its original bytes and a
-`DecodedMarketData`, `UnknownMessage`, `ProviderError`, or `DecodeFailure`
-disposition. Outbound authentication and subscription messages are never
-captured. A frame is at most 1 MiB; outstanding frame leases are bounded to 16
-MiB and 1,024 records process-wide. Normalized events refer to the canonical
-generation, frame sequence, exact frame hash, and 1-based ordinal/count. The
-count describes quote/trade events expected from that frame, even if an unknown
-or invalid message makes the frame terminal. Such records are diagnostics, not
-complete archive input. This crate transports raw frames in memory only; it does
-not persist them or qualify research completeness.
+The canonical `MarketDataItem` lane can also carry each received application
+frame once, with exact bytes and a `ControlMessage`, `DecodedMarketData`,
+`UnknownMessage`, `ProviderError`, or `DecodeFailure` disposition. Capture starts
+only after successful authentication and includes inbound subscription ACKs and
+market application frames; outbound authentication/subscription messages and
+authentication diagnostics are never captured. A frame is at most 1 MiB;
+outstanding frame leases are bounded to 16 MiB and 1,024 records process-wide.
+Normalized events refer to the canonical port generation, frame sequence, exact
+frame hash, and 1-based ordinal/count. A durable capture also carries one
+`RawFrameCaptureKey` with `(capture UUID, source-local generation, frame
+sequence, exact SHA-256)`. Canonical generation and source-local generation are
+separate lineages: the former sequences public port records, while the latter
+identifies the raw spool frame before projection. A reconnect can reuse a frame
+sequence and byte-identical payload, so a durable capture is keyed by all four
+source fields rather than by canonical generation alone.
+
+For `DecodedMarketData`, the summary count describes successfully decoded
+quote/trade messages. `ControlMessage` and `DecodeFailure` summaries require
+zero events, no symbols, and no numeric encoding. A mixed numeric frame is valid
+with no homogeneous numeric encoding. `UnknownMessage` and `ProviderError`
+summaries may retain successfully parsed market counts and symbols, but the
+adapter quarantines the entire frame and emits none of its normalized events.
+These records are diagnostics, not complete archive input.
+
+`AlpacaOptionsStream::new` and `AlpacaOptionsMarketDataPort::new` keep the
+existing in-memory diagnostic mode. To require pre-decode persistence, inject a
+trusted `RawFrameSink` or configure
+`AlpacaOptionsMarketDataPort::with_raw_frame_sink_factory`. The runner awaits a
+matching pre-decode ACK before decoding and a matching post-decode finalization
+ACK before publishing the raw frame or its normalized events. These ACKs bind
+the same `RawFrameCaptureKey`, including source-local generation; finalization also
+binds the bounded event count, sorted symbols, numeric encoding, disposition,
+and its canonical summary hash. Any sink failure, timeout, cancellation, or
+ACK mismatch ends the generation with no retry or later frame. Decode failures
+are finalized with the original bytes and produce no normalized event. A
+factory-owned UUIDv4 is stable across reconnect generations and new after
+process restart. An unfinalized record after a crash remains unknown/quarantined.
+The ACK types only express the sink implementation's promise: they do not prove
+that bytes were fsynced, that the source is entitled or complete, or that Drive
+publication occurred. This workspace defines the seam and runner ordering but
+does not yet contain the production MDP spool; persistence and recovery remain
+the sink owner's responsibility.
 
 The shared v1 subscription control is channel-agnostic and allows at most 32
 requested `(channel, symbol)` pairs. Quote/trade overlap counts twice toward
@@ -51,6 +82,12 @@ WebSocket，使用 binary MessagePack frame，通过 `CredentialProvider` 注入
   JSON examples are for readability. In addition to the existing bounded
   RFC 3339 string form, quote/trade timestamps decode the standard MessagePack
   Timestamp extension type `-1` using its 4-, 8-, or 12-byte payload format.
+- The options endpoint does not support JSON text frames. Any WebSocket text
+  frame after authentication is a terminal protocol violation: the generation
+  closes without decoding or capturing that frame, retrying, or consuming later
+  binary messages. When a raw sink is configured, every post-auth binary
+  application message passed to the MessagePack decoder is captured and
+  finalized before it can be published; pre-authentication traffic is excluded.
 - The configured feed is explicit: `Opra` or `Indicative` is carried on every
   event. `Delayed` remains a distinct enum value but is rejected because the
   reviewed options endpoint does not define a delayed feed path. There is no
@@ -141,6 +178,9 @@ WebSocket，使用 binary MessagePack frame，通过 `CredentialProvider` 注入
 - Alpaca 文档说明期权流在线路上使用 MessagePack，JSON 示例仅为便于阅读。除原有有界
   RFC 3339 字符串外，报价/成交时间字段还会按 MessagePack Timestamp 标准解码 `-1` 扩展及其
   4、8、12 字节载荷格式。
+- 期权 endpoint 不支持 JSON text frame。认证后的任何 WebSocket text frame 都是终止性协议错误：
+  当前代次关闭，不解码或捕获该帧、不重试，也不消费后续 binary 消息。配置 raw sink 时，所有
+  传给 MessagePack decoder 的认证后 binary 应用消息都会先捕获并完成定稿，再允许发布；认证前流量不纳入捕获。
 - 报价按唯一期权代码合并。成交不会合并；成交 lane 满时以 `ConsumerOverloaded` 结束会话。
   控制 lane 满时也结束会话，确保控制/错误事件不会被行情静默挤出。
 - 每个流任务最多持有一条打开或正在建立的 socket。Provider 套餐限制会变化，因此不硬编码
@@ -189,17 +229,20 @@ transport 且关闭重定向。
 
 ## Verification boundary / 验证边界
 
-Tests use synthetic MessagePack frames, fake sockets, and Tokio's paused time.
-They do not contact Alpaca, invoke REST, read local credentials, persist raw
-frames, submit orders, calculate volatility, or run strategy code. A passing
+Tests use synthetic MessagePack frames, fake sockets/sinks, and Tokio's paused time.
+They do not contact Alpaca, invoke REST, read local credentials, perform actual
+durable persistence, submit orders, calculate volatility, or run strategy code. A passing
 unit suite is local protocol/adapter evidence only; production entitlement,
 provider behavior, and native Windows/macOS operation remain unverified.
 
-测试只使用合成 MessagePack frame、假 socket 和 Tokio paused time。它们不会连接 Alpaca、调用
-REST、读取本地凭证、持久化原始 frame、提交订单、计算波动率或运行策略。原始 frame 只在内存中
-沿有序 lane 传递，且不捕获发出的认证/订阅消息；frame 上限为 1 MiB，全局未释放预算为 16 MiB /
-1,024 条。frame `event_count` 表示可规范化行情数；未知或无效消息不会减少计数，这类帧会失败关闭并
-作为诊断保留，不能充当完整归档。单元测试通过只构成本地
+测试只使用合成 MessagePack frame、假 socket/sink 和 Tokio paused time。它们不会连接 Alpaca、调用
+REST、读取本地凭证、证明真实耐久存储、提交订单、计算波动率或运行策略。没有注入可信 sink 时，原始
+frame 只在内存中沿有序 lane 传递；注入 sink 时，runner 会等待解码前 ACK 和解码后定稿 ACK。它不捕获
+发出的认证/订阅消息及认证诊断；frame 上限为 1 MiB，全局未释放预算为 16 MiB / 1,024 条。公开
+`generation` 是 canonical port 代次；耐久 `capture_key` 另保留 `(capture UUID, 来源本地代次, 帧序号,
+SHA-256)`，因此 reconnect 后即使帧序号和字节相同也不会与 spool 原始记录冲突。`DecodedMarketData`
+的 `event_count` 记录成功解码的 quote/trade；`ControlMessage` 和 `DecodeFailure` 必须为零事件、无 symbol、无数值编码。
+混合数值编码可用 `None` 表示。`UnknownMessage` / `ProviderError` 可能保留已解析行情数量和 symbol，但整帧进入 quarantine，且不发布任何规范化事件。单元测试通过只构成本地
 协议/适配器证据；生产 entitlement、provider 行为和原生 Windows/macOS 运行仍未验证。
 
 ## References / 参考资料
