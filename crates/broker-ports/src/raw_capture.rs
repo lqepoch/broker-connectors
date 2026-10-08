@@ -755,7 +755,7 @@ mod tests {
         RawCaptureInstanceId, RawCaptureInstanceIdError, RawFrameCapture, RawFrameCaptureAck,
         RawFrameCaptureKey, RawFrameCaptureKeyError, RawFrameCaptureRequestError,
         RawFrameDisposition, RawFrameFinalization, RawFrameFinalizationAck,
-        RawFrameFinalizationError,
+        RawFrameFinalizationError, numeric_encoding_tag,
     };
 
     fn capture_id(fill: u8) -> RawCaptureInstanceId {

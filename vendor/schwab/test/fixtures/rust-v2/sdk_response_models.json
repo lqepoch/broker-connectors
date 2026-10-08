@@ -1,0 +1,448 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Synthetic Node/Rust golden for typed Trader preference/account/order/transaction and selected Market Data response projections.",
+  "evidenceLimit": "Node schema goldens exercise the current Zod contract. Rust goldens exercise exact JSON numeric-token retention and typed passthrough DTOs. All values are synthetic; no broker API or account data is used.",
+  "cases": [
+    {
+      "id": "account-numbers-with-additive-fields",
+      "kind": "AccountNumbers",
+      "body": [
+        {
+          "accountNumber": "synthetic-account-8421",
+          "hashValue": "synthetic-account-hash-secret",
+          "futureAccountField": { "version": 2.000, "enabled": true }
+        }
+      ]
+    },
+    {
+      "id": "account-positions-and-exact-balances",
+      "kind": "Account",
+      "body": {
+        "responseFutureField": "synthetic-account-extra",
+        "securitiesAccount": {
+          "accountNumber": "synthetic-account-8421",
+          "type": "MARGIN",
+          "roundTrips": 2.00,
+          "isDayTrader": false,
+          "isClosingOnlyRestricted": false,
+          "pfcbFlag": true,
+          "positions": [
+            {
+              "shortQuantity": 0.125000,
+              "averagePrice": 1.0000000000000001,
+              "currentDayProfitLoss": -0.0100,
+              "currentDayProfitLossPercentage": -0.5,
+              "longQuantity": 3,
+              "settledLongQuantity": 2.500,
+              "settledShortQuantity": 0,
+              "agedQuantity": 0,
+              "instrument": {
+                "assetType": "OPTION",
+                "cusip": "synthetic-cusip",
+                "symbol": "SYNTH  260927P00100000",
+                "description": "synthetic option position",
+                "instrumentId": 9007199254740993,
+                "netChange": -0.0001,
+                "type": "VANILLA",
+                "futureInstrumentField": "preserved"
+              },
+              "marketValue": -12.3400,
+              "maintenanceRequirement": 10.01,
+              "averageLongPrice": 0.8300,
+              "averageShortPrice": 0.1700,
+              "taxLotAverageLongPrice": 0.8200,
+              "taxLotAverageShortPrice": 0.1800,
+              "longOpenProfitLoss": 0.03,
+              "shortOpenProfitLoss": -0.03,
+              "previousSessionLongQuantity": 1,
+              "previousSessionShortQuantity": 0,
+              "currentDayCost": -2.4900,
+              "futurePositionField": { "settlement": "synthetic" }
+            }
+          ],
+          "initialBalances": {
+            "cashBalance": 1000.0000,
+            "availableFundsNonMarginableTrade": 900.50,
+            "isInCall": 0,
+            "futureBalanceField": { "note": "preserved" }
+          },
+          "currentBalances": {
+            "availableFunds": 800.25,
+            "buyingPowerNonMarginableTrade": 500.00,
+            "stockBuyingPower": 1200,
+            "optionBuyingPower": 700.75,
+            "futureCurrentBalance": "preserved"
+          },
+          "projectedBalances": {
+            "accountValue": 1777.1234567890123456,
+            "futureProjectedBalance": [1, "kept"]
+          },
+          "futureSecuritiesAccountField": "preserved"
+        }
+      }
+    },
+    {
+      "id": "orders-with-recursive-strategy-and-executions",
+      "kind": "Orders",
+      "body": [
+        {
+          "session": "NORMAL",
+          "duration": "DAY",
+          "orderType": "NET_DEBIT",
+          "cancelTime": "2026-09-27T14:30:00Z",
+          "complexOrderStrategyType": "VERTICAL",
+          "quantity": 1.000,
+          "filledQuantity": 0.500,
+          "remainingQuantity": 0.500,
+          "requestedDestination": "SMART",
+          "destinationLinkName": "synthetic-destination",
+          "releaseTime": "2026-09-27T14:30:00Z",
+          "stopPrice": 0.7500,
+          "stopPriceLinkBasis": "MARK",
+          "stopPriceLinkType": "VALUE",
+          "stopPriceOffset": 0.0500,
+          "stopType": "STANDARD",
+          "priceLinkBasis": "MARK",
+          "priceLinkType": "VALUE",
+          "price": 0.8300,
+          "taxLotMethod": "FIFO",
+          "orderLegCollection": [
+            {
+              "orderLegType": "OPTION",
+              "legId": 1,
+              "instrument": {
+                "assetType": "OPTION",
+                "symbol": "SYNTH  260927P00100000",
+                "instrumentId": 9007199254740993
+              },
+              "instruction": "BUY_TO_OPEN",
+              "positionEffect": "OPENING",
+              "quantity": 1.000,
+              "quantityType": "ALL_SHARES",
+              "divCapGains": "REINVEST",
+              "toSymbol": "SYNTH",
+              "futureLegField": true
+            }
+          ],
+          "activationPrice": 0.8100,
+          "specialInstruction": "ALL_OR_NONE",
+          "orderStrategyType": "SINGLE",
+          "orderId": 9007199254740993,
+          "cancelable": true,
+          "editable": true,
+          "status": "WORKING",
+          "enteredTime": "2026-09-27T14:29:00Z",
+          "closeTime": "2026-09-27T14:31:00Z",
+          "tag": "synthetic-order-tag",
+          "accountNumber": 9007199254740995,
+          "orderActivityCollection": [
+            {
+              "activityType": "EXECUTION",
+              "executionType": "PARTIAL_FILL",
+              "quantity": 0.500,
+              "orderRemainingQuantity": 0.500,
+              "executionLegs": [
+                {
+                  "legId": 1,
+                  "price": 0.410000,
+                  "quantity": 0.500,
+                  "mismarkedQuantity": 0,
+                  "instrumentId": 9007199254740997,
+                  "time": "2026-09-27T14:30:00Z",
+                  "futureExecutionField": "retained"
+                }
+              ],
+              "futureActivityField": { "kept": true }
+            }
+          ],
+          "replacingOrderCollection": ["9007199254740991"],
+          "childOrderStrategies": [
+            {
+              "orderId": 9007199254740999,
+              "status": "AWAITING_PARENT_ORDER",
+              "childFutureField": "kept"
+            }
+          ],
+          "statusDescription": "synthetic working order",
+          "futureOrderField": { "payload": "preserved" }
+        }
+      ]
+    },
+    {
+      "id": "transaction-object-with-trade-transfer-items",
+      "kind": "Transaction",
+      "body": {
+        "activityId": 9007199254740993,
+        "time": "2026-09-27T14:30:00Z",
+        "user": {
+          "cdDomainId": "synthetic-domain",
+          "login": "synthetic-login",
+          "type": "BROKER",
+          "userId": 9007199254740995,
+          "systemUserName": "synthetic-user",
+          "firstName": "Ada",
+          "lastName": "Example",
+          "brokerRepCode": "REP0",
+          "futureUserField": "preserved"
+        },
+        "description": "synthetic option trade",
+        "accountNumber": "synthetic-account-8421",
+        "type": "TRADE",
+        "status": "EXECUTED",
+        "subAccount": "MARGIN",
+        "tradeDate": "2026-09-27",
+        "settlementDate": "2026-09-29",
+        "positionId": 9007199254740997,
+        "orderId": 9007199254740993,
+        "netAmount": -0.830000,
+        "activityType": "TRADE",
+        "transferItems": [
+          {
+            "instrument": {
+              "assetType": "OPTION",
+              "symbol": "SYNTH  260927P00100000",
+              "instrumentId": 9007199254740993
+            },
+            "amount": 1.000,
+            "cost": -0.8300,
+            "price": 0.830000,
+            "feeType": "COMMISSION",
+            "positionEffect": "OPENING",
+            "futureTransferField": { "retained": true }
+          }
+        ],
+        "futureTransactionField": { "source": "synthetic" }
+      }
+    },
+    {
+      "id": "transaction-array-preserved-in-order",
+      "kind": "TransactionArray",
+      "body": [
+        { "activityId": 41, "description": "synthetic first" },
+        { "activityId": 42, "description": "synthetic second" }
+      ]
+    },
+    {
+      "id": "transaction-empty-array",
+      "kind": "TransactionArray",
+      "body": []
+    },
+    {
+      "id": "user-preferences-object-with-accounts-streamer-offers-and-additive-fields",
+      "kind": "UserPreferencesObject",
+      "body": {
+        "accounts": [
+          {
+            "accountNumber": "synthetic-preference-account",
+            "primaryAccount": true,
+            "type": "MARGIN",
+            "nickName": "Synthetic",
+            "accountColor": "BLUE",
+            "displayAcctId": "8421",
+            "autoPositionEffect": false,
+            "futureAccountPreference": "preserved"
+          }
+        ],
+        "streamerInfo": [
+          {
+            "streamerSocketUrl": "wss://streamer.example.invalid/ws",
+            "schwabClientCustomerId": "synthetic-customer-secret",
+            "schwabClientCorrelId": "synthetic-correlation-secret",
+            "schwabClientChannel": "N9",
+            "schwabClientFunctionId": "synthetic-function-secret",
+            "futureStreamerField": { "opaque": "synthetic-streamer-extra" }
+          }
+        ],
+        "offers": [
+          {
+            "level2Permissions": true,
+            "mktDataPermission": "REALTIME",
+            "futureOfferField": "preserved"
+          }
+        ],
+        "futurePreferenceField": { "opaque": "synthetic-preference-extra" }
+      }
+    },
+    {
+      "id": "user-preferences-array-preserves-first-selection-order",
+      "kind": "UserPreferencesArray",
+      "body": [
+        {
+          "streamerInfo": [
+            {
+              "streamerSocketUrl": "https://streamer.example.invalid/connect",
+              "schwabClientCustomerId": "synthetic-first-customer",
+              "schwabClientCorrelId": "synthetic-first-correlation",
+              "schwabClientChannel": "N9",
+              "schwabClientFunctionId": "synthetic-first-function"
+            },
+            {
+              "streamerSocketUrl": "wss://second.example.invalid/ws",
+              "schwabClientCustomerId": "synthetic-second-customer",
+              "schwabClientCorrelId": "synthetic-second-correlation",
+              "schwabClientChannel": "N9",
+              "schwabClientFunctionId": "synthetic-second-function"
+            }
+          ],
+          "futureFirstPreferenceField": "preserved"
+        },
+        {
+          "streamerInfo": [
+            {
+              "streamerSocketUrl": "wss://ignored.example.invalid/ws",
+              "schwabClientCustomerId": "synthetic-ignored-customer",
+              "schwabClientCorrelId": "synthetic-ignored-correlation",
+              "schwabClientChannel": "N9",
+              "schwabClientFunctionId": "synthetic-ignored-function"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "market-hours-batch-records-preserve-wire-shape",
+      "kind": "MarketHoursBatch",
+      "body": {
+        "EQUITY": {
+          "equity": {
+            "date": "2026-09-28",
+            "marketType": "EQUITY",
+            "product": "EQUITY",
+            "productName": "Equities",
+            "isOpen": false,
+            "sessionHours": {
+              "preMarket": [{ "start": "2026-09-28T07:00:00-04:00", "end": "2026-09-28T09:30:00-04:00" }],
+              "regularMarket": [{ "start": "2026-09-28T09:30:00-04:00", "end": "2026-09-28T16:00:00-04:00", "futureSessionTimeField": "preserved-in-rust" }]
+            },
+            "futureProductField": { "note": "synthetic market hours" }
+          }
+        }
+      },
+      "nodeProjection": {
+        "EQUITY": {
+          "equity": {
+            "date": "2026-09-28",
+            "marketType": "EQUITY",
+            "product": "EQUITY",
+            "productName": "Equities",
+            "isOpen": false,
+            "sessionHours": {
+              "preMarket": [{ "start": "2026-09-28T07:00:00-04:00", "end": "2026-09-28T09:30:00-04:00" }],
+              "regularMarket": [{ "start": "2026-09-28T09:30:00-04:00", "end": "2026-09-28T16:00:00-04:00" }]
+            },
+            "futureProductField": { "note": "synthetic market hours" }
+          }
+        }
+      }
+    },
+    {
+      "id": "market-hours-single-route-allows-omitted-product-name",
+      "kind": "MarketHoursSingle",
+      "body": {
+        "OPTION": {
+          "option": {
+            "date": "2026-09-28",
+            "marketType": "OPTION",
+            "product": "OPTION",
+            "isOpen": true,
+            "sessionHours": { "regularMarket": [] }
+          }
+        }
+      }
+    },
+    {
+      "id": "instrument-search-record-has-optional-fields-and-additive-values",
+      "kind": "InstrumentsSearch",
+      "body": {
+        "instruments": [
+          {
+            "cusip": "synthetic-cusip",
+            "symbol": "SYNTH",
+            "description": "Synthetic instrument",
+            "exchange": "SYNTHETIC",
+            "assetType": "EQUITY",
+            "futureInstrumentField": { "source": "synthetic" }
+          },
+          {}
+        ],
+        "futureSearchField": "preserved"
+      }
+    },
+    {
+      "id": "instrument-detail-all-schema-fields-optional-and-number-is-lossless",
+      "kind": "InstrumentDetail",
+      "body": {
+        "futureNumericToken": 9007199254740993,
+        "futureInstrumentField": { "note": "synthetic" }
+      }
+    }
+  ],
+  "acceptedUrlSyntaxCases": [
+    "wss://streamer.example.invalid/ws",
+    "https://streamer.example.invalid",
+    "mailto:user@example.invalid",
+    "http://localhost"
+  ],
+  "invalidPreferenceCases": [
+    {
+      "id": "streamer-info-rejects-invalid-url-syntax",
+      "body": {
+        "streamerInfo": [
+          {
+            "streamerSocketUrl": "not a url",
+            "schwabClientCustomerId": "synthetic-customer",
+            "schwabClientCorrelId": "synthetic-correlation",
+            "schwabClientChannel": "N9",
+            "schwabClientFunctionId": "synthetic-function"
+          }
+        ]
+      },
+      "issuePaths": ["streamerInfo.0.streamerSocketUrl"]
+    },
+    {
+      "id": "streamer-info-requires-nonempty-client-identifiers",
+      "body": {
+        "streamerInfo": [
+          {
+            "streamerSocketUrl": "wss://streamer.example.invalid/ws",
+            "schwabClientCustomerId": "",
+            "schwabClientCorrelId": "synthetic-correlation",
+            "schwabClientChannel": "N9",
+            "schwabClientFunctionId": "synthetic-function"
+          }
+        ]
+      },
+      "issuePaths": ["streamerInfo.0.schwabClientCustomerId"]
+    }
+  ],
+  "invalidMarketCases": [
+    {
+      "id": "market-hours-requires-open-boolean",
+      "kind": "MarketHoursBatch",
+      "body": {
+        "EQUITY": {
+          "equity": {
+            "date": "2026-09-28",
+            "marketType": "EQUITY",
+            "product": "EQUITY",
+            "isOpen": "false",
+            "sessionHours": {}
+          }
+        }
+      },
+      "issuePaths": ["EQUITY.equity.isOpen"]
+    },
+    {
+      "id": "instrument-search-rejects-malformed-optional-field",
+      "kind": "InstrumentsSearch",
+      "body": { "instruments": [{ "symbol": 12 }] },
+      "issuePaths": ["instruments.0.symbol"]
+    },
+    {
+      "id": "instrument-detail-rejects-malformed-optional-field",
+      "kind": "InstrumentDetail",
+      "body": { "assetType": false },
+      "issuePaths": ["assetType"]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+[package]
+name = "schwab-rest"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+reqwest = { version = "=0.13.5", default-features = false, features = ["http2", "rustls"] }
+serde_json.workspace = true
+tokio.workspace = true
+zeroize.workspace = true
+
+[dev-dependencies]
+rcgen = "=0.14.10"
+tokio = { workspace = true, features = ["io-util", "net"] }
+tokio-rustls = { version = "=0.26.5", default-features = false, features = ["aws_lc_rs", "tls12"] }
+
+[lints]
+workspace = true

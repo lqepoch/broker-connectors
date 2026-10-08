@@ -65,6 +65,25 @@ def vendored_package_sources() -> dict[str, dict[str, Any]]:
     return sources
 
 
+def project_source_packages() -> dict[str, dict[str, str]]:
+    document = json.loads(
+        (ROOT / "vendor/schwab/SOURCE-MANIFEST.json").read_text(encoding="utf-8")
+    )
+    sources = {}
+    for package in document["packages"]:
+        name = package["name"]
+        if name in sources:
+            raise ValueError(f"project-source package is registered twice: {name}")
+        sources[name] = {
+            "repository": document["source_repository"],
+            "commit": document["source_commit"],
+            "source_path": package["source_path"],
+            "target_root": document["target_root"],
+            "source_tree": document["source_tree"],
+        }
+    return sources
+
+
 def reviewed_dependency_licenses() -> dict[tuple[str, str], dict[str, str]]:
     document = json.loads(
         (ROOT / "SOURCE-MANIFEST.json").read_text(encoding="utf-8")
@@ -87,6 +106,7 @@ def cargo_purl(name: str, version: str) -> str:
 def main() -> None:
     metadata = run_metadata()
     vendored_sources = vendored_package_sources()
+    project_sources = project_source_packages()
     lock_path = ROOT / "Cargo.lock"
     lock_digest = hashlib.sha256(lock_path.read_bytes()).hexdigest()
     lock = tomllib.loads(lock_path.read_text(encoding="utf-8"))
@@ -130,6 +150,8 @@ def main() -> None:
                 f"/{path}" if path else
                 f"https://github.com/{origin['repository']}/tree/{origin['commit']}"
             )
+        elif name in project_sources:
+            download = "https://github.com/lqepoch/broker-connectors"
         elif package["id"] in root_ids:
             download = "https://github.com/lqepoch/broker-connectors"
         else:
@@ -183,6 +205,17 @@ def main() -> None:
                     "the vendored source."
                 )
             item["sourceInfo"] = source_info
+        elif name in project_sources:
+            origin = project_sources[name]
+            item["sourceInfo"] = (
+                "Contains selected project-owned source extracted from private repository "
+                f"{origin['repository']}@{origin['commit']} (tree {origin['source_tree']}); "
+                "the repository has no repository-wide open-source license, and owner "
+                "authorization covers only the listed files. Exact source and target "
+                f"hashes are recorded in {origin['target_root']}/SOURCE-MANIFEST.json."
+            )
+        elif source and source.startswith("git+"):
+            item["sourceInfo"] = f"Cargo locked immutable Git source: {source}."
         reviewed_license = license_exceptions.get((name, version))
         if reviewed_license:
             item["licenseComments"] = (

@@ -1,7 +1,7 @@
 # broker-execution
 
 `broker-execution` defines a provider-neutral software port for submit, replace, and cancel
-commands. It reuses the frozen `trading-core@0a2eaff08d45e8abc1a0137dab17d5d3ef5553c8`
+commands. It reuses the frozen `trading-core@0d23c2e9f9e29c97d3f386c48cc47b9fd7909d7b`
 `domain` types, including `OptionComboIntent`, `ExecutionRoute`, `RoutedOrderIdentity`, and
 `Revision`. It does not define a second order model, account ledger, risk engine, or outbox.
 

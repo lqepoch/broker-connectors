@@ -18,6 +18,8 @@ CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p alpaca-rest-read --locked --offline
 CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy -p alpaca-rest-read --all-targets --locked --offline -- -D warnings
 CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p ibkr-read --locked
 CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy -p ibkr-read --all-targets --locked -- -D warnings
+CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p schwab-rest -p schwab-sdk -p schwab-streamer -p schwab-adapter --locked --offline
+CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy -p schwab-rest -p schwab-sdk -p schwab-streamer -p schwab-adapter --all-targets --locked --offline -- -D warnings
 CARGO_BUILD_JOBS=2 cargo +1.99.0 test --workspace --locked
 CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy --workspace --all-targets --locked -- -D warnings
 python3 scripts/generate_spdx_sbom.py
@@ -71,3 +73,14 @@ explicit non-`SMART` exchange/currency, and all results require native terminal
 confirmation. Missing option economics stay `Unknown`. Tests use a synthetic
 localhost gateway only; real TWS/Gateway, accounts, and orders are never part
 of this local validation flow.
+
+`schwab-adapter` reuses the selected source-pinned project packages recorded in
+`vendor/schwab/SOURCE-MANIFEST.json`. Keep account reads bounded and read-only,
+use the single injected read-budget owner, and do not duplicate quota state.
+Streamer fields have no verified public dictionary here; keep them opaque and
+do not label them SIP/OPRA or project them into market quotes. The public
+`schwab-streamer` API contains decoding and local state types only; its
+credential/login/socket runtime is compiled only in the crate's own unit tests.
+The adapter gate drops validated candidate credentials and does not connect a
+socket. Source SDK tests use fake transports or localhost-only TLS. Never run
+OAuth or contact a real Schwab provider as part of repository validation.
