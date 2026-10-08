@@ -15,7 +15,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "fe804046a638cb1cb5672d35cb6fbceeb243bbc76eb89b37162d09c0496fd5d8",
+      "sha256": "4e2ab8c1bdbd0c7e70565b9445736ff0373c6c720f7c77e16935c0a37d09d41e",
       "target_path": "AGENTS.md"
     },
     {
@@ -45,12 +45,12 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "b0c481dd059758833e9b8d243795879e9395835ea930ae12fad162a8a2a161b5",
+      "sha256": "0daa658a19dd60acba7d4fdb3b1ca15ea7d6f92ddc0a674a1704ab1868ca06ca",
       "target_path": "README.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "4b4714b32dbfad9083295d2938befa91a71ce2d50156173850458e64271db8a4",
+      "sha256": "aad01aeffbc2728ab06a18587b8617b77d4190ad517345af70160cc7a2e1a7cf",
       "target_path": "SBOM.spdx.json"
     },
     {
@@ -150,7 +150,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "581475a71008d78bacf93c8af506ef7f85b2319547b1b49c2406e50db6887243",
+      "sha256": "5bd33ded69f58a6f47e800f498947ffd6b870d90c10c8dde008ab0eda92aa211",
       "target_path": "crates/broker-ports/src/raw_capture.rs"
     },
     {
@@ -165,7 +165,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "f5879b4c849530406bb667dda8ea360596614dc729ef5965de1916f410316c6a",
+      "sha256": "5af68b6c5cfc410a3889337c3b5d16da4eddb973fed9883a1a06b8300c7d0513",
       "target_path": "crates/ibkr-read/README.md"
     },
     {
@@ -274,12 +274,12 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "bbd352e5aedf1981638b89df342fdc763648f6687ae747f2b856528b7ff8c5f9",
+      "sha256": "99d89fea3ee9e7050d11605cc8175799060a97ee8ff74f87484723f6a4412a7f",
       "target_path": "scripts/check_vendor_provenance.py"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "b7220610ecd57723612574909ccb699ddc633caf0771a8c0ab2b082028791478",
+      "sha256": "fcb62453ebeb2b9caf3e2238a1c1b5179dc21ab279e5c0248a143dd47343ffb7",
       "target_path": "scripts/generate_spdx_sbom.py"
     },
     {
@@ -319,17 +319,17 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "5f61e9087d0dbd3413992770fe203d3f059e049b55f2b9d028eea6a3187af4d5",
+      "sha256": "a6cf4ed0c9ac34dc62edef22bbf5093ddebcc83358c5ff77f16318ddb2520260",
       "target_path": "vendor/ibapi/LOCAL-CHANGES.json"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "162437a1bad7c39528186919865e45c67eb75e0dc3957cfb913abc05f4fb91fa",
+      "sha256": "85251874dcd7abf433c6a18ace1523b9400a8fe953e5558ce86ba05c9ad04792",
       "target_path": "vendor/ibapi/UPSTREAM.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "c390b74c37622e890c621dc8530c2939796487b17f075e4835ace589c16ee513",
+      "sha256": "701c4d554ed8e727103f42c311a85b025c8508f5307ed849f57b08718dbc74ad",
       "target_path": "vendor/schwab/SOURCE-MANIFEST.json"
     },
     {
@@ -971,7 +971,7 @@
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
-      "adapted_target_sha256": "ca380d7ed246f45ac9d04509c3e342bb47c3b0497b6baf4bbe8fece6226eeba8",
+      "adapted_target_sha256": "dd4ca65c0351e4b6fae966bbfc052b9c09d844f69366f5e397252cc59c7ef680",
       "source_blob_sha256": "824a0c6e98b35bee87de126b506b1df519cd89e84b56d84b11040531495db153",
       "source_git_blob": "80b9a4feb02e9a57b8537aaa00cf7879d377fb8d",
       "source_path": "crates/schwab-streamer/src/session/market_data.rs",
@@ -1072,9 +1072,11 @@
   "vendored_upstreams": [
     {
       "adaptations": [
-        "Active Cargo manifest retains the async feature only and removes upstream development, examples, and packaging targets.",
-        "The read-only adapter keeps the SDK Client private and exposes only exact option contract-details catalog lookup.",
-        "Five trailing-whitespace-only source edits are bound to source/target hashes and 1-based lines in LOCAL-CHANGES.json; no SDK protocol behavior changed."
+        "The vendored source has five trailing-whitespace normalizations plus reviewed privacy changes, all bound by per-file source/target hashes in LOCAL-CHANGES.json.",
+        "Connection request, handshake, and decoded text diagnostics emit message IDs and byte counts rather than raw payloads; synthetic regression tests cover log and panic redaction.",
+        "The bidirectional MessageRecorder is disabled for production and ignores IBAPI_RECORDING_DIR; its test-only constructor requires an explicit temporary path.",
+        "The independent upstream IBAPI_RAW_CAPTURE_DIR inbound tap is unchanged and is not used for real-provider/account validation.",
+        "The pinned upstream rustfmt.toml is retained for scoped workspace formatting."
       ],
       "license": "MIT",
       "license_files": [
@@ -1086,7 +1088,7 @@
         }
       ],
       "local_change_record_path": "vendor/ibapi/LOCAL-CHANGES.json",
-      "local_change_record_sha256": "5f61e9087d0dbd3413992770fe203d3f059e049b55f2b9d028eea6a3187af4d5",
+      "local_change_record_sha256": "a6cf4ed0c9ac34dc62edef22bbf5093ddebcc83358c5ff77f16318ddb2520260",
       "maintenance_status": "Unofficial community Rust TWS API client; the upstream project does not claim IBKR maintenance or support.",
       "manifest_target": "vendor/ibapi/Cargo.toml",
       "package_edition": "2021",
@@ -1105,9 +1107,10 @@
       "source_archive_paths": [
         "Cargo.toml",
         "LICENSE",
+        "rustfmt.toml",
         "src/"
       ],
-      "source_archive_sha256": "063f22b4b640fd2fddcddb100eaa02f39031e81c1ee09500769bfa5e44cf8647",
+      "source_archive_sha256": "91b49f2c57e423258d20b1f427682d622b78de011eacbb75fcb4296ceacb3532",
       "source_commit": "3e73f2f1cfac151c10e403a3e7d779272134445f",
       "source_files": [
         {
@@ -1123,6 +1126,14 @@
           "source_file_sha256": "a871ee487f4cc317c9312ed0ee91fb3718fe8bf8436259e5d8a9d54ce71a5bbf",
           "source_path": "LICENSE",
           "target_path": "vendor/ibapi/LICENSE"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes; scopes workspace formatting to the vendored source.",
+          "adapted_target_sha256": "ebdb640eee8312fc86d59249c5b43fb150f62375358f0216c2fa1bb7ef9514d2",
+          "source_file_sha256": "ebdb640eee8312fc86d59249c5b43fb150f62375358f0216c2fa1bb7ef9514d2",
+          "source_git_blob_sha1": "0a4312322c11cec08f41dd1ffc976fb3e4b1c395",
+          "source_path": "rustfmt.toml",
+          "target_path": "vendor/ibapi/rustfmt.toml"
         },
         {
           "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
@@ -1202,7 +1213,7 @@
           "target_path": "vendor/ibapi/src/accounts/common/test_data.rs"
         },
         {
-          "adaptation": "Trailing-whitespace-only formatting adjustment; exact file hashes and 1-based lines are in vendor/ibapi/LOCAL-CHANGES.json.",
+          "adaptation": "Trailing-whitespace-only formatting adjustment; exact hashes and source lines are in vendor/ibapi/LOCAL-CHANGES.json.",
           "adapted_target_sha256": "a5e9c83e8d773c258ef9d0350aab43b9204d7364e008bb412ee8cd266c211b28",
           "source_file_sha256": "4ef427799d5e92cf6f1b3c434c7271831a2dddfdfb977db4c2e11e10d23e184e",
           "source_path": "src/accounts/common/test_tables.rs",
@@ -1244,15 +1255,15 @@
           "target_path": "vendor/ibapi/src/accounts/types_tests.rs"
         },
         {
-          "adaptation": "Trailing-whitespace-only formatting adjustment; exact file hashes and 1-based lines are in vendor/ibapi/LOCAL-CHANGES.json.",
+          "adaptation": "Trailing-whitespace-only formatting adjustment; exact hashes and source lines are in vendor/ibapi/LOCAL-CHANGES.json.",
           "adapted_target_sha256": "b6b25d2d9dd580bd6b2c6c31fcb14d464ea650e4b5efa691595f57d7c5a8a5d1",
           "source_file_sha256": "2875fa05bc37c42b7aa59a1d34ab068688ad070257666b7cf19cdae23a0b59f9",
           "source_path": "src/client/async.rs",
           "target_path": "vendor/ibapi/src/client/async.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "8f3a92c1766205efa0379b08fb82e8e8e819e46bfe88c45f4da03851d53d7a30",
+          "adaptation": "Tests that IBAPI_RAW_CAPTURE_DIR cannot persist production frames over the async fake socket.",
+          "adapted_target_sha256": "4fcb5fbaa62c132c5046c03ea700e73351c29a88138da451c18e3c3a4a914358",
           "source_file_sha256": "8f3a92c1766205efa0379b08fb82e8e8e819e46bfe88c45f4da03851d53d7a30",
           "source_path": "src/client/async_tests.rs",
           "target_path": "vendor/ibapi/src/client/async_tests.rs"
@@ -1356,8 +1367,8 @@
           "target_path": "vendor/ibapi/src/client/sync.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "8a44262dea9dc5bc07991ac4a930273336d62a6c648b42f04b3083fdbf40900a",
+          "adaptation": "Tests that IBAPI_RAW_CAPTURE_DIR cannot persist production frames over the sync fake socket.",
+          "adapted_target_sha256": "2d45b97de90684ac8e69e0e04efb5dc13fc91a8c5c730c832cc3f8ef28de3942",
           "source_file_sha256": "8a44262dea9dc5bc07991ac4a930273336d62a6c648b42f04b3083fdbf40900a",
           "source_path": "src/client/sync_tests.rs",
           "target_path": "vendor/ibapi/src/client/sync_tests.rs"
@@ -1412,22 +1423,22 @@
           "target_path": "vendor/ibapi/src/common/retry_tests.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "ee0b26ac992f353b33a9a3018b8aee63ecc49cee296a72c8dd0a1e80cc04e85a",
+          "adaptation": "Redacts payload-bearing assertion failures; protobuf body mismatches report byte lengths without Debug formatting.",
+          "adapted_target_sha256": "313df4a8a8356e9f80ed1524f90600ecc5ad284dca757ec5adf49d45ff2f6772",
           "source_file_sha256": "ee0b26ac992f353b33a9a3018b8aee63ecc49cee296a72c8dd0a1e80cc04e85a",
           "source_path": "src/common/test_utils.rs",
           "target_path": "vendor/ibapi/src/common/test_utils.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "c4d351ffa711eaa9effa4ea21f441f68bcb340e1dc3e437b4e0cbc5198517dd6",
+          "adaptation": "Tests synthetic account-marker removal from assertion panic text and safe error/notice/routed-item diagnostic summaries.",
+          "adapted_target_sha256": "0caf445a0775d6815d761815f47e75d3d037cd05d45d0501ab2eb03e07738201",
           "source_file_sha256": "c4d351ffa711eaa9effa4ea21f441f68bcb340e1dc3e437b4e0cbc5198517dd6",
           "source_path": "src/common/test_utils_tests.rs",
           "target_path": "vendor/ibapi/src/common/test_utils_tests.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "e1cc2b98cf6b8e7b51cb896a9020841c19a5ba5775f563d9da984088c6805674",
+          "adaptation": "Timezone diagnostics omit input timestamps and environment-configured alias values.",
+          "adapted_target_sha256": "f4891ecb182094bba8b5e5bf3256bb60e0e2c9ed57fad49c23be4966f4c5295c",
           "source_file_sha256": "e1cc2b98cf6b8e7b51cb896a9020841c19a5ba5775f563d9da984088c6805674",
           "source_path": "src/common/timezone/mod.rs",
           "target_path": "vendor/ibapi/src/common/timezone/mod.rs"
@@ -1559,8 +1570,8 @@
           "target_path": "vendor/ibapi/src/connection.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "497840abec8e9b5a85a3521bf0e863df6931e2efe3b2d2d350c1aa3660d36aad",
+          "adaptation": "Logs frame lengths and fixed error classes; production message recording remains disabled.",
+          "adapted_target_sha256": "eae4c18bb12b2d2dd90ea3f711b1969d8e655def051c7c2e8ed287bf5a5b1498",
           "source_file_sha256": "497840abec8e9b5a85a3521bf0e863df6931e2efe3b2d2d350c1aa3660d36aad",
           "source_path": "src/connection/async.rs",
           "target_path": "vendor/ibapi/src/connection/async.rs"
@@ -1573,22 +1584,22 @@
           "target_path": "vendor/ibapi/src/connection/async_tests.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "3835ecf3415191bce54141e5c55edd4c2e9752aa6a156b7e7aede7e8117ca957",
+          "adaptation": "Logs safe inbound metadata, byte lengths and fixed error classifications without wire or timezone input.",
+          "adapted_target_sha256": "b8cc0b38e75cdf5c7e8255fbe50f86c00d3fe76933f7d706ade62b953995f430",
           "source_file_sha256": "3835ecf3415191bce54141e5c55edd4c2e9752aa6a156b7e7aede7e8117ca957",
           "source_path": "src/connection/common.rs",
           "target_path": "vendor/ibapi/src/connection/common.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "daf4230b6ffe9cf4b07da4cbbfd9fc8fe3f829d1011191eaaf434d58a33b9da0",
+          "adaptation": "Tests that outbound frame diagnostic summaries contain only byte counts.",
+          "adapted_target_sha256": "f8beb0585fa41a9dd744ff54a38076f56dcd32e65ef0f9e618c11bdac70a8586",
           "source_file_sha256": "daf4230b6ffe9cf4b07da4cbbfd9fc8fe3f829d1011191eaaf434d58a33b9da0",
           "source_path": "src/connection/common_tests.rs",
           "target_path": "vendor/ibapi/src/connection/common_tests.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "2200bf7c2bfea88a6d2d5819fd8789c912562832917f6d2aa986025fbf2c30fa",
+          "adaptation": "Logs frame lengths and fixed error classes; production message recording remains disabled.",
+          "adapted_target_sha256": "fa0371c97baf54a9a371ac3ccd23372e78a50ddce1c57c675bc5a0b7953df239",
           "source_file_sha256": "2200bf7c2bfea88a6d2d5819fd8789c912562832917f6d2aa986025fbf2c30fa",
           "source_path": "src/connection/sync.rs",
           "target_path": "vendor/ibapi/src/connection/sync.rs"
@@ -1846,15 +1857,15 @@
           "target_path": "vendor/ibapi/src/display_groups/sync_tests.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "72bed385dcbd5941fa3b4f9be1eaae1a64dcf5911411110f4898f6fc54ce61b1",
+          "adaptation": "Adds fixed internal error classifications and safe unexpected-message diagnostics.",
+          "adapted_target_sha256": "a1c45f14f2301fb5fc1e7d74653d593da8ec4e0fc48bfc29f377be218fa825b7",
           "source_file_sha256": "72bed385dcbd5941fa3b4f9be1eaae1a64dcf5911411110f4898f6fc54ce61b1",
           "source_path": "src/errors.rs",
           "target_path": "vendor/ibapi/src/errors.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "9e4746a884d36939989abd3ec98de933c881b7fb5d0528c4c554ae3f2aab8c10",
+          "adaptation": "Tests that unexpected-response diagnostics keep only envelope metadata and omit a synthetic account marker.",
+          "adapted_target_sha256": "8d6e738e7b7d486da54d161ef4874384f7a45eaa39ece2a7b4f7713650f2eaa1",
           "source_file_sha256": "9e4746a884d36939989abd3ec98de933c881b7fb5d0528c4c554ae3f2aab8c10",
           "source_path": "src/errors_tests.rs",
           "target_path": "vendor/ibapi/src/errors_tests.rs"
@@ -1881,8 +1892,8 @@
           "target_path": "vendor/ibapi/src/macros.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "f2f6af1cc392a3e0a28ca7eb27aca963cfaa7b462a17b671e087b988dc6cec52",
+          "adaptation": "Uses fixed error classifications for cancellation encoding failures.",
+          "adapted_target_sha256": "2781660f149d15e5415bb6332f19f8c8f6d4415172b9a5cee9085b1fe2b7eb44",
           "source_file_sha256": "f2f6af1cc392a3e0a28ca7eb27aca963cfaa7b462a17b671e087b988dc6cec52",
           "source_path": "src/market_data/historical/async.rs",
           "target_path": "vendor/ibapi/src/market_data/historical/async.rs"
@@ -1979,8 +1990,8 @@
           "target_path": "vendor/ibapi/src/market_data/historical/common/mod.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "a69e1a2a7d7673bc92c30d8a787b54bf74dfdc8a2378e958b16fc5fbf04401bb",
+          "adaptation": "Uses safe message metadata in unexpected historical response diagnostics.",
+          "adapted_target_sha256": "ce3bf76a26526734fb71c32c13c2edf45f434b3f02ae2b879307fdc17cd0dde4",
           "source_file_sha256": "a69e1a2a7d7673bc92c30d8a787b54bf74dfdc8a2378e958b16fc5fbf04401bb",
           "source_path": "src/market_data/historical/common/tick.rs",
           "target_path": "vendor/ibapi/src/market_data/historical/common/tick.rs"
@@ -2007,8 +2018,8 @@
           "target_path": "vendor/ibapi/src/market_data/historical/mod_tests.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "659a7bc41ce653a6c1f2ab869b0643348426fca32be307c292a9f767cd05c9f0",
+          "adaptation": "Uses fixed error classifications for cancellation encoding failures.",
+          "adapted_target_sha256": "5aabbcb7d3b5283fcd36a199f69d0043484c2c0b320789163be962094daf03b8",
           "source_file_sha256": "659a7bc41ce653a6c1f2ab869b0643348426fca32be307c292a9f767cd05c9f0",
           "source_path": "src/market_data/historical/sync.rs",
           "target_path": "vendor/ibapi/src/market_data/historical/sync.rs"
@@ -2189,8 +2200,8 @@
           "target_path": "vendor/ibapi/src/market_data/tests.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "fbb705b6f97bfd2031de72e1d87afb8146afe844e9ae3c47f7d1fe31b918e307",
+          "adaptation": "Adds response and notice summaries that omit decoded fields and raw bytes.",
+          "adapted_target_sha256": "137bab4caadc54513fbe098d4dc5afa844688163f695d5f5cda21a5b062093e6",
           "source_file_sha256": "fbb705b6f97bfd2031de72e1d87afb8146afe844e9ae3c47f7d1fe31b918e307",
           "source_path": "src/messages.rs",
           "target_path": "vendor/ibapi/src/messages.rs"
@@ -2315,7 +2326,7 @@
           "target_path": "vendor/ibapi/src/orders/builder/algo_helpers.rs"
         },
         {
-          "adaptation": "Trailing-whitespace-only formatting adjustment; exact file hashes and 1-based lines are in vendor/ibapi/LOCAL-CHANGES.json.",
+          "adaptation": "Trailing-whitespace-only formatting adjustment; exact hashes and source lines are in vendor/ibapi/LOCAL-CHANGES.json.",
           "adapted_target_sha256": "b37741c0ad1bc2acd489d269b55ec684a97df23b0e49b01f69170ac42e59134b",
           "source_file_sha256": "5e41e9c7eaadccb6070e4e7a20cc0a39f438afc8425d7ab6b303db742930328d",
           "source_path": "src/orders/builder/async_impl.rs",
@@ -2357,7 +2368,7 @@
           "target_path": "vendor/ibapi/src/orders/builder/order_builder/tests.rs"
         },
         {
-          "adaptation": "Trailing-whitespace-only formatting adjustment; exact file hashes and 1-based lines are in vendor/ibapi/LOCAL-CHANGES.json.",
+          "adaptation": "Trailing-whitespace-only formatting adjustment; exact hashes and source lines are in vendor/ibapi/LOCAL-CHANGES.json.",
           "adapted_target_sha256": "33acd8c33968cff46f66b6ef69282da235679b7cbe3f5fc2e380d86ddc04244f",
           "source_file_sha256": "65faad74b3c24761d2cc27e319a34d33acd704e0ff66a54f6e083d4b7be6c5b8",
           "source_path": "src/orders/builder/sync_impl.rs",
@@ -2490,7 +2501,7 @@
           "target_path": "vendor/ibapi/src/orders/exercise_options_builder_tests.rs"
         },
         {
-          "adaptation": "Trailing-whitespace-only formatting adjustment; exact file hashes and 1-based lines are in vendor/ibapi/LOCAL-CHANGES.json.",
+          "adaptation": "Trailing-whitespace-only formatting adjustment; exact hashes and source lines are in vendor/ibapi/LOCAL-CHANGES.json.",
           "adapted_target_sha256": "ad97c8adefb2b7d027b3f59b86af28e6c07387ee5618cf6a216adb9eaf65f767",
           "source_file_sha256": "3c57a00b7099ed1c96e4ae29830459237522fdc29f62e8a3d5e469ce2e20605c",
           "source_path": "src/orders/mod.rs",
@@ -2686,8 +2697,8 @@
           "target_path": "vendor/ibapi/src/stubs_tests.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "834815ea9c995d9b1a070fae0ead03678169be9e79cd11013830724064231ead",
+          "adaptation": "Subscription logs use notice code/category and fixed error classes.",
+          "adapted_target_sha256": "bb5e88b3b4bc9735e5f344f49d29122387d90708481831063ad1d788306666bd",
           "source_file_sha256": "834815ea9c995d9b1a070fae0ead03678169be9e79cd11013830724064231ead",
           "source_path": "src/subscriptions/async.rs",
           "target_path": "vendor/ibapi/src/subscriptions/async.rs"
@@ -2700,8 +2711,8 @@
           "target_path": "vendor/ibapi/src/subscriptions/async_tests.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "c346e88f508fcd41fe02c807928a057cd399086505455c68f59364bad7aa9288",
+          "adaptation": "Adds routed-item summaries that omit response, notice and error payloads.",
+          "adapted_target_sha256": "d7b879c6f521a02f136e3fb972c083b12d2f02731ca56a699d94fe492019948c",
           "source_file_sha256": "c346e88f508fcd41fe02c807928a057cd399086505455c68f59364bad7aa9288",
           "source_path": "src/subscriptions/common.rs",
           "target_path": "vendor/ibapi/src/subscriptions/common.rs"
@@ -2714,8 +2725,8 @@
           "target_path": "vendor/ibapi/src/subscriptions/common_tests.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "6184a8275ebb9ad7ee58002442d6ef10c381cbb4c000b30615f806e3e0bb7023",
+          "adaptation": "Subscription cancellation logs use fixed error classifications.",
+          "adapted_target_sha256": "6831fd3fe2e7c80e08e963dcc883a83975703bc833e78364479eb6d2b1f67566",
           "source_file_sha256": "6184a8275ebb9ad7ee58002442d6ef10c381cbb4c000b30615f806e3e0bb7023",
           "source_path": "src/subscriptions/mod.rs",
           "target_path": "vendor/ibapi/src/subscriptions/mod.rs"
@@ -2742,8 +2753,8 @@
           "target_path": "vendor/ibapi/src/subscriptions/response_message_ids_tests.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "72afa20d5f2abef33f742893a8cec835f86aac2204cf33f4a674a8b1e55d8f35",
+          "adaptation": "Subscription logs use notice code/category and fixed error classes.",
+          "adapted_target_sha256": "c90228ba1cd37ee6af9296d518aef3bfbf260673770a60a8a8ddfe659ffb458e",
           "source_file_sha256": "72afa20d5f2abef33f742893a8cec835f86aac2204cf33f4a674a8b1e55d8f35",
           "source_path": "src/subscriptions/sync.rs",
           "target_path": "vendor/ibapi/src/subscriptions/sync.rs"
@@ -2882,8 +2893,8 @@
           "target_path": "vendor/ibapi/src/tests.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "27a0e5fcb309754518fafd8c42c927528498038e8c2b675566594305d596c8f0",
+          "adaptation": "Async transport logs use safe routed-item summaries and fixed error classes.",
+          "adapted_target_sha256": "b42c443ed66de501daaf7d71a329041c4eeeb7c0a3265d3599657563c5a5c331",
           "source_file_sha256": "27a0e5fcb309754518fafd8c42c927528498038e8c2b675566594305d596c8f0",
           "source_path": "src/transport/async.rs",
           "target_path": "vendor/ibapi/src/transport/async.rs"
@@ -2903,8 +2914,8 @@
           "target_path": "vendor/ibapi/src/transport/async/connection_signal_tests.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "20030abf3fd23750e9c675135cea894dadbf65a71594c90f49dda8ffa4faef5c",
+          "adaptation": "Production async sockets construct only the disabled inbound raw-frame tap.",
+          "adapted_target_sha256": "d843157d61635dd6ce37bf7258bcd36609759b90c8d38a4eb0e2dd413ee39f1a",
           "source_file_sha256": "20030abf3fd23750e9c675135cea894dadbf65a71594c90f49dda8ffa4faef5c",
           "source_path": "src/transport/async/io.rs",
           "target_path": "vendor/ibapi/src/transport/async/io.rs"
@@ -2980,8 +2991,8 @@
           "target_path": "vendor/ibapi/src/transport/async_tests.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "2478a85157b9b854378a2a75d7358097fd78c093cc129ff870692528c1703ecb",
+          "adaptation": "Orphan-routing logs omit raw notice, error, and response payloads.",
+          "adapted_target_sha256": "78983bc70a897f25cba18e67f3cbb6a52e4675bc390e46008e661776eb7f04d7",
           "source_file_sha256": "2478a85157b9b854378a2a75d7358097fd78c093cc129ff870692528c1703ecb",
           "source_path": "src/transport/common.rs",
           "target_path": "vendor/ibapi/src/transport/common.rs"
@@ -3001,36 +3012,36 @@
           "target_path": "vendor/ibapi/src/transport/connection.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "c3f4ff47be125ec89aff7c640ebd0af5db7df70d5e78f9db14b804ce1d386c79",
+          "adaptation": "Channel-send failure logs do not format returned routed items.",
+          "adapted_target_sha256": "5c616d101e2899da2c76c9be026d1c80c47cb6793ac966a35b328bb258a40261",
           "source_file_sha256": "c3f4ff47be125ec89aff7c640ebd0af5db7df70d5e78f9db14b804ce1d386c79",
           "source_path": "src/transport/mod.rs",
           "target_path": "vendor/ibapi/src/transport/mod.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "31f5ec9c67fd170b8ee6f854bec4bb08c863d0fa080838281ef5abf3b5f85c83",
+          "adaptation": "Removes environment activation and restricts explicit inbound capture construction to tests.",
+          "adapted_target_sha256": "224c3fe503e45194f6e2a11951b4d0e558d0217867f0933ad015193894f753e0",
           "source_file_sha256": "31f5ec9c67fd170b8ee6f854bec4bb08c863d0fa080838281ef5abf3b5f85c83",
           "source_path": "src/transport/raw_capture.rs",
           "target_path": "vendor/ibapi/src/transport/raw_capture.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "b45ad8975588dceccadd5bf45dda6dc239c743d8118c33b93c1b6d02eb9647a5",
+          "adaptation": "Tests that legacy raw-capture environment activation cannot persist production frames.",
+          "adapted_target_sha256": "848fb72a39fa93e186ba7685ca9af1b66582d4cf3c75bf37e7ec8264042f8de8",
           "source_file_sha256": "b45ad8975588dceccadd5bf45dda6dc239c743d8118c33b93c1b6d02eb9647a5",
           "source_path": "src/transport/raw_capture_tests.rs",
           "target_path": "vendor/ibapi/src/transport/raw_capture_tests.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "3a825ec456c8ebdc115b43e4ffb0c41a7551dbac1341330fd9855f8123d13bc7",
+          "adaptation": "Removes environment activation and restricts explicit bidirectional recorder construction to tests.",
+          "adapted_target_sha256": "1e34148ec0460fb183ffc23d1712add12bff0d04bc236814874996aa8fb5ebbc",
           "source_file_sha256": "3a825ec456c8ebdc115b43e4ffb0c41a7551dbac1341330fd9855f8123d13bc7",
           "source_path": "src/transport/recorder.rs",
           "target_path": "vendor/ibapi/src/transport/recorder.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "4e721ca6c6231adaf5cc3c7819f6565d83680df1852a93646fabd1a188358787",
+          "adaptation": "Tests recording only synthetic data in explicit temp paths; verifies legacy environment activation is ignored.",
+          "adapted_target_sha256": "2ae7a022acaea9896e5b33c460890c73d6b0573ad158e6ccc84de0bd640010fd",
           "source_file_sha256": "4e721ca6c6231adaf5cc3c7819f6565d83680df1852a93646fabd1a188358787",
           "source_path": "src/transport/recorder_tests.rs",
           "target_path": "vendor/ibapi/src/transport/recorder_tests.rs"
@@ -3050,8 +3061,8 @@
           "target_path": "vendor/ibapi/src/transport/routing_tests.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "3176001d79515bef6980d0970685942cc1580245152af9547d63d2f499cf719e",
+          "adaptation": "Sync transport logs use safe routed-item summaries and fixed error classes.",
+          "adapted_target_sha256": "95b483c98a98857ae4c1991c3d7b4a4edd76cb8fffc8383b77396837c7a3e8ba",
           "source_file_sha256": "3176001d79515bef6980d0970685942cc1580245152af9547d63d2f499cf719e",
           "source_path": "src/transport/sync.rs",
           "target_path": "vendor/ibapi/src/transport/sync.rs"

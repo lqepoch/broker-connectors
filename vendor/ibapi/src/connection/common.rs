@@ -246,7 +246,7 @@ pub(crate) fn dispatch_unsolicited_message(_server_version: i32, message: &mut R
             Ok(t) => cb(wrap(t)),
             Err(e) => ctx.notice_sink.deliver(Notice::synthesized(
                 HANDSHAKE_DECODE_FAILURE_CODE,
-                format!("handshake decoder failed for {kind:?}: {e}"),
+                format!("handshake decoder failed for {kind:?}: class={}", e.diagnostic_class()),
             )),
         }
     }
@@ -322,17 +322,17 @@ pub(crate) fn require_protobuf_support(server_version: i32) -> Result<(), Error>
 ///
 /// Never fails the handshake. A truncated string, an unparseable date or a
 /// timezone name that no alias or IANA zone matches yields `None` for the
-/// affected component; the unmatched name is logged with how to map it.
+/// affected component; diagnostics report lengths without echoing wire text.
 pub fn parse_connection_time(connection_time: &str) -> (Option<OffsetDateTime>, Option<&'static Tz>) {
     // The zone is everything after the time and may contain spaces ("China Standard Time").
     let mut parts = connection_time.splitn(3, ' ');
     let (Some(date), Some(time), Some(tz_name)) = (parts.next(), parts.next(), parts.next()) else {
-        error!("Invalid connection time format: {connection_time}");
+        error!("Invalid connection time format ({} bytes)", connection_time.len());
         return (None, None);
     };
 
     let Some(timezone) = find_timezone(tz_name) else {
-        warn!("{}", Error::UnsupportedTimeZone(tz_name.to_string()));
+        warn!("Unsupported connection timezone ({} bytes)", tz_name.len());
         return (None, None);
     };
 
@@ -342,8 +342,12 @@ pub fn parse_connection_time(connection_time: &str) -> (Option<OffsetDateTime>, 
 
     match date {
         Ok(connected_at) => (Some(resolve_local(connected_at, timezone)), Some(timezone)),
-        Err(err) => {
-            warn!("Could not parse connection time from {date_str}: {err}");
+        Err(_) => {
+            warn!(
+                "Could not parse connection date/time (date bytes={}, time bytes={})",
+                date_str.len(),
+                time.len()
+            );
             (None, Some(timezone))
         }
     }
@@ -375,16 +379,21 @@ pub fn parse_raw_message(data: &[u8]) -> Result<ResponseMessage, Error> {
 
     if msg_id > PROTOBUF_MSG_ID {
         let real_type = msg_id - PROTOBUF_MSG_ID;
-        debug!("<- protobuf msg_id={real_type}");
+        debug!("<- protobuf msg_id={real_type}, frame bytes={}", data.len());
         Ok(ResponseMessage::from_protobuf(real_type, payload.to_vec()))
     } else {
         // Binary message ID, NUL-delimited text payload.
         let raw = String::from_utf8_lossy(payload);
-        debug!("<- {raw:?}");
+        debug!("<- text msg_id={msg_id}, payload bytes={}", payload.len());
         let mut fields = vec![msg_id.to_string()];
         fields.extend(raw.split_terminator('\0').map(|s| s.to_string()));
         Ok(ResponseMessage::from_text_fields(fields))
     }
+}
+
+/// Return only the size needed for safe outbound-frame diagnostics.
+pub(crate) fn outbound_frame_log_length(data: &[u8]) -> usize {
+    data.len()
 }
 
 #[cfg(test)]

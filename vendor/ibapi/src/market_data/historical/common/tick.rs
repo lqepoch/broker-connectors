@@ -36,7 +36,7 @@ pub(crate) enum TickAction<T> {
 pub(crate) fn classify<T: TickDecoder<T>>(item: RoutedItem) -> TickAction<T> {
     match item {
         RoutedItem::Response(message) if is_undeclared(T::RESPONSE_MESSAGE_IDS, &message) => {
-            debug!("unexpected message on historical-ticks channel: {message:?}");
+            debug!("unexpected message on historical-ticks channel: {}", message.diagnostic_summary());
             TickAction::Skip
         }
         RoutedItem::Response(message) => match T::decode(&message) {

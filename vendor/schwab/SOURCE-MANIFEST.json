@@ -446,7 +446,7 @@
       "source_path": "crates/schwab-streamer/src/session/market_data.rs",
       "source_sha256": "824a0c6e98b35bee87de126b506b1df519cd89e84b56d84b11040531495db153",
       "target_path": "vendor/schwab/crates/schwab-streamer/src/session/market_data.rs",
-      "target_sha256": "ca380d7ed246f45ac9d04509c3e342bb47c3b0497b6baf4bbe8fece6226eeba8"
+      "target_sha256": "dd4ca65c0351e4b6fae966bbfc052b9c09d844f69366f5e397252cc59c7ef680"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",

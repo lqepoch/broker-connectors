@@ -283,8 +283,8 @@ impl<T: StreamDecoder<T>> Subscription<T> {
                 }
                 Err(err) => {
                     match &err {
-                        Error::Notice(n) => warn!("subscription terminated by TWS error {n}"),
-                        _ => error!("error decoding message: {err}"),
+                        Error::Notice(n) => warn!("subscription terminated by TWS notice: {}", n.diagnostic_summary()),
+                        _ => error!("error decoding message: class={}", err.diagnostic_class()),
                     }
                     self.stream_ended.store(true, Ordering::Relaxed);
                     NextAction::Return(Some(Err(err)))
@@ -472,9 +472,9 @@ impl<T: StreamDecoder<T>> Subscription<T> {
                         break;
                     }
                 }
-                Some(Ok(SubscriptionItem::Notice(notice))) => warn!("ib notice on subscription: {notice}"),
+                Some(Ok(SubscriptionItem::Notice(notice))) => warn!("ib notice on subscription: {}", notice.diagnostic_summary()),
                 Some(Err(e)) => {
-                    warn!("subscription error during collect: {e}");
+                    warn!("subscription error during collect: class={}", e.diagnostic_class());
                     break;
                 }
                 // Per-item timeout (total deadline reached) or end of stream.
@@ -495,7 +495,7 @@ impl<T: StreamDecoder<T>> Subscription<T> {
         while let Some(item) = self.next() {
             match item? {
                 SubscriptionItem::Data(value) => collected.push(value),
-                SubscriptionItem::Notice(notice) => warn!("ib notice on subscription: {notice}"),
+                SubscriptionItem::Notice(notice) => warn!("ib notice on subscription: {}", notice.diagnostic_summary()),
             }
         }
         if !self.ended_natively() {

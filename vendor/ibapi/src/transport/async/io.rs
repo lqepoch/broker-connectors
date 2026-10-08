@@ -55,8 +55,8 @@ pub(crate) struct AsyncTcpSocket {
     broken: watch::Sender<bool>,
     connection_url: String,
     tcp_no_delay: bool,
-    /// Byte-level capture of the inbound stream. Disabled unless
-    /// `IBAPI_RAW_CAPTURE_DIR` is set; see [`RawFrameTap`].
+    /// Byte-level capture of the inbound stream. Production connections always
+    /// keep this disabled; synthetic tests opt in with an explicit temp path.
     tap: RawFrameTap,
 }
 
@@ -71,7 +71,7 @@ impl AsyncTcpSocket {
             broken: watch::Sender::new(false),
             connection_url: address.to_string(),
             tcp_no_delay,
-            tap: RawFrameTap::from_env(),
+            tap: RawFrameTap::disabled(),
         })
     }
 

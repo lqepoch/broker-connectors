@@ -8,6 +8,16 @@ use std::sync::{Arc, Mutex};
 use time::macros::datetime;
 use time_tz::TimeZone;
 
+#[test]
+fn outbound_frame_log_summary_never_contains_payload() {
+    let payload = b"SYNTHETIC_ACCOUNT_FIELD=ACCOUNT-12345";
+    let summary = format!("outbound frame bytes={}", outbound_frame_log_length(payload));
+
+    assert_eq!(outbound_frame_log_length(payload), payload.len());
+    assert!(!summary.contains("SYNTHETIC_ACCOUNT_FIELD"));
+    assert!(!summary.contains("ACCOUNT-12345"));
+}
+
 const TEST_SERVER_VERSION: i32 = server_versions::PROTOBUF_REST_MESSAGES_3;
 
 /// Test sink that drops every notice. Used when the test cares about the

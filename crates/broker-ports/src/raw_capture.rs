@@ -752,11 +752,10 @@ mod tests {
     use crate::{RawFramePayload, RawFrameWireEncoding};
 
     use super::{
-        numeric_encoding_tag, RawCaptureInstanceId, RawCaptureInstanceIdError, RawFrameCapture,
-        RawFrameCaptureAck, RawFrameCaptureKey, RawFrameCaptureKeyError,
-        RawFrameCaptureRequestError, RawFrameDisposition, RawFrameFinalization,
-        RawFrameFinalizationAck,
-        RawFrameFinalizationError,
+        RawCaptureInstanceId, RawCaptureInstanceIdError, RawFrameCapture, RawFrameCaptureAck,
+        RawFrameCaptureKey, RawFrameCaptureKeyError, RawFrameCaptureRequestError,
+        RawFrameDisposition, RawFrameFinalization, RawFrameFinalizationAck,
+        RawFrameFinalizationError, numeric_encoding_tag,
     };
 
     fn capture_id(fill: u8) -> RawCaptureInstanceId {
@@ -836,9 +835,18 @@ mod tests {
     #[test]
     fn raw_json_and_messagepack_finalizations_have_distinct_stable_tags() {
         assert_eq!(numeric_encoding_tag(None), 0);
-        assert_eq!(numeric_encoding_tag(Some(NumericEncodingV1::Unspecified)), 1);
-        assert_eq!(numeric_encoding_tag(Some(NumericEncodingV1::DecimalToken)), 2);
-        assert_eq!(numeric_encoding_tag(Some(NumericEncodingV1::IntegerToken)), 3);
+        assert_eq!(
+            numeric_encoding_tag(Some(NumericEncodingV1::Unspecified)),
+            1
+        );
+        assert_eq!(
+            numeric_encoding_tag(Some(NumericEncodingV1::DecimalToken)),
+            2
+        );
+        assert_eq!(
+            numeric_encoding_tag(Some(NumericEncodingV1::IntegerToken)),
+            3
+        );
         assert_eq!(
             numeric_encoding_tag(Some(NumericEncodingV1::BinaryFloat32ShortestDecimal)),
             4

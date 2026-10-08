@@ -7,27 +7,51 @@ unofficial Tokio/blocking client for the IBKR TWS API. The `v5.0.0` tag points
 to a different commit (`f43c64682ab24b822dcd2892ff4208eac81813dc`); this vendor
 snapshot is pinned to the inspected `main` commit, not that tag.
 
-Source archive digest for the upstream commit's `Cargo.toml`, `LICENSE`, and
-`src/` paths (from `git archive --format=tar`):
+Source archive digest for the upstream commit's `Cargo.toml`, `LICENSE`,
+`rustfmt.toml`, and `src/` paths (from `git archive --format=tar`):
 
 ```text
-SHA-256 063f22b4b640fd2fddcddb100eaa02f39031e81c1ee09500769bfa5e44cf8647
+SHA-256 91b49f2c57e423258d20b1f427682d622b78de011eacbb75fcb4296ceacb3532
 ```
+
+The upstream `rustfmt.toml` is copied unchanged to this directory so Cargo's
+workspace-wide format check uses the vendored source's pinned formatter settings
+without rewriting those sources. Its Git blob is
+`0a4312322c11cec08f41dd1ffc976fb3e4b1c395` and its file SHA-256 is
+`ebdb640eee8312fc86d59249c5b43fb150f62375358f0216c2fa1bb7ef9514d2`. The
+existing upstream MIT license applies to this configuration file as part of the
+pinned repository snapshot.
 
 `Cargo.toml.upstream` preserves the exact upstream manifest. The active local
 `Cargo.toml` is a dependency-only manifest: it removes upstream workspace
 members, development dependencies, examples, and docs.rs packaging metadata so
 this repository builds only the vendored library. The pinned upstream `src/`
-tree is retained. Trailing whitespace was removed from five upstream source
-files (`accounts/common/test_tables.rs`, `client/async.rs`,
-`orders/builder/async_impl.rs`, `orders/builder/sync_impl.rs`, and
-`orders/mod.rs`) so repository whitespace checks pass; no protocol or SDK
-behavior was changed. The archive digest above covers the unmodified upstream
-archive, not this whitespace-normalized working copy. The manifest records
-hashes for all 302 files in the pinned `Cargo.toml`, `LICENSE`, and `src/`
-closure, including the exact source path for each file. `LOCAL-CHANGES.json`
-binds each of the five normalized files to its upstream and target hash and
-lists the exact 1-based line numbers; the record is descriptive and is not
+tree is retained with five whitespace normalizations and narrowly scoped
+privacy changes, all bound to pinned source hashes and adapted target hashes in
+`LOCAL-CHANGES.json` and `SOURCE-MANIFEST.json`.
+
+The five whitespace-only edits affect `accounts/common/test_tables.rs`,
+`client/async.rs`, `orders/builder/async_impl.rs`,
+`orders/builder/sync_impl.rs`, and `orders/mod.rs`. The local privacy edits
+change only diagnostics, test assertions, and recorder construction:
+`connection/sync.rs` and `connection/async.rs` log outbound request and
+handshake byte counts rather than raw frames; `connection/common.rs` logs
+message IDs and inbound byte counts rather than decoded text payloads;
+`common/test_utils.rs` uses stable result classes and byte counts rather than
+printing error values or protobuf bodies; transport, subscription and handshake
+diagnostics use fixed error classes, message IDs and payload lengths rather
+than wire content. Both `transport/recorder.rs` and `transport/raw_capture.rs`
+keep their production capture paths disabled. Neither `IBAPI_RECORDING_DIR`
+nor `IBAPI_RAW_CAPTURE_DIR` enables persistence. Tests may opt into capture
+only through test-only constructors with explicit temporary directories and
+synthetic fixtures. No real provider/account traffic is captured.
+
+The source archive digest above covers the unmodified upstream
+archive, not this locally adapted working copy. The manifest records hashes
+for all 303 files in the pinned `Cargo.toml`, `LICENSE`, `rustfmt.toml`, and
+`src/` closure, including the exact source path for each file. The versioned
+local change record binds each changed file to its upstream and target hashes
+and records the operation and source lines; it is descriptive and is not
 presented as an apply-ready patch.
 
 The adapter crate keeps the SDK client private and exposes only the bounded,

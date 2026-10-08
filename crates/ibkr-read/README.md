@@ -16,6 +16,7 @@ provider `conId` 是来源记录身份，不能替代 `OptionInstrumentKey`，�
 - 成功结果必须在 `ContractDataEnd` 后确认；多条结果、无效 provider identity、超限、断链或未确认取消均失败关闭。
 - 未能确认请求结束时，adapter 会 poison 并在配置时限内停止和释放 SDK client；该实例不再接受查询。调用方取消 lookup 时，SDK 的订阅 Drop 只会排队发送取消而不能证明 native END；RAII guard 会同步 poison 并释放 adapter 持有的 SDK client，使连接结束且不能被复用。
 - 不实现 `MarketDataPort`、`BrokerReadPort`、`BrokerEventPort`、`ExecutionPort`、账户读取、symbol 行情订阅或历史行情读取。
+- SDK request、handshake、notice、错误和路由诊断只输出固定分类、消息 ID 与字节数，不打印原始 payload。生产连接同时禁用双向 `MessageRecorder` 和 inbound `RawFrameTap`；`IBAPI_RECORDING_DIR` 与 `IBAPI_RAW_CAPTURE_DIR` 都不能启用持久化。仅合成单测可通过显式 `TempDir` 构造器记录 synthetic bytes。
 
 查询只能使用有效完整 OCC symbol；exchange 和 currency 都必须显式传入。`SMART` 与隐式 `USD` 不会被 adapter 使用。SDK 搜索请求中的 `conId = 0` 是 IBKR 搜索 sentinel，不能作为返回身份。返回行需精确匹配 OCC local symbol、标的、到期、right、strike、exchange、currency，并包含正数 provider `conId`。
 
@@ -28,7 +29,7 @@ loopback-only 是本阶段目录适配器的连接边界，不代表支持或验
 vendored `ibapi` 的源码来自 `wboayue/rust-ibapi` commit
 `3e73f2f1cfac151c10e403a3e7d779272134445f`，package metadata 为 `5.0.0`、MIT、MSRV 1.88；该源码 commit 与 `v5.0.0` tag `f43c64682ab24b822dcd2892ff4208eac81813dc` 不同。源码 hash 与局部 manifest 处理记录在 [`vendor/ibapi/UPSTREAM.md`](../../vendor/ibapi/UPSTREAM.md)。
 
-SDK 官方语言支持列表不包含 Rust，因此此处使用的是社区维护的非官方 TWS API 客户端。vendor 源码未做 Rust 行为修改；局部 Cargo manifest 去掉上游 workspace、开发依赖和示例目标。
+SDK 官方语言支持列表不包含 Rust，因此此处使用的是社区维护的非官方 TWS API 客户端。vendor `src/` 以可审计局部修改记录绑定上游与目标 hash：五个上游文件只去除尾部空白；连接、错误和路由诊断只输出固定分类、消息 ID 或长度；生产 `MessageRecorder` 与 `RawFrameTap` 均固定禁用且忽略对应环境变量；单测仅通过显式临时目录处理合成字节。局部 Cargo manifest 去掉上游 workspace、开发依赖和示例目标。
 
 ## 离线验证
 

@@ -91,7 +91,7 @@ impl<S: AsyncStream> AsyncConnection<S> {
                 ..Default::default()
             }),
             server_version_cache: AtomicI32::new(0),
-            recorder: MessageRecorder::from_env(),
+            recorder: MessageRecorder::disabled(),
             connection_handler: ConnectionHandler::default(),
             startup_callback,
             notice_broadcaster: NoticeBroadcaster::new(notice_sender),
@@ -183,13 +183,16 @@ impl<S: AsyncStream> AsyncConnection<S> {
                             return Ok(());
                         }
                         Err(e) => {
-                            info!("reconnection attempt {attempt_label} failed while establishing session: {e}");
+                            info!(
+                                "reconnection attempt {attempt_label} failed while establishing session: class={}",
+                                e.diagnostic_class()
+                            );
                             last_error = Some(e);
                         }
                     }
                 }
                 Err(e) => {
-                    info!("reconnection attempt {attempt_label} failed: {e}");
+                    info!("reconnection attempt {attempt_label} failed: class={}", e.diagnostic_class());
                     last_error = Some(e);
                 }
             }
@@ -220,7 +223,7 @@ impl<S: AsyncStream> AsyncConnection<S> {
     /// Write a protobuf message to the connection
     pub(crate) async fn write_message(&self, data: &[u8]) -> Result<(), Error> {
         self.recorder.record_request(data);
-        debug!("-> {:?}", data);
+        debug!("-> outbound frame bytes={}", super::common::outbound_frame_log_length(data));
 
         self.write_raw(data).await
     }
@@ -245,7 +248,7 @@ impl<S: AsyncStream> AsyncConnection<S> {
     // sends server handshake
     pub(crate) async fn handshake(&self) -> Result<(), Error> {
         let handshake = self.connection_handler.format_handshake();
-        debug!("-> handshake: {handshake:?}");
+        debug!("-> handshake bytes={}", super::common::outbound_frame_log_length(&handshake));
 
         self.socket.write_all(&handshake).await?;
 
@@ -272,7 +275,8 @@ impl<S: AsyncStream> AsyncConnection<S> {
             }
             Err(Error::Io(err)) if err.kind() == std::io::ErrorKind::UnexpectedEof => {
                 return Err(Error::ConnectionRejected(format!(
-                    "server may be rejecting connections from this host: {err}"
+                    "server may be rejecting connections from this host: io-kind={:?}",
+                    err.kind()
                 )));
             }
             Err(err) => {

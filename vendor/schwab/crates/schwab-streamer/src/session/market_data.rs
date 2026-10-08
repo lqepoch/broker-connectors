@@ -719,8 +719,7 @@ mod market_data_buffer_tests {
                             generation,
                             key.clone(),
                             f64::from(
-                                u32::try_from(batch + 1)
-                                    .expect("synthetic timestamp fits u32"),
+                                u32::try_from(batch + 1).expect("synthetic timestamp fits u32"),
                             ),
                             fields,
                         )

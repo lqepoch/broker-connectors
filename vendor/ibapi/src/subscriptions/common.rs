@@ -67,7 +67,7 @@ pub(crate) fn filter_notice<T>(item: Result<SubscriptionItem<T>, Error>) -> Opti
     match item {
         Ok(SubscriptionItem::Data(t)) => Some(Ok(t)),
         Ok(SubscriptionItem::Notice(n)) => {
-            log::warn!("ib notice on subscription: {n}");
+            log::warn!("ib notice on subscription: {}", n.diagnostic_summary());
             None
         }
         Err(e) => Some(Err(e)),
@@ -98,6 +98,15 @@ impl From<Error> for RoutedItem {
 }
 
 impl RoutedItem {
+    /// Log-safe summary that never formats decoded response or notice payloads.
+    pub(crate) fn diagnostic_summary(&self) -> String {
+        match self {
+            RoutedItem::Response(message) => message.diagnostic_summary(),
+            RoutedItem::Notice(notice) => notice.diagnostic_summary(),
+            RoutedItem::Error(error) => format!("error class={}", error.diagnostic_class()),
+        }
+    }
+
     /// Translate to `Result<ResponseMessage, Error>`. Returns `None` for
     /// `Notice` so callers can skip and recv the next item.
     pub(crate) fn into_legacy(self) -> Option<Result<ResponseMessage, Error>> {

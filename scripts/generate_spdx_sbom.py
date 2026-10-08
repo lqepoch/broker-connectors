@@ -11,6 +11,7 @@ import sys
 import tomllib
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 from urllib.parse import quote
 
 
@@ -30,7 +31,7 @@ def run_metadata() -> dict:
     return json.loads(result.stdout)
 
 
-def vendored_package_sources() -> dict[str, dict[str, str]]:
+def vendored_package_sources() -> dict[str, dict[str, Any]]:
     document = json.loads(
         (ROOT / "SOURCE-MANIFEST.json").read_text(encoding="utf-8")
     )
@@ -39,6 +40,14 @@ def vendored_package_sources() -> dict[str, dict[str, str]]:
         raise ValueError("no pinned vendored upstreams are recorded")
     sources = {}
     for upstream in upstreams:
+        formatting_config = next(
+            (
+                entry
+                for entry in upstream["source_files"]
+                if entry["source_path"] == "rustfmt.toml"
+            ),
+            None,
+        )
         for package in upstream["packages"]:
             name = package["name"]
             if name in sources:
@@ -48,6 +57,10 @@ def vendored_package_sources() -> dict[str, dict[str, str]]:
                 "commit": upstream["source_commit"],
                 "source_path": package["source_path"],
                 "target_root": upstream.get("target_root", "vendor/alpaca-rust"),
+                "source_archive_sha256": upstream.get("source_archive_sha256"),
+                "formatting_config": formatting_config,
+                "local_change_record_path": upstream.get("local_change_record_path"),
+                "local_change_record_sha256": upstream.get("local_change_record_sha256"),
             }
     return sources
 
@@ -165,13 +178,33 @@ def main() -> None:
             }]
         elif name in vendored_sources:
             origin = vendored_sources[name]
-            item["sourceInfo"] = (
+            source_info = (
                 f"Vendored from {origin['repository']}@{origin['commit']}; "
                 f"package source path: {'repository root' if source_path == '.' else source_path}. "
                 "Local adaptations and "
                 f"source-file hashes are documented in {origin['target_root']}/UPSTREAM.md "
                 "and SOURCE-MANIFEST.json."
             )
+            archive_sha256 = origin.get("source_archive_sha256")
+            if archive_sha256:
+                source_info += f" Pinned source archive SHA-256: {archive_sha256}."
+            change_record_path = origin.get("local_change_record_path")
+            change_record_hash = origin.get("local_change_record_sha256")
+            if change_record_path and change_record_hash:
+                source_info += (
+                    f" Local source-change record: {change_record_path}; "
+                    f"SHA-256 {change_record_hash}."
+                )
+            formatting_config = origin.get("formatting_config")
+            if formatting_config:
+                source_info += (
+                    " Vendored formatter configuration is copied from upstream path "
+                    f"{formatting_config['source_path']} to {formatting_config['target_path']} "
+                    f"with SHA-256 {formatting_config['adapted_target_sha256']} and Git blob "
+                    f"{formatting_config['source_git_blob_sha1']}; it scopes formatting to "
+                    "the vendored source."
+                )
+            item["sourceInfo"] = source_info
         elif name in project_sources:
             origin = project_sources[name]
             item["sourceInfo"] = (

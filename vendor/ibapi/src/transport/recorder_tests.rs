@@ -5,192 +5,119 @@ use super::*;
 use std::fs;
 use tempfile::TempDir;
 
+fn test_recorder(directory: &TempDir) -> MessageRecorder {
+    MessageRecorder::recording_to(directory.path())
+}
+
+fn recorded_files(directory: &str) -> Vec<std::path::PathBuf> {
+    fs::read_dir(directory)
+        .unwrap()
+        .map(|entry| entry.map(|item| item.path()))
+        .collect::<Result<Vec<_>, std::io::Error>>()
+        .unwrap()
+}
+
 #[test]
-fn test_message_recorder_new_with_empty_env_var() {
-    temp_env::with_var("IBAPI_RECORDING_DIR", Some(""), || {
-        let recorder = MessageRecorder::from_env();
+fn production_recorder_ignores_legacy_environment_variable() {
+    let temp_dir = TempDir::new().unwrap();
+    temp_env::with_var("IBAPI_RECORDING_DIR", Some(temp_dir.path().to_str().unwrap()), || {
+        let recorder = MessageRecorder::disabled();
         assert!(!recorder.enabled);
         assert_eq!(recorder.recording_dir, "");
+
+        recorder.record_request(b"synthetic request");
+        recorder.record_response(&ResponseMessage::from_simple(MANAGED_ACCOUNT));
+        assert!(fs::read_dir(temp_dir.path()).unwrap().next().is_none());
     });
 }
 
 #[test]
-fn test_message_recorder_new_with_valid_env_var() {
+fn explicit_test_recorder_uses_temporary_directory() {
     let temp_dir = TempDir::new().unwrap();
-    let temp_path = temp_dir.path().to_str().unwrap();
+    let path = temp_dir.path().to_string_lossy();
+    let recorder = test_recorder(&temp_dir);
 
-    temp_env::with_var("IBAPI_RECORDING_DIR", Some(temp_path), || {
-        let recorder = MessageRecorder::from_env();
-
-        assert!(recorder.enabled);
-        assert!(recorder.recording_dir.starts_with(temp_path));
-        assert!(fs::metadata(&recorder.recording_dir).unwrap().is_dir());
-    });
+    assert!(recorder.enabled);
+    assert!(recorder.recording_dir.starts_with(path.as_ref()));
+    assert_eq!(fs::canonicalize(&recorder.recording_dir).unwrap(), temp_dir.path());
 }
 
 #[test]
-fn test_record_request() {
+fn records_synthetic_request_bytes() {
     let temp_dir = TempDir::new().unwrap();
-    let temp_path = temp_dir.path().to_str().unwrap();
+    let data = encode_protobuf_message(63, &[0x08, 0xd0, 0x46]);
+    let recorder = test_recorder(&temp_dir);
 
-    temp_env::with_var("IBAPI_RECORDING_DIR", Some(temp_path), || {
-        let data = encode_protobuf_message(63, &[0x08, 0xd0, 0x46]); // msg_id=63, proto payload
+    recorder.record_request(&data);
 
-        let recorder = MessageRecorder::from_env();
-        recorder.record_request(&data);
-
-        let files = fs::read_dir(&recorder.recording_dir)
-            .unwrap()
-            .map(|res| res.map(|e| e.path()))
-            .collect::<Result<Vec<_>, std::io::Error>>()
-            .unwrap();
-
-        assert_eq!(files.len(), 1);
-        assert!(files[0].to_str().unwrap().ends_with("-request.msg"));
-
-        let content = fs::read(&files[0]).unwrap();
-        assert_eq!(content, data);
-    });
+    let files = recorded_files(&recorder.recording_dir);
+    assert_eq!(files.len(), 1);
+    assert!(files[0].to_string_lossy().ends_with("-request.msg"));
+    assert_eq!(fs::read(&files[0]).unwrap(), data);
 }
 
 #[test]
-fn test_record_response() {
+fn records_synthetic_text_response() {
     let temp_dir = TempDir::new().unwrap();
-    let temp_path = temp_dir.path().to_str().unwrap();
+    let message = ResponseMessage::from_simple(MARKET_RULE);
+    let recorder = test_recorder(&temp_dir);
 
-    temp_env::with_var("IBAPI_RECORDING_DIR", Some(temp_path), || {
-        let message = ResponseMessage::from_simple(MARKET_RULE);
+    recorder.record_response(&message);
 
-        let recorder = MessageRecorder::from_env();
-        recorder.record_response(&message);
-
-        let files = fs::read_dir(&recorder.recording_dir)
-            .unwrap()
-            .map(|res| res.map(|e| e.path()))
-            .collect::<Result<Vec<_>, std::io::Error>>()
-            .unwrap();
-
-        assert_eq!(files.len(), 1);
-        assert!(files[0].to_str().unwrap().ends_with("-response.msg"));
-
-        let content = fs::read_to_string(&files[0]).unwrap();
-        assert_eq!(content, message.encode_simple());
-    });
+    let files = recorded_files(&recorder.recording_dir);
+    assert_eq!(files.len(), 1);
+    assert!(files[0].to_string_lossy().ends_with("-response.msg"));
+    assert_eq!(fs::read_to_string(&files[0]).unwrap(), message.encode_simple());
 }
 
 #[test]
-fn test_record_response_writes_the_protobuf_frame() {
-    // Every response at the protocol floor is proto-framed, and this used to
-    // record `fields.join("\0")` — which for a proto message is the bare
-    // message id, losing the entire payload.
+fn records_synthetic_protobuf_response_frame() {
     let temp_dir = TempDir::new().unwrap();
-    let temp_path = temp_dir.path().to_str().unwrap();
+    let payload = vec![0x08, 0xd0, 0x46];
+    let message = ResponseMessage::from_protobuf(crate::messages::IncomingMessages::CurrentTime as i32, payload.clone());
+    let recorder = test_recorder(&temp_dir);
 
-    temp_env::with_var("IBAPI_RECORDING_DIR", Some(temp_path), || {
-        let payload = vec![0x08, 0xd0, 0x46];
-        let message = ResponseMessage::from_protobuf(crate::messages::IncomingMessages::CurrentTime as i32, payload.clone());
+    recorder.record_response(&message);
 
-        let recorder = MessageRecorder::from_env();
-        recorder.record_response(&message);
-
-        let file = fs::read_dir(&recorder.recording_dir).unwrap().next().unwrap().unwrap().path();
-        let content = fs::read(&file).unwrap();
-
-        assert_eq!(
-            content,
-            encode_protobuf_message(crate::messages::IncomingMessages::CurrentTime as i32, &payload),
-            "a recorded response must be the wire frame a replay would read"
-        );
-        assert!(content.ends_with(&payload), "the payload must survive the round trip");
-    });
+    let file = recorded_files(&recorder.recording_dir).pop().unwrap();
+    let content = fs::read(&file).unwrap();
+    assert_eq!(
+        content,
+        encode_protobuf_message(crate::messages::IncomingMessages::CurrentTime as i32, &payload),
+        "a recorded response must be the wire frame a replay would read"
+    );
+    assert!(content.ends_with(&payload), "the synthetic payload must survive the round trip");
 }
 
 #[test]
-fn test_multiple_records() {
+fn records_multiple_synthetic_messages() {
     let temp_dir = TempDir::new().unwrap();
-    let temp_path = temp_dir.path().to_str().unwrap();
+    let request = encode_protobuf_message(1, &[]);
+    let response = ResponseMessage::from_simple(MANAGED_ACCOUNT);
+    let recorder = test_recorder(&temp_dir);
 
-    temp_env::with_var("IBAPI_RECORDING_DIR", Some(temp_path), || {
-        let request_data = encode_protobuf_message(1, &[]);
-        let response = ResponseMessage::from_simple(MANAGED_ACCOUNT);
+    recorder.record_request(&request);
+    recorder.record_response(&response);
 
-        let recorder = MessageRecorder::from_env();
-
-        recorder.record_request(&request_data);
-        recorder.record_response(&response);
-
-        let files = fs::read_dir(&recorder.recording_dir)
-            .unwrap()
-            .map(|res| res.map(|e| e.path()))
-            .collect::<Result<Vec<_>, std::io::Error>>()
-            .unwrap();
-
-        assert_eq!(files.len(), 2);
-    });
+    assert_eq!(recorded_files(&recorder.recording_dir).len(), 2);
 }
 
 #[test]
-fn test_disabled_recorder() {
-    temp_env::with_var("IBAPI_RECORDING_DIR", Some(""), || {
-        let recorder = MessageRecorder::from_env();
-        assert!(!recorder.enabled);
-
-        let response = ResponseMessage::from_simple(MANAGED_ACCOUNT);
-
-        recorder.record_request(&[]);
-        recorder.record_response(&response);
-    });
-}
-
-/// An unrecognized message id must be recorded as itself, not as the `-1` its
-/// kind resolves to. This is the capture an operator would attach to a desync
-/// report, so fabricating the id there destroys the one field that identifies
-/// the fault.
-#[test]
-fn test_record_response_keeps_an_unrecognized_message_id() {
+fn records_unrecognized_synthetic_message_id_verbatim() {
     use crate::common::test_utils::helpers::UNKNOWN_MESSAGE_ID;
 
     let temp_dir = TempDir::new().unwrap();
-    let temp_path = temp_dir.path().to_str().unwrap();
+    let payload = vec![0x08, 0x64];
+    let message = ResponseMessage::from_protobuf(UNKNOWN_MESSAGE_ID, payload.clone());
+    assert_eq!(message.message_type(), crate::messages::IncomingMessages::NotValid);
+    let recorder = test_recorder(&temp_dir);
 
-    temp_env::with_var("IBAPI_RECORDING_DIR", Some(temp_path), || {
-        let payload = vec![0x08, 0x64];
-        let message = ResponseMessage::from_protobuf(UNKNOWN_MESSAGE_ID, payload.clone());
-        assert_eq!(
-            message.message_type(),
-            crate::messages::IncomingMessages::NotValid,
-            "fixture must be an unrecognized id"
-        );
+    recorder.record_response(&message);
 
-        let recorder = MessageRecorder::from_env();
-        recorder.record_response(&message);
-
-        let file = fs::read_dir(&recorder.recording_dir).unwrap().next().unwrap().unwrap().path();
-        let content = fs::read(&file).unwrap();
-
-        assert_eq!(
-            content,
-            encode_protobuf_message(UNKNOWN_MESSAGE_ID, &payload),
-            "the recorded frame must carry the id that arrived, not NotValid's -1"
-        );
-    });
-}
-
-/// A diagnostic aid must never be the reason a connection fails. Pointing
-/// `IBAPI_RECORDING_DIR` at a path that cannot become a directory used to
-/// panic inside `Client::connect`.
-#[test]
-fn test_unusable_recording_dir_downgrades_to_disabled() {
-    let temp_dir = TempDir::new().unwrap();
-    let occupied = temp_dir.path().join("not-a-directory");
-    fs::write(&occupied, b"occupied").unwrap();
-
-    temp_env::with_var("IBAPI_RECORDING_DIR", Some(occupied.to_str().unwrap()), || {
-        let recorder = MessageRecorder::from_env();
-
-        assert!(!recorder.enabled, "an unusable directory must disable recording, not panic");
-
-        // Still safe to drive.
-        recorder.record_request(b"request");
-    });
+    let file = recorded_files(&recorder.recording_dir).pop().unwrap();
+    assert_eq!(
+        fs::read(file).unwrap(),
+        encode_protobuf_message(UNKNOWN_MESSAGE_ID, &payload),
+        "the synthetic frame must retain its wire id"
+    );
 }

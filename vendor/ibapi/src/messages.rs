@@ -853,6 +853,16 @@ impl ResponseMessage {
         self.message_id
     }
 
+    /// Summarize wire metadata without exposing decoded fields or raw bytes.
+    pub(crate) fn diagnostic_summary(&self) -> String {
+        let payload_bytes = self.raw_bytes().map_or_else(|| self.fields.iter().map(String::len).sum(), <[u8]>::len);
+        format!(
+            "message_type={:?} message_id={:?} payload_bytes={payload_bytes}",
+            self.message_type(),
+            self.message_id()
+        )
+    }
+
     /// Raw protobuf payload bytes, if this is a protobuf message.
     pub fn raw_bytes(&self) -> Option<&[u8]> {
         self.raw_bytes.as_deref()
@@ -887,7 +897,10 @@ impl ResponseMessage {
         if self.message_type() == expected {
             Ok(self)
         } else {
-            Err(Error::UnexpectedResponse(format!("expected {expected:?}, got {self:?}")))
+            Err(Error::UnexpectedResponse(format!(
+                "expected_type={expected:?}; {}",
+                self.diagnostic_summary()
+            )))
         }
     }
 
@@ -1326,9 +1339,7 @@ pub const UNKNOWN_MESSAGE_TYPE_CODE: i32 = -5;
 /// matching `warn!`. The single owner of the wording, shared by steady-state
 /// routing and the handshake.
 pub(crate) fn unknown_message_type_notice(message: &ResponseMessage) -> Notice {
-    // The Debug dump already carries the id; the notice has no such fallback,
-    // so it interpolates.
-    log::warn!("unroutable frame: message id maps to no known type — the stream may be desynchronized: {message:?}");
+    log::warn!("unroutable frame: message id maps to no known type — {}", message.diagnostic_summary());
     let id = match message.message_id() {
         Some(id) => format!("message id {id}"),
         None => "no message id".to_string(),
@@ -1374,7 +1385,7 @@ pub const SUBSCRIPTION_LAG_CODE: i32 = -6;
 #[cfg(feature = "async")]
 pub(crate) fn subscription_lag_notice(skipped: u64) -> Notice {
     let message = format!("subscription fell behind; {skipped} frames dropped (consumer lagged broadcast channel)");
-    log::warn!("{message}");
+    log::warn!("subscription lag detected: frames_dropped={skipped}");
     Notice::synthesized(SUBSCRIPTION_LAG_CODE, message)
 }
 
@@ -1384,7 +1395,7 @@ pub(crate) fn subscription_lag_notice(skipped: u64) -> Notice {
 #[cfg(feature = "async")]
 pub(crate) fn order_lag_notice(skipped: u64) -> Notice {
     let message = format!("order stream fell behind; {skipped} frames dropped — order state unknown, resync with open_orders() / executions()");
-    log::error!("{message}");
+    log::error!("order stream lag detected: frames_dropped={skipped}");
     Notice::synthesized(SUBSCRIPTION_LAG_CODE, message)
 }
 
@@ -1420,7 +1431,7 @@ pub const NOTICE_STREAM_LAG_CODE: i32 = -7;
 #[cfg(feature = "async")]
 pub(crate) fn notice_stream_lag_notice(skipped: u64) -> Notice {
     let message = format!("notice stream fell behind; {skipped} notices dropped (consumer lagged the notice fan-out)");
-    log::warn!("{message}");
+    log::warn!("notice stream lag detected: notices_dropped={skipped}");
     Notice::synthesized(NOTICE_STREAM_LAG_CODE, message)
 }
 
@@ -1617,6 +1628,12 @@ impl From<&ResponseMessage> for Notice {
 }
 
 impl Notice {
+    /// A log-safe summary that omits request identifiers, message text and
+    /// advanced-order-reject payloads.
+    pub(crate) fn diagnostic_summary(&self) -> String {
+        format!("notice code={} category={:?}", self.code, self.category())
+    }
+
     /// Build a client-synthesized notice with no wire timestamp and no
     /// advanced-order-reject JSON. Used by the client-side observability
     /// codes (see [`HANDSHAKE_UNKNOWN_FRAME_CODE`],

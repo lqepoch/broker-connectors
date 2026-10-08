@@ -609,7 +609,7 @@ impl<S: AsyncStream> AsyncTcpMessageBus<S> {
                                 continue;
                             }
                             Err(ref err) if err.is_connection_lost() => {
-                                error!("Connection error detected, attempting to reconnect: {err:?}");
+                                error!("Connection error detected, attempting to reconnect: class={}", err.diagnostic_class());
                                 message_bus.connection_state.set_disconnected();
 
                                 // Fail every registered channel before
@@ -664,7 +664,7 @@ impl<S: AsyncStream> AsyncTcpMessageBus<S> {
                                         break;
                                     }
                                     Err(e) => {
-                                        error!("Failed to reconnect to TWS/Gateway: {e:?}");
+                                        error!("Failed to reconnect to TWS/Gateway: class={}", e.diagnostic_class());
                                         break;
                                     }
                                 }
@@ -675,7 +675,7 @@ impl<S: AsyncStream> AsyncTcpMessageBus<S> {
                                 break;
                             }
                             Err(err) => {
-                                error!("Error processing message (shutting down): {err:?}");
+                                error!("Error processing message (shutting down): class={}", err.diagnostic_class());
                                 break;
                             }
                         }
@@ -856,13 +856,13 @@ impl<S: AsyncStream> AsyncTcpMessageBus<S> {
                 let execution_id = message.execution_id();
                 if let Err(item) = self.deliver_to_order_or_request(message_order_id, message_request_id, message.into(), execution_id.as_ref()) {
                     if !routed {
-                        warn!("could not route ExecutionData message {item:?}");
+                        warn!("could not route ExecutionData message: {}", item.diagnostic_summary());
                     }
                 }
             }
             OrderRoutingStrategy::ExecutionDataEnd => {
                 if let Err(item) = self.deliver_to_order_or_request(message_order_id, message_request_id, message.into(), None) {
-                    warn!("could not route ExecutionDataEnd message {item:?}");
+                    warn!("could not route ExecutionDataEnd message: {}", item.diagnostic_summary());
                 }
             }
             OrderRoutingStrategy::OrderOrShared => {
@@ -879,7 +879,7 @@ impl<S: AsyncStream> AsyncTcpMessageBus<S> {
                     }
                 }
                 if !routed {
-                    warn!("could not route message {:?}", message);
+                    warn!("could not route message: {}", message.diagnostic_summary());
                 }
             }
             OrderRoutingStrategy::ByExecutionId => {
@@ -889,13 +889,13 @@ impl<S: AsyncStream> AsyncTcpMessageBus<S> {
                 };
                 if let Err(item) = unrouted {
                     if !routed {
-                        warn!("could not route commission report {item:?}");
+                        warn!("could not route commission report: {}", item.diagnostic_summary());
                     }
                 }
             }
             OrderRoutingStrategy::SharedOnly => {
                 if !self.shared_channels.send_message(message.message_type(), &message) && !routed {
-                    warn!("could not route message {:?}", message);
+                    warn!("could not route message: {}", message.diagnostic_summary());
                 }
             }
             OrderRoutingStrategy::ByOrderId => {
@@ -906,7 +906,7 @@ impl<S: AsyncStream> AsyncTcpMessageBus<S> {
                 };
                 if let Err(item) = unrouted {
                     if !routed {
-                        warn!("could not route message {item:?}");
+                        warn!("could not route message: {}", item.diagnostic_summary());
                     }
                 }
             }
@@ -1016,8 +1016,8 @@ impl<S: AsyncStream> AsyncTcpMessageBus<S> {
     fn send_order_update_item(&self, item: RoutedItem) -> bool {
         let order_update_stream = lock_slot(&self.order_update_stream);
         if let Some(route) = order_update_stream.as_ref() {
-            if let Err(e) = route.sender.send(item) {
-                warn!("error sending to order update stream: {e}");
+            if route.sender.send(item).is_err() {
+                warn!("error sending to order update stream");
                 return false;
             }
             return true;
@@ -1142,8 +1142,8 @@ impl<S: AsyncStream> AsyncMessageBus for AsyncTcpMessageBus<S> {
 
         if let Some(handle) = task_handle {
             debug!("Waiting for processing task to finish");
-            if let Err(e) = handle.await {
-                warn!("Error joining processing task: {e}");
+            if handle.await.is_err() {
+                warn!("Error joining processing task");
             }
             debug!("Processing task finished");
         }

@@ -1,5 +1,6 @@
 use std::fs;
 
+use serial_test::serial;
 use tempfile::TempDir;
 
 use super::test_support::{frames, index, segments};
@@ -37,29 +38,13 @@ fn test_disabled_tap_is_inert() {
 }
 
 #[test]
-fn test_unset_env_var_disables_the_tap() {
-    temp_env::with_var_unset("IBAPI_RAW_CAPTURE_DIR", || {
-        assert!(RawFrameTap::from_env().sink.is_none());
-    });
-    // An empty value is a common way to switch a capture off in a shell script;
-    // it must not create a directory named "".
-    temp_env::with_var("IBAPI_RAW_CAPTURE_DIR", Some(""), || {
-        assert!(RawFrameTap::from_env().sink.is_none());
-    });
-}
-
-#[test]
-fn test_env_var_opens_a_capture_under_the_named_directory() {
+#[serial]
+fn test_environment_variable_cannot_enable_production_capture() {
     let dir = TempDir::new().unwrap();
-    let nested = dir.path().join("does/not/exist/yet");
-
-    temp_env::with_var("IBAPI_RAW_CAPTURE_DIR", Some(nested.to_str().unwrap()), || {
-        let tap = RawFrameTap::from_env();
-        assert!(tap.sink.is_some());
-
+    temp_env::with_var("IBAPI_RAW_CAPTURE_DIR", Some(dir.path().to_str().unwrap()), || {
+        let tap = RawFrameTap::disabled();
         record_frame(&tap, &[0, 0, 0, 9]);
-
-        assert_eq!(frames(&nested), encode_raw_length(&[0, 0, 0, 9]));
+        assert!(fs::read_dir(dir.path()).unwrap().next().is_none());
     });
 }
 
