@@ -26,6 +26,7 @@ struct RawFrameCorrelation {
     frame_sequence: u64,
     event_count: u32,
     sha256: String,
+    received_at_utc: chrono::DateTime<chrono::Utc>,
 }
 
 struct PendingRawCapture {
@@ -700,6 +701,7 @@ where
             frame_sequence: *frame_sequence,
             event_count: analysis.event_count(),
             sha256: payload.sha256().to_owned(),
+            received_at_utc,
         })
     }
 
@@ -811,6 +813,7 @@ where
             frame_sequence: pending.capture.frame_sequence(),
             event_count: summary.event_count(),
             sha256: payload.sha256().to_owned(),
+            received_at_utc: pending.received_at_utc,
         })
     }
 
@@ -992,7 +995,7 @@ where
             raw_frame_event_ordinal: event_ordinal,
             raw_frame_event_count: raw_frame.event_count,
             received_at: Instant::now(),
-            received_at_utc: chrono::DateTime::<chrono::Utc>::from(std::time::SystemTime::now()),
+            received_at_utc: raw_frame.received_at_utc,
         })
     }
 

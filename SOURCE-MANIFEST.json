@@ -427,7 +427,7 @@
     },
     {
       "adaptation": "Updated for public scope, shared v1 contracts, numeric provenance, ACK limits, and archive completeness boundaries.",
-      "adapted_target_sha256": "29d29b8e31561756170ddad4496b417bb4b57b36762e7077939d5951a1359638",
+      "adapted_target_sha256": "36938091c0fd031bbb84fdb7cd70f8016c73d88eafc568d51d118be252721206",
       "source_blob_sha256": "5c6080b377e1e0a7ad9963a3fc6f095f88fdd16ebb0c55b92115a60d329c3e67",
       "source_path": "crates/alpaca-stream/README.md",
       "target_path": "crates/alpaca-stream/README.md"
@@ -524,8 +524,8 @@
       "target_path": "crates/alpaca-stream/src/session.rs"
     },
     {
-      "adaptation": "Captures only bounded inbound market-data application frames; excludes outbound auth/subscription data, awaits predecode and postdecode sink acknowledgements, and preserves source-local capture identity through canonical projection.",
-      "adapted_target_sha256": "3a1bf995b00f469a51724e38e5da4aaee9c8156998feb9b8ceb38c493d0b99f7",
+      "adaptation": "Captures only bounded inbound market-data application frames; excludes outbound auth/subscription data, awaits predecode and postdecode sink acknowledgements, preserves source-local capture identity through canonical projection, and carries the socket frame's receive UTC into linked normalized events.",
+      "adapted_target_sha256": "9b06f28b3de74ea936e5c87b0191213c40e20d6e64ce8467a2154ec751e9cf78",
       "source_blob_sha256": "8c47578aedd8199f6ee039ed2cf638e1bde385393cc74576bae8625b338bc7b2",
       "source_path": "crates/alpaca-stream/src/session/runner.rs",
       "target_path": "crates/alpaca-stream/src/session/runner.rs"
@@ -545,8 +545,8 @@
       "target_path": "crates/alpaca-stream/src/session_test_support.rs"
     },
     {
-      "adaptation": "Adds synthetic raw-frame exact-byte/hash linkage and terminal unknown-frame coverage alongside independent quote/trade ACK rejection.",
-      "adapted_target_sha256": "1cc45951119f29c91d0775d674122b233d883a7fab1b9284122578b48ff70f78",
+      "adaptation": "Adds synthetic raw-frame exact-byte/hash and receive-UTC linkage checks, plus terminal unknown-frame coverage alongside independent quote/trade ACK rejection.",
+      "adapted_target_sha256": "1c90407696edf17e95504408becc4292ce7e2848a9660cd239f4dcb0a03c4d1f",
       "source_blob_sha256": "c5546d94bb951120deceb6c33088df116f149593de92b22cd8a7aaa661c8961b",
       "source_path": "crates/alpaca-stream/src/session_tests.rs",
       "target_path": "crates/alpaca-stream/src/session_tests.rs"

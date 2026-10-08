@@ -18,7 +18,9 @@ market application frames; outbound authentication/subscription messages and
 authentication diagnostics are never captured. A frame is at most 1 MiB;
 outstanding frame leases are bounded to 16 MiB and 1,024 records process-wide.
 Normalized events refer to the canonical port generation, frame sequence, exact
-frame hash, and 1-based ordinal/count. A durable capture also carries one
+frame hash, and 1-based ordinal/count. Their UTC receive timestamp is copied
+from that same socket frame's raw capture; the separate monotonic ingest clock
+continues to record local processing order. A durable capture also carries one
 `RawFrameCaptureKey` with `(capture UUID, source-local generation, frame
 sequence, exact SHA-256)`. Canonical generation and source-local generation are
 separate lineages: the former sequences public port records, while the latter
