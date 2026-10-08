@@ -34,8 +34,8 @@ SDK 官方语言支持列表不包含 Rust，因此此处使用的是社区维�
 合并到 workspace 后运行：
 
 ```bash
-cargo test -p ibkr-read
-cargo clippy -p ibkr-read --all-targets -- -D warnings
+CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p ibkr-read --locked
+CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy -p ibkr-read --all-targets --locked -- -D warnings
 ```
 
 代码和 fake-wire 结果不证明真实 IBKR 端点、权限、provider 目录完整性或 Paper/Live 能力。真实 TWS/Gateway 连接、账户操作、订单操作和 provider 行情均未运行。

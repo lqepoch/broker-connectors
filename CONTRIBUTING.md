@@ -16,8 +16,8 @@ CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p broker-execution --features offline-fak
 python3 scripts/check_broker_execution_dependency_firewall.py
 CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p alpaca-rest-read --locked --offline
 CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy -p alpaca-rest-read --all-targets --locked --offline -- -D warnings
-CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p ibkr-read --locked --offline
-CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy -p ibkr-read --all-targets --locked --offline -- -D warnings
+CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p ibkr-read --locked
+CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy -p ibkr-read --all-targets --locked -- -D warnings
 CARGO_BUILD_JOBS=2 cargo +1.99.0 test --workspace --locked
 CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy --workspace --all-targets --locked -- -D warnings
 python3 scripts/generate_spdx_sbom.py

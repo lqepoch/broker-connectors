@@ -20,7 +20,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "5a921c402bb200843f2c6ed01ee4c3bac55060bb09a445b9184eb2de43913c8d",
+      "sha256": "def2d1b32de545b5b03cf88180f513bdfee66ea342b4224e1c923242fc7fc956",
       "target_path": "CONTRIBUTING.md"
     },
     {
@@ -45,7 +45,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "f444c8d0a9a8e6d927ef783a472d945c7aa5e36fafc3b48ee8e76261b61be9f8",
+      "sha256": "4fb63f9d0b21bb737f63c163cdf227bcaac544e42c946d876d6cadede75685b3",
       "target_path": "README.md"
     },
     {
@@ -165,7 +165,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "5fbeeb1541582c9941b72484675e5621f6c84ea5eef4b46d12fabf85d60e0579",
+      "sha256": "2a3e67a2263f282acb208a01d35a53aa5e83877fc58d07a1be7ec626448cc0b4",
       "target_path": "crates/ibkr-read/README.md"
     },
     {
