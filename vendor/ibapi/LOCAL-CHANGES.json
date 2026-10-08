@@ -1,0 +1,57 @@
+{
+  "edits": [
+    {
+      "source_line_numbers": [
+        259
+      ],
+      "source_path": "src/accounts/common/test_tables.rs",
+      "source_sha256": "4ef427799d5e92cf6f1b3c434c7271831a2dddfdfb977db4c2e11e10d23e184e",
+      "target_path": "vendor/ibapi/src/accounts/common/test_tables.rs",
+      "target_sha256": "a5e9c83e8d773c258ef9d0350aab43b9204d7364e008bb412ee8cd266c211b28"
+    },
+    {
+      "source_line_numbers": [
+        179
+      ],
+      "source_path": "src/client/async.rs",
+      "source_sha256": "2875fa05bc37c42b7aa59a1d34ab068688ad070257666b7cf19cdae23a0b59f9",
+      "target_path": "vendor/ibapi/src/client/async.rs",
+      "target_sha256": "b6b25d2d9dd580bd6b2c6c31fcb14d464ea650e4b5efa691595f57d7c5a8a5d1"
+    },
+    {
+      "source_line_numbers": [
+        140,
+        149
+      ],
+      "source_path": "src/orders/builder/async_impl.rs",
+      "source_sha256": "5e41e9c7eaadccb6070e4e7a20cc0a39f438afc8425d7ab6b303db742930328d",
+      "target_path": "vendor/ibapi/src/orders/builder/async_impl.rs",
+      "target_sha256": "b37741c0ad1bc2acd489d269b55ec684a97df23b0e49b01f69170ac42e59134b"
+    },
+    {
+      "source_line_numbers": [
+        139
+      ],
+      "source_path": "src/orders/builder/sync_impl.rs",
+      "source_sha256": "65faad74b3c24761d2cc27e319a34d33acd704e0ff66a54f6e083d4b7be6c5b8",
+      "target_path": "vendor/ibapi/src/orders/builder/sync_impl.rs",
+      "target_sha256": "33acd8c33968cff46f66b6ef69282da235679b7cbe3f5fc2e380d86ddc04244f"
+    },
+    {
+      "source_line_numbers": [
+        206,
+        246,
+        251,
+        400
+      ],
+      "source_path": "src/orders/mod.rs",
+      "source_sha256": "3c57a00b7099ed1c96e4ae29830459237522fdc29f62e8a3d5e469ce2e20605c",
+      "target_path": "vendor/ibapi/src/orders/mod.rs",
+      "target_sha256": "ad97c8adefb2b7d027b3f59b86af28e6c07387ee5618cf6a216adb9eaf65f767"
+    }
+  ],
+  "format_version": 1,
+  "operation": "remove trailing horizontal whitespace only",
+  "source_commit": "3e73f2f1cfac151c10e403a3e7d779272134445f",
+  "source_repository": "wboayue/rust-ibapi"
+}

@@ -24,8 +24,14 @@ def main() -> None:
         for entry in upstream.get("source_files", []):
             target = ROOT / entry["target_path"]
             entry["adapted_target_sha256"] = hashlib.sha256(target.read_bytes()).hexdigest()
-        patch = ROOT / upstream["local_patch_path"]
-        upstream["local_patch_sha256"] = hashlib.sha256(patch.read_bytes()).hexdigest()
+        if "local_patch_path" in upstream:
+            patch = ROOT / upstream["local_patch_path"]
+            upstream["local_patch_sha256"] = hashlib.sha256(patch.read_bytes()).hexdigest()
+        if "local_change_record_path" in upstream:
+            change_record = ROOT / upstream["local_change_record_path"]
+            upstream["local_change_record_sha256"] = hashlib.sha256(
+                change_record.read_bytes()
+            ).hexdigest()
     for entry in document.get("reviewed_dependency_licenses", []):
         target = ROOT / entry["target_license_path"]
         entry["target_license_sha256"] = hashlib.sha256(target.read_bytes()).hexdigest()

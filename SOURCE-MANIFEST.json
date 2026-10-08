@@ -15,22 +15,22 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "fae4bed0eeceb4c112dc08042534a86ecba87593601ba1684f61c81d26502e64",
+      "sha256": "23f05a43080fa381426cf5712e10cdfaa68e8cd9d40b69c8d72ef1c28ef91bcf",
       "target_path": "AGENTS.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "ca5d1487d8560649143f0954689818c0621125760107f432f42dee1bd5ad7612",
+      "sha256": "def2d1b32de545b5b03cf88180f513bdfee66ea342b4224e1c923242fc7fc956",
       "target_path": "CONTRIBUTING.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "1e7d780a40ad58fa8d1104612d0e656b593df12fd4b37f7c65669a12570997d1",
+      "sha256": "e3401d6e369a0156a0e58ab1bc7057a4b1484ec4bad99e7bf1a037d9d6016f5a",
       "target_path": "Cargo.lock"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "307dd13baab360897fedd927a0b9873092bc5d2a1c4c67c5bb9c8d1a4531a78c",
+      "sha256": "6b60efd4f2860441adec19fdd2118be38772ae79d5692bf7bbeb84c4eb297085",
       "target_path": "Cargo.toml"
     },
     {
@@ -40,17 +40,17 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "896b8d86465aa6111b58f935a1c67ab6d7f62f68cfe5b7ff3848dd404549a909",
+      "sha256": "1d1d7291e593d14cbf139793cc8da769c589b0d01fb16aca0a811443541857da",
       "target_path": "NOTICE"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "0a2d5743d4e29f24cb9a01767c68f7198e1f803dedf0fd5c03d18f844c5367f7",
+      "sha256": "f7ade647b5579b4ad13a031f92033ef7e919b2e7bc419a89c6d11e0048d8d937",
       "target_path": "README.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "ff2a8a3bc2816a8c0e83032df6f9671edfce76ee9f736e3d5623934e29759a77",
+      "sha256": "50c6527b0eea7922b1e3dfc693b62b98cd668fa8ab5dc4ef5f80f873405e4af6",
       "target_path": "SBOM.spdx.json"
     },
     {
@@ -160,6 +160,55 @@
     },
     {
       "origin": "new project-owned code",
+      "sha256": "4edc9d91fbfc37eea2b496a8e18621f55c6ef78665b352e83a18c8c3aabad60b",
+      "target_path": "crates/ibkr-read/Cargo.toml"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "f5879b4c849530406bb667dda8ea360596614dc729ef5965de1916f410316c6a",
+      "target_path": "crates/ibkr-read/README.md"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "2886a3fa715f4d8bb71d75980bfc07d1b1c5952ac91cbf0781b4df3a5d600d46",
+      "target_path": "crates/ibkr-read/src/adapter.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "a923da603b28767058d54589b9f37c907d3face9fbf7da66dea85be9ea333d8d",
+      "target_path": "crates/ibkr-read/src/entry.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "52ba1fb70790ebb529354e2e96708596dff87debe1a5fa739ff12bf807c2f084",
+      "target_path": "crates/ibkr-read/src/error.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "96918e50c0b3704eb7b28fe9987adfeefc7bd89e64909238bf0f9a6a3740cd9e",
+      "target_path": "crates/ibkr-read/src/lib.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "6b00939eab82b664e90182f4b48aed01d6b96d3159ee6916e52d81c547f17ebd",
+      "target_path": "crates/ibkr-read/src/query.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "f564e44079c4e6d3663695f18c72cb049a9f2884ac618dc44f121ad9562aeb8f",
+      "target_path": "crates/ibkr-read/tests/catalog_fake_wire.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "fc5e17d0b01c17b759cc6ca7317d4fe1ab276dbb840f232dc0d822d82b325912",
+      "target_path": "crates/ibkr-read/tests/support/fake_gateway.rs"
+    },
+    {
+      "sha256": "11200784f7cc951ba5d1ef777547a562e2dd6e6c42fb73ddf6def4ab9edccaa8",
+      "target_path": "deny.toml"
+    },
+    {
+      "origin": "new project-owned code",
       "sha256": "0825b0dd5ce327e08440351f42880e728f21cf5be410aac844fc4281096dd8ab",
       "target_path": "rust-toolchain.toml"
     },
@@ -170,17 +219,17 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "a9d0861897ba4fde52b94a867a22a194b87c44a51bf336c1a60f652bfe1c8c32",
+      "sha256": "2988afe9fb7a350e027444d3bd4ea369d039884727cd1d19ef146a9a940eeab2",
       "target_path": "scripts/check_vendor_provenance.py"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "93c2adb3e00cbcfd75421adf026baa90d838153e381c3689dc37689f42e7ccc9",
+      "sha256": "015897e65e15938898ca6e55f0618ad19992e7ec3185b254de232741ec87fbd9",
       "target_path": "scripts/generate_spdx_sbom.py"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "6fef99e1a957f8719db0b2c62f7173229302cb37200036a466441fd440833b53",
+      "sha256": "bb4e4c25f750e1be69851ffb8c6078770892afde99c3c2106064b400e7dc0106",
       "target_path": "scripts/update_source_manifest_hashes.py"
     },
     {
@@ -209,8 +258,19 @@
       "target_path": "vendor/alpaca-rust/crates/alpaca-http/tests/client_retry.rs"
     },
     {
-      "sha256": "11200784f7cc951ba5d1ef777547a562e2dd6e6c42fb73ddf6def4ab9edccaa8",
-      "target_path": "deny.toml"
+      "origin": "new project-owned code",
+      "sha256": "d3b50980cc29dd0e5e5524c0824b3b801e7be25cb21251575fa35037fd04b7de",
+      "target_path": "vendor/ibapi/Cargo.toml"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "5f61e9087d0dbd3413992770fe203d3f059e049b55f2b9d028eea6a3187af4d5",
+      "target_path": "vendor/ibapi/LOCAL-CHANGES.json"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "162437a1bad7c39528186919865e45c67eb75e0dc3957cfb913abc05f4fb91fa",
+      "target_path": "vendor/ibapi/UPSTREAM.md"
     }
   ],
   "reviewed_dependency_licenses": [
@@ -417,6 +477,2171 @@
   "source_repository": "lqepoch/schwab_auto_bot",
   "target_license": "MIT OR Apache-2.0 for the selected project-owned code; third-party dependencies retain their own licenses.",
   "vendored_upstreams": [
+    {
+      "adaptations": [
+        "Active Cargo manifest retains the async feature only and removes upstream development, examples, and packaging targets.",
+        "The read-only adapter keeps the SDK Client private and exposes only exact option contract-details catalog lookup.",
+        "Five trailing-whitespace-only source edits are bound to source/target hashes and 1-based lines in LOCAL-CHANGES.json; no SDK protocol behavior changed."
+      ],
+      "license": "MIT",
+      "license_files": [
+        {
+          "sha256": "a871ee487f4cc317c9312ed0ee91fb3718fe8bf8436259e5d8a9d54ce71a5bbf",
+          "source_path": "LICENSE",
+          "source_sha256": "a871ee487f4cc317c9312ed0ee91fb3718fe8bf8436259e5d8a9d54ce71a5bbf",
+          "target_path": "vendor/ibapi/LICENSE"
+        }
+      ],
+      "local_change_record_path": "vendor/ibapi/LOCAL-CHANGES.json",
+      "local_change_record_sha256": "5f61e9087d0dbd3413992770fe203d3f059e049b55f2b9d028eea6a3187af4d5",
+      "maintenance_status": "Unofficial community Rust TWS API client; the upstream project does not claim IBKR maintenance or support.",
+      "manifest_target": "vendor/ibapi/Cargo.toml",
+      "package_edition": "2021",
+      "package_layout": "single-package",
+      "package_msrv": "1.88",
+      "packages": [
+        {
+          "license": "MIT",
+          "name": "ibapi",
+          "source_path": ".",
+          "target_manifest": "vendor/ibapi/Cargo.toml",
+          "version": "5.0.0"
+        }
+      ],
+      "removed_source_files": [],
+      "source_archive_paths": [
+        "Cargo.toml",
+        "LICENSE",
+        "src/"
+      ],
+      "source_archive_sha256": "063f22b4b640fd2fddcddb100eaa02f39031e81c1ee09500769bfa5e44cf8647",
+      "source_commit": "3e73f2f1cfac151c10e403a3e7d779272134445f",
+      "source_files": [
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "ac3f0a964a09322726e99e353ceed9ef5696f3fa1aeed77c6f043b6b099ec5ff",
+          "source_file_sha256": "ac3f0a964a09322726e99e353ceed9ef5696f3fa1aeed77c6f043b6b099ec5ff",
+          "source_path": "Cargo.toml",
+          "target_path": "vendor/ibapi/Cargo.toml.upstream"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "a871ee487f4cc317c9312ed0ee91fb3718fe8bf8436259e5d8a9d54ce71a5bbf",
+          "source_file_sha256": "a871ee487f4cc317c9312ed0ee91fb3718fe8bf8436259e5d8a9d54ce71a5bbf",
+          "source_path": "LICENSE",
+          "target_path": "vendor/ibapi/LICENSE"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "63b2384c43af3b3607b779acd9ad9c40972ff76f248328f034cbec5c523c73a8",
+          "source_file_sha256": "63b2384c43af3b3607b779acd9ad9c40972ff76f248328f034cbec5c523c73a8",
+          "source_path": "src/accounts/async.rs",
+          "target_path": "vendor/ibapi/src/accounts/async.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "046dc820542e4d68ef6113a1f16886a538d0bafea3a83cdb80dcd4d3387e199d",
+          "source_file_sha256": "046dc820542e4d68ef6113a1f16886a538d0bafea3a83cdb80dcd4d3387e199d",
+          "source_path": "src/accounts/async_tests.rs",
+          "target_path": "vendor/ibapi/src/accounts/async_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "05263441c5f35cebf86a5a812949f3fe3737fbf39defc5b3e63314d730ac67f7",
+          "source_file_sha256": "05263441c5f35cebf86a5a812949f3fe3737fbf39defc5b3e63314d730ac67f7",
+          "source_path": "src/accounts/common/constants.rs",
+          "target_path": "vendor/ibapi/src/accounts/common/constants.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "93db4085bb2d900e4bd2c18d8eac258f9b67a5e6aaba7b55a012a6df5a7370ff",
+          "source_file_sha256": "93db4085bb2d900e4bd2c18d8eac258f9b67a5e6aaba7b55a012a6df5a7370ff",
+          "source_path": "src/accounts/common/decoders/mod.rs",
+          "target_path": "vendor/ibapi/src/accounts/common/decoders/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "a2395e4a9f78a0ee5fa574e161cd1a7b8112cf2f006d767892641d84015916bb",
+          "source_file_sha256": "a2395e4a9f78a0ee5fa574e161cd1a7b8112cf2f006d767892641d84015916bb",
+          "source_path": "src/accounts/common/decoders/tests.rs",
+          "target_path": "vendor/ibapi/src/accounts/common/decoders/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "941fc728bbb71da8b73fcd96f1c60ec050fca10c9cc82fee95cc250b62c85528",
+          "source_file_sha256": "941fc728bbb71da8b73fcd96f1c60ec050fca10c9cc82fee95cc250b62c85528",
+          "source_path": "src/accounts/common/encoders.rs",
+          "target_path": "vendor/ibapi/src/accounts/common/encoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e3171d7fd620397861e399de00cc3f7589bfa524af186a2e57e2dc45ffe8dde6",
+          "source_file_sha256": "e3171d7fd620397861e399de00cc3f7589bfa524af186a2e57e2dc45ffe8dde6",
+          "source_path": "src/accounts/common/encoders_tests.rs",
+          "target_path": "vendor/ibapi/src/accounts/common/encoders_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "a371f678dd8e6e8e345342fbe4ee9fdfd67d92e7d5ba8ed573e5ec24772c4029",
+          "source_file_sha256": "a371f678dd8e6e8e345342fbe4ee9fdfd67d92e7d5ba8ed573e5ec24772c4029",
+          "source_path": "src/accounts/common/mod.rs",
+          "target_path": "vendor/ibapi/src/accounts/common/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "fb3c2f3b841d1b7cf48de3ea6d8f1b5d7294bb18b77e1c15d6ef573c48998237",
+          "source_file_sha256": "fb3c2f3b841d1b7cf48de3ea6d8f1b5d7294bb18b77e1c15d6ef573c48998237",
+          "source_path": "src/accounts/common/stream_decoders/mod.rs",
+          "target_path": "vendor/ibapi/src/accounts/common/stream_decoders/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "fd621efe6dca89ab5d102a6f74a85cd80b8f7e29dd4620b763d99b68650e5f33",
+          "source_file_sha256": "fd621efe6dca89ab5d102a6f74a85cd80b8f7e29dd4620b763d99b68650e5f33",
+          "source_path": "src/accounts/common/stream_decoders/tests.rs",
+          "target_path": "vendor/ibapi/src/accounts/common/stream_decoders/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "1254168a8f08c8935180a8a3d45c5508f740b7c878d3d64be98b06a1235ac47a",
+          "source_file_sha256": "1254168a8f08c8935180a8a3d45c5508f740b7c878d3d64be98b06a1235ac47a",
+          "source_path": "src/accounts/common/test_data.rs",
+          "target_path": "vendor/ibapi/src/accounts/common/test_data.rs"
+        },
+        {
+          "adaptation": "Trailing-whitespace-only formatting adjustment; exact file hashes and 1-based lines are in vendor/ibapi/LOCAL-CHANGES.json.",
+          "adapted_target_sha256": "a5e9c83e8d773c258ef9d0350aab43b9204d7364e008bb412ee8cd266c211b28",
+          "source_file_sha256": "4ef427799d5e92cf6f1b3c434c7271831a2dddfdfb977db4c2e11e10d23e184e",
+          "source_path": "src/accounts/common/test_tables.rs",
+          "target_path": "vendor/ibapi/src/accounts/common/test_tables.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "67f58ba57f3974e2961885abe8d3253cb608283389204e37f7730b8f3299499f",
+          "source_file_sha256": "67f58ba57f3974e2961885abe8d3253cb608283389204e37f7730b8f3299499f",
+          "source_path": "src/accounts/mod.rs",
+          "target_path": "vendor/ibapi/src/accounts/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "becac01cdc99e6181f8bf8881449543c235c4baca1a20c142bacb89ad3e96832",
+          "source_file_sha256": "becac01cdc99e6181f8bf8881449543c235c4baca1a20c142bacb89ad3e96832",
+          "source_path": "src/accounts/sync.rs",
+          "target_path": "vendor/ibapi/src/accounts/sync.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "54510f6751092104f9f553e83e8ea7c28a183b281c56ad57ca9cbd43664cab00",
+          "source_file_sha256": "54510f6751092104f9f553e83e8ea7c28a183b281c56ad57ca9cbd43664cab00",
+          "source_path": "src/accounts/sync_tests.rs",
+          "target_path": "vendor/ibapi/src/accounts/sync_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "321905f0ebe46f4f2690f951abddde0832d1b46556839c4025b83eb3dbe90f46",
+          "source_file_sha256": "321905f0ebe46f4f2690f951abddde0832d1b46556839c4025b83eb3dbe90f46",
+          "source_path": "src/accounts/types.rs",
+          "target_path": "vendor/ibapi/src/accounts/types.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "85f1e8701d77ac09ebe07997525e2e0f99e7ea216584e3ac1b605dda301acdd0",
+          "source_file_sha256": "85f1e8701d77ac09ebe07997525e2e0f99e7ea216584e3ac1b605dda301acdd0",
+          "source_path": "src/accounts/types_tests.rs",
+          "target_path": "vendor/ibapi/src/accounts/types_tests.rs"
+        },
+        {
+          "adaptation": "Trailing-whitespace-only formatting adjustment; exact file hashes and 1-based lines are in vendor/ibapi/LOCAL-CHANGES.json.",
+          "adapted_target_sha256": "b6b25d2d9dd580bd6b2c6c31fcb14d464ea650e4b5efa691595f57d7c5a8a5d1",
+          "source_file_sha256": "2875fa05bc37c42b7aa59a1d34ab068688ad070257666b7cf19cdae23a0b59f9",
+          "source_path": "src/client/async.rs",
+          "target_path": "vendor/ibapi/src/client/async.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "8f3a92c1766205efa0379b08fb82e8e8e819e46bfe88c45f4da03851d53d7a30",
+          "source_file_sha256": "8f3a92c1766205efa0379b08fb82e8e8e819e46bfe88c45f4da03851d53d7a30",
+          "source_path": "src/client/async_tests.rs",
+          "target_path": "vendor/ibapi/src/client/async_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "a6a769311f8f00a8a814016798c6262043a80a75baee33e150a1e1acb72162a2",
+          "source_file_sha256": "a6a769311f8f00a8a814016798c6262043a80a75baee33e150a1e1acb72162a2",
+          "source_path": "src/client/builders/async.rs",
+          "target_path": "vendor/ibapi/src/client/builders/async.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "aeba5f223d7621b873bb6b5e1d4e23acc7d68e51f43d540b82283b6688b4af10",
+          "source_file_sha256": "aeba5f223d7621b873bb6b5e1d4e23acc7d68e51f43d540b82283b6688b4af10",
+          "source_path": "src/client/builders/async_tests.rs",
+          "target_path": "vendor/ibapi/src/client/builders/async_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "326cf9fa0753e2474059f1713b7b81ec79494e4c6f2ec6e1b422222d09f2f332",
+          "source_file_sha256": "326cf9fa0753e2474059f1713b7b81ec79494e4c6f2ec6e1b422222d09f2f332",
+          "source_path": "src/client/builders/client_builder.rs",
+          "target_path": "vendor/ibapi/src/client/builders/client_builder.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "c9f41d6be2ea75a075a4ebc0062a86c1c967b02bd873364008df3e8e8b4ec1c1",
+          "source_file_sha256": "c9f41d6be2ea75a075a4ebc0062a86c1c967b02bd873364008df3e8e8b4ec1c1",
+          "source_path": "src/client/builders/client_builder_tests.rs",
+          "target_path": "vendor/ibapi/src/client/builders/client_builder_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "06c4c03be2c4cee9b7356359327b688384a43b3e829068dd8be2ec5e3bedb973",
+          "source_file_sha256": "06c4c03be2c4cee9b7356359327b688384a43b3e829068dd8be2ec5e3bedb973",
+          "source_path": "src/client/builders/common.rs",
+          "target_path": "vendor/ibapi/src/client/builders/common.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "86423f725c1b9cdb088320ef10bc90329ea5610af431b4518bdb73490dbf8510",
+          "source_file_sha256": "86423f725c1b9cdb088320ef10bc90329ea5610af431b4518bdb73490dbf8510",
+          "source_path": "src/client/builders/mod.rs",
+          "target_path": "vendor/ibapi/src/client/builders/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "7a95d311c5195d53fac8873220fbbbda007d59042114fe328d18ce7b6ce74089",
+          "source_file_sha256": "7a95d311c5195d53fac8873220fbbbda007d59042114fe328d18ce7b6ce74089",
+          "source_path": "src/client/builders/sync.rs",
+          "target_path": "vendor/ibapi/src/client/builders/sync.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "363f1c8158e51ba103a42ea554a200079b92b58781ad59104e41d04432b1c0dc",
+          "source_file_sha256": "363f1c8158e51ba103a42ea554a200079b92b58781ad59104e41d04432b1c0dc",
+          "source_path": "src/client/builders/sync_tests.rs",
+          "target_path": "vendor/ibapi/src/client/builders/sync_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "bcf5f82fa1ca60933ff605959aa43180972d4d2e05714367fd03f4d8993381ed",
+          "source_file_sha256": "bcf5f82fa1ca60933ff605959aa43180972d4d2e05714367fd03f4d8993381ed",
+          "source_path": "src/client/id_generator.rs",
+          "target_path": "vendor/ibapi/src/client/id_generator.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "4df71f836a7560c9011a96d3d82f723071394541401c1d3d621958a34ba9fec7",
+          "source_file_sha256": "4df71f836a7560c9011a96d3d82f723071394541401c1d3d621958a34ba9fec7",
+          "source_path": "src/client/id_generator_tests.rs",
+          "target_path": "vendor/ibapi/src/client/id_generator_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "03209df06de3f10f55aa002c14f552a9766b3e5b0e2de4c794f6c8d0e3c4f7fa",
+          "source_file_sha256": "03209df06de3f10f55aa002c14f552a9766b3e5b0e2de4c794f6c8d0e3c4f7fa",
+          "source_path": "src/client/ids.rs",
+          "target_path": "vendor/ibapi/src/client/ids.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "729d14dca72147f9540100a7542e552bdb1cce3fb942ebd0da13b0b0a9c76435",
+          "source_file_sha256": "729d14dca72147f9540100a7542e552bdb1cce3fb942ebd0da13b0b0a9c76435",
+          "source_path": "src/client/ids_tests.rs",
+          "target_path": "vendor/ibapi/src/client/ids_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "df011baaf9516054d867c5c7d1761b8b1d25ed3de72b822ce2883170d089301b",
+          "source_file_sha256": "df011baaf9516054d867c5c7d1761b8b1d25ed3de72b822ce2883170d089301b",
+          "source_path": "src/client/mod.rs",
+          "target_path": "vendor/ibapi/src/client/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "45fd8cf568fc1fab17b01d4d50b0610be316da278c289e75f0c249142ce4bbbe",
+          "source_file_sha256": "45fd8cf568fc1fab17b01d4d50b0610be316da278c289e75f0c249142ce4bbbe",
+          "source_path": "src/client/sync.rs",
+          "target_path": "vendor/ibapi/src/client/sync.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "8a44262dea9dc5bc07991ac4a930273336d62a6c648b42f04b3083fdbf40900a",
+          "source_file_sha256": "8a44262dea9dc5bc07991ac4a930273336d62a6c648b42f04b3083fdbf40900a",
+          "source_path": "src/client/sync_tests.rs",
+          "target_path": "vendor/ibapi/src/client/sync_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "28da3a956d13cfeb12b0eaab69057bd6cbd129a04d3232e4e70968d30ac08fa9",
+          "source_file_sha256": "28da3a956d13cfeb12b0eaab69057bd6cbd129a04d3232e4e70968d30ac08fa9",
+          "source_path": "src/common/error_helpers.rs",
+          "target_path": "vendor/ibapi/src/common/error_helpers.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "b2339a7ec92708c5bd43b45ac6cc2aba49f4a0df61a0863ae40b58d34e1309dd",
+          "source_file_sha256": "b2339a7ec92708c5bd43b45ac6cc2aba49f4a0df61a0863ae40b58d34e1309dd",
+          "source_path": "src/common/error_helpers_tests.rs",
+          "target_path": "vendor/ibapi/src/common/error_helpers_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "0ba152399df2168a142d9752b2bf2bb5ee08d0a0a5b5b3abe26774963f01b0f7",
+          "source_file_sha256": "0ba152399df2168a142d9752b2bf2bb5ee08d0a0a5b5b3abe26774963f01b0f7",
+          "source_path": "src/common/mod.rs",
+          "target_path": "vendor/ibapi/src/common/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "098b815b6fcfdfa0f4d9a25ed5ee3432d4087ec32d74964f3936941ebe13563a",
+          "source_file_sha256": "098b815b6fcfdfa0f4d9a25ed5ee3432d4087ec32d74964f3936941ebe13563a",
+          "source_path": "src/common/request_helpers.rs",
+          "target_path": "vendor/ibapi/src/common/request_helpers.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "3a0dd49d6129d1ae8a9e8cc09b8daa2fa8047b948deced28d80da52fcb886a12",
+          "source_file_sha256": "3a0dd49d6129d1ae8a9e8cc09b8daa2fa8047b948deced28d80da52fcb886a12",
+          "source_path": "src/common/request_helpers_tests.rs",
+          "target_path": "vendor/ibapi/src/common/request_helpers_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "f1bfd679a2dccf5dc31b110f72a1ffdeca28b59134031e2d8b80dddfe783b577",
+          "source_file_sha256": "f1bfd679a2dccf5dc31b110f72a1ffdeca28b59134031e2d8b80dddfe783b577",
+          "source_path": "src/common/retry.rs",
+          "target_path": "vendor/ibapi/src/common/retry.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "95025ada90ee717f4448b8f5af1ec217ec2aafc77134da5788bab3f04843c118",
+          "source_file_sha256": "95025ada90ee717f4448b8f5af1ec217ec2aafc77134da5788bab3f04843c118",
+          "source_path": "src/common/retry_tests.rs",
+          "target_path": "vendor/ibapi/src/common/retry_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "ee0b26ac992f353b33a9a3018b8aee63ecc49cee296a72c8dd0a1e80cc04e85a",
+          "source_file_sha256": "ee0b26ac992f353b33a9a3018b8aee63ecc49cee296a72c8dd0a1e80cc04e85a",
+          "source_path": "src/common/test_utils.rs",
+          "target_path": "vendor/ibapi/src/common/test_utils.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "c4d351ffa711eaa9effa4ea21f441f68bcb340e1dc3e437b4e0cbc5198517dd6",
+          "source_file_sha256": "c4d351ffa711eaa9effa4ea21f441f68bcb340e1dc3e437b4e0cbc5198517dd6",
+          "source_path": "src/common/test_utils_tests.rs",
+          "target_path": "vendor/ibapi/src/common/test_utils_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e1cc2b98cf6b8e7b51cb896a9020841c19a5ba5775f563d9da984088c6805674",
+          "source_file_sha256": "e1cc2b98cf6b8e7b51cb896a9020841c19a5ba5775f563d9da984088c6805674",
+          "source_path": "src/common/timezone/mod.rs",
+          "target_path": "vendor/ibapi/src/common/timezone/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "c7e3d641610bfb142e2b836be421294689758f370f21d0cefb2375cfe937b735",
+          "source_file_sha256": "c7e3d641610bfb142e2b836be421294689758f370f21d0cefb2375cfe937b735",
+          "source_path": "src/common/timezone/tests.rs",
+          "target_path": "vendor/ibapi/src/common/timezone/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "eeeb2c2cdbdc46beaa5d5583bb782d745eb60fcad535c7ba233e0e6c784867b6",
+          "source_file_sha256": "eeeb2c2cdbdc46beaa5d5583bb782d745eb60fcad535c7ba233e0e6c784867b6",
+          "source_path": "src/config/async.rs",
+          "target_path": "vendor/ibapi/src/config/async.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "cb7eb3627ecb87fada58427ce04f049a628eb68564a9ca6391b12dfb2b650afc",
+          "source_file_sha256": "cb7eb3627ecb87fada58427ce04f049a628eb68564a9ca6391b12dfb2b650afc",
+          "source_path": "src/config/async_tests.rs",
+          "target_path": "vendor/ibapi/src/config/async_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "4d843ff1f73145df2062675b5f1fe9643a0b6b65ff25c0b659f420f6ffe91008",
+          "source_file_sha256": "4d843ff1f73145df2062675b5f1fe9643a0b6b65ff25c0b659f420f6ffe91008",
+          "source_path": "src/config/builder/async_impl.rs",
+          "target_path": "vendor/ibapi/src/config/builder/async_impl.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e34ae63d659d8344a31534ed70f5c9bcf46be7f3bfe0e428644b6ecfd7830a23",
+          "source_file_sha256": "e34ae63d659d8344a31534ed70f5c9bcf46be7f3bfe0e428644b6ecfd7830a23",
+          "source_path": "src/config/builder/async_impl_tests.rs",
+          "target_path": "vendor/ibapi/src/config/builder/async_impl_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "7149099dcc01b6ca0bfd4b20c8438af949853de4ceda6306babe61d73563fe18",
+          "source_file_sha256": "7149099dcc01b6ca0bfd4b20c8438af949853de4ceda6306babe61d73563fe18",
+          "source_path": "src/config/builder/mod.rs",
+          "target_path": "vendor/ibapi/src/config/builder/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "7fc507b50ce98e69afef006375de8f3f4b1ad83c4eb14934402052ceab8430d1",
+          "source_file_sha256": "7fc507b50ce98e69afef006375de8f3f4b1ad83c4eb14934402052ceab8430d1",
+          "source_path": "src/config/builder/sync_impl.rs",
+          "target_path": "vendor/ibapi/src/config/builder/sync_impl.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "d6d9da85a3cab8ec872e663697e6107a86fd78c7f0542f2fe925ac6d3e267c5e",
+          "source_file_sha256": "d6d9da85a3cab8ec872e663697e6107a86fd78c7f0542f2fe925ac6d3e267c5e",
+          "source_path": "src/config/builder/sync_impl_tests.rs",
+          "target_path": "vendor/ibapi/src/config/builder/sync_impl_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "7b09057115323ea8818c6eff0c8dffa6586da8ad4f930dbe07b22455a450ab89",
+          "source_file_sha256": "7b09057115323ea8818c6eff0c8dffa6586da8ad4f930dbe07b22455a450ab89",
+          "source_path": "src/config/builder/update_config_builder.rs",
+          "target_path": "vendor/ibapi/src/config/builder/update_config_builder.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "04701f8ff29c44e05d7decf0e29e4a014d532a254423a981f8b33df31a7fb9e2",
+          "source_file_sha256": "04701f8ff29c44e05d7decf0e29e4a014d532a254423a981f8b33df31a7fb9e2",
+          "source_path": "src/config/common/decoders.rs",
+          "target_path": "vendor/ibapi/src/config/common/decoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "935b3e4ad043ce75c1cc2ae36d7f7059f58adb6fa2caefa1e75d0cdd861ae0a1",
+          "source_file_sha256": "935b3e4ad043ce75c1cc2ae36d7f7059f58adb6fa2caefa1e75d0cdd861ae0a1",
+          "source_path": "src/config/common/decoders_tests.rs",
+          "target_path": "vendor/ibapi/src/config/common/decoders_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "55b05048bc30259087b34b20a53256e4da8aa7c95cee4fc79351cf927f38e2fd",
+          "source_file_sha256": "55b05048bc30259087b34b20a53256e4da8aa7c95cee4fc79351cf927f38e2fd",
+          "source_path": "src/config/common/encoders.rs",
+          "target_path": "vendor/ibapi/src/config/common/encoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "34f4d966cf28757e2d5a875c8db9cdd4e52965220f1272c86e89952104672806",
+          "source_file_sha256": "34f4d966cf28757e2d5a875c8db9cdd4e52965220f1272c86e89952104672806",
+          "source_path": "src/config/common/encoders_tests.rs",
+          "target_path": "vendor/ibapi/src/config/common/encoders_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "69e1e1ad38b65819bef0098158cb9859f9f62faba2b1a6be39d8bdf87c240423",
+          "source_file_sha256": "69e1e1ad38b65819bef0098158cb9859f9f62faba2b1a6be39d8bdf87c240423",
+          "source_path": "src/config/common/mod.rs",
+          "target_path": "vendor/ibapi/src/config/common/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "3375988ebd3133727aeef1da2e69fa4e0e84345bfceb2e333fe4bfa280f4c38e",
+          "source_file_sha256": "3375988ebd3133727aeef1da2e69fa4e0e84345bfceb2e333fe4bfa280f4c38e",
+          "source_path": "src/config/mod.rs",
+          "target_path": "vendor/ibapi/src/config/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "d6679f3e96b5c887546de3435142834d985bd4c8638b4daa6b48eadddf31d5af",
+          "source_file_sha256": "d6679f3e96b5c887546de3435142834d985bd4c8638b4daa6b48eadddf31d5af",
+          "source_path": "src/config/sync.rs",
+          "target_path": "vendor/ibapi/src/config/sync.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "a666cdbc2b52f361a0f04e56498ab223254bdf8f9d4f3c8147153a0ea7edbdec",
+          "source_file_sha256": "a666cdbc2b52f361a0f04e56498ab223254bdf8f9d4f3c8147153a0ea7edbdec",
+          "source_path": "src/config/sync_tests.rs",
+          "target_path": "vendor/ibapi/src/config/sync_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "62215071182c1a3dae53f472a32d5807ca0a41e8bf891bb7fa5e1fb3e6ef33a7",
+          "source_file_sha256": "62215071182c1a3dae53f472a32d5807ca0a41e8bf891bb7fa5e1fb3e6ef33a7",
+          "source_path": "src/connection.rs",
+          "target_path": "vendor/ibapi/src/connection.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "497840abec8e9b5a85a3521bf0e863df6931e2efe3b2d2d350c1aa3660d36aad",
+          "source_file_sha256": "497840abec8e9b5a85a3521bf0e863df6931e2efe3b2d2d350c1aa3660d36aad",
+          "source_path": "src/connection/async.rs",
+          "target_path": "vendor/ibapi/src/connection/async.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "8c6c9c0d03f848c9516242d03348386cc6aa13a39a7c65fb78d7c71c17ffb786",
+          "source_file_sha256": "8c6c9c0d03f848c9516242d03348386cc6aa13a39a7c65fb78d7c71c17ffb786",
+          "source_path": "src/connection/async_tests.rs",
+          "target_path": "vendor/ibapi/src/connection/async_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "3835ecf3415191bce54141e5c55edd4c2e9752aa6a156b7e7aede7e8117ca957",
+          "source_file_sha256": "3835ecf3415191bce54141e5c55edd4c2e9752aa6a156b7e7aede7e8117ca957",
+          "source_path": "src/connection/common.rs",
+          "target_path": "vendor/ibapi/src/connection/common.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "daf4230b6ffe9cf4b07da4cbbfd9fc8fe3f829d1011191eaaf434d58a33b9da0",
+          "source_file_sha256": "daf4230b6ffe9cf4b07da4cbbfd9fc8fe3f829d1011191eaaf434d58a33b9da0",
+          "source_path": "src/connection/common_tests.rs",
+          "target_path": "vendor/ibapi/src/connection/common_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "2200bf7c2bfea88a6d2d5819fd8789c912562832917f6d2aa986025fbf2c30fa",
+          "source_file_sha256": "2200bf7c2bfea88a6d2d5819fd8789c912562832917f6d2aa986025fbf2c30fa",
+          "source_path": "src/connection/sync.rs",
+          "target_path": "vendor/ibapi/src/connection/sync.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "df18c51031872da44cde261657e2f12e5e1dc8923e518a093655a9a412741cf8",
+          "source_file_sha256": "df18c51031872da44cde261657e2f12e5e1dc8923e518a093655a9a412741cf8",
+          "source_path": "src/connection/sync_tests.rs",
+          "target_path": "vendor/ibapi/src/connection/sync_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "051c07d0387dacd834069449f2a036a63887a7a12c47a0868962225a48013741",
+          "source_file_sha256": "051c07d0387dacd834069449f2a036a63887a7a12c47a0868962225a48013741",
+          "source_path": "src/contracts/async.rs",
+          "target_path": "vendor/ibapi/src/contracts/async.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "6385591bebb8a4e3111c50ca359cabe43303828965cfbb11dd27e56dd6bf7448",
+          "source_file_sha256": "6385591bebb8a4e3111c50ca359cabe43303828965cfbb11dd27e56dd6bf7448",
+          "source_path": "src/contracts/async_tests.rs",
+          "target_path": "vendor/ibapi/src/contracts/async_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "945757f5df508edf5e1364cb7439e44205e29218727cc395e6a997a7064156c6",
+          "source_file_sha256": "945757f5df508edf5e1364cb7439e44205e29218727cc395e6a997a7064156c6",
+          "source_path": "src/contracts/builders.rs",
+          "target_path": "vendor/ibapi/src/contracts/builders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "56c52029e74618793a55fd085a3713210c34971f33c85571abce21b8ce6bc5c3",
+          "source_file_sha256": "56c52029e74618793a55fd085a3713210c34971f33c85571abce21b8ce6bc5c3",
+          "source_path": "src/contracts/builders/tests.rs",
+          "target_path": "vendor/ibapi/src/contracts/builders/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "3bdc425412f9271442ddbb2f3250044995c412e7c26ebdb88c69b628e5a30a06",
+          "source_file_sha256": "3bdc425412f9271442ddbb2f3250044995c412e7c26ebdb88c69b628e5a30a06",
+          "source_path": "src/contracts/common/contract_builder/mod.rs",
+          "target_path": "vendor/ibapi/src/contracts/common/contract_builder/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "b406861f41ab606fe3b4fc2c9906a89ae628522d312f137ca3709d5b093af7cd",
+          "source_file_sha256": "b406861f41ab606fe3b4fc2c9906a89ae628522d312f137ca3709d5b093af7cd",
+          "source_path": "src/contracts/common/contract_builder/tests.rs",
+          "target_path": "vendor/ibapi/src/contracts/common/contract_builder/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "9c93a7543c8f74f1a11ccd070ab2f756a82fb94dabfb3a573f5460baf8e0ac55",
+          "source_file_sha256": "9c93a7543c8f74f1a11ccd070ab2f756a82fb94dabfb3a573f5460baf8e0ac55",
+          "source_path": "src/contracts/common/decoders/mod.rs",
+          "target_path": "vendor/ibapi/src/contracts/common/decoders/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "97ae698501f3447d0c919574a67490e76ba05dbeaa995731f71f93821c752c40",
+          "source_file_sha256": "97ae698501f3447d0c919574a67490e76ba05dbeaa995731f71f93821c752c40",
+          "source_path": "src/contracts/common/decoders/tests.rs",
+          "target_path": "vendor/ibapi/src/contracts/common/decoders/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "252a3871c3c4802959b3fdcba9a04b98146773a69c853bf5be56456cdf4c998d",
+          "source_file_sha256": "252a3871c3c4802959b3fdcba9a04b98146773a69c853bf5be56456cdf4c998d",
+          "source_path": "src/contracts/common/encoders.rs",
+          "target_path": "vendor/ibapi/src/contracts/common/encoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "33ea9fd1b5fc6dd7ba571ca735a17e8cd2dbe0b34e1ccebefcdbaf64246a93b3",
+          "source_file_sha256": "33ea9fd1b5fc6dd7ba571ca735a17e8cd2dbe0b34e1ccebefcdbaf64246a93b3",
+          "source_path": "src/contracts/common/mod.rs",
+          "target_path": "vendor/ibapi/src/contracts/common/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "17408b1c59ba28946ead3f283fcf966a00690e5407f0b463ae0609176bcc3519",
+          "source_file_sha256": "17408b1c59ba28946ead3f283fcf966a00690e5407f0b463ae0609176bcc3519",
+          "source_path": "src/contracts/common/stream_decoders.rs",
+          "target_path": "vendor/ibapi/src/contracts/common/stream_decoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "9a967a801ede50236f0009f8145e458ffa66f5fc091396e8159a35a50f3948f9",
+          "source_file_sha256": "9a967a801ede50236f0009f8145e458ffa66f5fc091396e8159a35a50f3948f9",
+          "source_path": "src/contracts/common/test_tables.rs",
+          "target_path": "vendor/ibapi/src/contracts/common/test_tables.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "4f1ee8e6ed5e2e2fb4801220ac82a854bdd8f60cbb815080b1ef5914fb887f95",
+          "source_file_sha256": "4f1ee8e6ed5e2e2fb4801220ac82a854bdd8f60cbb815080b1ef5914fb887f95",
+          "source_path": "src/contracts/common/verify.rs",
+          "target_path": "vendor/ibapi/src/contracts/common/verify.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "0da0ab5ba0b3d6e979682e01f866b36e0d75412311a64ffd1c165f0fcb4ce6f8",
+          "source_file_sha256": "0da0ab5ba0b3d6e979682e01f866b36e0d75412311a64ffd1c165f0fcb4ce6f8",
+          "source_path": "src/contracts/contract_details_builder.rs",
+          "target_path": "vendor/ibapi/src/contracts/contract_details_builder.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "240583cf07e5e3ea489c1ff3c4e2adf2fc22ea1c6a417194f3ed4257bb0e33c2",
+          "source_file_sha256": "240583cf07e5e3ea489c1ff3c4e2adf2fc22ea1c6a417194f3ed4257bb0e33c2",
+          "source_path": "src/contracts/mod.rs",
+          "target_path": "vendor/ibapi/src/contracts/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "8605cd88064d39bcabd5352ec85dbf32453dc0ae1e932580dc50935aaaff4a66",
+          "source_file_sha256": "8605cd88064d39bcabd5352ec85dbf32453dc0ae1e932580dc50935aaaff4a66",
+          "source_path": "src/contracts/mod_tests.rs",
+          "target_path": "vendor/ibapi/src/contracts/mod_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "0530d40747087fd13a28afbb78a719b861b3530ee06bc2a247802ca2b9f3994a",
+          "source_file_sha256": "0530d40747087fd13a28afbb78a719b861b3530ee06bc2a247802ca2b9f3994a",
+          "source_path": "src/contracts/option_chain_builder.rs",
+          "target_path": "vendor/ibapi/src/contracts/option_chain_builder.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "f8ef902e8df2d502f5a8017af1d3176dc2d3ef57c5068ef904123e508f6943d7",
+          "source_file_sha256": "f8ef902e8df2d502f5a8017af1d3176dc2d3ef57c5068ef904123e508f6943d7",
+          "source_path": "src/contracts/sync.rs",
+          "target_path": "vendor/ibapi/src/contracts/sync.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "f040646245fb3d3cae4119ab27802ff402bc1e1cb2ac5a356ef2167b82e6abcd",
+          "source_file_sha256": "f040646245fb3d3cae4119ab27802ff402bc1e1cb2ac5a356ef2167b82e6abcd",
+          "source_path": "src/contracts/sync_tests.rs",
+          "target_path": "vendor/ibapi/src/contracts/sync_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "9362dd3a1f66f6a4ece71d567ea8bc9f8a1dd56fec904c09a89c341eb2fef681",
+          "source_file_sha256": "9362dd3a1f66f6a4ece71d567ea8bc9f8a1dd56fec904c09a89c341eb2fef681",
+          "source_path": "src/contracts/tick_types/mod.rs",
+          "target_path": "vendor/ibapi/src/contracts/tick_types/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "cb6594dc68f169f3049a181419feea22074b3059eb1831619d3b4a4a451331b8",
+          "source_file_sha256": "cb6594dc68f169f3049a181419feea22074b3059eb1831619d3b4a4a451331b8",
+          "source_path": "src/contracts/tick_types/tests.rs",
+          "target_path": "vendor/ibapi/src/contracts/tick_types/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "4c12709b62d564fd50273529cbe715aa979c4df90c6e895d98d68cebc5c774a4",
+          "source_file_sha256": "4c12709b62d564fd50273529cbe715aa979c4df90c6e895d98d68cebc5c774a4",
+          "source_path": "src/contracts/types.rs",
+          "target_path": "vendor/ibapi/src/contracts/types.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "1b63bd1b6d11d3ea1b35e967fa1230bee4265433485f903c484548c82f241370",
+          "source_file_sha256": "1b63bd1b6d11d3ea1b35e967fa1230bee4265433485f903c484548c82f241370",
+          "source_path": "src/contracts/types_tests.rs",
+          "target_path": "vendor/ibapi/src/contracts/types_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "0bd478f92a547052c713421a1499dccd0e98788eb3c4f75a6c4f70c6c843be4d",
+          "source_file_sha256": "0bd478f92a547052c713421a1499dccd0e98788eb3c4f75a6c4f70c6c843be4d",
+          "source_path": "src/display_groups/async.rs",
+          "target_path": "vendor/ibapi/src/display_groups/async.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "4e76f20cb9e51554f0b7cdfd0cf2adfe0c9c8db0360774f55c25b3aea97fb230",
+          "source_file_sha256": "4e76f20cb9e51554f0b7cdfd0cf2adfe0c9c8db0360774f55c25b3aea97fb230",
+          "source_path": "src/display_groups/async_tests.rs",
+          "target_path": "vendor/ibapi/src/display_groups/async_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "90e5e9a493176ed43dd6d60a38440bd6e3c4c8ff5f489b11dc7fdbc396e43cb4",
+          "source_file_sha256": "90e5e9a493176ed43dd6d60a38440bd6e3c4c8ff5f489b11dc7fdbc396e43cb4",
+          "source_path": "src/display_groups/common/decoders.rs",
+          "target_path": "vendor/ibapi/src/display_groups/common/decoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "1d6f204a96350fea9be109a48b701a84e84af43b76c44b87e38cbd8e55512f3b",
+          "source_file_sha256": "1d6f204a96350fea9be109a48b701a84e84af43b76c44b87e38cbd8e55512f3b",
+          "source_path": "src/display_groups/common/decoders_tests.rs",
+          "target_path": "vendor/ibapi/src/display_groups/common/decoders_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "21b442eb2ec3fdfeb107900a6d2e0ca97eb7cb5e264634e82e0d1a4c537c421e",
+          "source_file_sha256": "21b442eb2ec3fdfeb107900a6d2e0ca97eb7cb5e264634e82e0d1a4c537c421e",
+          "source_path": "src/display_groups/common/encoders.rs",
+          "target_path": "vendor/ibapi/src/display_groups/common/encoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "a62db36ac5665c585e90b2ff49762e55f296af43a841047b8cb173f41ea34c22",
+          "source_file_sha256": "a62db36ac5665c585e90b2ff49762e55f296af43a841047b8cb173f41ea34c22",
+          "source_path": "src/display_groups/common/encoders_tests.rs",
+          "target_path": "vendor/ibapi/src/display_groups/common/encoders_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "789dbe01bee8a41ff3eeee4f3f210b2722c22d4e8dd7a319fb257c2eae44fcf1",
+          "source_file_sha256": "789dbe01bee8a41ff3eeee4f3f210b2722c22d4e8dd7a319fb257c2eae44fcf1",
+          "source_path": "src/display_groups/common/mod.rs",
+          "target_path": "vendor/ibapi/src/display_groups/common/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "d822d86111d6e5c6874d7e4036d5896eec8c45efad8343dc408621c00c0a02e7",
+          "source_file_sha256": "d822d86111d6e5c6874d7e4036d5896eec8c45efad8343dc408621c00c0a02e7",
+          "source_path": "src/display_groups/common/stream_decoders.rs",
+          "target_path": "vendor/ibapi/src/display_groups/common/stream_decoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "00a0a157cf85b7d79321d5a1188a56538c4f8c44093f6534697e75f923f3de2f",
+          "source_file_sha256": "00a0a157cf85b7d79321d5a1188a56538c4f8c44093f6534697e75f923f3de2f",
+          "source_path": "src/display_groups/common/stream_decoders_tests.rs",
+          "target_path": "vendor/ibapi/src/display_groups/common/stream_decoders_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "33cf3ee876a6ed541a20298b353435306384f83f072fb6ca4e535800608e7082",
+          "source_file_sha256": "33cf3ee876a6ed541a20298b353435306384f83f072fb6ca4e535800608e7082",
+          "source_path": "src/display_groups/mod.rs",
+          "target_path": "vendor/ibapi/src/display_groups/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e5440c2d4e57f983a48a48917f7841c8dfbbb4feb110492ce063c3f9927c7332",
+          "source_file_sha256": "e5440c2d4e57f983a48a48917f7841c8dfbbb4feb110492ce063c3f9927c7332",
+          "source_path": "src/display_groups/sync.rs",
+          "target_path": "vendor/ibapi/src/display_groups/sync.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "55b9c656e82dc6740a14bc33f15ea61453f50eca4aed146bf45efb4fe12b35b9",
+          "source_file_sha256": "55b9c656e82dc6740a14bc33f15ea61453f50eca4aed146bf45efb4fe12b35b9",
+          "source_path": "src/display_groups/sync_tests.rs",
+          "target_path": "vendor/ibapi/src/display_groups/sync_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "72bed385dcbd5941fa3b4f9be1eaae1a64dcf5911411110f4898f6fc54ce61b1",
+          "source_file_sha256": "72bed385dcbd5941fa3b4f9be1eaae1a64dcf5911411110f4898f6fc54ce61b1",
+          "source_path": "src/errors.rs",
+          "target_path": "vendor/ibapi/src/errors.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "9e4746a884d36939989abd3ec98de933c881b7fb5d0528c4c554ae3f2aab8c10",
+          "source_file_sha256": "9e4746a884d36939989abd3ec98de933c881b7fb5d0528c4c554ae3f2aab8c10",
+          "source_path": "src/errors_tests.rs",
+          "target_path": "vendor/ibapi/src/errors_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "17ed533b342ab34e191fbb7c0a89f81fc3215a5abd548e2d6528a0f2c1c03155",
+          "source_file_sha256": "17ed533b342ab34e191fbb7c0a89f81fc3215a5abd548e2d6528a0f2c1c03155",
+          "source_path": "src/lib.rs",
+          "target_path": "vendor/ibapi/src/lib.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "559122b35204318cb0d9d8bb152ae01bf78ae8131f54eba06c67dda83826fa57",
+          "source_file_sha256": "559122b35204318cb0d9d8bb152ae01bf78ae8131f54eba06c67dda83826fa57",
+          "source_path": "src/lib_tests.rs",
+          "target_path": "vendor/ibapi/src/lib_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "083bc2dc7f86fbdeddfb7e1c0d2dc167bc3ed31d9e653052f5b316b41cb5cef8",
+          "source_file_sha256": "083bc2dc7f86fbdeddfb7e1c0d2dc167bc3ed31d9e653052f5b316b41cb5cef8",
+          "source_path": "src/macros.rs",
+          "target_path": "vendor/ibapi/src/macros.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "f2f6af1cc392a3e0a28ca7eb27aca963cfaa7b462a17b671e087b988dc6cec52",
+          "source_file_sha256": "f2f6af1cc392a3e0a28ca7eb27aca963cfaa7b462a17b671e087b988dc6cec52",
+          "source_path": "src/market_data/historical/async.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/async.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "c49854dff6b0e37a6894caf602109e843c788497dcb304bf387514e3c5e3575b",
+          "source_file_sha256": "c49854dff6b0e37a6894caf602109e843c788497dcb304bf387514e3c5e3575b",
+          "source_path": "src/market_data/historical/async_tests.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/async_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "cebba09396068c37d207c65db9a54a17f4025d8a6fd02591cf99707ee967f0c4",
+          "source_file_sha256": "cebba09396068c37d207c65db9a54a17f4025d8a6fd02591cf99707ee967f0c4",
+          "source_path": "src/market_data/historical/builder/data.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/builder/data.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "091c8f3e800bd66d7fabbe2ac3320502621815f5fc28a3e132fc0bbd1dea2e3a",
+          "source_file_sha256": "091c8f3e800bd66d7fabbe2ac3320502621815f5fc28a3e132fc0bbd1dea2e3a",
+          "source_path": "src/market_data/historical/builder/data_tests.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/builder/data_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "0657497837c4e71ef07d9cb3245a0635abdf5978e661ea9a8da6860e04761458",
+          "source_file_sha256": "0657497837c4e71ef07d9cb3245a0635abdf5978e661ea9a8da6860e04761458",
+          "source_path": "src/market_data/historical/builder/mod.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/builder/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "a30895933e0b7a8de07469a473ba35a7867f23a8c2c569f681902f643fb598ac",
+          "source_file_sha256": "a30895933e0b7a8de07469a473ba35a7867f23a8c2c569f681902f643fb598ac",
+          "source_path": "src/market_data/historical/builder/schedule.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/builder/schedule.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "468d3f5f8c74252d282182563b887aae3ccde8042f8320684eba955e22f7e869",
+          "source_file_sha256": "468d3f5f8c74252d282182563b887aae3ccde8042f8320684eba955e22f7e869",
+          "source_path": "src/market_data/historical/builder/schedule_tests.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/builder/schedule_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "ed85afaa9e2c46f46af733b7ce49457a45660a33013f11008672f2366f0b726c",
+          "source_file_sha256": "ed85afaa9e2c46f46af733b7ce49457a45660a33013f11008672f2366f0b726c",
+          "source_path": "src/market_data/historical/builder/ticks.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/builder/ticks.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "14a34f9009095f5af49f1c64427a7c11a6943835969a26af124c0be9410d1d1b",
+          "source_file_sha256": "14a34f9009095f5af49f1c64427a7c11a6943835969a26af124c0be9410d1d1b",
+          "source_path": "src/market_data/historical/builder/ticks_tests.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/builder/ticks_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "79720df0f326002e83fc8718aa41e565230b75ac370dba8310ff78d17e203a71",
+          "source_file_sha256": "79720df0f326002e83fc8718aa41e565230b75ac370dba8310ff78d17e203a71",
+          "source_path": "src/market_data/historical/common/decoders/mod.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/common/decoders/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "d4184b1e2a6861da5e2fac146507325642f55479c3637796647f9d5114006c86",
+          "source_file_sha256": "d4184b1e2a6861da5e2fac146507325642f55479c3637796647f9d5114006c86",
+          "source_path": "src/market_data/historical/common/decoders/tests.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/common/decoders/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "164f4ba25cd1f4f3cefaf23cf08e4591ebf951da1696792b08d4bbea9909e5d7",
+          "source_file_sha256": "164f4ba25cd1f4f3cefaf23cf08e4591ebf951da1696792b08d4bbea9909e5d7",
+          "source_path": "src/market_data/historical/common/encoders.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/common/encoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "254351e2a5af888e46c57ce4bdffc4d81e7c67b795ed0e2a890ba86ba76202d0",
+          "source_file_sha256": "254351e2a5af888e46c57ce4bdffc4d81e7c67b795ed0e2a890ba86ba76202d0",
+          "source_path": "src/market_data/historical/common/encoders_tests.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/common/encoders_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "573c3bac0736ce482e35644fb06682f09e6a7c3d62ab593b39128313cc7311df",
+          "source_file_sha256": "573c3bac0736ce482e35644fb06682f09e6a7c3d62ab593b39128313cc7311df",
+          "source_path": "src/market_data/historical/common/mod.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/common/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "a69e1a2a7d7673bc92c30d8a787b54bf74dfdc8a2378e958b16fc5fbf04401bb",
+          "source_file_sha256": "a69e1a2a7d7673bc92c30d8a787b54bf74dfdc8a2378e958b16fc5fbf04401bb",
+          "source_path": "src/market_data/historical/common/tick.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/common/tick.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "675aaeb149ef9bc07f450c34df2658713657304e10ecd9bc445e42c06b488126",
+          "source_file_sha256": "675aaeb149ef9bc07f450c34df2658713657304e10ecd9bc445e42c06b488126",
+          "source_path": "src/market_data/historical/common/tick_tests.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/common/tick_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "aca62ab49a6549e9190d1b9e78bad67cca014f10f38e48d3a587436e07d105b9",
+          "source_file_sha256": "aca62ab49a6549e9190d1b9e78bad67cca014f10f38e48d3a587436e07d105b9",
+          "source_path": "src/market_data/historical/mod.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "2d0fd816b0e7883ee5a7a78bb475649e6612be0903a3187ba768e8d431f458b6",
+          "source_file_sha256": "2d0fd816b0e7883ee5a7a78bb475649e6612be0903a3187ba768e8d431f458b6",
+          "source_path": "src/market_data/historical/mod_tests.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/mod_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "659a7bc41ce653a6c1f2ab869b0643348426fca32be307c292a9f767cd05c9f0",
+          "source_file_sha256": "659a7bc41ce653a6c1f2ab869b0643348426fca32be307c292a9f767cd05c9f0",
+          "source_path": "src/market_data/historical/sync.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/sync.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "d075c6f5a0505fa2af5a16e7e17ab9feb18a112cd212c2b350c4fed69f447be5",
+          "source_file_sha256": "d075c6f5a0505fa2af5a16e7e17ab9feb18a112cd212c2b350c4fed69f447be5",
+          "source_path": "src/market_data/historical/sync_tests.rs",
+          "target_path": "vendor/ibapi/src/market_data/historical/sync_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "04ad5301b5ace8e80f00319c7979bf6a75ad006dfe3e57f2a5679a90de338470",
+          "source_file_sha256": "04ad5301b5ace8e80f00319c7979bf6a75ad006dfe3e57f2a5679a90de338470",
+          "source_path": "src/market_data/mod.rs",
+          "target_path": "vendor/ibapi/src/market_data/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "b5cb020ae76cad6a4231291ec7127854eea7d6b02cddd930b18fc9645cb42517",
+          "source_file_sha256": "b5cb020ae76cad6a4231291ec7127854eea7d6b02cddd930b18fc9645cb42517",
+          "source_path": "src/market_data/realtime/async.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/async.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e58c2036dd335c1286d5a01f1ac4cd51e66e43718fb641a4d86a4e09e4445386",
+          "source_file_sha256": "e58c2036dd335c1286d5a01f1ac4cd51e66e43718fb641a4d86a4e09e4445386",
+          "source_path": "src/market_data/realtime/async_tests.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/async_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "7b5a5d5156563ded13d023eea52699707a1aa50d0e964045b6c8e73d6bc4201d",
+          "source_file_sha256": "7b5a5d5156563ded13d023eea52699707a1aa50d0e964045b6c8e73d6bc4201d",
+          "source_path": "src/market_data/realtime/builder/bars.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/builder/bars.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "97aaa811d85ee93a8d557c403dd2e9309219d80267d0aaaf16e76e0da3baf095",
+          "source_file_sha256": "97aaa811d85ee93a8d557c403dd2e9309219d80267d0aaaf16e76e0da3baf095",
+          "source_path": "src/market_data/realtime/builder/bars_tests.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/builder/bars_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "89eadf98891696bbd3f621207bade491eabd06a28140b94dca052ed24790f933",
+          "source_file_sha256": "89eadf98891696bbd3f621207bade491eabd06a28140b94dca052ed24790f933",
+          "source_path": "src/market_data/realtime/builder/market_data.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/builder/market_data.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "b00b266c28eeb6d120d16cd32fa929fa59a1d0d4a0ea943807db9a6183faa8cd",
+          "source_file_sha256": "b00b266c28eeb6d120d16cd32fa929fa59a1d0d4a0ea943807db9a6183faa8cd",
+          "source_path": "src/market_data/realtime/builder/market_data_tests.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/builder/market_data_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "4d50b9ccd1fd9a13e1cd5a5d716ae2d32e251ceedc11faa20092b7268eb00cf1",
+          "source_file_sha256": "4d50b9ccd1fd9a13e1cd5a5d716ae2d32e251ceedc11faa20092b7268eb00cf1",
+          "source_path": "src/market_data/realtime/builder/market_depth.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/builder/market_depth.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "b83c4b92e2236e53ba60b70be7678227191385ef3708e10f3099bd1474528cbf",
+          "source_file_sha256": "b83c4b92e2236e53ba60b70be7678227191385ef3708e10f3099bd1474528cbf",
+          "source_path": "src/market_data/realtime/builder/market_depth_tests.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/builder/market_depth_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "4f1a743df565dc24bd322ab401556b6600b0abfa4f1154521044bf85030f18bf",
+          "source_file_sha256": "4f1a743df565dc24bd322ab401556b6600b0abfa4f1154521044bf85030f18bf",
+          "source_path": "src/market_data/realtime/builder/mod.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/builder/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "9f59c6de24d5a2eed68877619fa823297a26acab265dddc612553e80a467e9ca",
+          "source_file_sha256": "9f59c6de24d5a2eed68877619fa823297a26acab265dddc612553e80a467e9ca",
+          "source_path": "src/market_data/realtime/builder/tick_by_tick.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/builder/tick_by_tick.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "696e4aa17f845bd18a08e76646c02e450e67aef0a725129639e1ae882a0c9e70",
+          "source_file_sha256": "696e4aa17f845bd18a08e76646c02e450e67aef0a725129639e1ae882a0c9e70",
+          "source_path": "src/market_data/realtime/builder/tick_by_tick_tests.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/builder/tick_by_tick_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e12d0690a2193d957eafe2cdb7e4886e23a02921fa9ffcf912bc0811a4df6c8c",
+          "source_file_sha256": "e12d0690a2193d957eafe2cdb7e4886e23a02921fa9ffcf912bc0811a4df6c8c",
+          "source_path": "src/market_data/realtime/common/decoders/mod.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/common/decoders/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "b23bd322d3c324ed48f425126ac5e91cf2f6a73d82adc6d9608c8c0c7784f42f",
+          "source_file_sha256": "b23bd322d3c324ed48f425126ac5e91cf2f6a73d82adc6d9608c8c0c7784f42f",
+          "source_path": "src/market_data/realtime/common/decoders/tests.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/common/decoders/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "8108df8c07470d27c163cba4f9d216a65d0beb1bd503b13ef451ce19ee092352",
+          "source_file_sha256": "8108df8c07470d27c163cba4f9d216a65d0beb1bd503b13ef451ce19ee092352",
+          "source_path": "src/market_data/realtime/common/encoders.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/common/encoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "4265d11347a7dd25aca5856524415abcf9b28c1c973781c9cfb788423417cbcf",
+          "source_file_sha256": "4265d11347a7dd25aca5856524415abcf9b28c1c973781c9cfb788423417cbcf",
+          "source_path": "src/market_data/realtime/common/mod.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/common/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "c4f3819edef5d49c96b916790af5c8a325f28e23302a88c3c091277a47efd1ec",
+          "source_file_sha256": "c4f3819edef5d49c96b916790af5c8a325f28e23302a88c3c091277a47efd1ec",
+          "source_path": "src/market_data/realtime/common/tick_types.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/common/tick_types.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "f9966120fa913c4b7cb5e957c3dbbc1a31cda5eb570c9713d2f72c63dcc942a4",
+          "source_file_sha256": "f9966120fa913c4b7cb5e957c3dbbc1a31cda5eb570c9713d2f72c63dcc942a4",
+          "source_path": "src/market_data/realtime/generic_tick.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/generic_tick.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "345346a02a6616f995d8a1fd2950e115895b7cb5141f893a63c9a9428e21216b",
+          "source_file_sha256": "345346a02a6616f995d8a1fd2950e115895b7cb5141f893a63c9a9428e21216b",
+          "source_path": "src/market_data/realtime/generic_tick_tests.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/generic_tick_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "792412a1aa5a050c169116fe73b70e8baf716b617cd2edfadb176cb6e6bfb275",
+          "source_file_sha256": "792412a1aa5a050c169116fe73b70e8baf716b617cd2edfadb176cb6e6bfb275",
+          "source_path": "src/market_data/realtime/mod.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "c0854aa70e9a8cdb00bbe89e93a0c72b4b7cb01eabdeb4e0c5e2883d180e812d",
+          "source_file_sha256": "c0854aa70e9a8cdb00bbe89e93a0c72b4b7cb01eabdeb4e0c5e2883d180e812d",
+          "source_path": "src/market_data/realtime/mod_tests.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/mod_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "224f580eedb147d1b16601f181def19410ea466303a646aa1f70dde02cd0b55a",
+          "source_file_sha256": "224f580eedb147d1b16601f181def19410ea466303a646aa1f70dde02cd0b55a",
+          "source_path": "src/market_data/realtime/sync.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/sync.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "a0f659d31cec1fbac2e45c23091954914727ade0c6d72713c73786e074843ade",
+          "source_file_sha256": "a0f659d31cec1fbac2e45c23091954914727ade0c6d72713c73786e074843ade",
+          "source_path": "src/market_data/realtime/sync_tests.rs",
+          "target_path": "vendor/ibapi/src/market_data/realtime/sync_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "a415f79720725a0795fe4d68c003222cc02ea1b6df4dbd9b61ca1908cba480d7",
+          "source_file_sha256": "a415f79720725a0795fe4d68c003222cc02ea1b6df4dbd9b61ca1908cba480d7",
+          "source_path": "src/market_data/tests.rs",
+          "target_path": "vendor/ibapi/src/market_data/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "fbb705b6f97bfd2031de72e1d87afb8146afe844e9ae3c47f7d1fe31b918e307",
+          "source_file_sha256": "fbb705b6f97bfd2031de72e1d87afb8146afe844e9ae3c47f7d1fe31b918e307",
+          "source_path": "src/messages.rs",
+          "target_path": "vendor/ibapi/src/messages.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "6698b42e61ffe1f11a2ef242f96e9ab944378d67419df65b6bd9679dc4cb5584",
+          "source_file_sha256": "6698b42e61ffe1f11a2ef242f96e9ab944378d67419df65b6bd9679dc4cb5584",
+          "source_path": "src/messages/shared_channel_configuration.rs",
+          "target_path": "vendor/ibapi/src/messages/shared_channel_configuration.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "b3cbb5b3f24da4de21ac4417e52dd3a25ea8d25f5ff3b971c2e2990870e410dc",
+          "source_file_sha256": "b3cbb5b3f24da4de21ac4417e52dd3a25ea8d25f5ff3b971c2e2990870e410dc",
+          "source_path": "src/messages/tests.rs",
+          "target_path": "vendor/ibapi/src/messages/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "2204fd0d8f6a407733856aabb616f6468bee4e647e916a8c055a4e69c109994a",
+          "source_file_sha256": "2204fd0d8f6a407733856aabb616f6468bee4e647e916a8c055a4e69c109994a",
+          "source_path": "src/news/async.rs",
+          "target_path": "vendor/ibapi/src/news/async.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "ec7b1d6d2af28616fb8e08c9b7325ff434d4681aa2d5b5886d34fad4f1c4a5f3",
+          "source_file_sha256": "ec7b1d6d2af28616fb8e08c9b7325ff434d4681aa2d5b5886d34fad4f1c4a5f3",
+          "source_path": "src/news/async_tests.rs",
+          "target_path": "vendor/ibapi/src/news/async_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "298f47a847ff3e87348fdcfff9d949766579d80130783d46ab161d34f1089375",
+          "source_file_sha256": "298f47a847ff3e87348fdcfff9d949766579d80130783d46ab161d34f1089375",
+          "source_path": "src/news/common/decoders.rs",
+          "target_path": "vendor/ibapi/src/news/common/decoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "d4a0788a475d28441108091075b17e4db410c2f96bdb47a3990283d21906de03",
+          "source_file_sha256": "d4a0788a475d28441108091075b17e4db410c2f96bdb47a3990283d21906de03",
+          "source_path": "src/news/common/decoders_tests.rs",
+          "target_path": "vendor/ibapi/src/news/common/decoders_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "ed36706e3c810e849d4c6a7e456be23084e72909cd6a38bdf7e408ee90829b61",
+          "source_file_sha256": "ed36706e3c810e849d4c6a7e456be23084e72909cd6a38bdf7e408ee90829b61",
+          "source_path": "src/news/common/encoders.rs",
+          "target_path": "vendor/ibapi/src/news/common/encoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "3aada1b5e04c9b3ca3ab64f5424135c0d7e653716e8dbf38a9c4d33cead9f61e",
+          "source_file_sha256": "3aada1b5e04c9b3ca3ab64f5424135c0d7e653716e8dbf38a9c4d33cead9f61e",
+          "source_path": "src/news/common/mod.rs",
+          "target_path": "vendor/ibapi/src/news/common/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "9d62173e5a93e9655806ee219e949a63a716bb2cc49b2a096dd8fb871fa8ed10",
+          "source_file_sha256": "9d62173e5a93e9655806ee219e949a63a716bb2cc49b2a096dd8fb871fa8ed10",
+          "source_path": "src/news/common/stream_decoders.rs",
+          "target_path": "vendor/ibapi/src/news/common/stream_decoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e57a99fc666bc91127dc99c76fa4e2ed980e2dee7c0ca852dc3a87277f9f2cc3",
+          "source_file_sha256": "e57a99fc666bc91127dc99c76fa4e2ed980e2dee7c0ca852dc3a87277f9f2cc3",
+          "source_path": "src/news/mod.rs",
+          "target_path": "vendor/ibapi/src/news/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e5ab57036ab2849a275a24871944de40bd267721f74c52772f4da2263e4af3e0",
+          "source_file_sha256": "e5ab57036ab2849a275a24871944de40bd267721f74c52772f4da2263e4af3e0",
+          "source_path": "src/news/sync.rs",
+          "target_path": "vendor/ibapi/src/news/sync.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "c91a0390a099cf4f16550b944125d559ba826b031b43f947e5d84c6364365e09",
+          "source_file_sha256": "c91a0390a099cf4f16550b944125d559ba826b031b43f947e5d84c6364365e09",
+          "source_path": "src/news/sync_tests.rs",
+          "target_path": "vendor/ibapi/src/news/sync_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "2f1baea6d15adb5720594e8f02c379ad59381cd056b41ab2240ea524c4c9d072",
+          "source_file_sha256": "2f1baea6d15adb5720594e8f02c379ad59381cd056b41ab2240ea524c4c9d072",
+          "source_path": "src/orders/async.rs",
+          "target_path": "vendor/ibapi/src/orders/async.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e9a3187027b7df9f4d1c8a0e1e637397ba052ca47fd608920ad7c84d4a7ead73",
+          "source_file_sha256": "e9a3187027b7df9f4d1c8a0e1e637397ba052ca47fd608920ad7c84d4a7ead73",
+          "source_path": "src/orders/async_tests.rs",
+          "target_path": "vendor/ibapi/src/orders/async_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "202c0df63c611101d7320f2bce594ae440bac6e475e081e0da5cdfd2eef6a186",
+          "source_file_sha256": "202c0df63c611101d7320f2bce594ae440bac6e475e081e0da5cdfd2eef6a186",
+          "source_path": "src/orders/builder/algo_builders.rs",
+          "target_path": "vendor/ibapi/src/orders/builder/algo_builders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "643126e977b34bbf178a0ad1cd97b7246c33d796a17b82ad5033b17a45f37c9c",
+          "source_file_sha256": "643126e977b34bbf178a0ad1cd97b7246c33d796a17b82ad5033b17a45f37c9c",
+          "source_path": "src/orders/builder/algo_builders_tests.rs",
+          "target_path": "vendor/ibapi/src/orders/builder/algo_builders_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "b4425d1436cc11902972ae78c342200b65202b1f85fa15ebd73323acf646cc71",
+          "source_file_sha256": "b4425d1436cc11902972ae78c342200b65202b1f85fa15ebd73323acf646cc71",
+          "source_path": "src/orders/builder/algo_helpers.rs",
+          "target_path": "vendor/ibapi/src/orders/builder/algo_helpers.rs"
+        },
+        {
+          "adaptation": "Trailing-whitespace-only formatting adjustment; exact file hashes and 1-based lines are in vendor/ibapi/LOCAL-CHANGES.json.",
+          "adapted_target_sha256": "b37741c0ad1bc2acd489d269b55ec684a97df23b0e49b01f69170ac42e59134b",
+          "source_file_sha256": "5e41e9c7eaadccb6070e4e7a20cc0a39f438afc8425d7ab6b303db742930328d",
+          "source_path": "src/orders/builder/async_impl.rs",
+          "target_path": "vendor/ibapi/src/orders/builder/async_impl.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "8855a1431b031fcb70cc036934a9044869ce0388b3b182c82817e8c7ad70ffaf",
+          "source_file_sha256": "8855a1431b031fcb70cc036934a9044869ce0388b3b182c82817e8c7ad70ffaf",
+          "source_path": "src/orders/builder/condition_helpers.rs",
+          "target_path": "vendor/ibapi/src/orders/builder/condition_helpers.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "90a5ff6b51ad1d2ac7e41e00e9af5b88cf8a1124efed443c167ce44ed2f89d23",
+          "source_file_sha256": "90a5ff6b51ad1d2ac7e41e00e9af5b88cf8a1124efed443c167ce44ed2f89d23",
+          "source_path": "src/orders/builder/condition_helpers_tests.rs",
+          "target_path": "vendor/ibapi/src/orders/builder/condition_helpers_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "d0293e7a8c2add794a9694f15baafcabb2f36096de833fea0fac9667c29cd01f",
+          "source_file_sha256": "d0293e7a8c2add794a9694f15baafcabb2f36096de833fea0fac9667c29cd01f",
+          "source_path": "src/orders/builder/mod.rs",
+          "target_path": "vendor/ibapi/src/orders/builder/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "87a379d4aa3962b86374bd74097bdb88053c5984a580470ee0f6b22216ebb0a2",
+          "source_file_sha256": "87a379d4aa3962b86374bd74097bdb88053c5984a580470ee0f6b22216ebb0a2",
+          "source_path": "src/orders/builder/order_builder.rs",
+          "target_path": "vendor/ibapi/src/orders/builder/order_builder.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "cd3a7bcd36cd0905e0fcd8c01d36e01d84045c61b3a26b2cb86b9fe1b42e5952",
+          "source_file_sha256": "cd3a7bcd36cd0905e0fcd8c01d36e01d84045c61b3a26b2cb86b9fe1b42e5952",
+          "source_path": "src/orders/builder/order_builder/tests.rs",
+          "target_path": "vendor/ibapi/src/orders/builder/order_builder/tests.rs"
+        },
+        {
+          "adaptation": "Trailing-whitespace-only formatting adjustment; exact file hashes and 1-based lines are in vendor/ibapi/LOCAL-CHANGES.json.",
+          "adapted_target_sha256": "33acd8c33968cff46f66b6ef69282da235679b7cbe3f5fc2e380d86ddc04244f",
+          "source_file_sha256": "65faad74b3c24761d2cc27e319a34d33acd704e0ff66a54f6e083d4b7be6c5b8",
+          "source_path": "src/orders/builder/sync_impl.rs",
+          "target_path": "vendor/ibapi/src/orders/builder/sync_impl.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "62a0bc5d1554bb3de732c38f96534c1c0e0ff6b7426ea5914ee04f712ec0cc9a",
+          "source_file_sha256": "62a0bc5d1554bb3de732c38f96534c1c0e0ff6b7426ea5914ee04f712ec0cc9a",
+          "source_path": "src/orders/builder/tests.rs",
+          "target_path": "vendor/ibapi/src/orders/builder/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "454bdbb9b56c747679b9808a1bc9b2d98fc365c77ed3d2f98cd6413512a2647b",
+          "source_file_sha256": "454bdbb9b56c747679b9808a1bc9b2d98fc365c77ed3d2f98cd6413512a2647b",
+          "source_path": "src/orders/builder/types.rs",
+          "target_path": "vendor/ibapi/src/orders/builder/types.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "84a10ccc37f72081bbfc3a1ff2b82274c8ef78b50209b7bff8012e756cd05845",
+          "source_file_sha256": "84a10ccc37f72081bbfc3a1ff2b82274c8ef78b50209b7bff8012e756cd05845",
+          "source_path": "src/orders/builder/types/tests.rs",
+          "target_path": "vendor/ibapi/src/orders/builder/types/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "2fc8b8d5a4e7972dbf0eb2f865fdf2781c60c7259164ce7bc3c5c9529e2787a2",
+          "source_file_sha256": "2fc8b8d5a4e7972dbf0eb2f865fdf2781c60c7259164ce7bc3c5c9529e2787a2",
+          "source_path": "src/orders/builder/validation.rs",
+          "target_path": "vendor/ibapi/src/orders/builder/validation.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "4df8cacd54455f44575b824c52663b0fe62a2dd4ea2abf017bf8addad2a423a2",
+          "source_file_sha256": "4df8cacd54455f44575b824c52663b0fe62a2dd4ea2abf017bf8addad2a423a2",
+          "source_path": "src/orders/builder/validation/tests.rs",
+          "target_path": "vendor/ibapi/src/orders/builder/validation/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "abc30fb83ac412d9a71ede46d8dad78ee082cc0211952ccbe8c2f66fe05019a9",
+          "source_file_sha256": "abc30fb83ac412d9a71ede46d8dad78ee082cc0211952ccbe8c2f66fe05019a9",
+          "source_path": "src/orders/common/decoders/mod.rs",
+          "target_path": "vendor/ibapi/src/orders/common/decoders/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "9c1bebf9d99603990de7eccce629a8c926a6cd80b6df0144bf5f16f60c418849",
+          "source_file_sha256": "9c1bebf9d99603990de7eccce629a8c926a6cd80b6df0144bf5f16f60c418849",
+          "source_path": "src/orders/common/decoders/tests.rs",
+          "target_path": "vendor/ibapi/src/orders/common/decoders/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "f30ca60d17e2ffc2641bd12b1a68815da07cd8e7bf9596ae19df99268d4e85be",
+          "source_file_sha256": "f30ca60d17e2ffc2641bd12b1a68815da07cd8e7bf9596ae19df99268d4e85be",
+          "source_path": "src/orders/common/encoders.rs",
+          "target_path": "vendor/ibapi/src/orders/common/encoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "316955868acd4e048be3ab8d426c739cdbb5e781bcf2bd4a2e34247faac0afa7",
+          "source_file_sha256": "316955868acd4e048be3ab8d426c739cdbb5e781bcf2bd4a2e34247faac0afa7",
+          "source_path": "src/orders/common/mod.rs",
+          "target_path": "vendor/ibapi/src/orders/common/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e0f210072d61f1b78c0ae6c56b50b18ab0514c1681f2865272228abee10eb2de",
+          "source_file_sha256": "e0f210072d61f1b78c0ae6c56b50b18ab0514c1681f2865272228abee10eb2de",
+          "source_path": "src/orders/common/order_builder/mod.rs",
+          "target_path": "vendor/ibapi/src/orders/common/order_builder/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "342cd817bc7e29861ab5a3eb50defe2383e74d8c31ee48b09aca10ccf826e1bc",
+          "source_file_sha256": "342cd817bc7e29861ab5a3eb50defe2383e74d8c31ee48b09aca10ccf826e1bc",
+          "source_path": "src/orders/common/order_builder/tests.rs",
+          "target_path": "vendor/ibapi/src/orders/common/order_builder/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "dede3fe7333ebd5586f1ea19f706d735053bc25fe4580d0d9807b0bbc2fe25c7",
+          "source_file_sha256": "dede3fe7333ebd5586f1ea19f706d735053bc25fe4580d0d9807b0bbc2fe25c7",
+          "source_path": "src/orders/common/stream_decoders.rs",
+          "target_path": "vendor/ibapi/src/orders/common/stream_decoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "18e14ca37e648385c6c7eee898febac12c7e849d5a2420a1b8bf85244a8abca5",
+          "source_file_sha256": "18e14ca37e648385c6c7eee898febac12c7e849d5a2420a1b8bf85244a8abca5",
+          "source_path": "src/orders/common/verify.rs",
+          "target_path": "vendor/ibapi/src/orders/common/verify.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "116f9fe8bf93bf66d0d7960e7df7d77b6975904216b89a22f2de59bc9436aeae",
+          "source_file_sha256": "116f9fe8bf93bf66d0d7960e7df7d77b6975904216b89a22f2de59bc9436aeae",
+          "source_path": "src/orders/common/verify_tests.rs",
+          "target_path": "vendor/ibapi/src/orders/common/verify_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "fe5bc66db5fefa86bc4e78d4ccf2dc3219d4cff82d118d6a22b973631130cd74",
+          "source_file_sha256": "fe5bc66db5fefa86bc4e78d4ccf2dc3219d4cff82d118d6a22b973631130cd74",
+          "source_path": "src/orders/conditions.rs",
+          "target_path": "vendor/ibapi/src/orders/conditions.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "dd6fb630c3e85aa01107d1d672628ded05bc10026f44de78eb2fcc48978871dd",
+          "source_file_sha256": "dd6fb630c3e85aa01107d1d672628ded05bc10026f44de78eb2fcc48978871dd",
+          "source_path": "src/orders/conditions_tests.rs",
+          "target_path": "vendor/ibapi/src/orders/conditions_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "543e9e642c41a70f4264edfa999df09539f5732173e127f147c148b1019ab238",
+          "source_file_sha256": "543e9e642c41a70f4264edfa999df09539f5732173e127f147c148b1019ab238",
+          "source_path": "src/orders/exercise_options_builder.rs",
+          "target_path": "vendor/ibapi/src/orders/exercise_options_builder.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "4dcfccc47672df1946a394ec70de599255bd262060a822221574a6efda79364e",
+          "source_file_sha256": "4dcfccc47672df1946a394ec70de599255bd262060a822221574a6efda79364e",
+          "source_path": "src/orders/exercise_options_builder_tests.rs",
+          "target_path": "vendor/ibapi/src/orders/exercise_options_builder_tests.rs"
+        },
+        {
+          "adaptation": "Trailing-whitespace-only formatting adjustment; exact file hashes and 1-based lines are in vendor/ibapi/LOCAL-CHANGES.json.",
+          "adapted_target_sha256": "ad97c8adefb2b7d027b3f59b86af28e6c07387ee5618cf6a216adb9eaf65f767",
+          "source_file_sha256": "3c57a00b7099ed1c96e4ae29830459237522fdc29f62e8a3d5e469ce2e20605c",
+          "source_path": "src/orders/mod.rs",
+          "target_path": "vendor/ibapi/src/orders/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "d91b84ec4da2bf367dcf592c64e804b6d1dfa4c6f676880d91b7697c02903206",
+          "source_file_sha256": "d91b84ec4da2bf367dcf592c64e804b6d1dfa4c6f676880d91b7697c02903206",
+          "source_path": "src/orders/sync.rs",
+          "target_path": "vendor/ibapi/src/orders/sync.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "9523112f3d6bc8e66c4d4bf4d0048113d80d5d04aa371507cf0364e4c2ea0131",
+          "source_file_sha256": "9523112f3d6bc8e66c4d4bf4d0048113d80d5d04aa371507cf0364e4c2ea0131",
+          "source_path": "src/orders/sync_tests.rs",
+          "target_path": "vendor/ibapi/src/orders/sync_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "9fddd7f1b5aaa6bca703dcdb26eb2297c9888a5f1a5b25ae4bcf18e974ba7cc7",
+          "source_file_sha256": "9fddd7f1b5aaa6bca703dcdb26eb2297c9888a5f1a5b25ae4bcf18e974ba7cc7",
+          "source_path": "src/orders/tests.rs",
+          "target_path": "vendor/ibapi/src/orders/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "db00a52637340fc3d1e784a7cce92e89fa582c525410e67d848ad855c7bd4718",
+          "source_file_sha256": "db00a52637340fc3d1e784a7cce92e89fa582c525410e67d848ad855c7bd4718",
+          "source_path": "src/prelude.rs",
+          "target_path": "vendor/ibapi/src/prelude.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "71320f681491410386cf309f52370b25e18b22984cd80daed767f7c594d138f8",
+          "source_file_sha256": "71320f681491410386cf309f52370b25e18b22984cd80daed767f7c594d138f8",
+          "source_path": "src/proto/decoders.rs",
+          "target_path": "vendor/ibapi/src/proto/decoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "bd51223518ee70122f165b6ee73797503ce47cb240d4ca457521602ab2cee87d",
+          "source_file_sha256": "bd51223518ee70122f165b6ee73797503ce47cb240d4ca457521602ab2cee87d",
+          "source_path": "src/proto/decoders_tests.rs",
+          "target_path": "vendor/ibapi/src/proto/decoders_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "9063fe2773168159844a264308298a5518552bdc05204484acd50e489d6bf10f",
+          "source_file_sha256": "9063fe2773168159844a264308298a5518552bdc05204484acd50e489d6bf10f",
+          "source_path": "src/proto/encoders.rs",
+          "target_path": "vendor/ibapi/src/proto/encoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e142a06b2ab395000cecb94ba49308eef7673a5814ba7c41103b4845b9343159",
+          "source_file_sha256": "e142a06b2ab395000cecb94ba49308eef7673a5814ba7c41103b4845b9343159",
+          "source_path": "src/proto/encoders_tests.rs",
+          "target_path": "vendor/ibapi/src/proto/encoders_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "eb791e1799e524a336959d8897b3f588b1d18cc483af202ef15168d03b1c3cd5",
+          "source_file_sha256": "eb791e1799e524a336959d8897b3f588b1d18cc483af202ef15168d03b1c3cd5",
+          "source_path": "src/proto/mod.rs",
+          "target_path": "vendor/ibapi/src/proto/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "d7509ef134cb9ece9b275e00c02d1fc540dc37ba6947b6efd98a8d71c56474e9",
+          "source_file_sha256": "d7509ef134cb9ece9b275e00c02d1fc540dc37ba6947b6efd98a8d71c56474e9",
+          "source_path": "src/proto/payload.rs",
+          "target_path": "vendor/ibapi/src/proto/payload.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "26a3b61dee8434d4c87725d2985095d2e7ffd52dfb165cd9bd4cc307fa11dbb7",
+          "source_file_sha256": "26a3b61dee8434d4c87725d2985095d2e7ffd52dfb165cd9bd4cc307fa11dbb7",
+          "source_path": "src/proto/protobuf.rs",
+          "target_path": "vendor/ibapi/src/proto/protobuf.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "8270b7276d3512905cd30cc342a2e36398c007bf90d4a02319c95f5261d74642",
+          "source_file_sha256": "8270b7276d3512905cd30cc342a2e36398c007bf90d4a02319c95f5261d74642",
+          "source_path": "src/protocol.rs",
+          "target_path": "vendor/ibapi/src/protocol.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "0e5a714cc6c411bab0c9f605c36da8812e59e8e35a803bf269c1ca534828cccc",
+          "source_file_sha256": "0e5a714cc6c411bab0c9f605c36da8812e59e8e35a803bf269c1ca534828cccc",
+          "source_path": "src/protocol_tests.rs",
+          "target_path": "vendor/ibapi/src/protocol_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "00101a27ce99fb65e08d80af4a3252e469d51e94195e04c0c4566b04fcef9170",
+          "source_file_sha256": "00101a27ce99fb65e08d80af4a3252e469d51e94195e04c0c4566b04fcef9170",
+          "source_path": "src/scanner/async.rs",
+          "target_path": "vendor/ibapi/src/scanner/async.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "59e2d9a6d968830761f794a75c43afb233312ada40ed26a9a3cbf366250f4ce8",
+          "source_file_sha256": "59e2d9a6d968830761f794a75c43afb233312ada40ed26a9a3cbf366250f4ce8",
+          "source_path": "src/scanner/async_tests.rs",
+          "target_path": "vendor/ibapi/src/scanner/async_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "b524f44c1b2b3d21d2b085cdd4e579d907f835db2360cfefcaba3035479d53e3",
+          "source_file_sha256": "b524f44c1b2b3d21d2b085cdd4e579d907f835db2360cfefcaba3035479d53e3",
+          "source_path": "src/scanner/common/decoders.rs",
+          "target_path": "vendor/ibapi/src/scanner/common/decoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "9e119f60b7b1dc340ce05e3377472a67bdf535d06818d6adc2e5e6015c713481",
+          "source_file_sha256": "9e119f60b7b1dc340ce05e3377472a67bdf535d06818d6adc2e5e6015c713481",
+          "source_path": "src/scanner/common/decoders_tests.rs",
+          "target_path": "vendor/ibapi/src/scanner/common/decoders_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "b3902e6d94f478b46c01b0626ed8d72f315d54b716da5c342e38beb121ed1eb6",
+          "source_file_sha256": "b3902e6d94f478b46c01b0626ed8d72f315d54b716da5c342e38beb121ed1eb6",
+          "source_path": "src/scanner/common/encoders.rs",
+          "target_path": "vendor/ibapi/src/scanner/common/encoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "fe398b3b73e4862d0b78b352750ef9776209dec41311b381e9c1c95612500864",
+          "source_file_sha256": "fe398b3b73e4862d0b78b352750ef9776209dec41311b381e9c1c95612500864",
+          "source_path": "src/scanner/common/mod.rs",
+          "target_path": "vendor/ibapi/src/scanner/common/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "0231f570b0241a90cf595b6c031edb091f12bc6690f6f0f3e728efa8b105690b",
+          "source_file_sha256": "0231f570b0241a90cf595b6c031edb091f12bc6690f6f0f3e728efa8b105690b",
+          "source_path": "src/scanner/common/stream_decoders.rs",
+          "target_path": "vendor/ibapi/src/scanner/common/stream_decoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "5e388c3826e1b703a967bbd4ed77102e66f6af49370eb5efc3a5c8196e4f3b86",
+          "source_file_sha256": "5e388c3826e1b703a967bbd4ed77102e66f6af49370eb5efc3a5c8196e4f3b86",
+          "source_path": "src/scanner/common/test_tables.rs",
+          "target_path": "vendor/ibapi/src/scanner/common/test_tables.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "ab1bc24b8ffc95515dd3a814d64ca648fa36036ec5937c57fbcae54f0cab9b7a",
+          "source_file_sha256": "ab1bc24b8ffc95515dd3a814d64ca648fa36036ec5937c57fbcae54f0cab9b7a",
+          "source_path": "src/scanner/mod.rs",
+          "target_path": "vendor/ibapi/src/scanner/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "1d341ac993d01ddf7b82195d3fa68d0b8c4cc56166fac035e8d57b402a569345",
+          "source_file_sha256": "1d341ac993d01ddf7b82195d3fa68d0b8c4cc56166fac035e8d57b402a569345",
+          "source_path": "src/scanner/sync.rs",
+          "target_path": "vendor/ibapi/src/scanner/sync.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "69644c607a8479e7d644978866a9bfbf57e4f15bdde94902c07f7d830b866c8f",
+          "source_file_sha256": "69644c607a8479e7d644978866a9bfbf57e4f15bdde94902c07f7d830b866c8f",
+          "source_path": "src/scanner/sync_tests.rs",
+          "target_path": "vendor/ibapi/src/scanner/sync_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "ca0ae5bfa91a261f8569ffef9184016692592de1f16a50d666eb398d9323cb4d",
+          "source_file_sha256": "ca0ae5bfa91a261f8569ffef9184016692592de1f16a50d666eb398d9323cb4d",
+          "source_path": "src/server_versions.rs",
+          "target_path": "vendor/ibapi/src/server_versions.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "fe7377110597d3cd9233ca3841432dc05556af7a55434a7edd455b742d9723a4",
+          "source_file_sha256": "fe7377110597d3cd9233ca3841432dc05556af7a55434a7edd455b742d9723a4",
+          "source_path": "src/stubs.rs",
+          "target_path": "vendor/ibapi/src/stubs.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "78d403d2c1ff028fa1d6b246d28d393a37b47994b22791c43a093912e91408ef",
+          "source_file_sha256": "78d403d2c1ff028fa1d6b246d28d393a37b47994b22791c43a093912e91408ef",
+          "source_path": "src/stubs_tests.rs",
+          "target_path": "vendor/ibapi/src/stubs_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "834815ea9c995d9b1a070fae0ead03678169be9e79cd11013830724064231ead",
+          "source_file_sha256": "834815ea9c995d9b1a070fae0ead03678169be9e79cd11013830724064231ead",
+          "source_path": "src/subscriptions/async.rs",
+          "target_path": "vendor/ibapi/src/subscriptions/async.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "b1c7675f1bd4dea0ac4026397c2cbda8e41344750503d8c5f04336c7db3e2c63",
+          "source_file_sha256": "b1c7675f1bd4dea0ac4026397c2cbda8e41344750503d8c5f04336c7db3e2c63",
+          "source_path": "src/subscriptions/async_tests.rs",
+          "target_path": "vendor/ibapi/src/subscriptions/async_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "c346e88f508fcd41fe02c807928a057cd399086505455c68f59364bad7aa9288",
+          "source_file_sha256": "c346e88f508fcd41fe02c807928a057cd399086505455c68f59364bad7aa9288",
+          "source_path": "src/subscriptions/common.rs",
+          "target_path": "vendor/ibapi/src/subscriptions/common.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "8bfe5b54d07a01f960c443867a6e8ace4065cefdf0d1818f09e1d7c6bd1934f6",
+          "source_file_sha256": "8bfe5b54d07a01f960c443867a6e8ace4065cefdf0d1818f09e1d7c6bd1934f6",
+          "source_path": "src/subscriptions/common_tests.rs",
+          "target_path": "vendor/ibapi/src/subscriptions/common_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "6184a8275ebb9ad7ee58002442d6ef10c381cbb4c000b30615f806e3e0bb7023",
+          "source_file_sha256": "6184a8275ebb9ad7ee58002442d6ef10c381cbb4c000b30615f806e3e0bb7023",
+          "source_path": "src/subscriptions/mod.rs",
+          "target_path": "vendor/ibapi/src/subscriptions/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "66fe2ad11295ba3e3a47a9902076452c18281c86e22c98c8c350968d43902778",
+          "source_file_sha256": "66fe2ad11295ba3e3a47a9902076452c18281c86e22c98c8c350968d43902778",
+          "source_path": "src/subscriptions/notice_stream.rs",
+          "target_path": "vendor/ibapi/src/subscriptions/notice_stream.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "0470819848302084919daadfcc2af38fd24662a1fe9c0bdf3916aa1fac2ce6d3",
+          "source_file_sha256": "0470819848302084919daadfcc2af38fd24662a1fe9c0bdf3916aa1fac2ce6d3",
+          "source_path": "src/subscriptions/notice_stream_tests.rs",
+          "target_path": "vendor/ibapi/src/subscriptions/notice_stream_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "09a09b6740a05ac49badaaf3c37aabbe33249a80c3ba33942ac015d23f6fc2b3",
+          "source_file_sha256": "09a09b6740a05ac49badaaf3c37aabbe33249a80c3ba33942ac015d23f6fc2b3",
+          "source_path": "src/subscriptions/response_message_ids_tests.rs",
+          "target_path": "vendor/ibapi/src/subscriptions/response_message_ids_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "72afa20d5f2abef33f742893a8cec835f86aac2204cf33f4a674a8b1e55d8f35",
+          "source_file_sha256": "72afa20d5f2abef33f742893a8cec835f86aac2204cf33f4a674a8b1e55d8f35",
+          "source_path": "src/subscriptions/sync.rs",
+          "target_path": "vendor/ibapi/src/subscriptions/sync.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e9ce5a9469323fb1ec9bc9740344cf8a374e969179095a5144e4c970561d52f7",
+          "source_file_sha256": "e9ce5a9469323fb1ec9bc9740344cf8a374e969179095a5144e4c970561d52f7",
+          "source_path": "src/subscriptions/sync_tests.rs",
+          "target_path": "vendor/ibapi/src/subscriptions/sync_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "3657dbc05d00c4c9bc780bec69b47b4a819e8b5cebb4ccc4aad8b3ed73f4c835",
+          "source_file_sha256": "3657dbc05d00c4c9bc780bec69b47b4a819e8b5cebb4ccc4aad8b3ed73f4c835",
+          "source_path": "src/testdata.rs",
+          "target_path": "vendor/ibapi/src/testdata.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e180d0b353ed3a056e23fdce48c3bbdf0e2df87d8e5b3437464635dd277ab3d4",
+          "source_file_sha256": "e180d0b353ed3a056e23fdce48c3bbdf0e2df87d8e5b3437464635dd277ab3d4",
+          "source_path": "src/testdata/builders/accounts.rs",
+          "target_path": "vendor/ibapi/src/testdata/builders/accounts.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "eb9832e6c9b62ed982ac95d6bcd5e92e4946179a5b49fd6791fb7646dab69b29",
+          "source_file_sha256": "eb9832e6c9b62ed982ac95d6bcd5e92e4946179a5b49fd6791fb7646dab69b29",
+          "source_path": "src/testdata/builders/accounts_tests.rs",
+          "target_path": "vendor/ibapi/src/testdata/builders/accounts_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "22194ed9732503c5a3adc262aca9e813ba7de491fb1e2ccdecbad7a8e5b951ff",
+          "source_file_sha256": "22194ed9732503c5a3adc262aca9e813ba7de491fb1e2ccdecbad7a8e5b951ff",
+          "source_path": "src/testdata/builders/config.rs",
+          "target_path": "vendor/ibapi/src/testdata/builders/config.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "a7630198df03e2d5fb6d6132a389147147f2f719f6d9a88d532b218be8fe0210",
+          "source_file_sha256": "a7630198df03e2d5fb6d6132a389147147f2f719f6d9a88d532b218be8fe0210",
+          "source_path": "src/testdata/builders/contracts.rs",
+          "target_path": "vendor/ibapi/src/testdata/builders/contracts.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "a035a31c37544755fae95d073efc61f1bc500e27ca9ec635cdbe9dfae567052e",
+          "source_file_sha256": "a035a31c37544755fae95d073efc61f1bc500e27ca9ec635cdbe9dfae567052e",
+          "source_path": "src/testdata/builders/display_groups.rs",
+          "target_path": "vendor/ibapi/src/testdata/builders/display_groups.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "f83e13690f3211498e1a5983a9f2955bbcab4cb49c713082ef373cf46d449603",
+          "source_file_sha256": "f83e13690f3211498e1a5983a9f2955bbcab4cb49c713082ef373cf46d449603",
+          "source_path": "src/testdata/builders/market_data.rs",
+          "target_path": "vendor/ibapi/src/testdata/builders/market_data.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "c67916d1e03ac6d96c1bcd7be3576d7e2fe770dedf2fd0d57743d8f783668e68",
+          "source_file_sha256": "c67916d1e03ac6d96c1bcd7be3576d7e2fe770dedf2fd0d57743d8f783668e68",
+          "source_path": "src/testdata/builders/mod.rs",
+          "target_path": "vendor/ibapi/src/testdata/builders/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "66a81d80d946a43d53f1caa0522c40b1b40bf8c4781158450ccedf3bffe2e2b1",
+          "source_file_sha256": "66a81d80d946a43d53f1caa0522c40b1b40bf8c4781158450ccedf3bffe2e2b1",
+          "source_path": "src/testdata/builders/news.rs",
+          "target_path": "vendor/ibapi/src/testdata/builders/news.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "b76c5e1a12276dec71019dd853438492743e31d14ce2b57971b7f0ac784db1a4",
+          "source_file_sha256": "b76c5e1a12276dec71019dd853438492743e31d14ce2b57971b7f0ac784db1a4",
+          "source_path": "src/testdata/builders/orders.rs",
+          "target_path": "vendor/ibapi/src/testdata/builders/orders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "526bd1c39cd7a12dc6f6d74acfbf671a4c34c9494e66c08706567b6ff6ba3e10",
+          "source_file_sha256": "526bd1c39cd7a12dc6f6d74acfbf671a4c34c9494e66c08706567b6ff6ba3e10",
+          "source_path": "src/testdata/builders/orders_tests.rs",
+          "target_path": "vendor/ibapi/src/testdata/builders/orders_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "38651564575aae14f084feccdc657e31fc25af8ea794398b6e3ccb539abf0e5c",
+          "source_file_sha256": "38651564575aae14f084feccdc657e31fc25af8ea794398b6e3ccb539abf0e5c",
+          "source_path": "src/testdata/builders/positions.rs",
+          "target_path": "vendor/ibapi/src/testdata/builders/positions.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e4d8a8c907507f83f3a1310c592ceca18d6796f76ee82bcc2bba0bdd0cbfdd64",
+          "source_file_sha256": "e4d8a8c907507f83f3a1310c592ceca18d6796f76ee82bcc2bba0bdd0cbfdd64",
+          "source_path": "src/testdata/builders/positions_tests.rs",
+          "target_path": "vendor/ibapi/src/testdata/builders/positions_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "da4d5773c637e7d3ef1449477801108476e4af555e3800d420f17e90ba22132a",
+          "source_file_sha256": "da4d5773c637e7d3ef1449477801108476e4af555e3800d420f17e90ba22132a",
+          "source_path": "src/testdata/builders/scanner.rs",
+          "target_path": "vendor/ibapi/src/testdata/builders/scanner.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e48a829d6b1e58260668803638a8976dab4cef1dbef6c185c8ce0358319f835b",
+          "source_file_sha256": "e48a829d6b1e58260668803638a8976dab4cef1dbef6c185c8ce0358319f835b",
+          "source_path": "src/testdata/builders/tests.rs",
+          "target_path": "vendor/ibapi/src/testdata/builders/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "984d796e376904bfced5ced763ec73239abf9af4224a447808fc5cdbd7d82420",
+          "source_file_sha256": "984d796e376904bfced5ced763ec73239abf9af4224a447808fc5cdbd7d82420",
+          "source_path": "src/testdata/builders/wsh.rs",
+          "target_path": "vendor/ibapi/src/testdata/builders/wsh.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "d0b4fb0170bcbf67b2bf5121432278782ccef9834e987df8e72be4028ffde088",
+          "source_file_sha256": "d0b4fb0170bcbf67b2bf5121432278782ccef9834e987df8e72be4028ffde088",
+          "source_path": "src/testdata/responses.rs",
+          "target_path": "vendor/ibapi/src/testdata/responses.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "65d4218dd0097ce7b1c8782ab351f406628935a1b747ee5f73ab9bd8e4bc0bfe",
+          "source_file_sha256": "65d4218dd0097ce7b1c8782ab351f406628935a1b747ee5f73ab9bd8e4bc0bfe",
+          "source_path": "src/tests.rs",
+          "target_path": "vendor/ibapi/src/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "27a0e5fcb309754518fafd8c42c927528498038e8c2b675566594305d596c8f0",
+          "source_file_sha256": "27a0e5fcb309754518fafd8c42c927528498038e8c2b675566594305d596c8f0",
+          "source_path": "src/transport/async.rs",
+          "target_path": "vendor/ibapi/src/transport/async.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "03e8cbe7aa2814ea60d4b4c3ac05910c3cde825dd2de6de6eb7c80b8059ba953",
+          "source_file_sha256": "03e8cbe7aa2814ea60d4b4c3ac05910c3cde825dd2de6de6eb7c80b8059ba953",
+          "source_path": "src/transport/async/connection_signal.rs",
+          "target_path": "vendor/ibapi/src/transport/async/connection_signal.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "b1802f1f4de63f3eccbefbe38d00071a3211008d0e4ed00fc3d896062525501d",
+          "source_file_sha256": "b1802f1f4de63f3eccbefbe38d00071a3211008d0e4ed00fc3d896062525501d",
+          "source_path": "src/transport/async/connection_signal_tests.rs",
+          "target_path": "vendor/ibapi/src/transport/async/connection_signal_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "20030abf3fd23750e9c675135cea894dadbf65a71594c90f49dda8ffa4faef5c",
+          "source_file_sha256": "20030abf3fd23750e9c675135cea894dadbf65a71594c90f49dda8ffa4faef5c",
+          "source_path": "src/transport/async/io.rs",
+          "target_path": "vendor/ibapi/src/transport/async/io.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "0a3c94b396ad577b0593aa0e03f20b05ba3a1d677640313fad33209a293e3ee9",
+          "source_file_sha256": "0a3c94b396ad577b0593aa0e03f20b05ba3a1d677640313fad33209a293e3ee9",
+          "source_path": "src/transport/async/io_tests.rs",
+          "target_path": "vendor/ibapi/src/transport/async/io_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "b5a51d8d64b8a4281ef9060be29f3087309950bff806fa88a173362ae76144b3",
+          "source_file_sha256": "b5a51d8d64b8a4281ef9060be29f3087309950bff806fa88a173362ae76144b3",
+          "source_path": "src/transport/async/memory.rs",
+          "target_path": "vendor/ibapi/src/transport/async/memory.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "c291afefcf8c42cca6ef5f3b0f17c2196d734b9bbd390c89b6ca1b08ad8ba71d",
+          "source_file_sha256": "c291afefcf8c42cca6ef5f3b0f17c2196d734b9bbd390c89b6ca1b08ad8ba71d",
+          "source_path": "src/transport/async/memory_tests.rs",
+          "target_path": "vendor/ibapi/src/transport/async/memory_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "a8e9f0d8dd77be6d27282b134376bdd194184f69c2d48b7498afe218fff24a9a",
+          "source_file_sha256": "a8e9f0d8dd77be6d27282b134376bdd194184f69c2d48b7498afe218fff24a9a",
+          "source_path": "src/transport/async/registry.rs",
+          "target_path": "vendor/ibapi/src/transport/async/registry.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "7429102f1989ac0d927c18c5d4d486533d0ce6348e341583dc1b3047f982aab3",
+          "source_file_sha256": "7429102f1989ac0d927c18c5d4d486533d0ce6348e341583dc1b3047f982aab3",
+          "source_path": "src/transport/async/registry_tests.rs",
+          "target_path": "vendor/ibapi/src/transport/async/registry_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "ad982056ee4b70f70f0cd1e0e1c14f3aa06d802e01effd237ccbb5f9d5db5e17",
+          "source_file_sha256": "ad982056ee4b70f70f0cd1e0e1c14f3aa06d802e01effd237ccbb5f9d5db5e17",
+          "source_path": "src/transport/async/shutdown.rs",
+          "target_path": "vendor/ibapi/src/transport/async/shutdown.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "740f1d329050a9425deb62efae5cf1ea207ff1e076f9be5cc0c728cc9ebf8ca9",
+          "source_file_sha256": "740f1d329050a9425deb62efae5cf1ea207ff1e076f9be5cc0c728cc9ebf8ca9",
+          "source_path": "src/transport/async/shutdown_tests.rs",
+          "target_path": "vendor/ibapi/src/transport/async/shutdown_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e54134d90d884f6b61efa0188a3f39998e6379caae29d1136c072d998c4bcd53",
+          "source_file_sha256": "e54134d90d884f6b61efa0188a3f39998e6379caae29d1136c072d998c4bcd53",
+          "source_path": "src/transport/async/test_listener.rs",
+          "target_path": "vendor/ibapi/src/transport/async/test_listener.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "6afd67b7feaf20f8bf62585381281f0a611da55af51f0ac98518586b8c048b8a",
+          "source_file_sha256": "6afd67b7feaf20f8bf62585381281f0a611da55af51f0ac98518586b8c048b8a",
+          "source_path": "src/transport/async_submission_tests.rs",
+          "target_path": "vendor/ibapi/src/transport/async_submission_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e0ff3ca33a38f4b25bce7bd4fd08363d6984815d7226b20a6572e64f55729f13",
+          "source_file_sha256": "e0ff3ca33a38f4b25bce7bd4fd08363d6984815d7226b20a6572e64f55729f13",
+          "source_path": "src/transport/async_tests.rs",
+          "target_path": "vendor/ibapi/src/transport/async_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "2478a85157b9b854378a2a75d7358097fd78c093cc129ff870692528c1703ecb",
+          "source_file_sha256": "2478a85157b9b854378a2a75d7358097fd78c093cc129ff870692528c1703ecb",
+          "source_path": "src/transport/common.rs",
+          "target_path": "vendor/ibapi/src/transport/common.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e7635dc5f906ec812585ab296803335bb58ff4ac20451b7b72e945976fccf1df",
+          "source_file_sha256": "e7635dc5f906ec812585ab296803335bb58ff4ac20451b7b72e945976fccf1df",
+          "source_path": "src/transport/common_tests.rs",
+          "target_path": "vendor/ibapi/src/transport/common_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+          "source_file_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+          "source_path": "src/transport/connection.rs",
+          "target_path": "vendor/ibapi/src/transport/connection.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "c3f4ff47be125ec89aff7c640ebd0af5db7df70d5e78f9db14b804ce1d386c79",
+          "source_file_sha256": "c3f4ff47be125ec89aff7c640ebd0af5db7df70d5e78f9db14b804ce1d386c79",
+          "source_path": "src/transport/mod.rs",
+          "target_path": "vendor/ibapi/src/transport/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "31f5ec9c67fd170b8ee6f854bec4bb08c863d0fa080838281ef5abf3b5f85c83",
+          "source_file_sha256": "31f5ec9c67fd170b8ee6f854bec4bb08c863d0fa080838281ef5abf3b5f85c83",
+          "source_path": "src/transport/raw_capture.rs",
+          "target_path": "vendor/ibapi/src/transport/raw_capture.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "b45ad8975588dceccadd5bf45dda6dc239c743d8118c33b93c1b6d02eb9647a5",
+          "source_file_sha256": "b45ad8975588dceccadd5bf45dda6dc239c743d8118c33b93c1b6d02eb9647a5",
+          "source_path": "src/transport/raw_capture_tests.rs",
+          "target_path": "vendor/ibapi/src/transport/raw_capture_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "3a825ec456c8ebdc115b43e4ffb0c41a7551dbac1341330fd9855f8123d13bc7",
+          "source_file_sha256": "3a825ec456c8ebdc115b43e4ffb0c41a7551dbac1341330fd9855f8123d13bc7",
+          "source_path": "src/transport/recorder.rs",
+          "target_path": "vendor/ibapi/src/transport/recorder.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "4e721ca6c6231adaf5cc3c7819f6565d83680df1852a93646fabd1a188358787",
+          "source_file_sha256": "4e721ca6c6231adaf5cc3c7819f6565d83680df1852a93646fabd1a188358787",
+          "source_path": "src/transport/recorder_tests.rs",
+          "target_path": "vendor/ibapi/src/transport/recorder_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e24934a47c114a45bdeed0fd2fbaa75d5d896b87756ec6a01628bc67ba1371a3",
+          "source_file_sha256": "e24934a47c114a45bdeed0fd2fbaa75d5d896b87756ec6a01628bc67ba1371a3",
+          "source_path": "src/transport/routing.rs",
+          "target_path": "vendor/ibapi/src/transport/routing.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "a6f0ce330292b14e5d28f561813923cd20323de51cb9ce26fd5a3265540f9737",
+          "source_file_sha256": "a6f0ce330292b14e5d28f561813923cd20323de51cb9ce26fd5a3265540f9737",
+          "source_path": "src/transport/routing_tests.rs",
+          "target_path": "vendor/ibapi/src/transport/routing_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "3176001d79515bef6980d0970685942cc1580245152af9547d63d2f499cf719e",
+          "source_file_sha256": "3176001d79515bef6980d0970685942cc1580245152af9547d63d2f499cf719e",
+          "source_path": "src/transport/sync.rs",
+          "target_path": "vendor/ibapi/src/transport/sync.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "a0ce766badcc83ab29bc115a5e550cc810a807d488c0a001e4b34bebcb07bd37",
+          "source_file_sha256": "a0ce766badcc83ab29bc115a5e550cc810a807d488c0a001e4b34bebcb07bd37",
+          "source_path": "src/transport/sync/connection_signal.rs",
+          "target_path": "vendor/ibapi/src/transport/sync/connection_signal.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "a8e0a74d82718db5e95d205c023907e1f810cfc96d7279efa47344a39c32f920",
+          "source_file_sha256": "a8e0a74d82718db5e95d205c023907e1f810cfc96d7279efa47344a39c32f920",
+          "source_path": "src/transport/sync/connection_signal_tests.rs",
+          "target_path": "vendor/ibapi/src/transport/sync/connection_signal_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "aef10a625458480d5c51d9d87bcadb29fda4c45787e91870453fd2a86b810865",
+          "source_file_sha256": "aef10a625458480d5c51d9d87bcadb29fda4c45787e91870453fd2a86b810865",
+          "source_path": "src/transport/sync/memory.rs",
+          "target_path": "vendor/ibapi/src/transport/sync/memory.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "f5f900c0ca4022b27c11f4b412f8e60179826e29f899f00187e754ba858d9246",
+          "source_file_sha256": "f5f900c0ca4022b27c11f4b412f8e60179826e29f899f00187e754ba858d9246",
+          "source_path": "src/transport/sync/memory_tests.rs",
+          "target_path": "vendor/ibapi/src/transport/sync/memory_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "0dc40eb00ec88e102680c3d86bebdcddb3a2a9897b3252b652a4a0824c90d8be",
+          "source_file_sha256": "0dc40eb00ec88e102680c3d86bebdcddb3a2a9897b3252b652a4a0824c90d8be",
+          "source_path": "src/transport/sync/shutdown.rs",
+          "target_path": "vendor/ibapi/src/transport/sync/shutdown.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "a160d2c24506177859e409acaa4ba2513320e4f136b13d53cef50411619a62b9",
+          "source_file_sha256": "a160d2c24506177859e409acaa4ba2513320e4f136b13d53cef50411619a62b9",
+          "source_path": "src/transport/sync/shutdown_tests.rs",
+          "target_path": "vendor/ibapi/src/transport/sync/shutdown_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "b69ade23fec81e1819f0822ff84d633a2cae7f652c6609f6f64e8a35fd52e5d2",
+          "source_file_sha256": "b69ade23fec81e1819f0822ff84d633a2cae7f652c6609f6f64e8a35fd52e5d2",
+          "source_path": "src/transport/sync/test_listener.rs",
+          "target_path": "vendor/ibapi/src/transport/sync/test_listener.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "7c963f824f5382c6602d77ac10fbf2f6079cac0ab0038a304be0f22fdfca89ee",
+          "source_file_sha256": "7c963f824f5382c6602d77ac10fbf2f6079cac0ab0038a304be0f22fdfca89ee",
+          "source_path": "src/transport/sync_tests.rs",
+          "target_path": "vendor/ibapi/src/transport/sync_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "845717cf6bd5c28cea568607b551bb785659eb1782c7532f0ef41fe2a2a729d6",
+          "source_file_sha256": "845717cf6bd5c28cea568607b551bb785659eb1782c7532f0ef41fe2a2a729d6",
+          "source_path": "src/transport/tests.rs",
+          "target_path": "vendor/ibapi/src/transport/tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "9403192ff8fdecca73cd2c4ba0dfa538ffe6de0d1a30836c8c31e767a757ff51",
+          "source_file_sha256": "9403192ff8fdecca73cd2c4ba0dfa538ffe6de0d1a30836c8c31e767a757ff51",
+          "source_path": "src/wsh/async.rs",
+          "target_path": "vendor/ibapi/src/wsh/async.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "61e394c888a51086581cd4aaf62b4d64ca93cb16b24f2aa195d1064ef8463308",
+          "source_file_sha256": "61e394c888a51086581cd4aaf62b4d64ca93cb16b24f2aa195d1064ef8463308",
+          "source_path": "src/wsh/async_tests.rs",
+          "target_path": "vendor/ibapi/src/wsh/async_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "5e6d306473ebca6ed215f3cb0003120ab1f68c29528e3006cb28e6962e3e9928",
+          "source_file_sha256": "5e6d306473ebca6ed215f3cb0003120ab1f68c29528e3006cb28e6962e3e9928",
+          "source_path": "src/wsh/builder.rs",
+          "target_path": "vendor/ibapi/src/wsh/builder.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "1ac1bd0e1648c567d5442e9be5e9d5217143eb6dc731eca818a0e53f6465b987",
+          "source_file_sha256": "1ac1bd0e1648c567d5442e9be5e9d5217143eb6dc731eca818a0e53f6465b987",
+          "source_path": "src/wsh/builder_tests.rs",
+          "target_path": "vendor/ibapi/src/wsh/builder_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "f2295c4dcae3256515c0616822927669abc1c4d6402fb871806ade6b86bce8fb",
+          "source_file_sha256": "f2295c4dcae3256515c0616822927669abc1c4d6402fb871806ade6b86bce8fb",
+          "source_path": "src/wsh/common/decoders.rs",
+          "target_path": "vendor/ibapi/src/wsh/common/decoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "e7a148f75b1a28174e5f0f9b34d33d38b90a848e6d7b1811202f538e71d84644",
+          "source_file_sha256": "e7a148f75b1a28174e5f0f9b34d33d38b90a848e6d7b1811202f538e71d84644",
+          "source_path": "src/wsh/common/decoders_tests.rs",
+          "target_path": "vendor/ibapi/src/wsh/common/decoders_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "a1edea087dc56c9be2ff993cf80631e8b5ad62a74a33f6633eb7eb7ec4006ceb",
+          "source_file_sha256": "a1edea087dc56c9be2ff993cf80631e8b5ad62a74a33f6633eb7eb7ec4006ceb",
+          "source_path": "src/wsh/common/encoders.rs",
+          "target_path": "vendor/ibapi/src/wsh/common/encoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "cb39bbd4a52101a8891af0fa4cf4ac904dc658f539c63583fc2815cca32134bd",
+          "source_file_sha256": "cb39bbd4a52101a8891af0fa4cf4ac904dc658f539c63583fc2815cca32134bd",
+          "source_path": "src/wsh/common/mod.rs",
+          "target_path": "vendor/ibapi/src/wsh/common/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "b8e610923d7a15ac9bfc2140902ca79a516a2b3d426546511b9ce7e74fafcd25",
+          "source_file_sha256": "b8e610923d7a15ac9bfc2140902ca79a516a2b3d426546511b9ce7e74fafcd25",
+          "source_path": "src/wsh/common/stream_decoders.rs",
+          "target_path": "vendor/ibapi/src/wsh/common/stream_decoders.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "d66da4c8651b522fe941fbd168f9f84b9e8a77e7736bc614cf7e294b1451622b",
+          "source_file_sha256": "d66da4c8651b522fe941fbd168f9f84b9e8a77e7736bc614cf7e294b1451622b",
+          "source_path": "src/wsh/common/test_data.rs",
+          "target_path": "vendor/ibapi/src/wsh/common/test_data.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "c0f89c1ead25311d8b9485cd71e8396553c5cf93f3573b080e907a2b5aab5b8a",
+          "source_file_sha256": "c0f89c1ead25311d8b9485cd71e8396553c5cf93f3573b080e907a2b5aab5b8a",
+          "source_path": "src/wsh/common/test_tables.rs",
+          "target_path": "vendor/ibapi/src/wsh/common/test_tables.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "66315432ced5a51178ac7762e587d97089b6dc6a24bbe88355fa603dfc01d47f",
+          "source_file_sha256": "66315432ced5a51178ac7762e587d97089b6dc6a24bbe88355fa603dfc01d47f",
+          "source_path": "src/wsh/common_tests.rs",
+          "target_path": "vendor/ibapi/src/wsh/common_tests.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "7f1c0b9dfef3dd548bd6f7a450c9dd22c28e5a36499947bc02ae3199313c7584",
+          "source_file_sha256": "7f1c0b9dfef3dd548bd6f7a450c9dd22c28e5a36499947bc02ae3199313c7584",
+          "source_path": "src/wsh/mod.rs",
+          "target_path": "vendor/ibapi/src/wsh/mod.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "6b1ad6334c939a611892a046adcb955d3eabd681a5421b9247fb59ca9b5b29a6",
+          "source_file_sha256": "6b1ad6334c939a611892a046adcb955d3eabd681a5421b9247fb59ca9b5b29a6",
+          "source_path": "src/wsh/sync.rs",
+          "target_path": "vendor/ibapi/src/wsh/sync.rs"
+        },
+        {
+          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
+          "adapted_target_sha256": "896290391787e77ffb10f74d3617c0d8a4cbed58ffbf17da51636c742b72223e",
+          "source_file_sha256": "896290391787e77ffb10f74d3617c0d8a4cbed58ffbf17da51636c742b72223e",
+          "source_path": "src/wsh/sync_tests.rs",
+          "target_path": "vendor/ibapi/src/wsh/sync_tests.rs"
+        }
+      ],
+      "source_git_tree": "0259ade7e3d59e458a192e50c9aa5d00c3210b92",
+      "source_repository": "wboayue/rust-ibapi",
+      "target_root": "vendor/ibapi",
+      "upstream_tag_reference": {
+        "commit": "f43c64682ab24b822dcd2892ff4208eac81813dc",
+        "note": "The immutable source commit used here is not the release tag target.",
+        "tag": "v5.0.0",
+        "verified_on": "2026-10-08"
+      }
+    },
     {
       "adaptations": [
         "zeroizing owned credentials and redacted Debug",
