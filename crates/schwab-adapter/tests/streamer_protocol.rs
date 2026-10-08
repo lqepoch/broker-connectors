@@ -1,189 +1,51 @@
-//! Exercises the extracted Schwab Streamer runtime through a fake socket port.
-//! Numeric service fields remain opaque; this test proves protocol reuse only.
-
-use std::future::Future;
-use std::sync::{Arc, Mutex};
-use std::time::Duration;
+//! Offline contract checks for the public Schwab Streamer decoder and state API.
+//! 仅验证公开 decoder 与订阅状态契约的离线合成用例。
 
 use schwab_streamer::{
-    AuthenticatedSessionFactory, ConnectionGeneration, PortFailure, ServiceReadiness,
-    ServiceStatusCause, SessionConfig, SessionEvent, SocketEvent, StreamerCommand, StreamerRuntime,
-    StreamerService, StreamerSocket,
+    AckDisposition, CommandAcknowledgement, ServiceReadiness, ServiceSubscriptionManager,
+    StreamerService, parse_streamer_frame,
 };
-use tokio::sync::mpsc;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-struct CommandObservation {
-    generation: u64,
-    request_id: u64,
-    service: &'static str,
-    command: &'static str,
-    fields: &'static str,
-}
-
-struct FakeSocketFactory {
-    inbound_tx: mpsc::Sender<Vec<u8>>,
-    inbound_rx: Option<mpsc::Receiver<Vec<u8>>>,
-    commands: Arc<Mutex<Vec<CommandObservation>>>,
-}
-
-struct FakeSocket {
-    inbound_tx: mpsc::Sender<Vec<u8>>,
-    inbound_rx: mpsc::Receiver<Vec<u8>>,
-    commands: Arc<Mutex<Vec<CommandObservation>>>,
-}
-
-impl AuthenticatedSessionFactory for FakeSocketFactory {
-    type Socket = FakeSocket;
-
-    fn connect_authenticated(
-        &mut self,
-        _generation: ConnectionGeneration,
-        _login_request_id: schwab_streamer::RequestId,
-    ) -> impl Future<Output = Result<Self::Socket, PortFailure>> + Send {
-        let result = self
-            .inbound_rx
-            .take()
-            .ok_or(PortFailure::ConnectFailed)
-            .map(|inbound_rx| FakeSocket {
-                inbound_tx: self.inbound_tx.clone(),
-                inbound_rx,
-                commands: Arc::clone(&self.commands),
-            });
-        std::future::ready(result)
-    }
-}
-
-impl StreamerSocket for FakeSocket {
-    async fn send_subscription(&mut self, command: &StreamerCommand) -> Result<(), PortFailure> {
-        let ack = format!(
-            "{{\"response\":[{{\"service\":\"{}\",\"requestid\":\"{}\",\"command\":\"{}\",\"timestamp\":1,\"content\":{{\"code\":0,\"msg\":\"OK\"}}}}]}}",
-            command.service().manifest().name(),
-            command.request_id().as_wire_value(),
-            command.command().name(),
-        )
-        .into_bytes();
-        let data = if command.service() == StreamerService::LevelOneEquities {
-            Some(
-                br#"{"data":[{"service":"LEVELONE_EQUITIES","timestamp":1700000000000,"command":"SUBS","content":[{"key":"SYNTHETIC-STREAM-KEY","45":12.3450,"52":"opaque-synthetic-field"}]}]}"#
-                    .to_vec(),
-            )
-        } else {
-            None
-        };
-        self.commands
-            .lock()
-            .expect("synthetic command record lock")
-            .push(CommandObservation {
-                generation: command.connection_generation().value(),
-                request_id: command.request_id().value(),
-                service: command.service().manifest().name(),
-                command: command.command().name(),
-                fields: command.fields(),
-            });
-        let sender = self.inbound_tx.clone();
-        sender
-            .send(ack)
-            .await
-            .map_err(|_| PortFailure::SendFailed)?;
-        if let Some(data) = data {
-            sender
-                .send(data)
-                .await
-                .map_err(|_| PortFailure::SendFailed)?;
-        }
-        Ok(())
-    }
-
-    async fn receive_frame(&mut self) -> Result<Option<Vec<u8>>, PortFailure> {
-        Ok(self.inbound_rx.recv().await)
-    }
-
-    async fn receive_event(&mut self) -> Result<Option<SocketEvent>, PortFailure> {
-        Ok(self.inbound_rx.recv().await.map(SocketEvent::Frame))
-    }
-}
-
-#[tokio::test]
-async fn fake_socket_drives_the_vendored_runtime_without_field_semantic_mapping() {
-    let (inbound_tx, inbound_rx) = mpsc::channel(16);
-    let commands = Arc::new(Mutex::new(Vec::new()));
-    let factory = FakeSocketFactory {
-        inbound_tx,
-        inbound_rx: Some(inbound_rx),
-        commands: Arc::clone(&commands),
-    };
-    let (runtime, channels) =
-        StreamerRuntime::new(factory, SessionConfig::default()).expect("default config is bounded");
-    channels
-        .control
-        .set_desired(StreamerService::LevelOneEquities, ["SYNTHETIC-STREAM-KEY"])
-        .expect("one synthetic instrument key is valid");
-    let task = tokio::spawn(runtime.run());
-    let mut critical = channels.critical;
-    let mut market_data = channels.market_data;
-
-    let ready = tokio::time::timeout(Duration::from_secs(2), async {
-        loop {
-            if let Some(SessionEvent::ServiceStatus {
-                service: StreamerService::LevelOneEquities,
-                readiness: ServiceReadiness::Ready,
-                cause: ServiceStatusCause::Acknowledged,
-                ..
-            }) = critical.recv().await
-            {
-                break;
-            }
-        }
-    })
-    .await;
-    assert!(
-        ready.is_ok(),
-        "matching synthetic ACK reaches SDK Ready state"
-    );
-
-    let update = tokio::time::timeout(Duration::from_secs(2), market_data.recv())
-        .await
-        .expect("synthetic market row arrives within the test deadline")
-        .expect("runtime has not shut down");
-    assert_eq!(update.service, StreamerService::LevelOneEquities);
-    assert_eq!(update.key, "SYNTHETIC-STREAM-KEY");
-    assert_eq!(update.generation.value(), 1);
-    assert_eq!(update.revision, 1);
-    assert_eq!(update.fields.get("45").unwrap().to_string(), "12.3450");
+#[test]
+fn public_surface_decodes_opaque_synthetic_wire_fields() {
+    let frame = br#"{"data":[{"service":"LEVELONE_EQUITIES","timestamp":1,"command":"UPDATE","content":[{"key":"SYNTH-EQ","1":123.45,"2":7}]}]}"#;
+    let decoded = parse_streamer_frame(frame).expect("bounded synthetic frame decodes");
+    let row = &decoded.data.expect("data payload exists")[0].content[0];
+    assert_eq!(row.key.as_deref(), Some("SYNTH-EQ"));
     assert_eq!(
-        update
-            .field_provenance
-            .get("45")
-            .expect("field provenance is retained")
-            .update_revision,
-        update.revision
+        row.fields.get("1").map(ToString::to_string),
+        Some("123.45".into())
     );
     assert_eq!(
-        update
-            .field_provenance
-            .get("52")
-            .expect("second field provenance is retained")
-            .update_revision,
-        update.revision
+        row.fields.get("2").map(ToString::to_string),
+        Some("7".into())
     );
+}
 
-    let observations = commands.lock().expect("synthetic command records").clone();
-    assert_eq!(observations.len(), 2);
-    assert_eq!(observations[0].service, "ACCT_ACTIVITY");
-    assert_eq!(observations[1].service, "LEVELONE_EQUITIES");
-    assert_eq!(observations[1].fields, "0,45,46,51,52");
-    assert!(
-        observations
-            .iter()
-            .all(|observation| observation.generation == 1 && observation.request_id > 0)
+#[test]
+fn public_subscription_state_tracks_ack_without_exposing_a_socket_runtime() {
+    let mut manager = ServiceSubscriptionManager::new();
+    manager
+        .set_desired(StreamerService::LevelOneEquities, ["SYNTH-EQ"])
+        .expect("synthetic desired key is valid");
+    let replay = manager.reconnect().expect("local generation starts");
+    let command = replay
+        .get(StreamerService::LevelOneEquities)
+        .expect("service command is generated");
+    assert_eq!(
+        manager.readiness(StreamerService::LevelOneEquities),
+        ServiceReadiness::Pending
     );
-
-    channels
-        .control
-        .shutdown()
-        .expect("runtime shutdown is bounded");
-    task.await
-        .expect("synthetic runtime task joined")
-        .expect("synthetic runtime shut down cleanly");
+    assert!(matches!(
+        manager.acknowledge(CommandAcknowledgement::new(
+            command.connection_generation(),
+            command.request_id(),
+            command.service(),
+            command.command(),
+            true,
+        )),
+        AckDisposition::Accepted {
+            readiness: ServiceReadiness::Ready
+        }
+    ));
 }

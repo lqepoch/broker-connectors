@@ -78,6 +78,9 @@ of this local validation flow.
 `vendor/schwab/SOURCE-MANIFEST.json`. Keep account reads bounded and read-only,
 use the single injected read-budget owner, and do not duplicate quota state.
 Streamer fields have no verified public dictionary here; keep them opaque and
-do not label them SIP/OPRA or project them into market quotes. Source SDK tests
-use fake transports or localhost-only TLS. Never run OAuth or contact a real
-Schwab provider as part of repository validation.
+do not label them SIP/OPRA or project them into market quotes. The public
+`schwab-streamer` API contains decoding and local state types only; its
+credential/login/socket runtime is compiled only in the crate's own unit tests.
+The adapter gate drops validated candidate credentials and does not connect a
+socket. Source SDK tests use fake transports or localhost-only TLS. Never run
+OAuth or contact a real Schwab provider as part of repository validation.

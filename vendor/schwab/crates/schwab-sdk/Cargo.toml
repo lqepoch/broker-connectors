@@ -7,7 +7,7 @@ license.workspace = true
 publish = false
 
 [dependencies]
-schwab-rest = { path = "../schwab-rest" }
+schwab-rest = { path = "../schwab-rest", version = "=0.1.0" }
 
 [dev-dependencies]
 tokio.workspace = true

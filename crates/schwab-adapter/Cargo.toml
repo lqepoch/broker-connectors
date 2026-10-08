@@ -12,8 +12,8 @@ broker-ports.workspace = true
 chrono.workspace = true
 domain.workspace = true
 market-contracts.workspace = true
-schwab-sdk = { path = "../../vendor/schwab/crates/schwab-sdk" }
-schwab-streamer = { path = "../../vendor/schwab/crates/schwab-streamer" }
+schwab-sdk = { path = "../../vendor/schwab/crates/schwab-sdk", version = "=0.1.0" }
+schwab-streamer = { path = "../../vendor/schwab/crates/schwab-streamer", version = "=0.1.0" }
 url.workspace = true
 zeroize.workspace = true
 

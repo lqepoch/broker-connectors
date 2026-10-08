@@ -24,7 +24,7 @@ use critical::CriticalBuffer;
 use market_data::MarketDataBuffer;
 
 pub use critical::CriticalEventReceiver;
-pub use market_data::{MarketDataFieldProvenance, MarketDataReceiver, MarketDataUpdate};
+pub use market_data::MarketDataReceiver;
 
 use crate::command::{
     AckDisposition, AckIgnoreReason, CommandAcknowledgement, ConnectionGeneration, RequestId,
@@ -274,25 +274,25 @@ impl SessionConfig {
             || self.reconnect_initial_delay.is_zero()
             || self.reconnect_max_delay < self.reconnect_initial_delay
         {
-            return Err(SessionConfigError::InvalidDuration);
+            return Err(SessionConfigError::Duration);
         }
         if self.control_capacity == 0 || self.control_capacity > MAX_CONTROL_CAPACITY {
-            return Err(SessionConfigError::InvalidControlCapacity {
+            return Err(SessionConfigError::ControlCapacity {
                 maximum: MAX_CONTROL_CAPACITY,
             });
         }
         if self.critical_capacity == 0 || self.critical_capacity > MAX_CRITICAL_CAPACITY {
-            return Err(SessionConfigError::InvalidCriticalCapacity {
+            return Err(SessionConfigError::CriticalCapacity {
                 maximum: MAX_CRITICAL_CAPACITY,
             });
         }
         if self.critical_bytes == 0 || self.critical_bytes > MAX_CRITICAL_BYTES {
-            return Err(SessionConfigError::InvalidCriticalBytes {
+            return Err(SessionConfigError::CriticalBytes {
                 maximum: MAX_CRITICAL_BYTES,
             });
         }
         if self.market_data_capacity == 0 || self.market_data_capacity > MAX_MARKET_DATA_KEYS {
-            return Err(SessionConfigError::InvalidMarketDataCapacity {
+            return Err(SessionConfigError::MarketDataCapacity {
                 maximum: MAX_MARKET_DATA_KEYS,
             });
         }
@@ -306,31 +306,31 @@ impl SessionConfig {
 pub enum SessionConfigError {
     /// Durations must be positive and max reconnect delay >= initial.
     /// 运行时期限必须为正且重连上限不能小于起始延迟。
-    InvalidDuration,
+    Duration,
     /// Control capacity was zero or exceeded its compile-time limit.
     /// 控制 mailbox 容量为零或超过固定上限。
-    InvalidControlCapacity {
+    ControlCapacity {
         /// Largest control-mailbox capacity accepted by this runtime.
         /// 该 runtime 接受的控制 mailbox 容量上限。
         maximum: usize,
     },
     /// Critical event capacity was zero or exceeded its compile-time limit.
     /// 关键事件队列容量为零或超过固定上限。
-    InvalidCriticalCapacity {
+    CriticalCapacity {
         /// Largest number of critical events the output queue may hold.
         /// 关键事件输出队列允许容纳的最大事件数。
         maximum: usize,
     },
     /// Critical byte capacity was zero or exceeded its compile-time limit.
     /// 关键事件字节预算为零或超过固定上限。
-    InvalidCriticalBytes {
+    CriticalBytes {
         /// Largest serialized payload budget accepted for critical events.
         /// 关键事件允许使用的最大序列化负载字节预算。
         maximum: usize,
     },
     /// Market-data capacity was zero or exceeded its compile-time limit.
     /// 行情合并容量为零或超过固定上限。
-    InvalidMarketDataCapacity {
+    MarketDataCapacity {
         /// Largest number of distinct market-data keys the coalescing buffer may retain.
         /// 行情合并缓冲区可保留的不同标的键数量上限。
         maximum: usize,
@@ -340,26 +340,26 @@ pub enum SessionConfigError {
 impl Display for SessionConfigError {
     fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            Self::InvalidDuration => formatter.write_str("invalid Streamer session duration"),
-            Self::InvalidControlCapacity { maximum } => {
+            Self::Duration => formatter.write_str("invalid Streamer session duration"),
+            Self::ControlCapacity { maximum } => {
                 write!(
                     formatter,
                     "control capacity must be between 1 and {maximum}"
                 )
             }
-            Self::InvalidCriticalCapacity { maximum } => {
+            Self::CriticalCapacity { maximum } => {
                 write!(
                     formatter,
                     "critical capacity must be between 1 and {maximum}"
                 )
             }
-            Self::InvalidCriticalBytes { maximum } => {
+            Self::CriticalBytes { maximum } => {
                 write!(
                     formatter,
                     "critical byte capacity must be between 1 and {maximum}"
                 )
             }
-            Self::InvalidMarketDataCapacity { maximum } => {
+            Self::MarketDataCapacity { maximum } => {
                 write!(
                     formatter,
                     "market-data capacity must be between 1 and {maximum}"

@@ -32,9 +32,9 @@ precision. The source-to-target version adaptation is recorded in
 `vendor/schwab/SOURCE-MANIFEST.json`.
 
 The current workspace pins `domain` and `market-contracts`, and their transitive
-`exact-decimal` package, to the same immutable RawCore7 revision
-`0d23c2e9f9e29c97d3f386c48cc47b9fd7909d7b` (tree
-`2dece30e7bf31c13899cf67508bdff5c235ebbab`). Cargo.lock records one shared
+`exact-decimal` package, to the same immutable trading-core PR 11 revision
+`23a87d5b5a549e4489c1a2844c4132c43148fe6b` (tree
+`f7b0c789bdc16c4695730d349cd519d2196900c7`). Cargo.lock records one shared
 revision so adapters and consumers use the same Rust domain and market-contract
 types. `SOURCE-MANIFEST.json` records that pin for all three packages.
 

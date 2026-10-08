@@ -437,6 +437,7 @@ def check_schwab_extraction(document: dict, project_paths: set[str]) -> None:
 
     root_sources = {entry["target_path"]: entry for entry in document["source_files"]}
     selected_targets: set[str] = set()
+    allowed_adaptation_categories = {"code", "documentation", "tests", "manifest"}
     for entry in extraction["files"]:
         target_name = entry["target_path"]
         if not target_name.startswith(f"{target_root}/") or target_name in selected_targets:
@@ -444,6 +445,32 @@ def check_schwab_extraction(document: dict, project_paths: set[str]) -> None:
         selected_targets.add(target_name)
         require_hash(entry.get("source_sha256"), f"Schwab source {entry['source_path']}")
         require_git_sha(entry.get("source_git_blob"), f"Schwab Git blob {entry['source_path']}")
+        source_hash = entry["source_sha256"]
+        target_hash = entry.get("target_sha256")
+        adaptation = entry.get("adaptation")
+        categories = entry.get("change_categories")
+        if source_hash == target_hash:
+            exact_copy = (
+                isinstance(adaptation, str)
+                and "exact source-pin copy" in adaptation.lower()
+            )
+            if categories != [] or not exact_copy:
+                raise ValueError(
+                    f"unchanged Schwab source must be recorded as an exact copy: {target_name}"
+                )
+        elif (
+            not isinstance(adaptation, str)
+            or not adaptation.strip()
+            or "exact source-pin copy" in adaptation.lower()
+            or not isinstance(categories, list)
+            or not categories
+            or not set(categories).issubset(allowed_adaptation_categories)
+            or categories != sorted(set(categories))
+        ):
+            raise ValueError(
+                "adapted Schwab source needs truthful per-file changes and categories: "
+                f"{target_name}"
+            )
         target = checked_path(target_name)
         if not target.is_file() or sha256(target) != entry.get("target_sha256"):
             raise ValueError(f"Schwab target hash mismatch: {target_name}")
@@ -454,6 +481,8 @@ def check_schwab_extraction(document: dict, project_paths: set[str]) -> None:
             or root_entry.get("source_blob_sha256") != entry["source_sha256"]
             or root_entry.get("source_git_blob") != entry["source_git_blob"]
             or root_entry.get("adapted_target_sha256") != entry["target_sha256"]
+            or root_entry.get("adaptation") != adaptation
+            or root_entry.get("change_categories") != categories
         ):
             raise ValueError(f"Schwab root and selected-source manifests disagree: {target_name}")
 
@@ -515,6 +544,66 @@ def check_schwab_extraction(document: dict, project_paths: set[str]) -> None:
             or manifest_path not in sbom_item.get("sourceInfo", "")
         ):
             raise ValueError(f"Schwab source package metadata mismatch: {key}")
+
+    check_schwab_runtime_surface()
+
+
+def check_schwab_runtime_surface() -> None:
+    library = checked_path("vendor/schwab/crates/schwab-streamer/src/lib.rs").read_text(
+        encoding="utf-8"
+    )
+    adapter_gate = checked_path("crates/schwab-adapter/src/streamer_gate.rs").read_text(
+        encoding="utf-8"
+    )
+    factory = checked_path("vendor/schwab/crates/schwab-streamer/src/factory.rs").read_text(
+        encoding="utf-8"
+    )
+    manifest = tomllib.loads(
+        checked_path("vendor/schwab/crates/schwab-streamer/Cargo.toml").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    for module in ("credentials", "factory", "protocol", "session", "socket"):
+        if f"#[cfg(test)]\nmod {module};" not in library:
+            raise ValueError(f"Schwab authenticated module is not test-only: {module}")
+        if f"pub use {module}::" in library or f"pub use {module} {{" in library:
+            raise ValueError(f"Schwab authenticated module is publicly re-exported: {module}")
+    if (
+        "StreamerCredentialProvider" in adapter_gate
+        or "StreamerSessionCredentials" in adapter_gate
+        or "StreamerLoginSecret" in adapter_gate
+        or "connect_async" in adapter_gate
+        or "send_login" in adapter_gate
+    ):
+        raise ValueError("Schwab adapter bootstrap gate exposes a credential-send path")
+    if not all(
+        phrase in adapter_gate
+        for phrase in ("pub async fn validate_bootstrap", "drop(lease)", "self.url == value")
+    ):
+        raise ValueError("Schwab adapter gate no longer validates-and-drops an exact URL lease")
+
+    validation = factory.find("if !endpoint_allowed(endpoint, allow_loopback_ws)")
+    connect = factory.find("let socket = connector().await?;", validation)
+    serialize = factory.find("let login_payload = serialize_login()?;", connect)
+    if validation < 0 or connect < 0 or serialize < 0:
+        raise ValueError(
+            "Schwab test-only factory must reject before connect and LOGIN serialization"
+        )
+    if "allow_loopback_ws\n        && url.scheme() == \"ws\"" not in factory:
+        raise ValueError("Schwab test-only factory must reject remote WSS targets")
+
+    normal_dependencies = manifest.get("dependencies", {})
+    test_only_dependencies = {
+        "futures-util",
+        "sha2",
+        "tokio",
+        "tokio-tungstenite",
+        "url",
+        "zeroize",
+    }
+    if test_only_dependencies.intersection(normal_dependencies):
+        raise ValueError("Schwab test-only runtime dependency leaked into the public library")
 
 
 def check_ibkr_vendor_diagnostics() -> None:

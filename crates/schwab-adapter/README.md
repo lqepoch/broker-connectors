@@ -20,15 +20,16 @@ requested page bound, and never truncate. Open-order and fill reads return
 `Unsupported`: the source query types do not establish a complete bounded
 cursor contract. This crate does not convert REST quotes into stream events.
 
-The Streamer gate requires an injected bootstrap source, a nonempty exact
-lowercase DNS-host/port allowlist, a fresh zeroizing token lease, and a WSS URL
-matching that allowlist. This crate does not implement OAuth, token storage, or
-the `userPreference` bootstrap source. No `BrokerEventPort` or market-event
-converter is enabled. Numeric Schwab field IDs remain opaque until an
-authoritative mapping is available. The protocol integration test supplies a
-fake socket to the extracted `schwab-streamer` runtime and checks ACK,
-generation, sparse-field revision, and raw field preservation without assigning
-field meanings.
+The Streamer gate only validates a fresh zeroizing candidate lease against an
+explicit exact full-URL WSS allowlist and then drops the lease. It does not
+return credentials or connect a socket. The public `schwab-streamer` library
+exports its bounded decoder and subscription-state types; the extracted
+credential, LOGIN, socket, and session runtime is compiled only for that crate's
+own loopback unit tests. No production Streamer runtime, OAuth bootstrap,
+`userPreference` source, `BrokerEventPort`, or market-event converter is
+available. Numeric Schwab field IDs remain opaque until authoritative evidence
+is available. The adapter integration tests exercise only public decoding and
+local subscription-state transitions; they do not test a provider connection.
 
 See [`docs/schwab-adapter.md`](../../docs/schwab-adapter.md) for source pin,
 license, protocol evidence, blockers, and validation status.

@@ -10,6 +10,8 @@ use super::{
     SchwabStreamerGate, SchwabStreamerGateError, TrustedWssEndpoint,
 };
 
+const ALLOWLISTED_URL: &str = "wss://streamer.example.invalid:443/provided/path?session=synthetic";
+
 struct FakeBootstrap {
     namespace: AccountNamespace,
     lease: Mutex<Option<SchwabStreamerBootstrapLease>>,
@@ -60,117 +62,79 @@ fn gate(socket_url: &str, expires_at: SystemTime) -> SchwabStreamerGate<FakeBoot
     });
     SchwabStreamerGate::new(
         namespace,
-        [TrustedWssEndpoint::new("streamer.example.invalid", 443)
-            .expect("synthetic exact endpoint is valid")],
+        [TrustedWssEndpoint::new(ALLOWLISTED_URL).expect("synthetic exact endpoint is valid")],
         bootstrap,
     )
     .expect("explicit allowlist and source are required")
 }
 
 #[test]
-fn endpoint_allowlist_rejects_empty_wildcard_ip_and_noncanonical_hosts() {
-    assert_eq!(
-        TrustedWssEndpoint::new("*.example.invalid", 443),
-        Err(SchwabStreamerGateError::InvalidAllowlist)
-    );
-    assert_eq!(
-        TrustedWssEndpoint::new("127.0.0.1", 443),
-        Err(SchwabStreamerGateError::InvalidAllowlist)
-    );
-    assert_eq!(
-        TrustedWssEndpoint::new("Streamer.example.invalid", 443),
-        Err(SchwabStreamerGateError::InvalidAllowlist)
-    );
+fn endpoint_allowlist_requires_a_full_wss_url_without_userinfo_or_fragment() {
+    for invalid in [
+        "",
+        "ws://streamer.example.invalid/path",
+        "wss:///path",
+        "wss://user@streamer.example.invalid/path",
+        "wss://@streamer.example.invalid/path",
+        "wss://streamer.example.invalid/path#fragment",
+        "wss://streamer.example.invalid:0/path",
+        "https://streamer.example.invalid/path",
+    ] {
+        assert_eq!(
+            TrustedWssEndpoint::new(invalid),
+            Err(SchwabStreamerGateError::InvalidAllowlist),
+            "rejected endpoint candidate: {invalid}"
+        );
+    }
 }
 
 #[tokio::test]
-async fn source_sdk_credential_provider_requires_exact_wss_host_and_live_lease() {
-    use schwab_streamer::StreamerCredentialProvider;
-
-    let mut gate = gate(
-        "wss://streamer.example.invalid:443/private?synthetic=opaque",
-        SystemTime::now() + Duration::from_secs(30),
-    );
-    let credentials = gate
-        .load_session_credentials()
-        .await
-        .expect("fake credential source and explicit endpoint gate accept the synthetic lease");
+async fn validation_returns_no_credential_object_and_drops_a_matching_lease() {
+    let gate = gate(ALLOWLISTED_URL, SystemTime::now() + Duration::from_secs(30));
+    let result: Result<(), SchwabStreamerGateError> = gate.validate_bootstrap().await;
+    assert_eq!(result, Ok(()));
+    assert!(matches!(
+        gate.validate_bootstrap().await,
+        Err(SchwabStreamerGateError::BootstrapUnavailable)
+    ));
     assert!(!format!("{gate:?}").contains("synthetic"));
-    drop(credentials);
 }
 
 #[tokio::test]
-async fn wrong_host_scheme_port_and_expired_lease_fail_closed() {
-    let wrong_host = gate(
-        "wss://unexpected.example.invalid:443/private?synthetic=opaque",
-        SystemTime::now() + Duration::from_secs(30),
-    );
-    assert!(matches!(
-        wrong_host.load_credentials().await,
-        Err(SchwabStreamerGateError::EndpointNotAllowed)
-    ));
+async fn exact_url_allowlist_rejects_host_port_path_query_case_and_scheme_variants() {
+    for candidate in [
+        "wss://unexpected.example.invalid:443/provided/path?session=synthetic",
+        "wss://streamer.example.invalid.attacker.test:443/provided/path?session=synthetic",
+        "wss://streamer.example.invalid:8443/provided/path?session=synthetic",
+        "wss://streamer.example.invalid:443/other/path?session=synthetic",
+        "wss://streamer.example.invalid:443/provided/path?session=other",
+        "wss://STREAMER.example.invalid:443/provided/path?session=synthetic",
+        "wss://stréamer.example.invalid:443/provided/path?session=synthetic",
+        "ws://streamer.example.invalid:443/provided/path?session=synthetic",
+        "wss://user@streamer.example.invalid:443/provided/path?session=synthetic",
+        "wss://@streamer.example.invalid:443/provided/path?session=synthetic",
+        "wss://streamer.example.invalid:443/provided/path?session=synthetic#fragment",
+    ] {
+        let gate = gate(candidate, SystemTime::now() + Duration::from_secs(30));
+        assert!(matches!(
+            gate.validate_bootstrap().await,
+            Err(SchwabStreamerGateError::EndpointNotAllowed)
+        ));
+    }
+}
 
-    let wrong_scheme = gate(
-        "ws://streamer.example.invalid:443/private",
-        SystemTime::now() + Duration::from_secs(30),
-    );
+#[tokio::test]
+async fn expired_lease_fails_closed_before_endpoint_acceptance() {
+    let gate = gate(ALLOWLISTED_URL, SystemTime::now() - Duration::from_secs(1));
     assert!(matches!(
-        wrong_scheme.load_credentials().await,
-        Err(SchwabStreamerGateError::EndpointNotAllowed)
-    ));
-
-    let wrong_port = gate(
-        "wss://streamer.example.invalid:8443/private",
-        SystemTime::now() + Duration::from_secs(30),
-    );
-    assert!(matches!(
-        wrong_port.load_credentials().await,
-        Err(SchwabStreamerGateError::EndpointNotAllowed)
-    ));
-
-    let userinfo = gate(
-        "wss://user@streamer.example.invalid:443/private",
-        SystemTime::now() + Duration::from_secs(30),
-    );
-    assert!(matches!(
-        userinfo.load_credentials().await,
-        Err(SchwabStreamerGateError::EndpointNotAllowed)
-    ));
-
-    let empty_userinfo = gate(
-        "wss://@streamer.example.invalid:443/private",
-        SystemTime::now() + Duration::from_secs(30),
-    );
-    assert!(matches!(
-        empty_userinfo.load_credentials().await,
-        Err(SchwabStreamerGateError::EndpointNotAllowed)
-    ));
-
-    let fragment = gate(
-        "wss://streamer.example.invalid:443/private#unexpected",
-        SystemTime::now() + Duration::from_secs(30),
-    );
-    assert!(matches!(
-        fragment.load_credentials().await,
-        Err(SchwabStreamerGateError::EndpointNotAllowed)
-    ));
-
-    let expired = gate(
-        "wss://streamer.example.invalid/private",
-        SystemTime::now() - Duration::from_secs(1),
-    );
-    assert!(matches!(
-        expired.load_credentials().await,
+        gate.validate_bootstrap().await,
         Err(SchwabStreamerGateError::LeaseExpired)
     ));
 }
 
 #[test]
 fn bootstrap_material_debug_is_redacted() {
-    let material = lease(
-        "wss://streamer.example.invalid/private?synthetic=opaque",
-        SystemTime::now() + Duration::from_secs(30),
-    );
+    let material = lease(ALLOWLISTED_URL, SystemTime::now() + Duration::from_secs(30));
     let debug = format!("{material:?}");
     assert!(!debug.contains("synthetic-access-token"));
     assert!(!debug.contains("streamer.example.invalid"));

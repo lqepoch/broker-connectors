@@ -37,12 +37,16 @@ entitlement, or tradeability.
 
 ## Streamer is out of scope
 
-This crate does not include or connect the Streamer. In the current separate
-`schwab-streamer` implementation, credentials accept any `wss://` host and the
-factory permits any `wss` endpoint before sending LOGIN credentials. A caller
-must not treat a URL from REST preferences as an authorized destination. An
-authenticated endpoint allowlist and production authentication/runtime wiring
-remain separate work before Streamer connectivity can be composed safely.
+This crate does not include or connect the Streamer. The extracted public
+`schwab-streamer` API contains a bounded frame decoder, opaque wire values,
+service manifests, and subscription acknowledgement state. Credential,
+LOGIN-serialization, socket, factory, and authenticated-session modules are
+compiled only for `schwab-streamer`'s own unit tests and are not a downstream
+runtime API. Its synthetic socket tests do not establish provider connectivity.
+
+A URL returned by REST preferences does not establish endpoint authority. This
+extraction has no official endpoint allowlist, production bootstrap, or
+provider field dictionary; production Streamer connectivity remains blocked.
 
 ## Project adapters
 

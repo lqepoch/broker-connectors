@@ -27,6 +27,7 @@ def update_schwab_targets(document: dict) -> None:
         if root_entry is None:
             raise ValueError(f"Schwab source missing from root manifest: {entry['target_path']}")
         root_entry["adaptation"] = entry["adaptation"]
+        root_entry["change_categories"] = entry["change_categories"]
         root_entry["adapted_target_sha256"] = entry["target_sha256"]
 
     SCHWAB_MANIFEST.write_text(

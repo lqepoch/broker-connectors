@@ -2,8 +2,9 @@
 
 This file is an implementation review map for the bounded Rust read-only REST
 slice in #172. It records which current Node GET helpers have an equivalent
-request builder and response family. It does not claim that the full public
-SDK, OAuth, retry/admission policy, or execution path has migrated.
+request builder and response family. Coverage is limited to the bounded read-only
+REST slice; broader SDK features and the admission and order lifecycles remain
+outside this migration.
 
 ## Node GET helpers mapped in this crate
 

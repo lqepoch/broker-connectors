@@ -5,18 +5,9 @@ use std::error::Error;
 use std::fmt::{self, Debug, Display, Formatter};
 use std::future::Future;
 
+use crate::{MAX_STREAMER_METADATA_BYTES, MAX_STREAMER_SOCKET_URL_BYTES, MAX_STREAMER_TOKEN_BYTES};
 use url::Url;
 use zeroize::Zeroizing;
-
-/// Maximum accepted access-token bytes retained for a Streamer LOGIN.
-/// 中文摘要：Streamer LOGIN bearer token 接受的最大 UTF-8 字节数。
-pub const MAX_STREAMER_TOKEN_BYTES: usize = 8 * 1024;
-/// Maximum UTF-8 bytes accepted for a dynamic Streamer WebSocket URL.
-/// 中文摘要：动态 Streamer WebSocket URL 接受的最大 UTF-8 字节数。
-pub const MAX_STREAMER_SOCKET_URL_BYTES: usize = 4 * 1024;
-/// Maximum UTF-8 bytes accepted for each Streamer metadata string.
-/// 中文摘要：每个 Streamer LOGIN 元数据字符串的最大 UTF-8 字节数。
-pub const MAX_STREAMER_METADATA_BYTES: usize = 512;
 
 /// Secret token material that cannot be formatted, cloned, or serialized.
 ///
@@ -32,7 +23,7 @@ impl StreamerLoginSecret {
     /// 中文摘要：校验输入并构造该类型的值；具体格式、大小上限和脱敏边界见类型说明。
     ///
     /// # Errors
-    /// Returns [`CredentialInputError::InvalidBearer`] for an empty, oversized,
+    /// Returns [`CredentialInputError::Bearer`] for an empty, oversized,
     /// or malformed bearer value.
     pub fn new(value: impl Into<String>) -> Result<Self, CredentialInputError> {
         Self::from_zeroizing(Zeroizing::new(value.into()))
@@ -43,11 +34,11 @@ impl StreamerLoginSecret {
     /// 中文摘要：校验已启用 zeroize 的 bearer 缓冲区并接管所有权，不额外创建应用层副本。
     ///
     /// # Errors
-    /// Returns [`CredentialInputError::InvalidBearer`] for an empty, oversized,
+    /// Returns [`CredentialInputError::Bearer`] for an empty, oversized,
     /// or malformed bearer value.
     pub fn from_zeroizing(value: Zeroizing<String>) -> Result<Self, CredentialInputError> {
         if !is_valid_bearer(value.as_str()) {
-            return Err(CredentialInputError::InvalidBearer);
+            return Err(CredentialInputError::Bearer);
         }
         Ok(Self(value))
     }
@@ -87,8 +78,8 @@ impl StreamerSessionCredentials {
     /// 中文摘要：校验输入并构造该类型的值；具体格式、大小上限和脱敏边界见类型说明。
     ///
     /// # Errors
-    /// Returns [`CredentialInputError::InvalidSocketUrl`] when the endpoint is
-    /// malformed or insecure, or [`CredentialInputError::InvalidMetadata`]
+    /// Returns [`CredentialInputError::SocketUrl`] when the endpoint is
+    /// malformed or insecure, or [`CredentialInputError::Metadata`]
     /// when a required login field is empty, oversized, or contains controls.
     pub fn new(
         socket_url: impl Into<String>,
@@ -208,21 +199,21 @@ impl Error for CredentialProviderFailure {}
 pub enum CredentialInputError {
     /// The access token is empty, oversized, or outside the bearer alphabet.
     /// 登录 bearer token 为空、格式错误或过长。
-    InvalidBearer,
+    Bearer,
     /// The Streamer URL is invalid or violates secure-endpoint policy.
     /// socket URL 不符合必需的 wss URL 语法。
-    InvalidSocketUrl,
+    SocketUrl,
     /// A required metadata value is empty, oversized, or contains controls.
     /// 必需的 Streamer 元数据缺失或超出大小上限。
-    InvalidMetadata,
+    Metadata,
 }
 
 impl Display for CredentialInputError {
     fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
         formatter.write_str(match self {
-            Self::InvalidBearer => "invalid Streamer bearer value",
-            Self::InvalidSocketUrl => "invalid or insecure Streamer endpoint",
-            Self::InvalidMetadata => "invalid Streamer login metadata",
+            Self::Bearer => "invalid Streamer bearer value",
+            Self::SocketUrl => "invalid or insecure Streamer endpoint",
+            Self::Metadata => "invalid Streamer login metadata",
         })
     }
 }
@@ -249,22 +240,22 @@ fn validate_metadata(value: &str) -> Result<(), CredentialInputError> {
         || value.len() > MAX_STREAMER_METADATA_BYTES
         || value.chars().any(char::is_control)
     {
-        return Err(CredentialInputError::InvalidMetadata);
+        return Err(CredentialInputError::Metadata);
     }
     Ok(())
 }
 
 fn validate_socket_url(value: &str, allow_loopback_ws: bool) -> Result<(), CredentialInputError> {
     if value.is_empty() || value.len() > MAX_STREAMER_SOCKET_URL_BYTES {
-        return Err(CredentialInputError::InvalidSocketUrl);
+        return Err(CredentialInputError::SocketUrl);
     }
-    let url = Url::parse(value).map_err(|_| CredentialInputError::InvalidSocketUrl)?;
+    let url = Url::parse(value).map_err(|_| CredentialInputError::SocketUrl)?;
     if url.host_str().is_none()
         || !url.username().is_empty()
         || url.password().is_some()
         || url.fragment().is_some()
     {
-        return Err(CredentialInputError::InvalidSocketUrl);
+        return Err(CredentialInputError::SocketUrl);
     }
     if url.scheme() == "wss" {
         return Ok(());
@@ -273,7 +264,7 @@ fn validate_socket_url(value: &str, allow_loopback_ws: bool) -> Result<(), Crede
     if allow_loopback_ws && url.scheme() == "ws" && is_loopback {
         return Ok(());
     }
-    Err(CredentialInputError::InvalidSocketUrl)
+    Err(CredentialInputError::SocketUrl)
 }
 
 #[cfg(test)]
@@ -317,11 +308,11 @@ mod tests {
                 "function",
                 secret,
             ),
-            Err(CredentialInputError::InvalidSocketUrl)
+            Err(CredentialInputError::SocketUrl)
         ));
         assert!(matches!(
             StreamerLoginSecret::new("bad token".to_owned()),
-            Err(CredentialInputError::InvalidBearer)
+            Err(CredentialInputError::Bearer)
         ));
 
         let oversized_endpoint = format!("wss://example.invalid/{}", "x".repeat(4096));
@@ -335,7 +326,7 @@ mod tests {
                 StreamerLoginSecret::new("synthetic-access-token".to_owned())
                     .expect("synthetic bearer is valid"),
             ),
-            Err(CredentialInputError::InvalidSocketUrl)
+            Err(CredentialInputError::SocketUrl)
         ));
     }
 }

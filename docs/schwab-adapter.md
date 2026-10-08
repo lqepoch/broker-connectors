@@ -21,8 +21,12 @@ source repository's license. The existing target `LICENSE-MIT` and
 claim to grant Schwab API access, account authority, or market-data rights.
 
 The source packages retain their fixed HTTPS GET routes, injected token and
-transport ports, bounded response parser, no-auto-retry behavior, source SDK
-error categories, and native Streamer protocol/runtime. The three Cargo
+transport ports, bounded response parser, no-auto-retry behavior, and source
+SDK error categories. Schwab Streamer's public target library exposes only the
+bounded decoder, opaque protocol values, fixed service manifests, and local
+subscription-state types. Authentication, credential, socket, and session
+runtime modules compile only in the `schwab-streamer` crate's own unit-test
+build. The three Cargo
 packages inherit the target's authorized `MIT OR Apache-2.0` metadata. The
 workspace pins `serde_json=1.0.151` with `arbitrary_precision`; `schwab-streamer`
 pins `sha2=0.11.0` directly while the existing Alpaca stream keeps its
@@ -38,9 +42,10 @@ per file in both manifests.
 | Account summary read | Available as a bounded read-only adapter call | Uses the pinned SDK's account `GET`, an explicit opaque broker hash, and the injected shared read-budget owner; account numbers are discarded. |
 | Positions read | Available as one bounded page | Rejects caller cursors and oversized responses; it does not invent continuation or completeness evidence. |
 | Open orders and fills | Unsupported | The selected source query contract has no cursor/completeness proof, so the adapter returns `Unsupported` without sending a request. |
-| Schwab Streamer protocol | Synthetic protocol path only | The extracted runtime is driven by a fake socket; ACK, generation, sparse revisions, and raw field keys are tested without assigning field meanings. |
+| Schwab Streamer protocol | Public decoder and state types only | Adapter tests decode synthetic opaque fields and check local subscription-state transitions. No public socket or authenticated runtime is exported. |
 | Stream-to-market-event conversion | Blocked | Numeric field IDs remain opaque; no quote/Greek mapping, SIP/OPRA label, or timestamp unit is inferred. |
-| Stream bootstrap and provider connection | Blocked | The gate requires an injected fresh bootstrap source, zeroizing token lease, and exact WSS host/port allowlist. This repository supplies no production bootstrap owner or provider allowlist. |
+| Stream bootstrap validation | Blocked without a provider | An injected source and an exact full-URL WSS allowlist can validate and immediately drop a candidate zeroizing lease. This gate does not return credentials or connect a socket. No production bootstrap owner or official endpoint allowlist is present. |
+| Stream provider connection and LOGIN | Unavailable in the public library | Native credential, LOGIN, socket, and session modules are test-only; no production code path can construct them through the SDK API. |
 | Order placement, replace, cancel, or OAuth | Not implemented | No write facade, OAuth flow, or broker call is included in this extraction. |
 | Generic account-event port | No provider implementation | The shared contract exists, but this adapter does not publish account events. |
 
@@ -84,41 +89,56 @@ evidence to map IDs to price, size, or Greeks. No numeric field is translated
 into a market quote, no event is labeled SIP/OPRA, and no provider timestamp
 unit is inferred.
 
-`SchwabStreamerGate` requires all three inputs before the extracted SDK
-credential trait can produce a session: an application-supplied fresh
-`userPreference`/access-token-lease source, a zeroizing lease, and a nonempty
-exact host/port allowlist. It rejects expired leases, insecure schemes, and
-host/port mismatches. There is no production bootstrap implementation or
-provider allowlist in this repository, so production streaming remains
+`SchwabStreamerGate` requires an application-supplied fresh
+`userPreference`/access-token-lease source and an explicit allowlist of exact
+full WSS URL strings. The URL's scheme, host, user information, and fragment
+are validated; path and query are compared only as part of the complete exact
+URL, without assuming a fixed provider path or host. The gate rejects expired
+leases and drops accepted candidates without returning a credential object.
+There is no production bootstrap implementation, official endpoint allowlist,
+or public authenticated runtime in this repository. Provider streaming remains
 **BLOCKED**. No real provider connection, OAuth call, or token load was run.
 
-The target fake-socket test drives the extracted `StreamerRuntime` and its
-`StreamerSocket`/`AuthenticatedSessionFactory` traits. It confirms matching ACK
-readiness, connection generation, sparse field revision, and uninterpreted
-wire keys. It is protocol-only synthetic evidence, not provider compatibility
-or market-data acceptance evidence.
+`schwab-streamer`'s own unit tests still exercise the pinned source runtime
+against localhost-only synthetic sockets. Those private module paths compile
+only in the crate's unit-test build; they are not in the downstream public
+library API. Adapter integration tests use only the public decoder and local
+subscription-state manager. These are protocol-only synthetic checks, not
+provider compatibility or market-data acceptance evidence.
 
 ## Validation status
 
-The offline Schwab and shared-port test suites passed on the RawCore7-pinned
-workspace snapshot:
+The final integrated workspace uses Core `domain`, `market-contracts`, and
+`exact-decimal` from the published trading-core revision
+`23a87d5b5a549e4489c1a2844c4132c43148fe6b` (tree
+`f7b0c789bdc16c4695730d349cd519d2196900c7`). The full nine-package workspace
+passes these offline gates with the Rust 1.99.0 toolchain:
 
 ```text
-CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR=/root/.cache/lqepoch/broker-connectors-target \
-  cargo +1.99.0 test -p broker-ports -p schwab-rest -p schwab-sdk \
-  -p schwab-streamer -p schwab-adapter --locked --offline
-184 passed; 4 ignored
+CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 CARGO_TARGET_DIR=/root/.cache/lqepoch/broker-connectors-target \
+  cargo +1.99.0 test --workspace --all-features --locked --offline
+313 passed; 4 ignored; 0 failed
 
-CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR=/root/.cache/lqepoch/broker-connectors-target \
-  cargo +1.99.0 clippy -p schwab-rest -p schwab-sdk -p schwab-streamer \
-  -p schwab-adapter --all-targets --no-deps --locked --offline -- -D warnings
+CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 CARGO_TARGET_DIR=/root/.cache/lqepoch/broker-connectors-target \
+  cargo +1.99.0 clippy --workspace --all-targets --all-features --locked --offline -- -D warnings
+passed
+
+cargo +1.99.0 deny --all-features --locked --offline check all
+passed
+
+cargo +1.99.0 fmt --all -- --check
+passed
+
+python3 scripts/generate_spdx_sbom.py
+python3 scripts/update_source_manifest_hashes.py
+python3 scripts/check_vendor_provenance.py
 passed
 ```
 
 Static source-hash checks also matched all 88 root imported-source entries and
 66 selected Schwab source entries to their recorded target hashes; all 66
 selected source hashes and Git blobs matched the immutable source pin. Final
-workspace formatting, integrated SBOM/provenance regeneration, full-workspace
-gates, and secret scanning remain pending on the final integrated head. Real
-Schwab REST/Streamer access, OAuth, live accounts, Windows/macOS execution, and
-market-data entitlement are **NOT RUN**.
+selected source hashes and Git blobs matched the immutable source pin. Gitleaks
+range and working-tree scans are recorded separately for the frozen commit.
+Real Schwab REST/Streamer access, OAuth, live accounts, Windows/macOS execution,
+and market-data entitlement are **NOT RUN**.
