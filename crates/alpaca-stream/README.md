@@ -18,7 +18,9 @@ market application frames; outbound authentication/subscription messages and
 authentication diagnostics are never captured. A frame is at most 1 MiB;
 outstanding frame leases are bounded to 16 MiB and 1,024 records process-wide.
 Normalized events refer to the canonical port generation, frame sequence, exact
-frame hash, and 1-based ordinal/count. A durable capture also carries one
+frame hash, and 1-based ordinal/count. Their UTC receive timestamp is copied
+from that same socket frame's raw capture; the separate monotonic ingest clock
+continues to record local processing order. A durable capture also carries one
 `RawFrameCaptureKey` with `(capture UUID, source-local generation, frame
 sequence, exact SHA-256)`. Canonical generation and source-local generation are
 separate lineages: the former sequences public port records, while the latter
@@ -71,6 +73,60 @@ does not implement stock SIP or historical REST, does not establish the account'
 OPRA entitlement, and does not qualify an option symbol or binary-float price as
 source-exact. Larger subscriptions require a separately versioned bounded ACK
 contract; they are not split into chunks or represented as partial success.
+
+The `offline-test-support` feature is default-off. It exposes one fixed reviewed
+MessagePack fixture through `capture_reviewed_fixture`; the in-process script
+drives the same session runner, raw sink ACK path, and `EventProjector` used by
+the live adapter. Its public input is a closed one-variant fixture enum, a
+`RawFrameSinkFactory`, and a cancellation receiver:
+
+```rust
+pub async fn capture_reviewed_fixture(
+    fixture_id: ReviewedFixtureId,
+    sink_factory: std::sync::Arc<dyn broker_ports::RawFrameSinkFactory>,
+    cancellation: tokio::sync::watch::Receiver<bool>,
+) -> Result<OfflineFixtureCapture, OfflineFixtureError>
+```
+
+It accepts no provider URL, credentials, frame bytes, or arbitrary fixture
+identifier. `OfflineFixtureCapture` returns a slice of the existing
+`broker_ports::MarketDataItem` records and a private-field
+`OfflineFixtureReceipt` with read-only getters for fixture identity/input seal,
+fixed freshness-clock seconds, local terminal state, runner counts/input digest,
+capture counts/bytes, raw frame/finalization digests, and output count. The
+freshness-clock getter identifies only the fixed replay classifier reference;
+received timestamps remain wall-clock values. The fixture records its true
+`alpaca`/`opra` protocol identity and `Unknown` entitlement. Its local
+`FixtureEnd` marker is not a provider END, watermark, successful live stream,
+or completeness statement. The harness supplies a private fixed freshness clock
+matching the fixture trade timestamp so the same projector output is stable on
+different host dates; it changes neither provider timestamps nor received times,
+and does not establish live freshness.
+
+The receipt is constructed by the SDK and has private fields. It binds the four
+scripted provider frames (including the two pre-auth control frames, which never
+enter the raw sink) to the frames actually received, plus the two post-auth raw
+captures (subscription ACK and trade) and each matching pre-decode/finalization
+ACK. Cancellation, EOF, timeout, an early/missing terminal marker, a seal
+mismatch, or any missing/mismatched sink ACK returns an error without a receipt.
+For the fixed four-frame case, the local marker is emitted only after the
+existing projector has delivered the synthetic trade item to the bounded
+collector, so session shutdown cannot discard a still-pending trade.
+The run and cleanup are inline and bounded; it does not detach a worker. Input,
+capture, and output counts/bytes are capped. The receipt digests use
+domain-separated SHA-256 with big-endian `u32` counts and lengths. The input
+seal uses `eqoboard.alpaca.offline-fixture-input.v1\0`, frame count, then each
+frame's length and bytes. The ordered raw-frame digest uses
+`eqoboard.alpaca.offline-fixture-raw-frames.v1\0`, capture count, then each
+capture UUID, source generation, frame sequence, payload length, and exact
+payload. The finalization rollup uses
+`eqoboard.alpaca.offline-fixture-finalization.v1\0`, capture count, then each
+capture UUID, generation, frame sequence, raw 32-byte frame SHA-256, and raw
+32-byte matching finalization-summary SHA-256. The input seal covers connected,
+authenticated, subscription-ACK, and trade frames; it excludes outbound auth
+and subscription frames and the local `FixtureEnd` marker. Sink ACKs remain the sink's
+promise: they do not independently prove `fsync`, provider completeness, or
+entitlement. This feature exists only for local synthetic replay tooling.
 
 `alpaca-stream` 是只读期权行情适配器。每个任务只打开一条 allowlist 内的 Alpaca
 WebSocket，使用 binary MessagePack frame，通过 `CredentialProvider` 注入凭证，并将
@@ -244,6 +300,30 @@ SHA-256)`，因此 reconnect 后即使帧序号和字节相同也不会与 spool
 的 `event_count` 记录成功解码的 quote/trade；`ControlMessage` 和 `DecodeFailure` 必须为零事件、无 symbol、无数值编码。
 混合数值编码可用 `None` 表示。`UnknownMessage` / `ProviderError` 可能保留已解析行情数量和 symbol，但整帧进入 quarantine，且不发布任何规范化事件。单元测试通过只构成本地
 协议/适配器证据；生产 entitlement、provider 行为和原生 Windows/macOS 运行仍未验证。
+
+`offline-test-support` feature 默认关闭，只回放一个固定、已审阅的 MessagePack fixture，并通过
+同一 session runner、raw sink 两阶段 ACK 和 `EventProjector`。API 不接收 URL、凭证、任意帧或任意
+fixture ID；其参数是闭合的 `ReviewedFixtureId`（当前只有 `AlpacaOpraTradeV1`）、
+`Arc<dyn broker_ports::RawFrameSinkFactory>` 和 `watch::Receiver<bool>`。返回值只包含现有
+`broker_ports::MarketDataItem` 与 SDK 私有字段构造、没有公开构造/反序列化入口的
+`OfflineFixtureReceipt`；receipt 仅提供只读 getter，
+读取固定 fixture 标识/输入封印、回放 freshness clock 秒数、本地终止状态、runner 收帧数和摘要、捕获帧数/字节、
+原始帧/定稿摘要及输出数。该 clock 仅用于固定 provider 时间的陈旧分类；received time 仍来自 wall clock。
+provider/feed 仍是 `alpaca`/`opra`，entitlement 保留 `Unknown`。本地 `FixtureEnd` 只是
+测试控制标记，不是 provider END、水位、真实行情完成或 entitlement 证据。receipt 只在四个固定输入帧
+全部由 runner 收到、两条认证后捕获帧的两阶段 ACK 均匹配且摘要一致时返回；取消、EOF、超时、提前或
+缺失终止标记、seal/ACK 不匹配都只返回错误。正常四帧回放时，本地 marker 还会等待现有 projector 将合成
+成交写入有界 collector，避免会话关闭丢弃尚未消费的成交。会话与清理在同一 future 内有界完成，不 detach worker。
+离线 runner 使用与 fixture 成交时间相同的私有固定 freshness clock，避免宿主机日期改变投影结果；它不改写
+provider 时间戳或接收时间，也不构成真实实时性证据。
+
+摘要可跨 crate 复算：所有摘要先写入各自 ASCII 域分隔符（含末尾 `NUL`），计数和长度都使用无符号
+32 位大端序。输入域 `eqoboard.alpaca.offline-fixture-input.v1\0` 后依次写入帧数，再为每帧写入字节长度和
+原始 MessagePack 字节。捕获域 `eqoboard.alpaca.offline-fixture-raw-frames.v1\0` 后写入捕获数，再按捕获顺序
+写入 UUID 16 字节、source generation 64 位大端序、frame sequence 64 位大端序、payload 长度和原始
+payload。定稿域 `eqoboard.alpaca.offline-fixture-finalization.v1\0` 后写入捕获数，再按相同顺序写入 UUID、
+generation、sequence、frame SHA-256 原始 32 字节及匹配的定稿摘要 SHA-256 原始 32 字节。三者均对整个编码
+序列计算 SHA-256；十六进制格式只用于 receipt 展示，不参与后两种摘要的编码。
 
 ## References / 参考资料
 

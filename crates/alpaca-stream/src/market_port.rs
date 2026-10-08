@@ -142,26 +142,7 @@ where
                         }
                         update = handle.next_event() => {
                             let Some(update) = update else { break };
-                            let result = match update {
-                                StreamUpdate::Quote(update) => projector
-                                    .quote(update, feed)
-                                    .map(|(envelope, raw_frame)| {
-                                        Some(MarketDataItem::Event { envelope, raw_frame })
-                                    }),
-                                StreamUpdate::Trade(update) => projector
-                                    .trade(update, feed)
-                                    .map(|(envelope, raw_frame)| {
-                                        Some(MarketDataItem::Event { envelope, raw_frame })
-                                    }),
-                                StreamUpdate::Control(crate::ControlEvent::RawMarketFrame(frame)) => {
-                                    projector.raw_frame(frame, feed).map(|frame| {
-                                        Some(MarketDataItem::RawFrame(frame))
-                                    })
-                                }
-                                StreamUpdate::Control(update) => projector
-                                    .control(update, feed)
-                                    .map(|event| event.map(MarketDataItem::Control)),
-                            };
+                            let result = project_update(&mut projector, update, feed);
                             match result {
                                 Ok(Some(record)) => {
                                     failed_status_published |= is_failure_record(&record);
@@ -210,6 +191,37 @@ where
 
             Ok(MarketDataSession::new(records_rx, cancel_tx))
         })
+    }
+}
+
+pub(crate) fn project_update(
+    projector: &mut EventProjector,
+    update: StreamUpdate,
+    feed: OptionFeed,
+) -> Result<Option<MarketDataItem>, BrokerPortError> {
+    match update {
+        StreamUpdate::Quote(update) => {
+            projector.quote(update, feed).map(|(envelope, raw_frame)| {
+                Some(MarketDataItem::Event {
+                    envelope,
+                    raw_frame,
+                })
+            })
+        }
+        StreamUpdate::Trade(update) => {
+            projector.trade(update, feed).map(|(envelope, raw_frame)| {
+                Some(MarketDataItem::Event {
+                    envelope,
+                    raw_frame,
+                })
+            })
+        }
+        StreamUpdate::Control(crate::ControlEvent::RawMarketFrame(frame)) => projector
+            .raw_frame(frame, feed)
+            .map(|frame| Some(MarketDataItem::RawFrame(frame))),
+        StreamUpdate::Control(update) => projector
+            .control(update, feed)
+            .map(|event| event.map(MarketDataItem::Control)),
     }
 }
 
@@ -283,7 +295,7 @@ where
 }
 
 #[derive(Default)]
-struct EventProjector {
+pub(crate) struct EventProjector {
     generation: Option<GenerationState>,
     pending_raw_frames: BTreeMap<(u64, u64), PendingRawFrameLink>,
 }

@@ -29,15 +29,6 @@
         calls: Arc<AtomicUsize>,
     }
 
-    #[derive(Clone, Copy)]
-    struct FixedFreshnessClock(SystemTime);
-
-    impl FreshnessClock for FixedFreshnessClock {
-        fn now(&self) -> SystemTime {
-            self.0
-        }
-    }
-
     impl CredentialProvider for FakeCredentialProvider {
         fn load_credentials(
             &mut self,

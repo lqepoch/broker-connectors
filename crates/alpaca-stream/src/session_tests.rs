@@ -460,6 +460,7 @@ async fn raw_market_frame_bytes_link_to_each_normalized_event() {
         crate::model::MarketNumber::Float64(1.0)
     );
     assert_eq!(quote.ingest.raw_frame_sequence, 1);
+    assert_eq!(quote.ingest.received_at_utc, raw_frame.received_at_utc);
     assert_eq!(quote.ingest.raw_frame_event_ordinal, 1);
     assert_eq!(quote.ingest.raw_frame_event_count, 2);
 
@@ -470,6 +471,7 @@ async fn raw_market_frame_bytes_link_to_each_normalized_event() {
         .await
         .expect("second normalized event is delivered");
     assert_eq!(trade.ingest.raw_frame_sequence, 1);
+    assert_eq!(trade.ingest.received_at_utc, raw_frame.received_at_utc);
     assert_eq!(trade.ingest.raw_frame_event_ordinal, 2);
     assert_eq!(trade.ingest.raw_frame_event_count, 2);
 
@@ -538,6 +540,7 @@ async fn sink_acknowledgements_bracket_decode_and_control_frames_are_finalized()
         .await
         .expect("normalized quote follows finalization");
     assert_eq!(quote.ingest.raw_frame_sequence, 2);
+    assert_eq!(quote.ingest.received_at_utc, raw_frames[1].received_at_utc);
     let trade = running
         .receivers
         .trades
@@ -545,6 +548,7 @@ async fn sink_acknowledgements_bracket_decode_and_control_frames_are_finalized()
         .await
         .expect("normalized trade follows finalization");
     assert_eq!(trade.ingest.raw_frame_sequence, 2);
+    assert_eq!(trade.ingest.received_at_utc, raw_frames[1].received_at_utc);
     assert_eq!(
         *observations.lock().expect("fake raw sink observations"),
         ["pre:1:1", "final:0", "pre:1:2", "final:2"]
