@@ -1,0 +1,19 @@
+[package]
+name = "alpaca-rest-read"
+version.workspace = true
+edition.workspace = true
+rust-version = "1.99.0"
+license.workspace = true
+repository.workspace = true
+description = "Bounded, read-only Alpaca options REST adapter"
+
+[dependencies]
+alpaca-data.workspace = true
+alpaca-rest-http.workspace = true
+chrono = { workspace = true, features = ["clock"] }
+market-contracts.workspace = true
+tokio.workspace = true
+zeroize.workspace = true
+
+[lints]
+workspace = true

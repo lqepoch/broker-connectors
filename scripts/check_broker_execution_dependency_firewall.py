@@ -6,16 +6,24 @@ from __future__ import annotations
 import re
 import subprocess
 import sys
+import tomllib
+from pathlib import Path
 
 
 ALLOWED_PACKAGES = {"broker-execution", "domain", "exact-decimal"}
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def toolchain() -> str:
+    config = tomllib.loads((ROOT / "rust-toolchain.toml").read_text(encoding="utf-8"))
+    return config["toolchain"]["channel"]
 
 
 def main() -> None:
     result = subprocess.run(
         [
             "cargo",
-            "+1.98.1",
+            f"+{toolchain()}",
             "tree",
             "--locked",
             "--offline",

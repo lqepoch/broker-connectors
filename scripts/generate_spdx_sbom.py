@@ -16,17 +16,41 @@ from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "SBOM.spdx.json"
-
-
 def run_metadata() -> dict:
+    toolchain = tomllib.loads(
+        (ROOT / "rust-toolchain.toml").read_text(encoding="utf-8")
+    )["toolchain"]["channel"]
     result = subprocess.run(
-        ["cargo", "+1.98.1", "metadata", "--locked", "--format-version", "1"],
+        ["cargo", f"+{toolchain}", "metadata", "--locked", "--format-version", "1"],
         cwd=ROOT,
         check=True,
         capture_output=True,
         text=True,
     )
     return json.loads(result.stdout)
+
+
+def vendored_alpaca_pin() -> tuple[str, dict[str, str]]:
+    document = json.loads(
+        (ROOT / "SOURCE-MANIFEST.json").read_text(encoding="utf-8")
+    )
+    upstreams = document.get("vendored_upstreams", [])
+    if len(upstreams) != 1:
+        raise ValueError("expected one pinned vendored Alpaca Rust upstream")
+    upstream = upstreams[0]
+    return upstream["source_commit"], {
+        package["name"]: package["source_path"] for package in upstream["packages"]
+    }
+
+
+def reviewed_dependency_licenses() -> dict[tuple[str, str], dict[str, str]]:
+    document = json.loads(
+        (ROOT / "SOURCE-MANIFEST.json").read_text(encoding="utf-8")
+    )
+    return {
+        (entry["crate_name"], entry["version"]): entry
+        for entry in document.get("reviewed_dependency_licenses", [])
+    }
 
 
 def spdx_id(index: int, name: str, version: str) -> str:
@@ -40,6 +64,7 @@ def cargo_purl(name: str, version: str) -> str:
 
 def main() -> None:
     metadata = run_metadata()
+    alpaca_revision, alpaca_package_paths = vendored_alpaca_pin()
     lock_path = ROOT / "Cargo.lock"
     lock_digest = hashlib.sha256(lock_path.read_bytes()).hexdigest()
     lock = tomllib.loads(lock_path.read_text(encoding="utf-8"))
@@ -50,6 +75,7 @@ def main() -> None:
         lock_packages[key] = package
 
     packages = metadata["packages"]
+    license_exceptions = reviewed_dependency_licenses()
     ids = {package["id"]: spdx_id(i, package["name"], package["version"])
            for i, package in enumerate(packages, start=1)}
     root_ids = set(metadata["workspace_members"])
@@ -73,6 +99,12 @@ def main() -> None:
             download = f"https://crates.io/crates/{quote(name, safe='._-')}/{quote(version, safe='._-+')}"
         elif source and source.startswith("git+"):
             download = "NOASSERTION"
+        elif name in alpaca_package_paths:
+            upstream_path = alpaca_package_paths[name]
+            download = (
+                "https://github.com/wmzhai/alpaca-rust/tree/"
+                f"{alpaca_revision}/{upstream_path}"
+            )
         elif package["id"] in root_ids:
             download = "https://github.com/lqepoch/broker-connectors"
         else:
@@ -97,6 +129,26 @@ def main() -> None:
                 "referenceType": "purl",
                 "referenceLocator": cargo_purl(name, version),
             }]
+        elif name in alpaca_package_paths:
+            item["sourceInfo"] = (
+                "Vendored from wmzhai/alpaca-rust at commit "
+                f"{alpaca_revision}; narrowly patched source and exclusions are "
+                "documented in vendor/alpaca-rust/UPSTREAM.md and SOURCE-MANIFEST.json."
+            )
+        reviewed_license = license_exceptions.get((name, version))
+        if reviewed_license:
+            item["licenseComments"] = (
+                "The exact package license text is retained at "
+                f"{reviewed_license['target_license_path']} with SHA-256 "
+                f"{reviewed_license['target_license_sha256']}; package checksum and "
+                "dependency path are recorded in SOURCE-MANIFEST.json."
+            )
+            item["sourceInfo"] = (
+                f"{reviewed_license['source_url']}; "
+                f"dependency path: {reviewed_license['dependency_path']}. "
+                "The root-certificate data does not establish broker authority, "
+                "provider entitlement, or market-data source."
+            )
         package_items.append(item)
 
     document_namespace = (

@@ -1,0 +1,34 @@
+[package]
+name = "alpaca-rest-http"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+documentation = "https://docs.rs/alpaca-rest-http"
+readme = "README.md"
+description = "Shared HTTP transport layer for the alpaca-rust workspace"
+keywords = ["alpaca", "http", "sdk", "transport"]
+categories = ["api-bindings", "asynchronous"]
+
+[dependencies]
+alpaca-core = { path = "../alpaca-core", version = "0.33.3" }
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+zeroize.workspace = true
+
+[dev-dependencies]
+alpaca-data = { path = "../alpaca-data" }
+reqwest.workspace = true
+rust_decimal.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+
+[lib]
+name = "alpaca_http"

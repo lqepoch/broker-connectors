@@ -10,18 +10,83 @@
   "new_project_code": [
     {
       "origin": "new project-owned code",
-      "sha256": "95032b41ddd96f1e80743516f1caf27d20578fb37a0d727c7068b79f4deabc5f",
+      "sha256": "fae4bed0eeceb4c112dc08042534a86ecba87593601ba1684f61c81d26502e64",
+      "target_path": "AGENTS.md"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "ca5d1487d8560649143f0954689818c0621125760107f432f42dee1bd5ad7612",
+      "target_path": "CONTRIBUTING.md"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "9a08cf6e38d99e386a750e4347f486d759509fffa8fee4c20ade75aefd6f25ed",
+      "target_path": "Cargo.lock"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "307dd13baab360897fedd927a0b9873092bc5d2a1c4c67c5bb9c8d1a4531a78c",
+      "target_path": "Cargo.toml"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "1d3b5c56f3ff69305e8545414f6650348512e6e686fafd9d88dd5b1662ac6fee",
+      "target_path": "DEPENDENCY-RESOLUTION.md"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "896b8d86465aa6111b58f935a1c67ab6d7f62f68cfe5b7ff3848dd404549a909",
+      "target_path": "NOTICE"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "0a2d5743d4e29f24cb9a01767c68f7198e1f803dedf0fd5c03d18f844c5367f7",
+      "target_path": "README.md"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "c40294214692eebf09329a55d4d8f381058bc25ecf9eeaffe481f44e1515ecd5",
+      "target_path": "SBOM.spdx.json"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "cb3a4457ad7094f03ad0645d78f6e6ede9784de661f42752d56335f99d280b6c",
+      "target_path": "crates/alpaca-rest-read/Cargo.toml"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "28faf78ddd1be24302390e13c9e2b57e3815f8415702f9bfbdc3038d1d79b9e5",
+      "target_path": "crates/alpaca-rest-read/README.md"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "ef190c25323c4a7705f4a4da62641a289eac2bc01053c71b00c002d35ab66e6e",
+      "target_path": "crates/alpaca-rest-read/src/client.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "45f84377f2b2932c69fbbd5e0d7c982a43d63d9736119d18cbec738517abda8d",
+      "target_path": "crates/alpaca-rest-read/src/error.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "8582f0d8f4d1ad1a5b8dbb12e99e1bdcb1f6ef8352c8b066f514662ba80fade8",
+      "target_path": "crates/alpaca-rest-read/src/lib.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "2eacc69927d9afc8c386fbb3161c41dbadd3d9397dde2f6bc343e6c6d4e5edaa",
+      "target_path": "crates/alpaca-rest-read/src/model.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "1c7dcbab931bb4b0ff0cf1f177fbaa3f0fc610469eac28a33fd107222f8d7c46",
+      "target_path": "crates/alpaca-rest-read/src/request.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "9f7323f019b503a2a4ef61bdb2b72b3d8e694bfd08f8b39c37b32bd74db2c97f",
       "target_path": "crates/alpaca-stream/src/market_port.rs"
-    },
-    {
-      "origin": "new project-owned code",
-      "sha256": "53e8efa653fb0dc08de16fc6e0813f6d752f3f4a4bbdbe4b3eeb832adef36bb5",
-      "target_path": "crates/broker-ports/Cargo.toml"
-    },
-    {
-      "origin": "new project-owned code",
-      "sha256": "201847456dc2151a1f1a5639750f4d055292d0ba628c00fe65c97dbfc15ca840",
-      "target_path": "crates/broker-ports/src/lib.rs"
     },
     {
       "origin": "new project-owned code",
@@ -30,13 +95,8 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "133f7a758328cd7c7cec6e67280bbf012b0b02365a250fb63d9b7e6a54694cb3",
+      "sha256": "d333ce87e7f2ab3d0a5ce4407cbd0dcc9d6d70dcde232d1d2c349872fd41a4ad",
       "target_path": "crates/broker-execution/README.md"
-    },
-    {
-      "origin": "new project-owned code",
-      "sha256": "4ae1668b54e965287f2197b653c9676eda25a2418e8f5f8be5ccc29cf97d727d",
-      "target_path": "crates/broker-execution/src/lib.rs"
     },
     {
       "origin": "new project-owned code",
@@ -55,18 +115,13 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "880b842eef76fa69437f6dbecae33baca66b5c00130978499c4f3b81048e2c0d",
-      "target_path": "scripts/check_broker_execution_dependency_firewall.py"
+      "sha256": "4ae1668b54e965287f2197b653c9676eda25a2418e8f5f8be5ccc29cf97d727d",
+      "target_path": "crates/broker-execution/src/lib.rs"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "c4b7b9293b0718db30e2004ff60e440d0ca74be5787895dbda5840bcb1234461",
-      "target_path": "Cargo.toml"
-    },
-    {
-      "origin": "new project-owned code",
-      "sha256": "c4c1417404c98ab6e6c7ac6f606caade7a00b5372787195a7e2168239772d1b6",
-      "target_path": "README.md"
+      "sha256": "53e8efa653fb0dc08de16fc6e0813f6d752f3f4a4bbdbe4b3eeb832adef36bb5",
+      "target_path": "crates/broker-ports/Cargo.toml"
     },
     {
       "origin": "new project-owned code",
@@ -85,13 +140,86 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "d6198e3447987ffd6d1ee080714ed23afca78c6a472a6ebfda5f9c94996e845e",
-      "target_path": "crates/broker-ports/src/read.rs"
+      "sha256": "201847456dc2151a1f1a5639750f4d055292d0ba628c00fe65c97dbfc15ca840",
+      "target_path": "crates/broker-ports/src/lib.rs"
     },
     {
       "origin": "new project-owned code",
       "sha256": "a6a4679f6303a53bc26ef3feb3405ff6af8d52924326290b632e032319dae611",
       "target_path": "crates/broker-ports/src/raw_capture.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "d6198e3447987ffd6d1ee080714ed23afca78c6a472a6ebfda5f9c94996e845e",
+      "target_path": "crates/broker-ports/src/read.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "0825b0dd5ce327e08440351f42880e728f21cf5be410aac844fc4281096dd8ab",
+      "target_path": "rust-toolchain.toml"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "dc76d25c835a8db9489a286b308da2899e90db221ead30334d56ad34ec76d6ae",
+      "target_path": "scripts/check_broker_execution_dependency_firewall.py"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "a9d0861897ba4fde52b94a867a22a194b87c44a51bf336c1a60f652bfe1c8c32",
+      "target_path": "scripts/check_vendor_provenance.py"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "93c2adb3e00cbcfd75421adf026baa90d838153e381c3689dc37689f42e7ccc9",
+      "target_path": "scripts/generate_spdx_sbom.py"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "6fef99e1a957f8719db0b2c62f7173229302cb37200036a466441fd440833b53",
+      "target_path": "scripts/update_source_manifest_hashes.py"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "a6e56413ca4193048148c6865aa5cc15ffa81dc29cf99c3f69741911e75e82bb",
+      "target_path": "vendor/alpaca-rust/Cargo.lock"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "57affe02461196faf503aeefe60e9c7abf4e629286c65c11477be04980843b2c",
+      "target_path": "vendor/alpaca-rust/Cargo.toml"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "87b0b4a9b29cda05514b30e03d40d438bafa8ab59cf0a8a47c666ecebd4d8d48",
+      "target_path": "vendor/alpaca-rust/LOCAL-PATCHES.patch"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "f3e0789344428d3368fc7ddfd0c6b79bafae28f69b64d5259c54bfedb2bcc76f",
+      "target_path": "vendor/alpaca-rust/UPSTREAM.md"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "01dd2fb19700bc9f3bf3e8dca9bef752f9b62c8a5177a7befe334141c00b14b1",
+      "target_path": "vendor/alpaca-rust/crates/alpaca-http/tests/client_retry.rs"
+    },
+    {
+      "sha256": "11200784f7cc951ba5d1ef777547a562e2dd6e6c42fb73ddf6def4ab9edccaa8",
+      "target_path": "deny.toml"
+    }
+  ],
+  "reviewed_dependency_licenses": [
+    {
+      "crate_name": "webpki-root-certs",
+      "dependency_path": "Cargo target-union graph: alpaca-rest-read -> alpaca-data -> alpaca-rest-http -> reqwest 0.13.5 (the SDK enables reqwest's rustls feature) -> rustls-platform-verifier 0.7.1 (webpki-root-certs is its wasm32-target dependency) -> webpki-root-certs 1.0.9",
+      "license": "CDLA-Permissive-2.0",
+      "registry_checksum": "b96554aa2acc8ccdb7e1c9a58a7a68dd5d13bccc69cd124cb09406db612a1c9b",
+      "source_license_path": "LICENSE",
+      "source_license_sha256": "e271993808fec50ab29350b39539cdec611a9103f827e0aa26d61da70e2d33f8",
+      "source_url": "https://crates.io/crates/webpki-root-certs/1.0.9",
+      "target_license_path": "licenses/webpki-root-certs-1.0.9/LICENSE",
+      "target_license_sha256": "e271993808fec50ab29350b39539cdec611a9103f827e0aa26d61da70e2d33f8",
+      "version": "1.0.9"
     }
   ],
   "shared_contract_dependencies": [
@@ -204,7 +332,7 @@
     },
     {
       "adaptation": "Adapted only as required by the public crate boundary and formatting; source provenance is retained at the immutable commit above.",
-      "adapted_target_sha256": "aaf73db3900fba298b5225eb302b39f9213d99cc8a145bc0dcc07733a65daaf2",
+      "adapted_target_sha256": "e3144a29721ef829337afd99c0ac1cf70569bf9de4f9a2b6b36f3615ac916d4e",
       "source_blob_sha256": "b7d8b89bb3a32c42c7118d5bcab2ce1e242f95738d43dc504f0371a816c81ad3",
       "source_path": "crates/alpaca-stream/src/msgpack_timestamp_tests.rs",
       "target_path": "crates/alpaca-stream/src/msgpack_timestamp_tests.rs"
@@ -218,7 +346,7 @@
     },
     {
       "adaptation": "Adds synthetic raw-frame SHA-256 assertions.",
-      "adapted_target_sha256": "52261ff0db723112c4930143321dd6157f0afe172419a18ded878c83af00ff1b",
+      "adapted_target_sha256": "182f0a13ddbbada7ec28b4eadaa4b1c83f0b5e2bc937654aa57db89675fa9806",
       "source_blob_sha256": "d29089dcc0129198b0e4c6eeb62eee223e6975e75ab33343d672829ad33b0535",
       "source_path": "crates/alpaca-stream/src/protocol_tests.rs",
       "target_path": "crates/alpaca-stream/src/protocol_tests.rs"
@@ -282,5 +410,518 @@
   ],
   "source_license_status": "The source repository is private and this commit has no repository-wide open-source license. Repository-owner authorization covers only the source paths enumerated here and permits this selected project-owned code to be published in this repository under MIT OR Apache-2.0.",
   "source_repository": "lqepoch/schwab_auto_bot",
-  "target_license": "MIT OR Apache-2.0 for the selected project-owned code; third-party dependencies retain their own licenses."
+  "target_license": "MIT OR Apache-2.0 for the selected project-owned code; third-party dependencies retain their own licenses.",
+  "vendored_upstreams": [
+    {
+      "adaptations": [
+        "zeroizing owned credentials and redacted Debug",
+        "non-retained credential HeaderMap and fixed HTTPS market-data origin",
+        "disabled redirects and streamed response-body limit of 8 MiB",
+        "bounded total retry-wait budget",
+        "synthetic unit tests; omitted live provider integration tests and dotenvy dev dependency"
+      ],
+      "license": "MIT OR Apache-2.0",
+      "license_files": [
+        {
+          "sha256": "c81a00fb0b99068d9d31f3b474159a8f533c90b93201d0f4ac5a11e921cc701f",
+          "source_path": "LICENSE-MIT",
+          "target_path": "vendor/alpaca-rust/LICENSE-MIT"
+        },
+        {
+          "sha256": "bef9cf2a60b27cfbcabb2a18757d544b5098a9d4374f733205fb816bbf80b457",
+          "source_path": "LICENSE-APACHE",
+          "target_path": "vendor/alpaca-rust/LICENSE-APACHE"
+        }
+      ],
+      "local_patch_path": "vendor/alpaca-rust/LOCAL-PATCHES.patch",
+      "local_patch_sha256": "87b0b4a9b29cda05514b30e03d40d438bafa8ab59cf0a8a47c666ecebd4d8d48",
+      "maintenance_status": "Community-made Rust SDK; Alpaca lists it as community-made and does not identify it as an Alpaca-maintained or supported SDK.",
+      "package_edition": "2024",
+      "package_msrv": "1.99.0",
+      "packages": [
+        {
+          "license": "MIT OR Apache-2.0",
+          "name": "alpaca-core",
+          "source_path": "crates/alpaca-core",
+          "target_manifest": "vendor/alpaca-rust/crates/alpaca-core/Cargo.toml",
+          "version": "0.33.3"
+        },
+        {
+          "license": "MIT OR Apache-2.0",
+          "name": "alpaca-data",
+          "source_path": "crates/alpaca-data",
+          "target_manifest": "vendor/alpaca-rust/crates/alpaca-data/Cargo.toml",
+          "version": "0.33.3"
+        },
+        {
+          "license": "MIT OR Apache-2.0",
+          "name": "alpaca-rest-http",
+          "source_path": "crates/alpaca-http",
+          "target_manifest": "vendor/alpaca-rust/crates/alpaca-http/Cargo.toml",
+          "version": "0.33.3"
+        }
+      ],
+      "removed_source_files": [
+        {
+          "reason": "Excluded because this upstream integration test can call a real provider or read credentials; local validation must be offline/synthetic.",
+          "source_file_sha256": "573b62aabb03375be01c68eaa06e1f6c672727e6efa9f78850efe88f3c6d78d2",
+          "source_path": "crates/alpaca-data/tests/stocks_real_api.rs"
+        },
+        {
+          "reason": "Excluded because this upstream integration test can call a real provider or read credentials; local validation must be offline/synthetic.",
+          "source_file_sha256": "ca3324ed37701f2fc033d14f56acc3616671ad1b06038e873563c04802273ebf",
+          "source_path": "crates/alpaca-data/tests/crypto_real_api.rs"
+        },
+        {
+          "reason": "Excluded because this upstream integration test can call a real provider or read credentials; local validation must be offline/synthetic.",
+          "source_file_sha256": "784c41e41f468950eaf7deff07df71a8f4488f6c2a92db47475c13f0476bc098",
+          "source_path": "crates/alpaca-data/tests/corporate_actions_real_api.rs"
+        }
+      ],
+      "source_commit": "d91be382e3e9d25c52c24e626e78702532d24ba2",
+      "source_files": [
+        {
+          "adapted_target_sha256": "57affe02461196faf503aeefe60e9c7abf4e629286c65c11477be04980843b2c",
+          "source_file_sha256": "4129ace36304cc3e48e0b11ab164bb2952253a4e325762fcc67cbe07b97dcf84",
+          "source_path": "Cargo.toml",
+          "target_path": "vendor/alpaca-rust/Cargo.toml"
+        },
+        {
+          "adapted_target_sha256": "bef9cf2a60b27cfbcabb2a18757d544b5098a9d4374f733205fb816bbf80b457",
+          "source_file_sha256": "bef9cf2a60b27cfbcabb2a18757d544b5098a9d4374f733205fb816bbf80b457",
+          "source_path": "LICENSE-APACHE",
+          "target_path": "vendor/alpaca-rust/LICENSE-APACHE"
+        },
+        {
+          "adapted_target_sha256": "c81a00fb0b99068d9d31f3b474159a8f533c90b93201d0f4ac5a11e921cc701f",
+          "source_file_sha256": "c81a00fb0b99068d9d31f3b474159a8f533c90b93201d0f4ac5a11e921cc701f",
+          "source_path": "LICENSE-MIT",
+          "target_path": "vendor/alpaca-rust/LICENSE-MIT"
+        },
+        {
+          "adapted_target_sha256": "e28b3b11d4f508b282a4eee5a0b3ab4791176d20a0a46109c62df22b53177568",
+          "source_file_sha256": "38556da45bc9068201ba96326321f94537ddb4b78e4192c9066091f26ed82539",
+          "source_path": "crates/alpaca-core/Cargo.toml",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-core/Cargo.toml"
+        },
+        {
+          "adapted_target_sha256": "800dcd93749bd34614eb76bcc02f0bdcf5e04a462bb5a86a6d8193490d44892b",
+          "source_file_sha256": "800dcd93749bd34614eb76bcc02f0bdcf5e04a462bb5a86a6d8193490d44892b",
+          "source_path": "crates/alpaca-core/README.md",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-core/README.md"
+        },
+        {
+          "adapted_target_sha256": "186bff2c563898e84ef32db9a413aec2816036439b42bacf6358e0641a5fe85c",
+          "source_file_sha256": "93f3ee2138e232cf035fb3d49147ee65d4dc7aeb60f52a99138cdbb55f386a32",
+          "source_path": "crates/alpaca-core/src/auth.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-core/src/auth.rs"
+        },
+        {
+          "adapted_target_sha256": "b6c7f06f5b56167758b2f9281caff2e42fb5d87c493172fa86667832ed2bdbff",
+          "source_file_sha256": "b6c7f06f5b56167758b2f9281caff2e42fb5d87c493172fa86667832ed2bdbff",
+          "source_path": "crates/alpaca-core/src/decimal.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-core/src/decimal.rs"
+        },
+        {
+          "adapted_target_sha256": "1305ae7e9401ec875696621f8f9d8f36b209280c990ef61502953e9053784254",
+          "source_file_sha256": "1305ae7e9401ec875696621f8f9d8f36b209280c990ef61502953e9053784254",
+          "source_path": "crates/alpaca-core/src/env.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-core/src/env.rs"
+        },
+        {
+          "adapted_target_sha256": "367ca51ae1ca4ec43ce2c99a0f3a0dc8c5bb7611cab815ed46e52c82981d4209",
+          "source_file_sha256": "367ca51ae1ca4ec43ce2c99a0f3a0dc8c5bb7611cab815ed46e52c82981d4209",
+          "source_path": "crates/alpaca-core/src/error.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-core/src/error.rs"
+        },
+        {
+          "adapted_target_sha256": "a813e960fd144faa96fd993a20c9f257366ea6f923963904cea1a7af075dd8ce",
+          "source_file_sha256": "a813e960fd144faa96fd993a20c9f257366ea6f923963904cea1a7af075dd8ce",
+          "source_path": "crates/alpaca-core/src/float.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-core/src/float.rs"
+        },
+        {
+          "adapted_target_sha256": "5b11ed3f968359adeeebb58ad821058ac98a12b7b0068d909999b8698440c3ef",
+          "source_file_sha256": "5b11ed3f968359adeeebb58ad821058ac98a12b7b0068d909999b8698440c3ef",
+          "source_path": "crates/alpaca-core/src/integer.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-core/src/integer.rs"
+        },
+        {
+          "adapted_target_sha256": "a4fcf91358ab52bbdf62dea0f12554ac70b0984ddfbf9730e419b33cb7b33075",
+          "source_file_sha256": "a4fcf91358ab52bbdf62dea0f12554ac70b0984ddfbf9730e419b33cb7b33075",
+          "source_path": "crates/alpaca-core/src/lib.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-core/src/lib.rs"
+        },
+        {
+          "adapted_target_sha256": "4a0ae1f6a4eae820f6a70b1a9368e0f83f6e79e3dcde25d8274454aef73be0bf",
+          "source_file_sha256": "4a0ae1f6a4eae820f6a70b1a9368e0f83f6e79e3dcde25d8274454aef73be0bf",
+          "source_path": "crates/alpaca-core/src/pagination.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-core/src/pagination.rs"
+        },
+        {
+          "adapted_target_sha256": "605c1856fc1cc2245393937dd828a0bb8b79264baf24eb8d94b4a1caaf036e6e",
+          "source_file_sha256": "605c1856fc1cc2245393937dd828a0bb8b79264baf24eb8d94b4a1caaf036e6e",
+          "source_path": "crates/alpaca-core/src/query.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-core/src/query.rs"
+        },
+        {
+          "adapted_target_sha256": "f33135b33663099bd3450b2089d65c61fae34f3baa5def4ae9385381d1adcdcd",
+          "source_file_sha256": "f33135b33663099bd3450b2089d65c61fae34f3baa5def4ae9385381d1adcdcd",
+          "source_path": "crates/alpaca-core/src/validate.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-core/src/validate.rs"
+        },
+        {
+          "adapted_target_sha256": "0a6ab49a8e6ed92a8249dd2d1a46a61ec64c74a8f73f4e09200e20b89c09a723",
+          "source_file_sha256": "0a6ab49a8e6ed92a8249dd2d1a46a61ec64c74a8f73f4e09200e20b89c09a723",
+          "source_path": "crates/alpaca-core/tests/shared_primitives.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-core/tests/shared_primitives.rs"
+        },
+        {
+          "adapted_target_sha256": "dddff3ca718f8cfa56321103b61c994d5547ec042fff14ee2e1f0263f3ec7bea",
+          "source_file_sha256": "0823d499f68b4b5825d3648715796f51af04912c75e29fba28bbfabeb02f0de9",
+          "source_path": "crates/alpaca-data/Cargo.toml",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/Cargo.toml"
+        },
+        {
+          "adapted_target_sha256": "ab3247f4e81300433245ccc010bedf766419e093a93c216aebd82270428356bd",
+          "source_file_sha256": "ab3247f4e81300433245ccc010bedf766419e093a93c216aebd82270428356bd",
+          "source_path": "crates/alpaca-data/README.md",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/README.md"
+        },
+        {
+          "adapted_target_sha256": "ee8e0982c9d4bc494ebdabfbf71b7807130efd80eba1c0e027d12d06f4fc1bf4",
+          "source_file_sha256": "cc720c3a807d41c72865822161f89da1ad155bbe89561a6ae71229f3f364a41d",
+          "source_path": "crates/alpaca-data/src/cache/client.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/cache/client.rs"
+        },
+        {
+          "adapted_target_sha256": "fc03ec3491ea357211f12e62ae1353b403d909d298f458112d2beb31d28fbd47",
+          "source_file_sha256": "fc03ec3491ea357211f12e62ae1353b403d909d298f458112d2beb31d28fbd47",
+          "source_path": "crates/alpaca-data/src/cache/mod.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/cache/mod.rs"
+        },
+        {
+          "adapted_target_sha256": "0231f3cb444f0be9fcba417d874764499fcfd0cea5e59fc73b9bab0a0aa39061",
+          "source_file_sha256": "a520ac7370987723fb44e55c1aa857dc3155fa6b32c7c1eddda141280e9dd0eb",
+          "source_path": "crates/alpaca-data/src/cache/state.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/cache/state.rs"
+        },
+        {
+          "adapted_target_sha256": "72af13d06f6d3e9f3ca1470b3fad0d0341eaa2539c71547ec1949ddd32eda7f6",
+          "source_file_sha256": "72af13d06f6d3e9f3ca1470b3fad0d0341eaa2539c71547ec1949ddd32eda7f6",
+          "source_path": "crates/alpaca-data/src/cache/stats.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/cache/stats.rs"
+        },
+        {
+          "adapted_target_sha256": "9f6d56a2907c2797c26e36de7f299d665375886251ab445c705b4d922cc89130",
+          "source_file_sha256": "950a29c50694bf9d88230198b36c8db852ffe12326693602d8e387ef918531fc",
+          "source_path": "crates/alpaca-data/src/client.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/client.rs"
+        },
+        {
+          "adapted_target_sha256": "9edf9935e0a05de91843431e104723c46b902820cae3a33c106064362e868cee",
+          "source_file_sha256": "9edf9935e0a05de91843431e104723c46b902820cae3a33c106064362e868cee",
+          "source_path": "crates/alpaca-data/src/corporate_actions/client.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/corporate_actions/client.rs"
+        },
+        {
+          "adapted_target_sha256": "b5707e36db99bd49a6289d2f637007a4d4341e439dc650f816eef678eb6d2438",
+          "source_file_sha256": "b5707e36db99bd49a6289d2f637007a4d4341e439dc650f816eef678eb6d2438",
+          "source_path": "crates/alpaca-data/src/corporate_actions/enums.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/corporate_actions/enums.rs"
+        },
+        {
+          "adapted_target_sha256": "5942ca85a1323d36577ce666275f4849e2879fcde0994e6015ee50f9810b0a2f",
+          "source_file_sha256": "5942ca85a1323d36577ce666275f4849e2879fcde0994e6015ee50f9810b0a2f",
+          "source_path": "crates/alpaca-data/src/corporate_actions/mod.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/corporate_actions/mod.rs"
+        },
+        {
+          "adapted_target_sha256": "62b0a2d2497781057fdc3c294a1b7d733a953724ad3c83e1f03697a21c9669be",
+          "source_file_sha256": "62b0a2d2497781057fdc3c294a1b7d733a953724ad3c83e1f03697a21c9669be",
+          "source_path": "crates/alpaca-data/src/corporate_actions/model.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/corporate_actions/model.rs"
+        },
+        {
+          "adapted_target_sha256": "50c2a914f6e6c10f723678527e3c897197d94b03c60189d7dd408e68820daf78",
+          "source_file_sha256": "50c2a914f6e6c10f723678527e3c897197d94b03c60189d7dd408e68820daf78",
+          "source_path": "crates/alpaca-data/src/corporate_actions/request.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/corporate_actions/request.rs"
+        },
+        {
+          "adapted_target_sha256": "2f988b6d489d0c7aca6fb23692572fb4c67fa6e994ad61a43cba3f99296524a4",
+          "source_file_sha256": "2f988b6d489d0c7aca6fb23692572fb4c67fa6e994ad61a43cba3f99296524a4",
+          "source_path": "crates/alpaca-data/src/corporate_actions/response.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/corporate_actions/response.rs"
+        },
+        {
+          "adapted_target_sha256": "24d296290714a64cc62fca299b28c17c2a4501afab0e585c4cd907e248e4c8dd",
+          "source_file_sha256": "24d296290714a64cc62fca299b28c17c2a4501afab0e585c4cd907e248e4c8dd",
+          "source_path": "crates/alpaca-data/src/crypto/client.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/crypto/client.rs"
+        },
+        {
+          "adapted_target_sha256": "02925d0451a9331094aa791fe915a50a0f6fa31919c1287772486bea21e12a4e",
+          "source_file_sha256": "02925d0451a9331094aa791fe915a50a0f6fa31919c1287772486bea21e12a4e",
+          "source_path": "crates/alpaca-data/src/crypto/convenience.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/crypto/convenience.rs"
+        },
+        {
+          "adapted_target_sha256": "a3eb3c4c577fb0a2f2a422985fe057bbcf78fcbaa3310a2326995918efb2267c",
+          "source_file_sha256": "a3eb3c4c577fb0a2f2a422985fe057bbcf78fcbaa3310a2326995918efb2267c",
+          "source_path": "crates/alpaca-data/src/crypto/enums.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/crypto/enums.rs"
+        },
+        {
+          "adapted_target_sha256": "eb4d7f5642c246c6da3f62d554dc8153883d50a9ca2c5de70a402a71b2bff849",
+          "source_file_sha256": "eb4d7f5642c246c6da3f62d554dc8153883d50a9ca2c5de70a402a71b2bff849",
+          "source_path": "crates/alpaca-data/src/crypto/mod.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/crypto/mod.rs"
+        },
+        {
+          "adapted_target_sha256": "737f008c458cc75d43aa46689c65ade7e8fd3b7260c40131e75d5fbfbcae13a0",
+          "source_file_sha256": "737f008c458cc75d43aa46689c65ade7e8fd3b7260c40131e75d5fbfbcae13a0",
+          "source_path": "crates/alpaca-data/src/crypto/model.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/crypto/model.rs"
+        },
+        {
+          "adapted_target_sha256": "017cd33a9102fa829e4f94fc8c17f51ff0a92d5333a6e8e808b8b656e83f292a",
+          "source_file_sha256": "017cd33a9102fa829e4f94fc8c17f51ff0a92d5333a6e8e808b8b656e83f292a",
+          "source_path": "crates/alpaca-data/src/crypto/request.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/crypto/request.rs"
+        },
+        {
+          "adapted_target_sha256": "5e4c867f3de9b28cb6de2500fbc5399a8d037b074fb5583cb00a17eea28911bb",
+          "source_file_sha256": "5e4c867f3de9b28cb6de2500fbc5399a8d037b074fb5583cb00a17eea28911bb",
+          "source_path": "crates/alpaca-data/src/crypto/response.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/crypto/response.rs"
+        },
+        {
+          "adapted_target_sha256": "ae8a25e012aaa6de1307558d34517db69fb02af436a557d9be49a0d068527e76",
+          "source_file_sha256": "ae8a25e012aaa6de1307558d34517db69fb02af436a557d9be49a0d068527e76",
+          "source_path": "crates/alpaca-data/src/error.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/error.rs"
+        },
+        {
+          "adapted_target_sha256": "e22b2d9f8f1f0d52d37b7b829413341db5abb8f417610ce52edb58efeb038457",
+          "source_file_sha256": "e22b2d9f8f1f0d52d37b7b829413341db5abb8f417610ce52edb58efeb038457",
+          "source_path": "crates/alpaca-data/src/lib.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/lib.rs"
+        },
+        {
+          "adapted_target_sha256": "59948b0249165ba0b4c01820eba29a60d891a55858bbd30b78ce6bf37c61c3a5",
+          "source_file_sha256": "59948b0249165ba0b4c01820eba29a60d891a55858bbd30b78ce6bf37c61c3a5",
+          "source_path": "crates/alpaca-data/src/news/client.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/news/client.rs"
+        },
+        {
+          "adapted_target_sha256": "97b282640c84448cef7c5166bd856deb5746b4df35a3ddd114438ad8824a4306",
+          "source_file_sha256": "97b282640c84448cef7c5166bd856deb5746b4df35a3ddd114438ad8824a4306",
+          "source_path": "crates/alpaca-data/src/news/enums.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/news/enums.rs"
+        },
+        {
+          "adapted_target_sha256": "0240553d2d3dcda824563726fed2c9edaf2237c06c8bb515665df25339c3a93c",
+          "source_file_sha256": "0240553d2d3dcda824563726fed2c9edaf2237c06c8bb515665df25339c3a93c",
+          "source_path": "crates/alpaca-data/src/news/mod.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/news/mod.rs"
+        },
+        {
+          "adapted_target_sha256": "358edb25896a1c72c54099649b5bddbc33c7aae773cafb68c7f6c8b2df0a6934",
+          "source_file_sha256": "358edb25896a1c72c54099649b5bddbc33c7aae773cafb68c7f6c8b2df0a6934",
+          "source_path": "crates/alpaca-data/src/news/model.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/news/model.rs"
+        },
+        {
+          "adapted_target_sha256": "51ef54d04ed01d8bff0064f19732886496527b5e2463fbecb01f63db1fa48172",
+          "source_file_sha256": "51ef54d04ed01d8bff0064f19732886496527b5e2463fbecb01f63db1fa48172",
+          "source_path": "crates/alpaca-data/src/news/request.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/news/request.rs"
+        },
+        {
+          "adapted_target_sha256": "44cef1642a76d8f9ac58fb47cf10a56974353795506aa213a48989833479fb92",
+          "source_file_sha256": "44cef1642a76d8f9ac58fb47cf10a56974353795506aa213a48989833479fb92",
+          "source_path": "crates/alpaca-data/src/news/response.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/news/response.rs"
+        },
+        {
+          "adapted_target_sha256": "d5384d5e74e08cccd51836d184d7d1a647abe82f4a32c8e2adfa3b9e0362d8f2",
+          "source_file_sha256": "d5384d5e74e08cccd51836d184d7d1a647abe82f4a32c8e2adfa3b9e0362d8f2",
+          "source_path": "crates/alpaca-data/src/options/client.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/options/client.rs"
+        },
+        {
+          "adapted_target_sha256": "c04711eacc464dceb847cad3ce3e1621c763ea8fb78d5a3a4cedb3198e064c48",
+          "source_file_sha256": "c04711eacc464dceb847cad3ce3e1621c763ea8fb78d5a3a4cedb3198e064c48",
+          "source_path": "crates/alpaca-data/src/options/convenience.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/options/convenience.rs"
+        },
+        {
+          "adapted_target_sha256": "3ad2cca22b48bd700665435f9039ea94d711dd43cff1319fcbaf323629b5c5da",
+          "source_file_sha256": "3ad2cca22b48bd700665435f9039ea94d711dd43cff1319fcbaf323629b5c5da",
+          "source_path": "crates/alpaca-data/src/options/enums.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/options/enums.rs"
+        },
+        {
+          "adapted_target_sha256": "ba9d8cf41a40f62f1e10b47b5c59eb803bc8024d6ce1ec8f433ce86c06bedc43",
+          "source_file_sha256": "ba9d8cf41a40f62f1e10b47b5c59eb803bc8024d6ce1ec8f433ce86c06bedc43",
+          "source_path": "crates/alpaca-data/src/options/mod.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/options/mod.rs"
+        },
+        {
+          "adapted_target_sha256": "60ec8386a845cd5f031479af8925fab4d83ea72515a3ccc70ce183edc21293d3",
+          "source_file_sha256": "60ec8386a845cd5f031479af8925fab4d83ea72515a3ccc70ce183edc21293d3",
+          "source_path": "crates/alpaca-data/src/options/model.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/options/model.rs"
+        },
+        {
+          "adapted_target_sha256": "6a0404b3d901a4d789b20789f6212c1fe2ebc667833036589ab2b6d41b4fa651",
+          "source_file_sha256": "6a0404b3d901a4d789b20789f6212c1fe2ebc667833036589ab2b6d41b4fa651",
+          "source_path": "crates/alpaca-data/src/options/request.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/options/request.rs"
+        },
+        {
+          "adapted_target_sha256": "ce7f1a8ea2ed69bea0eca823599ef0f0d3d5c42eb1e6df8fcec12334880bb1f2",
+          "source_file_sha256": "ce7f1a8ea2ed69bea0eca823599ef0f0d3d5c42eb1e6df8fcec12334880bb1f2",
+          "source_path": "crates/alpaca-data/src/options/response.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/options/response.rs"
+        },
+        {
+          "adapted_target_sha256": "1a5f06105ecb242eb5bb8c95c74a9ca40fb4476c8cdbbd19596964a97131a568",
+          "source_file_sha256": "1a5f06105ecb242eb5bb8c95c74a9ca40fb4476c8cdbbd19596964a97131a568",
+          "source_path": "crates/alpaca-data/src/pagination.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/pagination.rs"
+        },
+        {
+          "adapted_target_sha256": "097cc6a7fca2004995de90ea0de8ab1e4790e14976224916a8d22bce79a26e7a",
+          "source_file_sha256": "097cc6a7fca2004995de90ea0de8ab1e4790e14976224916a8d22bce79a26e7a",
+          "source_path": "crates/alpaca-data/src/stocks/client.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/stocks/client.rs"
+        },
+        {
+          "adapted_target_sha256": "623cab241dac1935d7443ec18ebf4ed838d6566b5cf05cc40dc4d50b186e7626",
+          "source_file_sha256": "623cab241dac1935d7443ec18ebf4ed838d6566b5cf05cc40dc4d50b186e7626",
+          "source_path": "crates/alpaca-data/src/stocks/convenience.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/stocks/convenience.rs"
+        },
+        {
+          "adapted_target_sha256": "0a5ab87e53d12b5d94ea1ff49c6d187c3a0e089c8815b88d3534c6352d7998e9",
+          "source_file_sha256": "0a5ab87e53d12b5d94ea1ff49c6d187c3a0e089c8815b88d3534c6352d7998e9",
+          "source_path": "crates/alpaca-data/src/stocks/enums.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/stocks/enums.rs"
+        },
+        {
+          "adapted_target_sha256": "bcf3c5eb921124b36e84fd0150356d0ddbc75c9eacc83982dc785b52ba08199d",
+          "source_file_sha256": "bcf3c5eb921124b36e84fd0150356d0ddbc75c9eacc83982dc785b52ba08199d",
+          "source_path": "crates/alpaca-data/src/stocks/mod.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/stocks/mod.rs"
+        },
+        {
+          "adapted_target_sha256": "20273f69cdddc7b2576e111a009fa251ee31451dd98578c261e05a29f7d0fde9",
+          "source_file_sha256": "20273f69cdddc7b2576e111a009fa251ee31451dd98578c261e05a29f7d0fde9",
+          "source_path": "crates/alpaca-data/src/stocks/model.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/stocks/model.rs"
+        },
+        {
+          "adapted_target_sha256": "430d3ad505a8b5d3d4ed9a1486f9743bdcf70b174830e082b3c46d2934e96ac7",
+          "source_file_sha256": "430d3ad505a8b5d3d4ed9a1486f9743bdcf70b174830e082b3c46d2934e96ac7",
+          "source_path": "crates/alpaca-data/src/stocks/request.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/stocks/request.rs"
+        },
+        {
+          "adapted_target_sha256": "3f40179880f23e667345a8a6d28d8a94d64e461e28a4119e01629992b505ab23",
+          "source_file_sha256": "f98ce26385fec14f85030d53e29be3aefb0836a96ee62b541f75953c407e2a71",
+          "source_path": "crates/alpaca-data/src/stocks/response.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/stocks/response.rs"
+        },
+        {
+          "adapted_target_sha256": "54598cb1590a37f7d7a1dc767c28ede4ee5c2cc7bbb2e53cc4db55b6c4421855",
+          "source_file_sha256": "54598cb1590a37f7d7a1dc767c28ede4ee5c2cc7bbb2e53cc4db55b6c4421855",
+          "source_path": "crates/alpaca-data/src/symbols.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/symbols.rs"
+        },
+        {
+          "adapted_target_sha256": "25599853245a2f5a82dd33447ba56ede2250827b236a5b1d0ab0a3ba0eb6a540",
+          "source_file_sha256": "f109031bba2bc815bb52925e880004d393070d86e5b447c92f687d76bdcf795f",
+          "source_path": "crates/alpaca-http/Cargo.toml",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-http/Cargo.toml"
+        },
+        {
+          "adapted_target_sha256": "57f324e6f726d03ba2cb9c29e45730f377ed824d66b5e9aa2a5e41a070a89d3c",
+          "source_file_sha256": "57f324e6f726d03ba2cb9c29e45730f377ed824d66b5e9aa2a5e41a070a89d3c",
+          "source_path": "crates/alpaca-http/README.md",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-http/README.md"
+        },
+        {
+          "adapted_target_sha256": "57a7a95ce531ede822a7920a0e0646eafc9963b41823b7c78df767c698dd915c",
+          "source_file_sha256": "de2183035ca9bbf798ff8e9c27326e6babc8499432409c847b510bc3687a362f",
+          "source_path": "crates/alpaca-http/src/auth.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-http/src/auth.rs"
+        },
+        {
+          "adapted_target_sha256": "a9bb54200b636f51f27cda8108c8664ba9fdd6aafe52abb9d3e9000ec0e1d13c",
+          "source_file_sha256": "a0f5e0f5fda7db6aac82bd7cf05250982409e2b925ca539553e36c6b5c87dc37",
+          "source_path": "crates/alpaca-http/src/client.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-http/src/client.rs"
+        },
+        {
+          "adapted_target_sha256": "5608c804245dcc3eea05fa5ce865b7eff5a5b79217dc6164b009f9970e1f1bbb",
+          "source_file_sha256": "06005ea72939475bee52203d475f4e20a417df815720948f353ac9d920ddcd59",
+          "source_path": "crates/alpaca-http/src/error.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-http/src/error.rs"
+        },
+        {
+          "adapted_target_sha256": "dbebf9ff8fda2de4a6a071efa19348c018ad8e93217fcc45a87ede61f7d95099",
+          "source_file_sha256": "dbebf9ff8fda2de4a6a071efa19348c018ad8e93217fcc45a87ede61f7d95099",
+          "source_path": "crates/alpaca-http/src/lib.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-http/src/lib.rs"
+        },
+        {
+          "adapted_target_sha256": "6c33fb761db2371d1baa73b03028ad2a95a7899b9d28fb413d9f98445487fc6c",
+          "source_file_sha256": "6c33fb761db2371d1baa73b03028ad2a95a7899b9d28fb413d9f98445487fc6c",
+          "source_path": "crates/alpaca-http/src/meta.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-http/src/meta.rs"
+        },
+        {
+          "adapted_target_sha256": "7901379863258a0dbfa672de307a879cc6ee15d0f10159a1c05cfe300397d79d",
+          "source_file_sha256": "7901379863258a0dbfa672de307a879cc6ee15d0f10159a1c05cfe300397d79d",
+          "source_path": "crates/alpaca-http/src/observer.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-http/src/observer.rs"
+        },
+        {
+          "adapted_target_sha256": "acebdaf394db02ef0a7039bc49c2e4a3b7cf6fd9e9adb4bbcabc0777909d66b7",
+          "source_file_sha256": "acebdaf394db02ef0a7039bc49c2e4a3b7cf6fd9e9adb4bbcabc0777909d66b7",
+          "source_path": "crates/alpaca-http/src/rate_limit.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-http/src/rate_limit.rs"
+        },
+        {
+          "adapted_target_sha256": "0af56828d2172439b79fbd9eb1722e61f62e25d82ba6b7c0d0b34e89f3e6962d",
+          "source_file_sha256": "0af56828d2172439b79fbd9eb1722e61f62e25d82ba6b7c0d0b34e89f3e6962d",
+          "source_path": "crates/alpaca-http/src/request.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-http/src/request.rs"
+        },
+        {
+          "adapted_target_sha256": "9ac87ddb30f481fb49f05bb04261d0efd282caa7dd7e51d008a98a6990204b6b",
+          "source_file_sha256": "6155fe5a8a481cd7ea8f757534fcd5411f8dca7d8d36d1b07eee1a75fdc442ce",
+          "source_path": "crates/alpaca-http/src/retry.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-http/src/retry.rs"
+        },
+        {
+          "adapted_target_sha256": "01dd2fb19700bc9f3bf3e8dca9bef752f9b62c8a5177a7befe334141c00b14b1",
+          "source_file_sha256": "01dd2fb19700bc9f3bf3e8dca9bef752f9b62c8a5177a7befe334141c00b14b1",
+          "source_path": "crates/alpaca-http/tests/client_retry.rs",
+          "target_path": "vendor/alpaca-rust/crates/alpaca-http/tests/client_retry.rs"
+        }
+      ],
+      "source_git_tree": "faba69ee9eaacdafff334699a03b4dd45223b004",
+      "source_repository": "wmzhai/alpaca-rust",
+      "upstream_release": {
+        "commit": "d91be382e3e9d25c52c24e626e78702532d24ba2",
+        "tag": "v0.33.3",
+        "url": "https://github.com/wmzhai/alpaca-rust/releases/tag/v0.33.3",
+        "verified_on": "2026-10-08"
+      },
+      "workspace_scope": "Only alpaca-core, alpaca-data, and alpaca-rest-http are vendored; trading, mock, time, option, and facade packages are not included."
+    }
+  ]
 }

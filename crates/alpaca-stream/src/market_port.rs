@@ -1365,7 +1365,7 @@ mod tests {
             panic!("expected typed subscription acknowledgement");
         };
         assert_eq!(acknowledged.len(), 2);
-        assert!(rejected.is_empty());
+        assert_eq!(rejected, Vec::new());
         assert!(request_id.starts_with("alpaca-session-"));
         assert!(subscription_id.starts_with("local-subscription-"));
         assert!(acknowledgement.metadata.sequence > connecting.metadata.sequence);

@@ -15,3 +15,22 @@ and payloads are synthetic.
 
 Third-party dependencies retain their own license terms. See Cargo.lock and
 SBOM.spdx.json; this notice does not relicense any dependency.
+
+The read-only `alpaca-rest-read` adapter vendors the `alpaca-core`, `alpaca-data`,
+and `alpaca-rest-http` crates from the community project `wmzhai/alpaca-rust` at
+commit `d91be382e3e9d25c52c24e626e78702532d24ba2`, under its declared
+`MIT OR Apache-2.0` license. The original license texts are retained in
+`vendor/alpaca-rust/LICENSE-MIT` and `vendor/alpaca-rust/LICENSE-APACHE`.
+Alpaca lists this Rust SDK as community-made; it is not maintained or supported
+by Alpaca. Source hashes and local security patches are recorded in
+`vendor/alpaca-rust/UPSTREAM.md` and `SOURCE-MANIFEST.json`.
+
+The exact transitive registry package `webpki-root-certs 1.0.9` declares
+`CDLA-Permissive-2.0`. Its actual package `LICENSE` text is retained at
+`licenses/webpki-root-certs-1.0.9/LICENSE` with SHA-256
+`e271993808fec50ab29350b39539cdec611a9103f827e0aa26d61da70e2d33f8`; the
+locked registry checksum and exact dependency path are recorded in
+`SOURCE-MANIFEST.json` and the SPDX package metadata. `deny.toml` permits this
+license only for this exact crate version. The dependency supplies Mozilla root
+certificate data and confers no Alpaca/broker authority, entitlement, or market
+data provenance.

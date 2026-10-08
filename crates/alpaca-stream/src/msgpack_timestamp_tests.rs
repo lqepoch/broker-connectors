@@ -49,7 +49,7 @@ fn decodes_timestamp_96_signed_seconds_and_full_nanoseconds() {
         decode_96(-1, 999_999_999).expect("negative seconds and maximum nanoseconds should decode");
     assert_eq!(before_epoch.unix_seconds(), -1);
     assert_eq!(before_epoch.nanosecond(), 999_999_999);
-    assert!(before_epoch.as_rfc3339().is_empty());
+    assert_eq!(before_epoch.as_rfc3339(), "");
 
     let epoch = decode_96(0, 1).expect("epoch with one nanosecond should decode");
     assert_eq!(epoch.unix_seconds(), 0);

@@ -1,0 +1,2229 @@
+diff --git a/Cargo.toml b/Cargo.toml
+index 2bb0e50..7e71569 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -3,11 +3,6 @@ members = [
+   "crates/alpaca-core",
+   "crates/alpaca-http",
+   "crates/alpaca-data",
+-  "crates/alpaca-trade",
+-  "crates/alpaca-mock",
+-  "crates/alpaca-time",
+-  "crates/alpaca-option",
+-  "crates/alpaca-facade",
+ ]
+ resolver = "2"
+ 
+@@ -21,20 +16,12 @@ repository = "https://github.com/wmzhai/alpaca-rust"
+ homepage = "https://wmzhai.github.io/alpaca-rust/"
+ 
+ [workspace.dependencies]
+-anyhow = "1"
+-axum = "0.8"
+ chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+-chrono-tz = "0.10"
+-dotenvy = "0.15"
+-futures = "0.3"
+ reqwest = { version = "0.13", default-features = false, features = ["json", "query", "rustls"] }
+ rust_decimal = { version = "1.41", default-features = false, features = ["serde-with-arbitrary-precision", "std"] }
+ serde = { version = "1", features = ["derive"] }
+ serde_json = { version = "1", features = ["arbitrary_precision"] }
+ thiserror = "2"
+ tokio = { version = "1", features = ["macros", "process", "rt-multi-thread", "sync", "time"] }
+-tracing = "0.1"
+-ts-rs = { version = "11.1", features = ["serde-compat"] }
+-tower = { version = "0.5", features = ["util"] }
+ url = "2"
+-uuid = { version = "1", features = ["v4"] }
++zeroize = "1.9"
+diff --git a/crates/alpaca-core/Cargo.toml b/crates/alpaca-core/Cargo.toml
+index 3d4d5f3..5ebe3b4 100644
+--- a/crates/alpaca-core/Cargo.toml
++++ b/crates/alpaca-core/Cargo.toml
+@@ -19,6 +19,7 @@ serde.workspace = true
+ serde_json.workspace = true
+ thiserror.workspace = true
+ url.workspace = true
++zeroize.workspace = true
+ 
+ [dev-dependencies]
+ tokio.workspace = true
+diff --git a/crates/alpaca-core/src/auth.rs b/crates/alpaca-core/src/auth.rs
+index bcf4950..f203d60 100644
+--- a/crates/alpaca-core/src/auth.rs
++++ b/crates/alpaca-core/src/auth.rs
+@@ -1,17 +1,37 @@
+ use std::fmt;
++use zeroize::Zeroizing;
+ 
+ use crate::{Error, validate};
+ 
+ #[derive(Clone, PartialEq, Eq)]
+ pub struct Credentials {
+-    api_key: String,
+-    secret_key: String,
++    api_key: Zeroizing<String>,
++    secret_key: Zeroizing<String>,
+ }
+ 
+ impl Credentials {
+     pub fn new(api_key: impl Into<String>, secret_key: impl Into<String>) -> Result<Self, Error> {
+-        let api_key = validate::non_empty_string("api_key", api_key)?;
+-        let secret_key = validate::non_empty_string("secret_key", secret_key)?;
++        Self::new_zeroizing(
++            Zeroizing::new(api_key.into()),
++            Zeroizing::new(secret_key.into()),
++        )
++    }
++
++    /// Constructs credentials that are zeroized when their owner is dropped.
++    pub fn new_zeroizing(
++        api_key: Zeroizing<String>,
++        secret_key: Zeroizing<String>,
++    ) -> Result<Self, Error> {
++        if api_key.trim().is_empty() {
++            return Err(Error::InvalidConfiguration(
++                "api_key must not be empty or whitespace".to_owned(),
++            ));
++        }
++        if secret_key.trim().is_empty() {
++            return Err(Error::InvalidConfiguration(
++                "secret_key must not be empty or whitespace".to_owned(),
++            ));
++        }
+         validate::valid_header_value("api_key", &api_key)?;
+         validate::valid_header_value("secret_key", &secret_key)?;
+ 
+@@ -23,12 +43,12 @@ impl Credentials {
+ 
+     #[must_use]
+     pub fn api_key(&self) -> &str {
+-        &self.api_key
++        self.api_key.as_str()
+     }
+ 
+     #[must_use]
+     pub fn secret_key(&self) -> &str {
+-        &self.secret_key
++        self.secret_key.as_str()
+     }
+ }
+ 
+@@ -40,3 +60,19 @@ impl fmt::Debug for Credentials {
+             .finish()
+     }
+ }
++
++#[cfg(test)]
++mod tests {
++    use super::Credentials;
++
++    #[test]
++    fn credentials_debug_redacts_values() {
++        let credentials = Credentials::new("synthetic-test-key", "synthetic-test-secret")
++            .expect("synthetic credentials are valid");
++        let debug = format!("{credentials:?}");
++
++        assert!(debug.contains("REDACTED"));
++        assert!(!debug.contains("synthetic-test-key"));
++        assert!(!debug.contains("synthetic-test-secret"));
++    }
++}
+diff --git a/crates/alpaca-data/Cargo.toml b/crates/alpaca-data/Cargo.toml
+index 57b2d9d..a6115ef 100644
+--- a/crates/alpaca-data/Cargo.toml
++++ b/crates/alpaca-data/Cargo.toml
+@@ -23,6 +23,4 @@ serde.workspace = true
+ serde_json.workspace = true
+ thiserror.workspace = true
+ tokio.workspace = true
+-
+-[dev-dependencies]
+-dotenvy.workspace = true
++zeroize.workspace = true
+diff --git a/crates/alpaca-data/src/cache/client.rs b/crates/alpaca-data/src/cache/client.rs
+index da1428c..f6bb068 100644
+--- a/crates/alpaca-data/src/cache/client.rs
++++ b/crates/alpaca-data/src/cache/client.rs
+@@ -78,7 +78,13 @@ impl CachedClient {
+         let now = Instant::now();
+         let (mut hits, missing) = {
+             let state = self.state.read().await;
+-            collect_cached_hits(&resolved, &state.stocks.values, &state.stocks.empty, ttl, now)
++            collect_cached_hits(
++                &resolved,
++                &state.stocks.values,
++                &state.stocks.empty,
++                ttl,
++                now,
++            )
+         };
+ 
+         if !missing.is_empty() {
+@@ -287,7 +293,15 @@ impl CachedClient {
+             .collect();
+         let fetched = fetched
+             .into_iter()
+-            .map(|(symbol, bars)| (symbol, CachedEntry { value: bars, stored_at }))
++            .map(|(symbol, bars)| {
++                (
++                    symbol,
++                    CachedEntry {
++                        value: bars,
++                        stored_at,
++                    },
++                )
++            })
+             .collect();
+ 
+         let mut state = self.state.write().await;
+diff --git a/crates/alpaca-data/src/cache/state.rs b/crates/alpaca-data/src/cache/state.rs
+index adca262..63e46a1 100644
+--- a/crates/alpaca-data/src/cache/state.rs
++++ b/crates/alpaca-data/src/cache/state.rs
+@@ -189,9 +189,7 @@ pub fn collect_cached_hits<T: Clone>(
+     (hits, missing)
+ }
+ 
+-pub(crate) fn unwrap_bars_map(
+-    cached: &HashMap<String, CachedEntry<Vec<BarPoint>>>,
+-) -> BarsMap {
++pub(crate) fn unwrap_bars_map(cached: &HashMap<String, CachedEntry<Vec<BarPoint>>>) -> BarsMap {
+     cached
+         .iter()
+         .map(|(symbol, entry)| (symbol.clone(), entry.value.clone()))
+@@ -271,11 +269,7 @@ mod tests {
+         );
+ 
+         let (hits, missing) = collect_cached_hits(
+-            &[
+-                "AAPL".to_string(),
+-                "MSFT".to_string(),
+-                "GOOG".to_string(),
+-            ],
++            &["AAPL".to_string(), "MSFT".to_string(), "GOOG".to_string()],
+             &cached,
+             &HashMap::new(),
+             Duration::from_secs(15),
+diff --git a/crates/alpaca-data/src/client.rs b/crates/alpaca-data/src/client.rs
+index 23ffe2e..4496837 100644
+--- a/crates/alpaca-data/src/client.rs
++++ b/crates/alpaca-data/src/client.rs
+@@ -8,6 +8,7 @@ use alpaca_http::{
+     StaticHeaderAuthenticator, TransportObserver,
+ };
+ use serde::de::DeserializeOwned;
++use zeroize::Zeroizing;
+ 
+ use crate::{
+     Error, corporate_actions::CorporateActionsClient, crypto::CryptoClient, news::NewsClient,
+@@ -39,8 +40,8 @@ pub(crate) struct ClientInner {
+ 
+ #[derive(Clone, Default)]
+ pub struct ClientBuilder {
+-    api_key: Option<String>,
+-    secret_key: Option<String>,
++    api_key: Option<Zeroizing<String>>,
++    secret_key: Option<Zeroizing<String>>,
+     base_url: Option<BaseUrl>,
+     timeout: Option<Duration>,
+     observer: Option<Arc<dyn TransportObserver>>,
+@@ -132,21 +133,34 @@ impl fmt::Debug for ClientBuilder {
+ 
+ impl ClientBuilder {
+     #[must_use]
+-    pub fn credentials(mut self, credentials: Credentials) -> Self {
+-        self.api_key = Some(credentials.api_key().to_owned());
+-        self.secret_key = Some(credentials.secret_key().to_owned());
++    pub fn credentials(self, credentials: Credentials) -> Self {
++        self.credentials_zeroizing(
++            Zeroizing::new(credentials.api_key().to_owned()),
++            Zeroizing::new(credentials.secret_key().to_owned()),
++        )
++    }
++
++    /// Set credentials from zeroizing buffers without storing plain `String` values.
++    #[must_use]
++    pub fn credentials_zeroizing(
++        mut self,
++        api_key: Zeroizing<String>,
++        secret_key: Zeroizing<String>,
++    ) -> Self {
++        self.api_key = Some(api_key);
++        self.secret_key = Some(secret_key);
+         self
+     }
+ 
+     #[must_use]
+     pub fn api_key(mut self, api_key: impl Into<String>) -> Self {
+-        self.api_key = Some(api_key.into());
++        self.api_key = Some(Zeroizing::new(api_key.into()));
+         self
+     }
+ 
+     #[must_use]
+     pub fn secret_key(mut self, secret_key: impl Into<String>) -> Self {
+-        self.secret_key = Some(secret_key.into());
++        self.secret_key = Some(Zeroizing::new(secret_key.into()));
+         self
+     }
+ 
+@@ -206,8 +220,18 @@ impl ClientBuilder {
+     }
+ 
+     pub fn build(self) -> Result<Client, Error> {
++        let base_url = match self.base_url {
++            Some(base_url) => base_url,
++            None => BaseUrl::new(DEFAULT_DATA_BASE_URL)?,
++        };
++        if base_url.as_str() != DEFAULT_DATA_BASE_URL {
++            return Err(Error::InvalidConfiguration(
++                "base_url must be the fixed HTTPS Alpaca market-data origin".to_owned(),
++            ));
++        }
++
+         let credentials = match (self.api_key, self.secret_key) {
+-            (Some(api_key), Some(secret_key)) => Credentials::new(api_key, secret_key)?,
++            (Some(api_key), Some(secret_key)) => Credentials::new_zeroizing(api_key, secret_key)?,
+             (None, None) => return Err(Error::MissingCredentials),
+             _ => {
+                 return Err(Error::InvalidConfiguration(
+@@ -216,10 +240,6 @@ impl ClientBuilder {
+             }
+         };
+ 
+-        let base_url = match self.base_url {
+-            Some(base_url) => base_url,
+-            None => BaseUrl::new(DEFAULT_DATA_BASE_URL)?,
+-        };
+         let auth = StaticHeaderAuthenticator::from_pairs([
+             (APCA_API_KEY_HEADER, credentials.api_key()),
+             (APCA_API_SECRET_HEADER, credentials.secret_key()),
+@@ -252,6 +272,8 @@ impl ClientBuilder {
+     fn build_reqwest_client(timeout: Duration) -> Result<reqwest::Client, Error> {
+         reqwest::Client::builder()
+             .no_proxy()
++            .redirect(reqwest::redirect::Policy::none())
++            .https_only(true)
+             .pool_max_idle_per_host(DEFAULT_POOL_MAX_IDLE_PER_HOST)
+             .pool_idle_timeout(DEFAULT_POOL_IDLE_TIMEOUT)
+             .tcp_keepalive(DEFAULT_TCP_KEEPALIVE)
+@@ -297,9 +319,51 @@ impl ClientInner {
+     }
+ }
+ 
+-fn redacted_option(value: &Option<String>) -> &'static str {
++fn redacted_option<T>(value: &Option<T>) -> &'static str {
+     match value {
+         Some(_) => "[REDACTED]",
+         None => "None",
+     }
+ }
++
++#[cfg(test)]
++mod tests {
++    use super::{Client, Error};
++
++    #[test]
++    fn client_builder_debug_redacts_credentials() {
++        let builder = Client::builder()
++            .api_key("synthetic-test-key")
++            .secret_key("synthetic-test-secret");
++        let debug = format!("{builder:?}");
++
++        assert!(debug.contains("REDACTED"));
++        assert!(!debug.contains("synthetic-test-key"));
++        assert!(!debug.contains("synthetic-test-secret"));
++    }
++
++    #[test]
++    fn fixed_origin_is_validated_before_credentials_or_request_construction() {
++        let fixed_origin_without_credentials = Client::builder().build();
++        assert!(matches!(
++            fixed_origin_without_credentials,
++            Err(Error::MissingCredentials)
++        ));
++
++        let untrusted_origin = Client::builder()
++            .base_url_str("https://other.example")
++            .expect("syntactically valid URL")
++            .api_key("synthetic-test-key")
++            .secret_key("synthetic-test-secret")
++            .build();
++        let Err(error) = untrusted_origin else {
++            panic!("untrusted origin must be rejected");
++        };
++        let debug = format!("{error:?}");
++
++        assert!(matches!(error, Error::InvalidConfiguration(_)));
++        assert!(!debug.contains("other.example"));
++        assert!(!debug.contains("synthetic-test-key"));
++        assert!(!debug.contains("synthetic-test-secret"));
++    }
++}
+diff --git a/crates/alpaca-data/src/stocks/response.rs b/crates/alpaca-data/src/stocks/response.rs
+index 895ffdd..19310b5 100644
+--- a/crates/alpaca-data/src/stocks/response.rs
++++ b/crates/alpaca-data/src/stocks/response.rs
+@@ -233,7 +233,10 @@ mod tests {
+             .get("SNDK")
+             .and_then(|bars| bars.first())
+             .and_then(|bar| bar.c);
+-        assert_eq!(close.map(|price| price.to_string()).as_deref(), Some("1660.46"));
++        assert_eq!(
++            close.map(|price| price.to_string()).as_deref(),
++            Some("1660.46")
++        );
+     }
+ }
+ 
+diff --git a/crates/alpaca-data/tests/corporate_actions_real_api.rs b/crates/alpaca-data/tests/corporate_actions_real_api.rs
+deleted file mode 100644
+index cf130f5..0000000
+--- a/crates/alpaca-data/tests/corporate_actions_real_api.rs
++++ /dev/null
+@@ -1,304 +0,0 @@
+-#[path = "../../../tests/support/live/mod.rs"]
+-mod live_support;
+-
+-use std::sync::Arc;
+-
+-use alpaca_data::{
+-    Client,
+-    corporate_actions::{CorporateActionType, ListRequest, Region, Sort},
+-};
+-use live_support::{
+-    LiveRequestObserver, LiveTestEnv, observed_query_value, observed_request_lines,
+-    unique_observed_requests,
+-};
+-use serde_json::Value;
+-
+-fn real_data_client() -> (Client, Arc<LiveRequestObserver>) {
+-    let env = LiveTestEnv::load().expect("live test environment should load");
+-    let service = env
+-        .data()
+-        .expect("Paper/Data credentials must be present for real API tests");
+-    let observer = Arc::new(LiveRequestObserver::default());
+-    let client = Client::builder()
+-        .credentials(service.credentials().clone())
+-        .observer(observer.clone())
+-        .build()
+-        .expect("client should build from Paper/Data credentials");
+-    (client, observer)
+-}
+-
+-fn all_action_types() -> Vec<CorporateActionType> {
+-    vec![
+-        CorporateActionType::ForwardSplit,
+-        CorporateActionType::ReverseSplit,
+-        CorporateActionType::UnitSplit,
+-        CorporateActionType::StockDividend,
+-        CorporateActionType::CashDividend,
+-        CorporateActionType::SpinOff,
+-        CorporateActionType::CashMerger,
+-        CorporateActionType::StockMerger,
+-        CorporateActionType::StockAndCashMerger,
+-        CorporateActionType::Redemption,
+-        CorporateActionType::NameChange,
+-        CorporateActionType::WorthlessRemoval,
+-        CorporateActionType::RightsDistribution,
+-        CorporateActionType::PartialCall,
+-        CorporateActionType::Reorganization,
+-    ]
+-}
+-
+-fn count_non_null_fields(value: &Value, predicate: &impl Fn(&str) -> bool) -> usize {
+-    match value {
+-        Value::Array(values) => values
+-            .iter()
+-            .map(|value| count_non_null_fields(value, predicate))
+-            .sum(),
+-        Value::Object(fields) => fields
+-            .iter()
+-            .map(|(name, value)| {
+-                usize::from(predicate(name) && !value.is_null())
+-                    + count_non_null_fields(value, predicate)
+-            })
+-            .sum(),
+-        _ => 0,
+-    }
+-}
+-
+-#[tokio::test]
+-async fn corporate_actions_regions_and_types_use_real_api_contract() {
+-    let (client, observer) = real_data_client();
+-    let expected_types = all_action_types()
+-        .iter()
+-        .map(ToString::to_string)
+-        .collect::<Vec<_>>()
+-        .join(",");
+-
+-    let us = client
+-        .corporate_actions()
+-        .list(ListRequest {
+-            symbols: None,
+-            cusips: None,
+-            types: Some(all_action_types()),
+-            region: Some(Region::Us),
+-            start: Some("2026-07-01".to_owned()),
+-            end: Some("2026-07-10".to_owned()),
+-            ids: None,
+-            limit: Some(1000),
+-            sort: Some(Sort::Asc),
+-            page_token: None,
+-        })
+-        .await
+-        .expect("all corporate action types should read from the real US Data API");
+-    assert!(!us.corporate_actions.cash_dividends.is_empty());
+-    assert!(!us.corporate_actions.reorganizations.is_empty());
+-    let cash_dividends_with_sub_type = us
+-        .corporate_actions
+-        .cash_dividends
+-        .iter()
+-        .filter(|action| action.sub_type.is_some())
+-        .count();
+-    assert!(
+-        cash_dividends_with_sub_type > 0,
+-        "real cash dividends should exercise typed sub_type"
+-    );
+-
+-    let non_us = client
+-        .corporate_actions()
+-        .list(ListRequest {
+-            symbols: None,
+-            cusips: None,
+-            types: Some(all_action_types()),
+-            region: Some(Region::NonUs),
+-            start: Some("2026-07-01".to_owned()),
+-            end: Some("2026-07-10".to_owned()),
+-            ids: None,
+-            limit: Some(1000),
+-            sort: Some(Sort::Asc),
+-            page_token: None,
+-        })
+-        .await
+-        .expect("non-US corporate actions should read from the real Data API");
+-    let serialized_non_us_actions = serde_json::to_value(&non_us.corporate_actions)
+-        .expect("typed non-US corporate actions should serialize for field-presence verification");
+-    let non_us_currency_values =
+-        count_non_null_fields(&serialized_non_us_actions, &|name| name == "currency");
+-    let non_us_isin_values =
+-        count_non_null_fields(&serialized_non_us_actions, &|name| name.ends_with("isin"));
+-    assert!(
+-        non_us_currency_values > 0,
+-        "real non-US actions should exercise typed currency fields"
+-    );
+-    assert!(
+-        non_us_isin_values > 0,
+-        "real non-US actions should exercise typed ISIN fields"
+-    );
+-
+-    let all = client
+-        .corporate_actions()
+-        .list(ListRequest {
+-            symbols: None,
+-            cusips: None,
+-            types: Some(vec![CorporateActionType::PartialCall]),
+-            region: Some(Region::All),
+-            start: Some("2026-03-31".to_owned()),
+-            end: Some("2026-07-08".to_owned()),
+-            ids: None,
+-            limit: Some(100),
+-            sort: Some(Sort::Asc),
+-            page_token: None,
+-        })
+-        .await
+-        .expect("all-region partial calls should read from the real Data API");
+-    assert!(!all.corporate_actions.partial_calls.is_empty());
+-    assert!(
+-        all.corporate_actions
+-            .partial_calls
+-            .iter()
+-            .all(|action| !action.id.is_empty()
+-                && !action.symbol.is_empty()
+-                && !action.process_date.is_empty())
+-    );
+-    let partial_calls_with_lottery_type = all
+-        .corporate_actions
+-        .partial_calls
+-        .iter()
+-        .filter(|action| action.lottery_type.is_some())
+-        .count();
+-    assert!(
+-        partial_calls_with_lottery_type > 0,
+-        "real partial calls should exercise typed lottery_type"
+-    );
+-
+-    let attempts = observer.requests();
+-    let requests = unique_observed_requests(&attempts);
+-    let retries = observer.retries();
+-    let responses = observer.responses();
+-    assert_eq!(requests.len(), 3);
+-    assert_eq!(attempts.len(), responses.len() + retries.len());
+-    assert_eq!(requests.len(), responses.len());
+-    assert!(requests.iter().all(|request| {
+-        request.operation.as_deref() == Some("corporate_actions.list")
+-            && request.url.contains("/v1/corporate-actions")
+-    }));
+-    assert_eq!(
+-        observed_query_value(&requests[0], "types").as_deref(),
+-        Some(expected_types.as_str())
+-    );
+-    assert_eq!(
+-        observed_query_value(&requests[1], "types").as_deref(),
+-        Some(expected_types.as_str())
+-    );
+-    assert_eq!(
+-        observed_query_value(&requests[0], "region").as_deref(),
+-        Some("us")
+-    );
+-    assert_eq!(
+-        observed_query_value(&requests[1], "region").as_deref(),
+-        Some("non_us")
+-    );
+-    assert_eq!(
+-        observed_query_value(&requests[2], "region").as_deref(),
+-        Some("all")
+-    );
+-    assert!(
+-        responses
+-            .iter()
+-            .all(|meta| meta.status() == 200 && meta.request_id().is_some())
+-    );
+-    eprintln!(
+-        "real_api operation=corporate_actions.list attempts={} retries={:?} requests={:?} regions={:?} statuses={:?} request_ids={:?} shape=typed_15_action_arrays cash_dividends={} reorganizations={} partial_calls={} non_us_currency_values={} non_us_isin_values={} cash_dividend_sub_type={} partial_call_lottery_type={}",
+-        attempts.len(),
+-        retries
+-            .iter()
+-            .map(|retry| retry.status.map(|status| status.as_u16()))
+-            .collect::<Vec<_>>(),
+-        observed_request_lines(&attempts),
+-        requests
+-            .iter()
+-            .filter_map(|request| observed_query_value(request, "region"))
+-            .collect::<Vec<_>>(),
+-        responses
+-            .iter()
+-            .map(|meta| meta.status())
+-            .collect::<Vec<_>>(),
+-        responses
+-            .iter()
+-            .filter_map(|meta| meta.request_id())
+-            .collect::<Vec<_>>(),
+-        us.corporate_actions.cash_dividends.len(),
+-        us.corporate_actions.reorganizations.len(),
+-        all.corporate_actions.partial_calls.len(),
+-        non_us_currency_values,
+-        non_us_isin_values,
+-        cash_dividends_with_sub_type,
+-        partial_calls_with_lottery_type
+-    );
+-}
+-
+-#[tokio::test]
+-async fn corporate_action_reorganizations_paginate_real_api() {
+-    let (client, observer) = real_data_client();
+-    let response = client
+-        .corporate_actions()
+-        .list_all(ListRequest {
+-            symbols: None,
+-            cusips: None,
+-            types: Some(vec![CorporateActionType::Reorganization]),
+-            region: Some(Region::Us),
+-            start: Some("2026-05-08".to_owned()),
+-            end: Some("2026-05-08".to_owned()),
+-            ids: None,
+-            limit: Some(1),
+-            sort: Some(Sort::Asc),
+-            page_token: None,
+-        })
+-        .await
+-        .expect("real reorganizations should paginate through the Data API");
+-
+-    assert!(response.corporate_actions.reorganizations.len() > 1);
+-    assert!(response.next_page_token.is_none());
+-    assert!(
+-        response
+-            .corporate_actions
+-            .reorganizations
+-            .iter()
+-            .any(|action| !action.stock_movements.is_empty())
+-    );
+-    let attempts = observer.requests();
+-    let requests = unique_observed_requests(&attempts);
+-    let retries = observer.retries();
+-    let responses = observer.responses();
+-    assert!(responses.len() > 1);
+-    assert_eq!(attempts.len(), responses.len() + retries.len());
+-    assert_eq!(requests.len(), responses.len());
+-    assert!(requests.iter().all(|request| {
+-        request.operation.as_deref() == Some("corporate_actions.list")
+-            && request.url.contains("/v1/corporate-actions")
+-            && observed_query_value(request, "types").as_deref() == Some("reorganization")
+-            && observed_query_value(request, "region").as_deref() == Some("us")
+-    }));
+-    assert!(
+-        responses
+-            .iter()
+-            .all(|meta| meta.status() == 200 && meta.request_id().is_some())
+-    );
+-    eprintln!(
+-        "real_api operation=corporate_actions.list_all pages={} attempts={} retries={:?} requests={:?} statuses={:?} request_ids={:?} shape=reorganizations[]+stock_movements[]+next_page_token reorganizations={}",
+-        responses.len(),
+-        attempts.len(),
+-        retries
+-            .iter()
+-            .map(|retry| retry.status.map(|status| status.as_u16()))
+-            .collect::<Vec<_>>(),
+-        observed_request_lines(&attempts),
+-        responses
+-            .iter()
+-            .map(|meta| meta.status())
+-            .collect::<Vec<_>>(),
+-        responses
+-            .iter()
+-            .filter_map(|meta| meta.request_id())
+-            .collect::<Vec<_>>(),
+-        response.corporate_actions.reorganizations.len()
+-    );
+-}
+diff --git a/crates/alpaca-data/tests/crypto_real_api.rs b/crates/alpaca-data/tests/crypto_real_api.rs
+deleted file mode 100644
+index 11018c6..0000000
+--- a/crates/alpaca-data/tests/crypto_real_api.rs
++++ /dev/null
+@@ -1,496 +0,0 @@
+-#[path = "../../../tests/support/live/mod.rs"]
+-mod live_support;
+-
+-use std::sync::Arc;
+-
+-use alpaca_data::{
+-    Client,
+-    crypto::{
+-        Bar, BarsRequest, LatestBarsRequest, LatestOrderbooksRequest, LatestQuotesRequest,
+-        LatestTradesRequest, Orderbook, Quote, QuotesRequest, Snapshot, SnapshotsRequest,
+-        TimeFrame, Trade, TradesRequest, preferred_location,
+-    },
+-};
+-use live_support::{
+-    LiveRequestObserver, LiveTestEnv, observed_query_value, observed_request_lines,
+-    unique_observed_requests,
+-};
+-
+-fn real_data_client() -> (Client, Arc<LiveRequestObserver>) {
+-    let env = LiveTestEnv::load().expect("live test environment should load");
+-    let service = env
+-        .data()
+-        .expect("Paper/Data credentials must be present for real API tests");
+-    let observer = Arc::new(LiveRequestObserver::default());
+-    let client = Client::builder()
+-        .credentials(service.credentials().clone())
+-        .observer(observer.clone())
+-        .build()
+-        .expect("client should build from Paper/Data credentials");
+-    (client, observer)
+-}
+-
+-fn assert_bar_shape(bar: &Bar) {
+-    assert!(bar.t.is_some(), "bar timestamp should be present");
+-    assert!(bar.o.is_some(), "bar open should be present");
+-    assert!(bar.h.is_some(), "bar high should be present");
+-    assert!(bar.l.is_some(), "bar low should be present");
+-    assert!(bar.c.is_some(), "bar close should be present");
+-    assert!(bar.v.is_some(), "bar volume should be present");
+-    assert!(bar.n.is_some(), "bar trade count should be present");
+-    assert!(bar.vw.is_some(), "bar VWAP should be present");
+-}
+-
+-fn assert_quote_shape(quote: &Quote) {
+-    assert!(quote.t.is_some(), "quote timestamp should be present");
+-    assert!(quote.bp.is_some(), "quote bid price should be present");
+-    assert!(quote.bs.is_some(), "quote bid size should be present");
+-    assert!(quote.ap.is_some(), "quote ask price should be present");
+-    assert!(quote.r#as.is_some(), "quote ask size should be present");
+-}
+-
+-fn assert_trade_shape(trade: &Trade) {
+-    assert!(trade.t.is_some(), "trade timestamp should be present");
+-    assert!(trade.p.is_some(), "trade price should be present");
+-    assert!(trade.s.is_some(), "trade size should be present");
+-    assert!(trade.i.is_some(), "trade id should be present");
+-    assert!(trade.tks.is_some(), "trade taker side should be present");
+-}
+-
+-fn assert_orderbook_shape(orderbook: &Orderbook) {
+-    assert!(
+-        orderbook.t.is_some(),
+-        "orderbook timestamp should be present"
+-    );
+-}
+-
+-fn assert_snapshot_shape(snapshot: &Snapshot) {
+-    assert_trade_shape(
+-        snapshot
+-            .latest_trade
+-            .as_ref()
+-            .expect("snapshot latestTrade should be present"),
+-    );
+-    assert_quote_shape(
+-        snapshot
+-            .latest_quote
+-            .as_ref()
+-            .expect("snapshot latestQuote should be present"),
+-    );
+-    assert_bar_shape(
+-        snapshot
+-            .minute_bar
+-            .as_ref()
+-            .expect("snapshot minuteBar should be present"),
+-    );
+-    assert_bar_shape(
+-        snapshot
+-            .daily_bar
+-            .as_ref()
+-            .expect("snapshot dailyBar should be present"),
+-    );
+-    assert_bar_shape(
+-        snapshot
+-            .prev_daily_bar
+-            .as_ref()
+-            .expect("snapshot prevDailyBar should be present"),
+-    );
+-}
+-
+-#[tokio::test]
+-async fn crypto_latest_bars_use_real_api_endpoint() {
+-    let (client, observer) = real_data_client();
+-    let response = client
+-        .crypto()
+-        .latest_bars(LatestBarsRequest {
+-            location: preferred_location(),
+-            symbols: vec!["BTC/USD".to_owned(), "ETH/USD".to_owned()],
+-        })
+-        .await
+-        .expect("latest crypto bars should read from the real Data API");
+-
+-    let btc = response
+-        .bars
+-        .get("BTC/USD")
+-        .expect("canonical latest bars response should contain BTC/USD");
+-    let eth = response
+-        .bars
+-        .get("ETH/USD")
+-        .expect("canonical latest bars response should contain ETH/USD");
+-    assert_bar_shape(btc);
+-    assert_bar_shape(eth);
+-
+-    let request = observer
+-        .last_request()
+-        .expect("real Data API request should be observed");
+-    assert_eq!(request.operation.as_deref(), Some("crypto.latest_bars"));
+-    assert!(request.url.contains("/v1beta3/crypto/us/latest/bars"));
+-    assert_eq!(
+-        observed_query_value(&request, "symbols").as_deref(),
+-        Some("BTC/USD,ETH/USD")
+-    );
+-
+-    let meta = observer
+-        .last_response()
+-        .expect("real Data API response should be observed");
+-    assert_eq!(meta.status(), 200);
+-    let request_id = meta
+-        .request_id()
+-        .expect("real Data API response should include x-request-id");
+-    eprintln!(
+-        "real_api operation={} request={} {} status={} request_id={} shape=bars{{BTC/USD,ETH/USD}}(t,o,h,l,c,v,n,vw)",
+-        request.operation.as_deref().unwrap_or("unknown"),
+-        request.method,
+-        request.url,
+-        meta.status(),
+-        request_id
+-    );
+-}
+-
+-#[tokio::test]
+-async fn crypto_latest_quotes_use_real_api_endpoint() {
+-    let (client, observer) = real_data_client();
+-    let response = client
+-        .crypto()
+-        .latest_quotes(LatestQuotesRequest {
+-            location: preferred_location(),
+-            symbols: vec!["BTC/USD".to_owned()],
+-        })
+-        .await
+-        .expect("latest crypto quotes should read from the real Data API");
+-
+-    let quote = response
+-        .quotes
+-        .get("BTC/USD")
+-        .expect("canonical latest quotes response should contain BTC/USD");
+-    assert_quote_shape(quote);
+-
+-    let request = observer
+-        .last_request()
+-        .expect("real Data API request should be observed");
+-    assert_eq!(request.operation.as_deref(), Some("crypto.latest_quotes"));
+-    assert!(request.url.contains("/v1beta3/crypto/us/latest/quotes"));
+-    assert_eq!(
+-        observed_query_value(&request, "symbols").as_deref(),
+-        Some("BTC/USD")
+-    );
+-
+-    let meta = observer
+-        .last_response()
+-        .expect("real Data API response should be observed");
+-    assert_eq!(meta.status(), 200);
+-    assert!(meta.request_id().is_some());
+-}
+-
+-#[tokio::test]
+-async fn crypto_latest_trades_use_real_api_endpoint() {
+-    let (client, observer) = real_data_client();
+-    let response = client
+-        .crypto()
+-        .latest_trades(LatestTradesRequest {
+-            location: preferred_location(),
+-            symbols: vec!["BTC/USD".to_owned()],
+-        })
+-        .await
+-        .expect("latest crypto trades should read from the real Data API");
+-
+-    let trade = response
+-        .trades
+-        .get("BTC/USD")
+-        .expect("canonical latest trades response should contain BTC/USD");
+-    assert_trade_shape(trade);
+-
+-    let request = observer
+-        .last_request()
+-        .expect("real Data API request should be observed");
+-    assert_eq!(request.operation.as_deref(), Some("crypto.latest_trades"));
+-    assert!(request.url.contains("/v1beta3/crypto/us/latest/trades"));
+-    assert_eq!(
+-        observed_query_value(&request, "symbols").as_deref(),
+-        Some("BTC/USD")
+-    );
+-
+-    let meta = observer
+-        .last_response()
+-        .expect("real Data API response should be observed");
+-    assert_eq!(meta.status(), 200);
+-    assert!(meta.request_id().is_some());
+-}
+-
+-#[tokio::test]
+-async fn crypto_latest_orderbooks_use_real_api_endpoint() {
+-    let (client, observer) = real_data_client();
+-    let response = client
+-        .crypto()
+-        .latest_orderbooks(LatestOrderbooksRequest {
+-            location: preferred_location(),
+-            symbols: vec!["BTC/USD".to_owned()],
+-        })
+-        .await
+-        .expect("latest crypto orderbooks should read from the real Data API");
+-
+-    let orderbook = response
+-        .orderbooks
+-        .get("BTC/USD")
+-        .expect("canonical latest orderbooks response should contain BTC/USD");
+-    assert_orderbook_shape(orderbook);
+-
+-    let request = observer
+-        .last_request()
+-        .expect("real Data API request should be observed");
+-    assert_eq!(
+-        request.operation.as_deref(),
+-        Some("crypto.latest_orderbooks")
+-    );
+-    assert!(request.url.contains("/v1beta3/crypto/us/latest/orderbooks"));
+-    assert_eq!(
+-        observed_query_value(&request, "symbols").as_deref(),
+-        Some("BTC/USD")
+-    );
+-
+-    let meta = observer
+-        .last_response()
+-        .expect("real Data API response should be observed");
+-    assert_eq!(meta.status(), 200);
+-    assert!(meta.request_id().is_some());
+-}
+-
+-#[tokio::test]
+-async fn crypto_snapshots_use_real_api_endpoint() {
+-    let (client, observer) = real_data_client();
+-    let response = client
+-        .crypto()
+-        .snapshots(SnapshotsRequest {
+-            location: preferred_location(),
+-            symbols: vec!["BTC/USD".to_owned()],
+-        })
+-        .await
+-        .expect("crypto snapshots should read from the real Data API");
+-
+-    let snapshot = response
+-        .snapshots
+-        .get("BTC/USD")
+-        .expect("canonical snapshots response should contain BTC/USD");
+-    assert_snapshot_shape(snapshot);
+-    assert!(
+-        snapshot.price().is_some(),
+-        "snapshot price helper should resolve"
+-    );
+-
+-    let request = observer
+-        .last_request()
+-        .expect("real Data API request should be observed");
+-    assert_eq!(request.operation.as_deref(), Some("crypto.snapshots"));
+-    assert!(request.url.contains("/v1beta3/crypto/us/snapshots"));
+-    assert_eq!(
+-        observed_query_value(&request, "symbols").as_deref(),
+-        Some("BTC/USD")
+-    );
+-
+-    let meta = observer
+-        .last_response()
+-        .expect("real Data API response should be observed");
+-    assert_eq!(meta.status(), 200);
+-    assert!(meta.request_id().is_some());
+-}
+-
+-#[tokio::test]
+-async fn crypto_bars_use_real_api_endpoint_and_paginate() {
+-    let (client, observer) = real_data_client();
+-    let response = client
+-        .crypto()
+-        .bars_all(BarsRequest {
+-            location: preferred_location(),
+-            symbols: vec!["BTC/USD".to_owned()],
+-            timeframe: TimeFrame::min_1(),
+-            start: Some("2026-08-20T15:00:00Z".to_owned()),
+-            end: Some("2026-08-20T15:04:00Z".to_owned()),
+-            limit: Some(2),
+-            sort: Some(alpaca_data::crypto::Sort::Asc),
+-            page_token: None,
+-        })
+-        .await
+-        .expect("crypto bars should paginate through the real Data API");
+-
+-    let bars = response
+-        .bars
+-        .get("BTC/USD")
+-        .expect("canonical bars response should contain BTC/USD");
+-    assert!(bars.len() > 2);
+-    bars.iter().for_each(assert_bar_shape);
+-    assert!(response.next_page_token.is_none());
+-
+-    let attempts = observer.requests();
+-    let requests = unique_observed_requests(&attempts);
+-    let retries = observer.retries();
+-    let responses = observer.responses();
+-    assert!(
+-        responses.len() > 1,
+-        "limit=2 should exercise real pagination"
+-    );
+-    assert_eq!(attempts.len(), responses.len() + retries.len());
+-    assert_eq!(requests.len(), responses.len());
+-    assert!(requests.iter().all(|request| {
+-        request.operation.as_deref() == Some("crypto.bars")
+-            && request.url.contains("/v1beta3/crypto/us/bars")
+-            && observed_query_value(request, "symbols").as_deref() == Some("BTC/USD")
+-    }));
+-    assert!(
+-        responses
+-            .iter()
+-            .all(|meta| { meta.status() == 200 && meta.request_id().is_some() })
+-    );
+-    eprintln!(
+-        "real_api operation=crypto.bars pages={} attempts={} retries={:?} requests={:?} statuses={:?} request_ids={:?} shape=bars{{BTC/USD}}[]+next_page_token bars={}",
+-        responses.len(),
+-        attempts.len(),
+-        retries
+-            .iter()
+-            .map(|retry| retry.status.map(|status| status.as_u16()))
+-            .collect::<Vec<_>>(),
+-        observed_request_lines(&attempts),
+-        responses
+-            .iter()
+-            .map(|meta| meta.status())
+-            .collect::<Vec<_>>(),
+-        responses
+-            .iter()
+-            .filter_map(|meta| meta.request_id())
+-            .collect::<Vec<_>>(),
+-        bars.len()
+-    );
+-}
+-
+-#[tokio::test]
+-async fn crypto_quotes_use_real_api_endpoint_and_paginate() {
+-    let (client, observer) = real_data_client();
+-    let first = client
+-        .crypto()
+-        .quotes(QuotesRequest {
+-            location: preferred_location(),
+-            symbols: vec!["BTC/USD".to_owned()],
+-            start: Some("2026-08-20T15:00:00Z".to_owned()),
+-            end: Some("2026-08-20T15:01:00Z".to_owned()),
+-            limit: Some(2),
+-            sort: Some(alpaca_data::crypto::Sort::Asc),
+-            page_token: None,
+-        })
+-        .await
+-        .expect("crypto quotes should read from the real Data API");
+-
+-    let quotes = first
+-        .quotes
+-        .get("BTC/USD")
+-        .expect("canonical quotes response should contain BTC/USD");
+-    assert_eq!(quotes.len(), 2);
+-    quotes.iter().for_each(assert_quote_shape);
+-    let page_token = first
+-        .next_page_token
+-        .clone()
+-        .expect("limit=2 should return a next_page_token");
+-
+-    let second = client
+-        .crypto()
+-        .quotes(QuotesRequest {
+-            location: preferred_location(),
+-            symbols: vec!["BTC/USD".to_owned()],
+-            start: Some("2026-08-20T15:00:00Z".to_owned()),
+-            end: Some("2026-08-20T15:01:00Z".to_owned()),
+-            limit: Some(2),
+-            sort: Some(alpaca_data::crypto::Sort::Asc),
+-            page_token: Some(page_token),
+-        })
+-        .await
+-        .expect("crypto quotes should continue from next_page_token");
+-    let next_quotes = second
+-        .quotes
+-        .get("BTC/USD")
+-        .expect("paginated quotes response should contain BTC/USD");
+-    assert!(!next_quotes.is_empty());
+-    next_quotes.iter().for_each(assert_quote_shape);
+-
+-    let attempts = observer.requests();
+-    let requests = unique_observed_requests(&attempts);
+-    let retries = observer.retries();
+-    let responses = observer.responses();
+-    assert_eq!(responses.len(), 2);
+-    assert_eq!(attempts.len(), responses.len() + retries.len());
+-    assert_eq!(requests.len(), responses.len());
+-    assert!(requests.iter().all(|request| {
+-        request.operation.as_deref() == Some("crypto.quotes")
+-            && request.url.contains("/v1beta3/crypto/us/quotes")
+-            && observed_query_value(request, "symbols").as_deref() == Some("BTC/USD")
+-    }));
+-    assert!(
+-        responses
+-            .iter()
+-            .all(|meta| { meta.status() == 200 && meta.request_id().is_some() })
+-    );
+-}
+-
+-#[tokio::test]
+-async fn crypto_trades_use_real_api_endpoint_and_paginate() {
+-    let (client, observer) = real_data_client();
+-    let first = client
+-        .crypto()
+-        .trades(TradesRequest {
+-            location: preferred_location(),
+-            symbols: vec!["BTC/USD".to_owned()],
+-            start: Some("2026-08-20T15:00:00Z".to_owned()),
+-            end: Some("2026-08-20T15:10:00Z".to_owned()),
+-            limit: Some(2),
+-            sort: Some(alpaca_data::crypto::Sort::Asc),
+-            page_token: None,
+-        })
+-        .await
+-        .expect("crypto trades should read from the real Data API");
+-
+-    let trades = first
+-        .trades
+-        .get("BTC/USD")
+-        .expect("canonical trades response should contain BTC/USD");
+-    assert_eq!(trades.len(), 2);
+-    trades.iter().for_each(assert_trade_shape);
+-    let page_token = first
+-        .next_page_token
+-        .clone()
+-        .expect("limit=2 should return a next_page_token");
+-
+-    let second = client
+-        .crypto()
+-        .trades(TradesRequest {
+-            location: preferred_location(),
+-            symbols: vec!["BTC/USD".to_owned()],
+-            start: Some("2026-08-20T15:00:00Z".to_owned()),
+-            end: Some("2026-08-20T15:10:00Z".to_owned()),
+-            limit: Some(2),
+-            sort: Some(alpaca_data::crypto::Sort::Asc),
+-            page_token: Some(page_token),
+-        })
+-        .await
+-        .expect("crypto trades should continue from next_page_token");
+-    let next_trades = second
+-        .trades
+-        .get("BTC/USD")
+-        .expect("paginated trades response should contain BTC/USD");
+-    assert!(!next_trades.is_empty());
+-    next_trades.iter().for_each(assert_trade_shape);
+-
+-    let attempts = observer.requests();
+-    let requests = unique_observed_requests(&attempts);
+-    let retries = observer.retries();
+-    let responses = observer.responses();
+-    assert_eq!(responses.len(), 2);
+-    assert_eq!(attempts.len(), responses.len() + retries.len());
+-    assert_eq!(requests.len(), responses.len());
+-    assert!(requests.iter().all(|request| {
+-        request.operation.as_deref() == Some("crypto.trades")
+-            && request.url.contains("/v1beta3/crypto/us/trades")
+-            && observed_query_value(request, "symbols").as_deref() == Some("BTC/USD")
+-    }));
+-    assert!(
+-        responses
+-            .iter()
+-            .all(|meta| { meta.status() == 200 && meta.request_id().is_some() })
+-    );
+-}
+diff --git a/crates/alpaca-data/tests/stocks_real_api.rs b/crates/alpaca-data/tests/stocks_real_api.rs
+deleted file mode 100644
+index 597918d..0000000
+--- a/crates/alpaca-data/tests/stocks_real_api.rs
++++ /dev/null
+@@ -1,699 +0,0 @@
+-#[path = "../../../tests/support/live/mod.rs"]
+-mod live_support;
+-
+-use std::sync::Arc;
+-
+-use alpaca_data::{
+-    Client,
+-    stocks::{
+-        Auction, AuctionsRequest, Bar, BarsRequest, ConditionCodesRequest, LatestBarsRequest,
+-        LatestQuotesRequest, LatestTradesRequest, Quote, QuotesRequest, Snapshot, SnapshotsRequest,
+-        Tape, TickType, TimeFrame, Trade, TradesRequest, display_stock_symbol, ordered_snapshots,
+-        preferred_feed,
+-    },
+-};
+-use live_support::{
+-    LiveRequestObserver, LiveTestEnv, observed_query_value, observed_request_lines,
+-    unique_observed_requests,
+-};
+-
+-fn real_data_client() -> (Client, Arc<LiveRequestObserver>) {
+-    let env = LiveTestEnv::load().expect("live test environment should load");
+-    let service = env
+-        .data()
+-        .expect("Paper/Data credentials must be present for real API tests");
+-    let observer = Arc::new(LiveRequestObserver::default());
+-    let client = Client::builder()
+-        .credentials(service.credentials().clone())
+-        .observer(observer.clone())
+-        .build()
+-        .expect("client should build from Paper/Data credentials");
+-    (client, observer)
+-}
+-
+-fn assert_bar_shape(bar: &Bar) {
+-    assert!(bar.t.is_some(), "bar timestamp should be present");
+-    assert!(bar.o.is_some(), "bar open should be present");
+-    assert!(bar.h.is_some(), "bar high should be present");
+-    assert!(bar.l.is_some(), "bar low should be present");
+-    assert!(bar.c.is_some(), "bar close should be present");
+-    assert!(bar.v.is_some(), "bar volume should be present");
+-    assert!(bar.n.is_some(), "bar trade count should be present");
+-    assert!(bar.vw.is_some(), "bar VWAP should be present");
+-}
+-
+-fn assert_quote_shape(quote: &Quote) {
+-    assert!(quote.t.is_some(), "quote timestamp should be present");
+-    assert!(quote.ax.is_some(), "quote ask exchange should be present");
+-    assert!(quote.ap.is_some(), "quote ask price should be present");
+-    assert!(quote.r#as.is_some(), "quote ask size should be present");
+-    assert!(quote.bx.is_some(), "quote bid exchange should be present");
+-    assert!(quote.bp.is_some(), "quote bid price should be present");
+-    assert!(quote.bs.is_some(), "quote bid size should be present");
+-    assert!(quote.c.is_some(), "quote conditions should be present");
+-    assert!(quote.z.is_some(), "quote tape should be present");
+-}
+-
+-fn assert_trade_shape(trade: &Trade) {
+-    assert!(trade.t.is_some(), "trade timestamp should be present");
+-    assert!(trade.x.is_some(), "trade exchange should be present");
+-    assert!(trade.p.is_some(), "trade price should be present");
+-    assert!(trade.s.is_some(), "trade size should be present");
+-    assert!(trade.i.is_some(), "trade id should be present");
+-    assert!(trade.c.is_some(), "trade conditions should be present");
+-    assert!(trade.z.is_some(), "trade tape should be present");
+-}
+-
+-fn assert_auction_shape(auction: &Auction) {
+-    assert!(auction.t.is_some(), "auction timestamp should be present");
+-    assert!(auction.x.is_some(), "auction exchange should be present");
+-    assert!(auction.p.is_some(), "auction price should be present");
+-    assert!(auction.s.is_some(), "auction size should be present");
+-    assert!(auction.c.is_some(), "auction condition should be present");
+-}
+-
+-fn assert_snapshot_shape(snapshot: &Snapshot) {
+-    assert_trade_shape(
+-        snapshot
+-            .latest_trade
+-            .as_ref()
+-            .expect("snapshot latestTrade should be present"),
+-    );
+-    assert_quote_shape(
+-        snapshot
+-            .latest_quote
+-            .as_ref()
+-            .expect("snapshot latestQuote should be present"),
+-    );
+-    assert_bar_shape(
+-        snapshot
+-            .minute_bar
+-            .as_ref()
+-            .expect("snapshot minuteBar should be present"),
+-    );
+-    assert_bar_shape(
+-        snapshot
+-            .daily_bar
+-            .as_ref()
+-            .expect("snapshot dailyBar should be present"),
+-    );
+-    assert_bar_shape(
+-        snapshot
+-            .prev_daily_bar
+-            .as_ref()
+-            .expect("snapshot prevDailyBar should be present"),
+-    );
+-}
+-
+-#[tokio::test]
+-async fn stock_latest_bar_single_uses_real_api_endpoint() {
+-    let (client, observer) = real_data_client();
+-    let response = client
+-        .stocks()
+-        .latest_bars(LatestBarsRequest {
+-            symbols: vec!["AAPL".to_owned()],
+-            feed: Some(alpaca_data::stocks::DataFeed::Iex),
+-            currency: None,
+-        })
+-        .await
+-        .expect("single-symbol latest bar should read from the real Data API");
+-
+-    let bar = response
+-        .bars
+-        .get("AAPL")
+-        .expect("canonical latest bars response should contain AAPL");
+-    assert_bar_shape(bar);
+-
+-    let request = observer
+-        .last_request()
+-        .expect("real Data API request should be observed");
+-    assert_eq!(request.operation.as_deref(), Some("stocks.latest_bar"));
+-    assert!(request.url.contains("/v2/stocks/AAPL/bars/latest"));
+-    assert!(observed_query_value(&request, "symbols").is_none());
+-
+-    let meta = observer
+-        .last_response()
+-        .expect("real Data API response should be observed");
+-    assert_eq!(meta.status(), 200);
+-    let request_id = meta
+-        .request_id()
+-        .expect("real Data API response should include x-request-id");
+-    eprintln!(
+-        "real_api operation={} request={} {} status={} request_id={} shape=symbol+bar(t,o,h,l,c,v,n,vw)",
+-        request.operation.as_deref().unwrap_or("unknown"),
+-        request.method,
+-        request.url,
+-        meta.status(),
+-        request_id
+-    );
+-}
+-
+-#[tokio::test]
+-async fn stock_bar_single_uses_real_api_endpoint_and_paginates() {
+-    let (client, observer) = real_data_client();
+-    let response = client
+-        .stocks()
+-        .bars_all(BarsRequest {
+-            symbols: vec!["AAPL".to_owned()],
+-            timeframe: TimeFrame::day_1(),
+-            start: Some("2026-07-01".to_owned()),
+-            end: Some("2026-07-10".to_owned()),
+-            limit: Some(2),
+-            adjustment: None,
+-            feed: Some(alpaca_data::stocks::DataFeed::Iex),
+-            sort: Some(alpaca_data::stocks::Sort::Asc),
+-            asof: None,
+-            currency: None,
+-            page_token: None,
+-        })
+-        .await
+-        .expect("single-symbol bars should paginate through the real Data API");
+-
+-    let bars = response
+-        .bars
+-        .get("AAPL")
+-        .expect("canonical bars response should contain AAPL");
+-    assert!(bars.len() > 2);
+-    bars.iter().for_each(assert_bar_shape);
+-    assert!(response.next_page_token.is_none());
+-
+-    let attempts = observer.requests();
+-    let requests = unique_observed_requests(&attempts);
+-    let retries = observer.retries();
+-    let responses = observer.responses();
+-    assert!(
+-        responses.len() > 1,
+-        "limit=2 should exercise real pagination"
+-    );
+-    assert_eq!(attempts.len(), responses.len() + retries.len());
+-    assert_eq!(requests.len(), responses.len());
+-    assert!(requests.iter().all(|request| {
+-        request.operation.as_deref() == Some("stocks.bar_single")
+-            && request.url.contains("/v2/stocks/AAPL/bars")
+-            && observed_query_value(request, "symbols").is_none()
+-    }));
+-    assert!(
+-        responses
+-            .iter()
+-            .all(|meta| { meta.status() == 200 && meta.request_id().is_some() })
+-    );
+-    eprintln!(
+-        "real_api operation=stocks.bar_single pages={} attempts={} retries={:?} requests={:?} statuses={:?} request_ids={:?} shape=symbol+bars[]+next_page_token bars={}",
+-        responses.len(),
+-        attempts.len(),
+-        retries
+-            .iter()
+-            .map(|retry| retry.status.map(|status| status.as_u16()))
+-            .collect::<Vec<_>>(),
+-        observed_request_lines(&attempts),
+-        responses
+-            .iter()
+-            .map(|meta| meta.status())
+-            .collect::<Vec<_>>(),
+-        responses
+-            .iter()
+-            .filter_map(|meta| meta.request_id())
+-            .collect::<Vec<_>>(),
+-        bars.len()
+-    );
+-}
+-
+-#[tokio::test]
+-async fn stock_latest_quote_single_uses_real_api_endpoint() {
+-    let (client, observer) = real_data_client();
+-    let response = client
+-        .stocks()
+-        .latest_quotes(LatestQuotesRequest {
+-            symbols: vec!["AAPL".to_owned()],
+-            feed: Some(alpaca_data::stocks::DataFeed::Iex),
+-            currency: None,
+-        })
+-        .await
+-        .expect("single-symbol latest quote should read from the real Data API");
+-
+-    let quote = response
+-        .quotes
+-        .get("AAPL")
+-        .expect("canonical latest quotes response should contain AAPL");
+-    assert_quote_shape(quote);
+-
+-    let request = observer
+-        .last_request()
+-        .expect("real Data API request should be observed");
+-    assert_eq!(request.operation.as_deref(), Some("stocks.latest_quote"));
+-    assert!(request.url.contains("/v2/stocks/AAPL/quotes/latest"));
+-    assert!(observed_query_value(&request, "symbols").is_none());
+-
+-    let meta = observer
+-        .last_response()
+-        .expect("real Data API response should be observed");
+-    assert_eq!(meta.status(), 200);
+-    let request_id = meta
+-        .request_id()
+-        .expect("real Data API response should include x-request-id");
+-    eprintln!(
+-        "real_api operation={} request={} {} status={} request_id={} shape=symbol+currency+quote(t,ax,ap,as,bx,bp,bs,c,z)",
+-        request.operation.as_deref().unwrap_or("unknown"),
+-        request.method,
+-        request.url,
+-        meta.status(),
+-        request_id
+-    );
+-}
+-
+-#[tokio::test]
+-async fn stock_quote_single_uses_real_api_endpoint_and_paginates() {
+-    let (client, observer) = real_data_client();
+-    let response = client
+-        .stocks()
+-        .quotes_all(QuotesRequest {
+-            symbols: vec!["AAPL".to_owned()],
+-            start: Some("2026-07-10T13:30:00Z".to_owned()),
+-            end: Some("2026-07-10T13:30:00.14835285Z".to_owned()),
+-            limit: Some(2),
+-            feed: Some(alpaca_data::stocks::DataFeed::Iex),
+-            sort: Some(alpaca_data::stocks::Sort::Asc),
+-            asof: None,
+-            currency: None,
+-            page_token: None,
+-        })
+-        .await
+-        .expect("single-symbol quotes should paginate through the real Data API");
+-
+-    let quotes = response
+-        .quotes
+-        .get("AAPL")
+-        .expect("canonical quotes response should contain AAPL");
+-    assert!(quotes.len() > 2);
+-    quotes.iter().for_each(assert_quote_shape);
+-    assert!(response.next_page_token.is_none());
+-
+-    let attempts = observer.requests();
+-    let requests = unique_observed_requests(&attempts);
+-    let retries = observer.retries();
+-    let responses = observer.responses();
+-    assert!(
+-        responses.len() > 1,
+-        "limit=2 should exercise real quote pagination"
+-    );
+-    assert_eq!(attempts.len(), responses.len() + retries.len());
+-    assert_eq!(requests.len(), responses.len());
+-    assert!(requests.iter().all(|request| {
+-        request.operation.as_deref() == Some("stocks.quote_single")
+-            && request.url.contains("/v2/stocks/AAPL/quotes")
+-            && observed_query_value(request, "symbols").is_none()
+-    }));
+-    assert!(
+-        responses
+-            .iter()
+-            .all(|meta| { meta.status() == 200 && meta.request_id().is_some() })
+-    );
+-    eprintln!(
+-        "real_api operation=stocks.quote_single pages={} attempts={} retries={:?} requests={:?} statuses={:?} request_ids={:?} shape=symbol+quotes[]+next_page_token quotes={}",
+-        responses.len(),
+-        attempts.len(),
+-        retries
+-            .iter()
+-            .map(|retry| retry.status.map(|status| status.as_u16()))
+-            .collect::<Vec<_>>(),
+-        observed_request_lines(&attempts),
+-        responses
+-            .iter()
+-            .map(|meta| meta.status())
+-            .collect::<Vec<_>>(),
+-        responses
+-            .iter()
+-            .filter_map(|meta| meta.request_id())
+-            .collect::<Vec<_>>(),
+-        quotes.len()
+-    );
+-}
+-
+-#[tokio::test]
+-async fn stock_latest_trade_single_uses_real_api_endpoint() {
+-    let (client, observer) = real_data_client();
+-    let response = client
+-        .stocks()
+-        .latest_trades(LatestTradesRequest {
+-            symbols: vec!["AAPL".to_owned()],
+-            feed: Some(alpaca_data::stocks::DataFeed::Iex),
+-            currency: None,
+-        })
+-        .await
+-        .expect("single-symbol latest trade should read from the real Data API");
+-
+-    let trade = response
+-        .trades
+-        .get("AAPL")
+-        .expect("canonical latest trades response should contain AAPL");
+-    assert_trade_shape(trade);
+-
+-    let request = observer
+-        .last_request()
+-        .expect("real Data API request should be observed");
+-    assert_eq!(request.operation.as_deref(), Some("stocks.latest_trade"));
+-    assert!(request.url.contains("/v2/stocks/AAPL/trades/latest"));
+-    assert!(observed_query_value(&request, "symbols").is_none());
+-
+-    let meta = observer
+-        .last_response()
+-        .expect("real Data API response should be observed");
+-    assert_eq!(meta.status(), 200);
+-    let request_id = meta
+-        .request_id()
+-        .expect("real Data API response should include x-request-id");
+-    eprintln!(
+-        "real_api operation={} request={} {} status={} request_id={} shape=symbol+currency+trade(t,x,p,s,i,c,z)",
+-        request.operation.as_deref().unwrap_or("unknown"),
+-        request.method,
+-        request.url,
+-        meta.status(),
+-        request_id
+-    );
+-}
+-
+-#[tokio::test]
+-async fn stock_trade_single_uses_real_api_endpoint_and_paginates() {
+-    let (client, observer) = real_data_client();
+-    let response = client
+-        .stocks()
+-        .trades_all(TradesRequest {
+-            symbols: vec!["AAPL".to_owned()],
+-            start: Some("2026-07-10T13:30:00Z".to_owned()),
+-            end: Some("2026-07-10T13:30:00.117509278Z".to_owned()),
+-            limit: Some(2),
+-            feed: Some(alpaca_data::stocks::DataFeed::Iex),
+-            sort: Some(alpaca_data::stocks::Sort::Asc),
+-            asof: None,
+-            currency: None,
+-            page_token: None,
+-        })
+-        .await
+-        .expect("single-symbol trades should paginate through the real Data API");
+-
+-    let trades = response
+-        .trades
+-        .get("AAPL")
+-        .expect("canonical trades response should contain AAPL");
+-    assert!(trades.len() > 2);
+-    trades.iter().for_each(assert_trade_shape);
+-    assert!(response.next_page_token.is_none());
+-
+-    let attempts = observer.requests();
+-    let requests = unique_observed_requests(&attempts);
+-    let retries = observer.retries();
+-    let responses = observer.responses();
+-    assert!(
+-        responses.len() > 1,
+-        "limit=2 should exercise real trade pagination"
+-    );
+-    assert_eq!(attempts.len(), responses.len() + retries.len());
+-    assert_eq!(requests.len(), responses.len());
+-    assert!(requests.iter().all(|request| {
+-        request.operation.as_deref() == Some("stocks.trade_single")
+-            && request.url.contains("/v2/stocks/AAPL/trades")
+-            && observed_query_value(request, "symbols").is_none()
+-    }));
+-    assert!(
+-        responses
+-            .iter()
+-            .all(|meta| { meta.status() == 200 && meta.request_id().is_some() })
+-    );
+-    eprintln!(
+-        "real_api operation=stocks.trade_single pages={} attempts={} retries={:?} requests={:?} statuses={:?} request_ids={:?} shape=symbol+trades[]+next_page_token trades={}",
+-        responses.len(),
+-        attempts.len(),
+-        retries
+-            .iter()
+-            .map(|retry| retry.status.map(|status| status.as_u16()))
+-            .collect::<Vec<_>>(),
+-        observed_request_lines(&attempts),
+-        responses
+-            .iter()
+-            .map(|meta| meta.status())
+-            .collect::<Vec<_>>(),
+-        responses
+-            .iter()
+-            .filter_map(|meta| meta.request_id())
+-            .collect::<Vec<_>>(),
+-        trades.len()
+-    );
+-}
+-
+-#[tokio::test]
+-async fn stock_snapshot_single_uses_real_api_endpoint() {
+-    let (client, observer) = real_data_client();
+-    let response = client
+-        .stocks()
+-        .snapshots(SnapshotsRequest {
+-            symbols: vec!["AAPL".to_owned()],
+-            feed: Some(alpaca_data::stocks::DataFeed::Iex),
+-            currency: None,
+-        })
+-        .await
+-        .expect("single-symbol snapshot should read from the real Data API");
+-
+-    let snapshot = response
+-        .get("AAPL")
+-        .expect("canonical snapshots response should contain AAPL");
+-    assert_snapshot_shape(snapshot);
+-
+-    let request = observer
+-        .last_request()
+-        .expect("real Data API request should be observed");
+-    assert_eq!(request.operation.as_deref(), Some("stocks.snapshot"));
+-    assert!(request.url.contains("/v2/stocks/AAPL/snapshot"));
+-    assert!(observed_query_value(&request, "symbols").is_none());
+-
+-    let meta = observer
+-        .last_response()
+-        .expect("real Data API response should be observed");
+-    assert_eq!(meta.status(), 200);
+-    let request_id = meta
+-        .request_id()
+-        .expect("real Data API response should include x-request-id");
+-    eprintln!(
+-        "real_api operation={} request={} {} status={} request_id={} shape=symbol+latestTrade+latestQuote+minuteBar+dailyBar+prevDailyBar",
+-        request.operation.as_deref().unwrap_or("unknown"),
+-        request.method,
+-        request.url,
+-        meta.status(),
+-        request_id
+-    );
+-}
+-
+-#[tokio::test]
+-async fn stock_auction_single_uses_real_api_endpoint_and_paginates() {
+-    let (client, observer) = real_data_client();
+-    let response = client
+-        .stocks()
+-        .auctions_all(AuctionsRequest {
+-            symbols: vec!["AAPL".to_owned()],
+-            start: Some("2026-07-01".to_owned()),
+-            end: Some("2026-07-10".to_owned()),
+-            limit: Some(2),
+-            asof: None,
+-            feed: Some(alpaca_data::stocks::AuctionFeed::Sip),
+-            currency: None,
+-            page_token: None,
+-            sort: Some(alpaca_data::stocks::Sort::Asc),
+-        })
+-        .await
+-        .expect("single-symbol auctions should paginate through the real Data API");
+-
+-    let auctions = response
+-        .auctions
+-        .get("AAPL")
+-        .expect("canonical auctions response should contain AAPL");
+-    assert!(auctions.len() > 2);
+-    assert!(
+-        auctions.iter().all(|auction| auction.d.is_some()),
+-        "daily auction date should be present"
+-    );
+-    assert!(
+-        auctions.iter().any(|auction| !auction.o.is_empty()),
+-        "opening auctions should be present"
+-    );
+-    assert!(
+-        auctions.iter().any(|auction| !auction.c.is_empty()),
+-        "closing auctions should be present"
+-    );
+-    auctions
+-        .iter()
+-        .flat_map(|auction| auction.o.iter().chain(&auction.c))
+-        .for_each(assert_auction_shape);
+-    assert!(response.next_page_token.is_none());
+-
+-    let attempts = observer.requests();
+-    let requests = unique_observed_requests(&attempts);
+-    let retries = observer.retries();
+-    let responses = observer.responses();
+-    assert!(
+-        responses.len() > 1,
+-        "limit=2 should exercise real auction pagination"
+-    );
+-    assert_eq!(attempts.len(), responses.len() + retries.len());
+-    assert_eq!(requests.len(), responses.len());
+-    assert!(requests.iter().all(|request| {
+-        request.operation.as_deref() == Some("stocks.auction_single")
+-            && request.url.contains("/v2/stocks/AAPL/auctions")
+-            && observed_query_value(request, "symbols").is_none()
+-            && observed_query_value(request, "feed").as_deref() == Some("sip")
+-    }));
+-    assert!(
+-        responses
+-            .iter()
+-            .all(|meta| { meta.status() == 200 && meta.request_id().is_some() })
+-    );
+-    eprintln!(
+-        "real_api operation=stocks.auction_single pages={} attempts={} retries={:?} requests={:?} statuses={:?} request_ids={:?} shape=symbol+auctions[](d,o[],c[])+next_page_token auctions={}",
+-        responses.len(),
+-        attempts.len(),
+-        retries
+-            .iter()
+-            .map(|retry| retry.status.map(|status| status.as_u16()))
+-            .collect::<Vec<_>>(),
+-        observed_request_lines(&attempts),
+-        responses
+-            .iter()
+-            .map(|meta| meta.status())
+-            .collect::<Vec<_>>(),
+-        responses
+-            .iter()
+-            .filter_map(|meta| meta.request_id())
+-            .collect::<Vec<_>>(),
+-        auctions.len()
+-    );
+-}
+-
+-#[tokio::test]
+-async fn stocks_resource_reads_real_api_endpoints() {
+-    let (client, _) = real_data_client();
+-    let stocks = client.stocks();
+-
+-    let latest_bars = stocks
+-        .latest_bars(LatestBarsRequest {
+-            symbols: vec!["AAPL".to_owned(), "MSFT".to_owned()],
+-            feed: Some(preferred_feed(false)),
+-            currency: None,
+-        })
+-        .await
+-        .expect("latest bars should read from real API");
+-    assert!(latest_bars.bars.contains_key("AAPL"));
+-    assert!(latest_bars.bars.contains_key("MSFT"));
+-
+-    let latest_quotes = stocks
+-        .latest_quotes(LatestQuotesRequest {
+-            symbols: vec!["AAPL".to_owned()],
+-            feed: Some(preferred_feed(false)),
+-            currency: None,
+-        })
+-        .await
+-        .expect("latest quotes should read from real API");
+-    assert!(latest_quotes.quotes.contains_key("AAPL"));
+-    assert!(latest_quotes.quotes["AAPL"].t.is_some());
+-
+-    let latest_trades = stocks
+-        .latest_trades(LatestTradesRequest {
+-            symbols: vec!["AAPL".to_owned()],
+-            feed: Some(preferred_feed(false)),
+-            currency: None,
+-        })
+-        .await
+-        .expect("latest trades should read from real API");
+-    assert!(latest_trades.trades.contains_key("AAPL"));
+-    assert!(latest_trades.trades["AAPL"].t.is_some());
+-
+-    let snapshots = stocks
+-        .snapshots(SnapshotsRequest {
+-            symbols: vec!["AAPL".to_owned()],
+-            feed: Some(preferred_feed(false)),
+-            currency: None,
+-        })
+-        .await
+-        .expect("snapshots should read from real API");
+-    let snapshot = snapshots
+-        .get("AAPL")
+-        .expect("single-symbol snapshots should contain AAPL");
+-    assert!(snapshot.latest_trade.is_some() || snapshot.latest_quote.is_some());
+-    assert!(snapshot.timestamp().is_some());
+-    assert!(snapshot.price().is_some());
+-    assert!(snapshot.bid_price().is_some() || snapshot.ask_price().is_some());
+-    assert!(snapshot.session_close().is_some() || snapshot.previous_close().is_some());
+-
+-    let batch_snapshots = stocks
+-        .snapshots(SnapshotsRequest {
+-            symbols: vec!["AAPL".to_owned(), "brk/b".to_owned()],
+-            feed: Some(preferred_feed(false)),
+-            currency: None,
+-        })
+-        .await
+-        .expect("batch snapshots should absorb stock symbol normalization");
+-    assert!(batch_snapshots.contains_key("AAPL"));
+-    assert!(batch_snapshots.contains_key("BRK.B"));
+-    assert_eq!(display_stock_symbol("brk/b"), "BRK.B");
+-    let ordered = ordered_snapshots(&batch_snapshots);
+-    assert_eq!(ordered.len(), batch_snapshots.len());
+-    assert!(ordered.windows(2).all(|pair| pair[0].0 <= pair[1].0));
+-    assert!(
+-        ordered.iter().all(|(_, snapshot)| {
+-            snapshot.timestamp().is_some()
+-                && snapshot.price().is_some()
+-                && (snapshot.bid_price().is_some() || snapshot.ask_price().is_some())
+-                && (snapshot.session_close().is_some() || snapshot.previous_close().is_some())
+-        }),
+-        "ordered stock snapshots should expose canonical quote/session readers"
+-    );
+-
+-    let brk_snapshots = stocks
+-        .snapshots(SnapshotsRequest {
+-            symbols: vec!["brk/b".to_owned()],
+-            feed: Some(preferred_feed(false)),
+-            currency: None,
+-        })
+-        .await
+-        .expect(
+-            "BRK.B snapshots request should succeed through canonical stock symbol normalization",
+-        );
+-    let brk_snapshot = brk_snapshots
+-        .get("BRK.B")
+-        .expect("BRK.B snapshots should contain BRK.B");
+-    assert!(brk_snapshot.timestamp().is_some());
+-    assert!(brk_snapshot.price().is_some());
+-    assert!(brk_snapshot.bid_price().is_some() || brk_snapshot.ask_price().is_some());
+-
+-    let bars = stocks
+-        .bars_all(BarsRequest {
+-            symbols: vec!["AAPL".to_owned()],
+-            timeframe: TimeFrame::day_1(),
+-            start: Some("2026-04-01T00:00:00Z".to_owned()),
+-            end: Some("2026-04-08T00:00:00Z".to_owned()),
+-            limit: Some(1),
+-            adjustment: None,
+-            feed: Some(preferred_feed(false)),
+-            sort: None,
+-            asof: None,
+-            currency: None,
+-            page_token: None,
+-        })
+-        .await
+-        .expect("historical bars should paginate through real API");
+-    let aapl_bars = bars.bars.get("AAPL").expect("AAPL bars should exist");
+-    assert!(aapl_bars.len() > 1);
+-    assert!(aapl_bars.iter().all(|bar| bar.t.is_some()));
+-
+-    let condition_codes = stocks
+-        .condition_codes(ConditionCodesRequest {
+-            ticktype: TickType::Trade,
+-            tape: Tape::C,
+-        })
+-        .await
+-        .expect("condition codes should read from real API");
+-    assert!(!condition_codes.is_empty());
+-
+-    let exchange_codes = stocks
+-        .exchange_codes()
+-        .await
+-        .expect("exchange codes should read from real API");
+-    assert!(!exchange_codes.is_empty());
+-}
+diff --git a/crates/alpaca-http/Cargo.toml b/crates/alpaca-http/Cargo.toml
+index 922be8b..c3e89ee 100644
+--- a/crates/alpaca-http/Cargo.toml
++++ b/crates/alpaca-http/Cargo.toml
+@@ -20,10 +20,10 @@ serde.workspace = true
+ serde_json.workspace = true
+ thiserror.workspace = true
+ tokio.workspace = true
++zeroize.workspace = true
+ 
+ [dev-dependencies]
+ alpaca-data = { path = "../alpaca-data" }
+-dotenvy.workspace = true
+ reqwest.workspace = true
+ rust_decimal.workspace = true
+ serde.workspace = true
+diff --git a/crates/alpaca-http/src/auth.rs b/crates/alpaca-http/src/auth.rs
+index f9dc6bd..dd27922 100644
+--- a/crates/alpaca-http/src/auth.rs
++++ b/crates/alpaca-http/src/auth.rs
+@@ -1,4 +1,7 @@
++use std::fmt;
++
+ use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
++use zeroize::Zeroizing;
+ 
+ use crate::Error;
+ 
+@@ -6,9 +9,9 @@ pub trait Authenticator: Send + Sync {
+     fn apply(&self, headers: &mut HeaderMap) -> Result<(), Error>;
+ }
+ 
+-#[derive(Debug, Clone, Default)]
++#[derive(Clone, Default)]
+ pub struct StaticHeaderAuthenticator {
+-    headers: HeaderMap,
++    headers: Vec<(HeaderName, Zeroizing<String>)>,
+ }
+ 
+ impl StaticHeaderAuthenticator {
+@@ -18,14 +21,15 @@ impl StaticHeaderAuthenticator {
+         K: AsRef<str>,
+         V: AsRef<str>,
+     {
+-        let mut headers = HeaderMap::new();
++        let mut headers = Vec::new();
+ 
+         for (name, value) in pairs {
+             let name = HeaderName::from_bytes(name.as_ref().as_bytes())
+                 .map_err(|error| Error::Authentication(format!("invalid header name: {error}")))?;
+-            let value = HeaderValue::from_str(value.as_ref())
+-                .map_err(|error| Error::Authentication(format!("invalid header value: {error}")))?;
+-            headers.insert(name, value);
++            let value = value.as_ref();
++            HeaderValue::from_str(value)
++                .map_err(|_| Error::Authentication("invalid header value".to_owned()))?;
++            headers.push((name, Zeroizing::new(value.to_owned())));
+         }
+ 
+         Ok(Self { headers })
+@@ -38,7 +42,37 @@ impl StaticHeaderAuthenticator {
+ 
+ impl Authenticator for StaticHeaderAuthenticator {
+     fn apply(&self, headers: &mut HeaderMap) -> Result<(), Error> {
+-        headers.extend(self.headers.clone());
++        for (name, value) in &self.headers {
++            let value = HeaderValue::from_str(value.as_str())
++                .map_err(|_| Error::Authentication("invalid header value".to_owned()))?;
++            headers.insert(name.clone(), value);
++        }
+         Ok(())
+     }
+ }
++
++impl fmt::Debug for StaticHeaderAuthenticator {
++    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
++        formatter
++            .debug_struct("StaticHeaderAuthenticator")
++            .field("header_count", &self.headers.len())
++            .field("values", &"[REDACTED]")
++            .finish()
++    }
++}
++
++#[cfg(test)]
++mod tests {
++    use super::StaticHeaderAuthenticator;
++
++    #[test]
++    fn static_authenticator_debug_redacts_header_values() {
++        let authenticator =
++            StaticHeaderAuthenticator::from_pairs([("authorization", "synthetic-test-secret")])
++                .expect("synthetic header is valid");
++        let debug = format!("{authenticator:?}");
++
++        assert!(debug.contains("REDACTED"));
++        assert!(!debug.contains("synthetic-test-secret"));
++    }
++}
+diff --git a/crates/alpaca-http/src/client.rs b/crates/alpaca-http/src/client.rs
+index 777eada..7b117f3 100644
+--- a/crates/alpaca-http/src/client.rs
++++ b/crates/alpaca-http/src/client.rs
+@@ -18,6 +18,16 @@ use crate::rate_limit::ConcurrencyLimit;
+ use crate::request::{NoContent, RequestBody, RequestParts};
+ use crate::retry::{RetryConfig, RetryDecision};
+ 
++/// Maximum response bytes read and retained by this transport.
++/// This applies to both fixed-length and chunked transfer encoding.
++pub const MAX_RESPONSE_BODY_BYTES: usize = 8 * 1024 * 1024;
++
++enum ResponseBodyError {
++    TooLarge,
++    InvalidUtf8,
++    Transport(reqwest::Error),
++}
++
+ #[derive(Clone)]
+ pub struct HttpClient {
+     client: reqwest::Client,
+@@ -266,9 +276,25 @@ impl HttpClient {
+                 attempt + 1,
+                 started_at.elapsed(),
+             );
+-            let body = match response.text().await {
++            let body = match read_bounded_response(response).await {
+                 Ok(body) => body,
+-                Err(error) => {
++                Err(ResponseBodyError::TooLarge) => {
++                    let error_meta = ErrorMeta::from_response_meta(meta, String::new());
++                    let error = Error::ResponseBodyTooLarge(error_meta.clone());
++                    self.observer.on_error(&ErrorEvent {
++                        meta: Some(error_meta),
++                    });
++                    return Err(error);
++                }
++                Err(ResponseBodyError::InvalidUtf8) => {
++                    let error_meta = ErrorMeta::from_response_meta(meta, String::new());
++                    let error = Error::InvalidResponseEncoding(error_meta.clone());
++                    self.observer.on_error(&ErrorEvent {
++                        meta: Some(error_meta),
++                    });
++                    return Err(error);
++                }
++                Err(ResponseBodyError::Transport(error)) => {
+                     match self.retry_config.classify_transport_error(
+                         &request.method(),
+                         attempt,
+@@ -389,6 +415,37 @@ fn url_with_query(url: &str, query: &[(String, String)]) -> String {
+     parsed.into()
+ }
+ 
++async fn read_bounded_response(
++    mut response: reqwest::Response,
++) -> Result<String, ResponseBodyError> {
++    if !declared_length_within_limit(response.content_length()) {
++        return Err(ResponseBodyError::TooLarge);
++    }
++
++    let mut body = Vec::new();
++    while let Some(chunk) = response
++        .chunk()
++        .await
++        .map_err(ResponseBodyError::Transport)?
++    {
++        append_bounded_chunk(&mut body, &chunk)?;
++    }
++
++    String::from_utf8(body).map_err(|_| ResponseBodyError::InvalidUtf8)
++}
++
++fn declared_length_within_limit(length: Option<u64>) -> bool {
++    length.is_none_or(|length| length <= MAX_RESPONSE_BODY_BYTES as u64)
++}
++
++fn append_bounded_chunk(body: &mut Vec<u8>, chunk: &[u8]) -> Result<(), ResponseBodyError> {
++    if body.len().saturating_add(chunk.len()) > MAX_RESPONSE_BODY_BYTES {
++        return Err(ResponseBodyError::TooLarge);
++    }
++    body.extend_from_slice(chunk);
++    Ok(())
++}
++
+ impl Default for HttpClientBuilder {
+     fn default() -> Self {
+         Self {
+@@ -471,3 +528,45 @@ impl HttpClientBuilder {
+         })
+     }
+ }
++
++#[cfg(test)]
++mod bounded_response_tests {
++    use super::{
++        MAX_RESPONSE_BODY_BYTES, ResponseBodyError, append_bounded_chunk,
++        declared_length_within_limit,
++    };
++
++    #[test]
++    fn declared_lengths_are_checked_before_reading() {
++        assert!(declared_length_within_limit(None));
++        assert!(declared_length_within_limit(Some(
++            MAX_RESPONSE_BODY_BYTES as u64
++        )));
++        assert!(!declared_length_within_limit(Some(
++            MAX_RESPONSE_BODY_BYTES as u64 + 1
++        )));
++    }
++
++    #[test]
++    fn response_chunks_are_capped_at_the_limit() {
++        let mut body = Vec::new();
++        let chunk = vec![b'x'; MAX_RESPONSE_BODY_BYTES];
++        assert!(append_bounded_chunk(&mut body, &chunk).is_ok());
++        assert_eq!(body.len(), MAX_RESPONSE_BODY_BYTES);
++        assert!(matches!(
++            append_bounded_chunk(&mut body, b"x"),
++            Err(ResponseBodyError::TooLarge)
++        ));
++    }
++
++    #[test]
++    fn cumulative_chunk_limit_rejects_chunked_overflow() {
++        let mut body = vec![b'x'; MAX_RESPONSE_BODY_BYTES - 2];
++        assert!(append_bounded_chunk(&mut body, b"ab").is_ok());
++        assert!(matches!(
++            append_bounded_chunk(&mut body, b"c"),
++            Err(ResponseBodyError::TooLarge)
++        ));
++        assert_eq!(body.len(), MAX_RESPONSE_BODY_BYTES);
++    }
++}
+diff --git a/crates/alpaca-http/src/error.rs b/crates/alpaca-http/src/error.rs
+index a7d4f2b..52289fe 100644
+--- a/crates/alpaca-http/src/error.rs
++++ b/crates/alpaca-http/src/error.rs
+@@ -24,6 +24,10 @@ pub enum Error {
+     HttpStatus(ErrorMeta),
+     #[error("rate limited")]
+     RateLimited(ErrorMeta),
++    #[error("response body exceeds configured size limit")]
++    ResponseBodyTooLarge(ErrorMeta),
++    #[error("response body is not valid UTF-8")]
++    InvalidResponseEncoding(ErrorMeta),
+ }
+ 
+ impl Error {
+@@ -31,7 +35,10 @@ impl Error {
+     pub fn meta(&self) -> Option<&ErrorMeta> {
+         match self {
+             Self::Transport { meta, .. } | Self::Deserialize { meta, .. } => meta.as_ref(),
+-            Self::HttpStatus(meta) | Self::RateLimited(meta) => Some(meta),
++            Self::HttpStatus(meta)
++            | Self::RateLimited(meta)
++            | Self::ResponseBodyTooLarge(meta)
++            | Self::InvalidResponseEncoding(meta) => Some(meta),
+             Self::InvalidRequest(_) | Self::Authentication(_) | Self::ConcurrencyLimit(_) => None,
+         }
+     }
+diff --git a/crates/alpaca-http/src/retry.rs b/crates/alpaca-http/src/retry.rs
+index c5398ce..49588f6 100644
+--- a/crates/alpaca-http/src/retry.rs
++++ b/crates/alpaca-http/src/retry.rs
+@@ -61,6 +61,16 @@ impl RetryConfig {
+         self
+     }
+ 
++    /// Set the maximum elapsed time at which another retry may start.
++    ///
++    /// The delay before a retry is clipped to the remaining budget. This does not
++    /// replace the HTTP request timeout; callers should set both limits.
++    #[must_use]
++    pub fn with_total_retry_budget(mut self, total_retry_budget: Duration) -> Self {
++        self.total_retry_budget = Some(total_retry_budget);
++        self
++    }
++
+     #[must_use]
+     pub fn classify_response(
+         &self,
+@@ -143,3 +153,52 @@ impl RetryConfig {
+         Duration::from_millis(u64::try_from(bounded).unwrap_or(u64::MAX))
+     }
+ }
++
++#[cfg(test)]
++mod tests {
++    use std::time::Duration;
++
++    use reqwest::{Method, StatusCode};
++
++    use super::{RetryConfig, RetryDecision};
++
++    #[test]
++    fn retry_budget_caps_wait_and_stops_after_budget_exhaustion() {
++        let config = RetryConfig::default()
++            .with_max_retries(2)
++            .with_total_retry_budget(Duration::from_millis(75));
++
++        assert_eq!(
++            config.classify_response(
++                &Method::GET,
++                StatusCode::SERVICE_UNAVAILABLE,
++                0,
++                None,
++                Duration::from_millis(25),
++            ),
++            RetryDecision::RetryAfter(Duration::from_millis(50))
++        );
++        assert_eq!(
++            config.classify_transport_error(&Method::GET, 0, Duration::from_millis(75),),
++            RetryDecision::DoNotRetry
++        );
++    }
++
++    #[test]
++    fn retry_budget_does_not_make_non_retryable_methods_retryable() {
++        let config = RetryConfig::default()
++            .with_max_retries(2)
++            .with_total_retry_budget(Duration::from_secs(1));
++
++        assert_eq!(
++            config.classify_response(
++                &Method::POST,
++                StatusCode::SERVICE_UNAVAILABLE,
++                0,
++                None,
++                Duration::ZERO,
++            ),
++            RetryDecision::DoNotRetry
++        );
++    }
++}
