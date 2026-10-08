@@ -10,10 +10,34 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "SOURCE-MANIFEST.json"
+SCHWAB_MANIFEST = ROOT / "vendor/schwab/SOURCE-MANIFEST.json"
+
+
+def update_schwab_targets(document: dict) -> None:
+    if not SCHWAB_MANIFEST.is_file():
+        return
+    schwab = json.loads(SCHWAB_MANIFEST.read_text(encoding="utf-8"))
+    for entry in schwab["files"]:
+        target = ROOT / entry["target_path"]
+        entry["target_sha256"] = hashlib.sha256(target.read_bytes()).hexdigest()
+
+    root_entries = {entry["target_path"]: entry for entry in document["source_files"]}
+    for entry in schwab["files"]:
+        root_entry = root_entries.get(entry["target_path"])
+        if root_entry is None:
+            raise ValueError(f"Schwab source missing from root manifest: {entry['target_path']}")
+        root_entry["adaptation"] = entry["adaptation"]
+        root_entry["change_categories"] = entry["change_categories"]
+        root_entry["adapted_target_sha256"] = entry["target_sha256"]
+
+    SCHWAB_MANIFEST.write_text(
+        json.dumps(schwab, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
 def main() -> None:
     document = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    update_schwab_targets(document)
     for entry in document["source_files"]:
         target = ROOT / entry["target_path"]
         entry["adapted_target_sha256"] = hashlib.sha256(target.read_bytes()).hexdigest()

@@ -1,0 +1,34 @@
+{
+  "securitiesAccount": {
+    "accountNumber": "SYNTHETIC-ACCOUNT-001",
+    "type": "CASH",
+    "roundTrips": 0,
+    "isDayTrader": false,
+    "isClosingOnlyRestricted": false,
+    "pfcbFlag": false,
+    "currentBalances": {
+      "cashBalance": 100.2500,
+      "availableFunds": 80.00
+    },
+    "initialBalances": {
+      "cashBalance": 99.0000
+    },
+    "projectedBalances": {
+      "cashBalance": 100.2500
+    },
+    "positions": [
+      {
+        "longQuantity": 2,
+        "shortQuantity": 0,
+        "averagePrice": 13.4500,
+        "currentDayProfitLoss": 1.2500,
+        "marketValue": 26.9000,
+        "instrument": {
+          "assetType": "OPTION",
+          "symbol": "SYNTHETIC-QQQ-CALL",
+          "type": "OPTION"
+        }
+      }
+    ]
+  }
+}

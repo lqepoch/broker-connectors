@@ -15,43 +15,53 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "d251375b2237f7a1c00f5498282df503ca48143a295822b98dd8b6fd2c2db912",
+      "sha256": "5db6d4d3c5dbf893830c45033241e8068eb81dd11136c7ee1e33f14a883da68b",
+      "target_path": ".gitleaksignore"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "0ea2430b897de760cdb28ec4f7ffba0b37479a2982527a6d858e66a30f0b74c2",
       "target_path": "AGENTS.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "def2d1b32de545b5b03cf88180f513bdfee66ea342b4224e1c923242fc7fc956",
+      "sha256": "281e49250558d96889a8f7b463719d346f2f92cae61566fd3387e6226a01331e",
       "target_path": "CONTRIBUTING.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "e3401d6e369a0156a0e58ab1bc7057a4b1484ec4bad99e7bf1a037d9d6016f5a",
+      "sha256": "b24fe6d02fb74b7bdb09f02a3a7b9b431a8c072c63131a056462f1f1e80fe8ab",
       "target_path": "Cargo.lock"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "6b60efd4f2860441adec19fdd2118be38772ae79d5692bf7bbeb84c4eb297085",
+      "sha256": "2951e5d2f0317e2e0e8c0136cd5041b2b1e2568bcbd29e92e7aa9524c5bce58f",
       "target_path": "Cargo.toml"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "1d3b5c56f3ff69305e8545414f6650348512e6e686fafd9d88dd5b1662ac6fee",
+      "sha256": "10d43165147788c050237ddccafe38515814d95b17ff0e9aac30ba3f31329d77",
       "target_path": "DEPENDENCY-RESOLUTION.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "1d1d7291e593d14cbf139793cc8da769c589b0d01fb16aca0a811443541857da",
+      "sha256": "e49e6831050c194fa5d03e46652cde5843f3680a663721937a9548bb4516605b",
       "target_path": "NOTICE"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "bdb22945bddfbd0ced644a379d9b966c32e8abd37044ce4b44f3b6ce343b4d14",
+      "sha256": "4afc1307999375068a5dda0bd23ef4e2dd0e3e2024949451bf3f1236e733041a",
       "target_path": "README.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "1e2c9e89e7a976b891f266bbc6912522800e9c1b21e7cfad17c8308fee2fff2b",
+      "sha256": "4255689deae52adb23fb026995a6a00aff431afc953791580b3f93341dff6d4a",
       "target_path": "SBOM.spdx.json"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "3df57d3fe8ade36ab67ffba120ccb3c6a7ebc216d1a3f741b9068966806148d5",
+      "target_path": "SECURITY.md"
     },
     {
       "origin": "new project-owned code",
@@ -100,7 +110,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "d333ce87e7f2ab3d0a5ce4407cbd0dcc9d6d70dcde232d1d2c349872fd41a4ad",
+      "sha256": "c804dd4d0856adbd5361e58bc860ebe65b55c6816c0e10ed9e646687522cf140",
       "target_path": "crates/broker-execution/README.md"
     },
     {
@@ -150,7 +160,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "a6a4679f6303a53bc26ef3feb3405ff6af8d52924326290b632e032319dae611",
+      "sha256": "5bd33ded69f58a6f47e800f498947ffd6b870d90c10c8dde008ab0eda92aa211",
       "target_path": "crates/broker-ports/src/raw_capture.rs"
     },
     {
@@ -204,8 +214,63 @@
       "target_path": "crates/ibkr-read/tests/support/fake_gateway.rs"
     },
     {
+      "origin": "new project-owned code",
+      "sha256": "010fe499b4b8d66a2856217bec5dea28f7e5cb39d5520b02941e957df9f29c21",
+      "target_path": "crates/schwab-adapter/Cargo.toml"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "1ee518042aefeb1c234e78d346821ebe7d39fb429245bc880daa4a0ea180089d",
+      "target_path": "crates/schwab-adapter/README.md"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "3bc39185f32518796949eb1b4c049c54eeda2d50f3b99f0b18cf885500956277",
+      "target_path": "crates/schwab-adapter/src/account_read.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "4849a6b048f98e5e08c605289da0b0bc7f414ed16f352cc8fcf90c875626bf86",
+      "target_path": "crates/schwab-adapter/src/admission.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "bc8bf5c344ffaa4df6deb3ed06eab5f67bce5bc9ac47a009cb4e0e1e2568544f",
+      "target_path": "crates/schwab-adapter/src/lib.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "419c9f5274f4497c611dc95be31424c685a6a1621fed77b62f13e0c0650dccb1",
+      "target_path": "crates/schwab-adapter/src/streamer_gate.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "f9b8e81cbc9c565e4c17678760cec678e9fa50763e989dd367e02229e18321f9",
+      "target_path": "crates/schwab-adapter/src/streamer_gate/tests.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "3c95d8317f84fbfb9b22fd63b128044bb3dd9730b51a4aa9d7df77fed5889e79",
+      "target_path": "crates/schwab-adapter/tests/account_read.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "53d0dc679cf2152618fc495ba7bebfbf21ea189c2600893e1ab0bf9513cc3a04",
+      "target_path": "crates/schwab-adapter/tests/fixtures/account_response.json"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "ed4b171d7debbb743adfd08671433ef4f8c5fe5b8fd0a14447f853db0f5eb6af",
+      "target_path": "crates/schwab-adapter/tests/streamer_protocol.rs"
+    },
+    {
       "sha256": "11200784f7cc951ba5d1ef777547a562e2dd6e6c42fb73ddf6def4ab9edccaa8",
       "target_path": "deny.toml"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "bba9064989e65ef91744bb1cd6b551546eac82fd7125eee0abd6e596b78c0be1",
+      "target_path": "docs/schwab-adapter.md"
     },
     {
       "origin": "new project-owned code",
@@ -219,17 +284,17 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "ce542355997b890abbd4791bcbd7b432960f444575c165bdddfa7b3da645239e",
+      "sha256": "4da2dc810be34caee246e1bdf3e19ea89b2a9e9ff263ea2bd58ed01c47010349",
       "target_path": "scripts/check_vendor_provenance.py"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "4fca67c1916ba642fa41411631397881c024c4714430a452570b7411f1023f29",
+      "sha256": "fcb62453ebeb2b9caf3e2238a1c1b5179dc21ab279e5c0248a143dd47343ffb7",
       "target_path": "scripts/generate_spdx_sbom.py"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "bb4e4c25f750e1be69851ffb8c6078770892afde99c3c2106064b400e7dc0106",
+      "sha256": "af9bc46566d1a5b1b2397bb16c04ca645137b6bfca9a812830c252376995119f",
       "target_path": "scripts/update_source_manifest_hashes.py"
     },
     {
@@ -271,6 +336,16 @@
       "origin": "new project-owned code",
       "sha256": "1fe4fc2877acd9a3de98722de4530f7407c4e95867120285c2a0250540b61776",
       "target_path": "vendor/ibapi/UPSTREAM.md"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "62f39171d2330144177453cd158c9ebc002a7a15cf79ba7ddebeff05c183a8d3",
+      "target_path": "vendor/schwab/SOURCE-MANIFEST.json"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "76e50ac9ac7e671a360ee70fa330c5352f9707cb9c18f226af7b3d453a63aaa1",
+      "target_path": "vendor/schwab/UPSTREAM.md"
     }
   ],
   "reviewed_dependency_licenses": [
@@ -287,10 +362,25 @@
       "version": "1.0.9"
     }
   ],
+  "reviewed_secret_scan_exceptions": [
+    {
+      "commit": "995ee0817f144491f9ce9028495da9dcd9ca7a2f",
+      "file": "vendor/schwab/crates/schwab-rest/README.md",
+      "fingerprint": "995ee0817f144491f9ce9028495da9dcd9ca7a2f:vendor/schwab/crates/schwab-rest/README.md:generic-api-key:6",
+      "line": 6,
+      "original_scan": "gitleaks git --log-opts='origin/main..HEAD' exited 1 with one finding before the exact-fingerprint exception.",
+      "original_sentence_html_entity_escaped": "It does not claim that the full public SDK, O&#65;uth, retry/admission policy, or execution path has migrated.",
+      "reason": "The match is ordinary documentation describing incomplete migration scope; reviewed redacted report contains no credential, token, account identifier, or access material.",
+      "rule": "generic-api-key",
+      "scanner": "Gitleaks 8.30.1",
+      "scope": "Only the exact historical commit, file, rule, and line fingerprint is excepted; no rule-wide or path-wide allowance.",
+      "validation": "The exact-ignore branch-range and current pre-commit diff scans exited 0; the target README was reworded and the current full-directory scan also exited 0. Re-run range and diff scans on the final frozen head; the initial unexcepted branch-range exit 1 is recorded above."
+    }
+  ],
   "shared_contract_dependencies": [
     {
-      "commit": "0a2eaff08d45e8abc1a0137dab17d5d3ef5553c8",
-      "git_tree": "fc8ec06ec05965ac23331b119047a80cb731a6bb",
+      "commit": "23a87d5b5a549e4489c1a2844c4132c43148fe6b",
+      "git_tree": "f7b0c789bdc16c4695730d349cd519d2196900c7",
       "license": "MIT OR Apache-2.0",
       "lockfile": "Cargo.lock includes this package and its transitive core packages at the same commit.",
       "package": "market-contracts",
@@ -298,8 +388,8 @@
       "repository": "lqepoch/trading-core"
     },
     {
-      "commit": "0a2eaff08d45e8abc1a0137dab17d5d3ef5553c8",
-      "git_tree": "fc8ec06ec05965ac23331b119047a80cb731a6bb",
+      "commit": "23a87d5b5a549e4489c1a2844c4132c43148fe6b",
+      "git_tree": "f7b0c789bdc16c4695730d349cd519d2196900c7",
       "license": "MIT OR Apache-2.0",
       "lockfile": "Cargo.lock resolves exact-decimal as the only normal transitive dependency of domain for broker-execution.",
       "package": "exact-decimal",
@@ -307,8 +397,8 @@
       "repository": "lqepoch/trading-core"
     },
     {
-      "commit": "0a2eaff08d45e8abc1a0137dab17d5d3ef5553c8",
-      "git_tree": "fc8ec06ec05965ac23331b119047a80cb731a6bb",
+      "commit": "23a87d5b5a549e4489c1a2844c4132c43148fe6b",
+      "git_tree": "f7b0c789bdc16c4695730d349cd519d2196900c7",
       "license": "MIT OR Apache-2.0",
       "lockfile": "Cargo.lock resolves domain and market-contracts from the same immutable trading-core revision.",
       "package": "domain",
@@ -471,6 +561,717 @@
       "source_blob_sha256": "c45f35c13b352970c34e3dc12df4dd5bfcc50fc1e7c07f5ec3032fbc1d36b3a8",
       "source_path": "crates/alpaca-stream/src/update.rs",
       "target_path": "crates/alpaca-stream/src/update.rs"
+    },
+    {
+      "adaptation": "Adds the target workspace license metadata; upstream dependency declarations and Rust behavior are unchanged.",
+      "adapted_target_sha256": "510fd87e3c8eec66a9a6a28ea5d54350b1783c44088f7477650f32b72e678ab1",
+      "change_categories": [
+        "manifest"
+      ],
+      "source_blob_sha256": "64e509e4bbcd1a5c78c9b9b80df86a58e5ad87b5e7cc1b576e51a14a088492c5",
+      "source_git_blob": "dd4c3a7cac0c2c4b4d3e9f696c74af0003b18347",
+      "source_path": "crates/schwab-rest/Cargo.toml",
+      "target_path": "vendor/schwab/crates/schwab-rest/Cargo.toml"
+    },
+    {
+      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adapted_target_sha256": "a96869f8a5e670d9a21afd43c37a6fc74e7633b08184408d8a006db6d3dd0afe",
+      "change_categories": [],
+      "source_blob_sha256": "a96869f8a5e670d9a21afd43c37a6fc74e7633b08184408d8a006db6d3dd0afe",
+      "source_git_blob": "7135ccc1a32c47dcd4ad5e934cca5803184f10ca",
+      "source_path": "crates/schwab-rest/MUTATION-CONTRACT.md",
+      "target_path": "vendor/schwab/crates/schwab-rest/MUTATION-CONTRACT.md"
+    },
+    {
+      "adaptation": "Rewords the migration-scope sentence to preserve its meaning without triggering the reviewed generic-api-key scanner false positive.",
+      "adapted_target_sha256": "9562de64d0bc4ff14ecb4cc1f9ef376d1fa0ae33bfe793864364c503bb705ba1",
+      "change_categories": [
+        "documentation"
+      ],
+      "source_blob_sha256": "6e131204d809316385aec7200cf5abb8462048b135014059cd80a10efeafa9eb",
+      "source_git_blob": "b5aadd7d646770cbc779ee0677d7052f8724fb8b",
+      "source_path": "crates/schwab-rest/README.md",
+      "target_path": "vendor/schwab/crates/schwab-rest/README.md"
+    },
+    {
+      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adapted_target_sha256": "264b2254add37336377a05592bbb84dd8382c887c269081c818e7e572e2558df",
+      "change_categories": [],
+      "source_blob_sha256": "264b2254add37336377a05592bbb84dd8382c887c269081c818e7e572e2558df",
+      "source_git_blob": "48e7b1d1911405c0d39dbbf80184fb149e0923c3",
+      "source_path": "crates/schwab-rest/fixtures/query_extensions.json",
+      "target_path": "vendor/schwab/crates/schwab-rest/fixtures/query_extensions.json"
+    },
+    {
+      "adaptation": "Adds must_use and error-contract docs; changes Debug output to finish_non_exhaustively so request internals are not exposed, and applies strict-Clippy readability fixes.",
+      "adapted_target_sha256": "afd0c45eb32c2675fa84ead17e26cca5599cbc799468eac01c4e65a997b34386",
+      "change_categories": [
+        "code",
+        "documentation"
+      ],
+      "source_blob_sha256": "d8f8759c7252431e256228698b7a628cdc35f8e86ac2ff14e5c62070ddce0f7e",
+      "source_git_blob": "fc7ea4ff4c5e023c3a66095ddee4c4594a889032",
+      "source_path": "crates/schwab-rest/src/client.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/client.rs"
+    },
+    {
+      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adapted_target_sha256": "979e6d0f785a564d9dd16baa21336026bae151e58b7ae393344198468dc8ea52",
+      "change_categories": [],
+      "source_blob_sha256": "979e6d0f785a564d9dd16baa21336026bae151e58b7ae393344198468dc8ea52",
+      "source_git_blob": "1c96a4bbf57c77979e047ab2c078b12998a813b9",
+      "source_path": "crates/schwab-rest/src/lib.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/lib.rs"
+    },
+    {
+      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adapted_target_sha256": "e3a0c36c2d21a34b53c7802d49a0ccad5367730a1cf78f436f4e66eab7c98d85",
+      "change_categories": [],
+      "source_blob_sha256": "e3a0c36c2d21a34b53c7802d49a0ccad5367730a1cf78f436f4e66eab7c98d85",
+      "source_git_blob": "d3fca639b2147b0a67414a73ea59b77641011ee2",
+      "source_path": "crates/schwab-rest/src/market_models/common.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/market_models/common.rs"
+    },
+    {
+      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adapted_target_sha256": "dd446b2be0e1ff20f5d77121419135908a1ef622360e81c593171771a74b6c7a",
+      "change_categories": [],
+      "source_blob_sha256": "dd446b2be0e1ff20f5d77121419135908a1ef622360e81c593171771a74b6c7a",
+      "source_git_blob": "aba7a5e416fcd060ce8e0c252814294b9b30918c",
+      "source_path": "crates/schwab-rest/src/market_models/history.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/market_models/history.rs"
+    },
+    {
+      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adapted_target_sha256": "53434c3ab57e6364a8991a3b2e6e3b2159968493cfce4d38eb60a188dd8b8b16",
+      "change_categories": [],
+      "source_blob_sha256": "53434c3ab57e6364a8991a3b2e6e3b2159968493cfce4d38eb60a188dd8b8b16",
+      "source_git_blob": "3ddfbecfed74388541efaaa681b026d0c2ee5589",
+      "source_path": "crates/schwab-rest/src/market_models/hours.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/market_models/hours.rs"
+    },
+    {
+      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adapted_target_sha256": "ccc978e2880a28cc13f093e140df9894c0a712d8d46c15e821857dffbef65560",
+      "change_categories": [],
+      "source_blob_sha256": "ccc978e2880a28cc13f093e140df9894c0a712d8d46c15e821857dffbef65560",
+      "source_git_blob": "164fa11cbdc36624aca76822b426677652842c8a",
+      "source_path": "crates/schwab-rest/src/market_models/instruments.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/market_models/instruments.rs"
+    },
+    {
+      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adapted_target_sha256": "462ba15dfe6b196234f6fa7dc270afcec127d0a2309fe2bd3637ceb71fac9751",
+      "change_categories": [],
+      "source_blob_sha256": "462ba15dfe6b196234f6fa7dc270afcec127d0a2309fe2bd3637ceb71fac9751",
+      "source_git_blob": "027a9f89b9b958c3e2bd59ed0c31233bf2d38f58",
+      "source_path": "crates/schwab-rest/src/market_models/mod.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/market_models/mod.rs"
+    },
+    {
+      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adapted_target_sha256": "d8f45771dfdd42e79afe5aa4291a8e7bc9822abbe20a40fc07e39b3010dfaf77",
+      "change_categories": [],
+      "source_blob_sha256": "d8f45771dfdd42e79afe5aa4291a8e7bc9822abbe20a40fc07e39b3010dfaf77",
+      "source_git_blob": "06682af25af06da8751bc12c6a217c571fb3f5f6",
+      "source_path": "crates/schwab-rest/src/market_models/options.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/market_models/options.rs"
+    },
+    {
+      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adapted_target_sha256": "cc311f7daaee90b2d5fe8432d85b23c5040098c82187d6796ce5da5b8098e44c",
+      "change_categories": [],
+      "source_blob_sha256": "cc311f7daaee90b2d5fe8432d85b23c5040098c82187d6796ce5da5b8098e44c",
+      "source_git_blob": "e61783d0cd9eb966fe91a551395c0dc591615ba1",
+      "source_path": "crates/schwab-rest/src/market_models/quotes.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/market_models/quotes.rs"
+    },
+    {
+      "adaptation": "Makes fixed mutation policy accessors associated constants/functions, uses checked u64-to-u16 status conversion, and updates assertions to preserve the one-attempt/no-replay contract.",
+      "adapted_target_sha256": "3a6b48e8221818e185954d6ceb35fc54dc6e29c2a59d94b0d65c9e863c080429",
+      "change_categories": [
+        "code",
+        "tests"
+      ],
+      "source_blob_sha256": "b2e1c816e4679356c69b1552ae05658831e4553ca62269d5c0d3100828ab898d",
+      "source_git_blob": "0ab74c0cdefb0288335028d40155697eb57943e9",
+      "source_path": "crates/schwab-rest/src/mutation_contract.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/mutation_contract.rs"
+    },
+    {
+      "adaptation": "Adds must_use and public error-contract documentation; clarifies the explicit empty CsvValues query behavior.",
+      "adapted_target_sha256": "3459de92ba816b4f71afeb567e3dbb0e80021452664838a58ba37f7cfd869d8f",
+      "change_categories": [
+        "code",
+        "documentation"
+      ],
+      "source_blob_sha256": "e87082620135b798ce0bb37e04d8bfae45280f1662d1cba872c3b13a3a88274a",
+      "source_git_blob": "fb8d2fc42d08edf2ffe0f815e72bfa9ced655498",
+      "source_path": "crates/schwab-rest/src/normalized_option_quote_api.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/normalized_option_quote_api.rs"
+    },
+    {
+      "adaptation": "Clarifies the WHATWG URLSearchParams and Node HttpClient names without changing serialization behavior.",
+      "adapted_target_sha256": "1671cfebe5c320daf32cdecb2d7303f50d29e9bdfee188f41f9e39a5d8790c84",
+      "change_categories": [
+        "documentation"
+      ],
+      "source_blob_sha256": "4aef4160b54d10592dc7f8a7bf88be313f98d47b710d189d73ed72804a017ca3",
+      "source_git_blob": "bc174c082c491fb31da41462b29643cbe651ba8d",
+      "source_path": "crates/schwab-rest/src/query_encoding.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/query_encoding.rs"
+    },
+    {
+      "adaptation": "Adds must_use annotations and documents validation, admission, token, transport, and projection failures on public read methods.",
+      "adapted_target_sha256": "a676a93253930ba0f645f9d07ee45f1d310432a66ba47437ff4de04c3f4f63f4",
+      "change_categories": [
+        "code",
+        "documentation"
+      ],
+      "source_blob_sha256": "a64f94f3a630c17d61ff938e4e7e8a25a44c2b4e77449216897d426b98191e8a",
+      "source_git_blob": "0f29dd9615b0a9d4514b80c3c31088fe0630f14e",
+      "source_path": "crates/schwab-rest/src/read_api.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/read_api.rs"
+    },
+    {
+      "adaptation": "Reorganizes the synthetic fixture-to-request mapping and assertion helpers, adds a documented local lint allowance for the contiguous mapping, and preserves the same fixture contract checks.",
+      "adapted_target_sha256": "ebeb2d5061535e227b73a235ddf10afd4ab16c1545ee8ad352cea8a00bdd3c54",
+      "change_categories": [
+        "tests"
+      ],
+      "source_blob_sha256": "37886a78fbf52e266c3ce5538b936da5055b9b8a00b709c69ba08ac15e23c5ff",
+      "source_git_blob": "1ee4824da6cb8e71f4d35868db7ec47046d2014f",
+      "source_path": "crates/schwab-rest/src/read_api_tests.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/read_api_tests.rs"
+    },
+    {
+      "adaptation": "Adds must_use annotations and documents the response projection error conditions; decimal parsing behavior is unchanged.",
+      "adapted_target_sha256": "ea04f20fa2dcb76280c98f9c9055cfd27290f61bf6339ac47aa54a667f4e4bbb",
+      "change_categories": [
+        "code",
+        "documentation"
+      ],
+      "source_blob_sha256": "f94d09e0ac4600c8552114fc870810a904647062831e204144e8a7d8e746072d",
+      "source_git_blob": "1781ccbf615fe6ae045d9338036e0dddd1d593f3",
+      "source_path": "crates/schwab-rest/src/read_response/decimal.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/read_response/decimal.rs"
+    },
+    {
+      "adaptation": "Adds must_use annotations and documents response projection failures on public conversion APIs; response shapes and parsing rules are unchanged.",
+      "adapted_target_sha256": "dbce0e5f8951c6f9675443232e4933a2ae7a9034fddcb09eee6a85beb2bdbe6b",
+      "change_categories": [
+        "code",
+        "documentation"
+      ],
+      "source_blob_sha256": "237b28d43bed29440ebfe09776dbbe41f4dd068305d96a631872fec1d7f76063",
+      "source_git_blob": "8940fce400f7bed071b6118c28d5556f530bf0c9",
+      "source_path": "crates/schwab-rest/src/read_response/mod.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/read_response/mod.rs"
+    },
+    {
+      "adaptation": "Documents projection failures and enumerates nonnumeric JSON variants that retain the existing None result for optional quote values.",
+      "adapted_target_sha256": "0a9842af71b70cddee53c81e9d368c513cebf9b65071c9d96abbe9d3bf0294b6",
+      "change_categories": [
+        "code",
+        "documentation"
+      ],
+      "source_blob_sha256": "c7060dcf9b9dc8df580e52d166756a7e0ec56900eb9f6ddb9946daba01b7b6e1",
+      "source_git_blob": "d8e71ac18b3922b92b5500c2e8699dfc08c67221",
+      "source_path": "crates/schwab-rest/src/read_response/option_quote.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/read_response/option_quote.rs"
+    },
+    {
+      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adapted_target_sha256": "c6cb4f171e0c81cf23b10d9f6a0f034ab5757b830d7fb700354ff24beb320cc3",
+      "change_categories": [],
+      "source_blob_sha256": "c6cb4f171e0c81cf23b10d9f6a0f034ab5757b830d7fb700354ff24beb320cc3",
+      "source_git_blob": "ef523738684f97edbbcf505ee749a05176676342",
+      "source_path": "crates/schwab-rest/src/read_response/validation/common.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/read_response/validation/common.rs"
+    },
+    {
+      "adaptation": "Replaces wildcard imports with the explicit market validation helpers used by this module; validation behavior is unchanged.",
+      "adapted_target_sha256": "5599b48c83f2c994039f3735c62d99e16510fcafa1c020b675e78e1f9b0e1a94",
+      "change_categories": [
+        "code"
+      ],
+      "source_blob_sha256": "3e94e36bd64dbfb0a631408251dfd33f773569a4679636d23e014d8d42810d4d",
+      "source_git_blob": "cf3a0e7c891122dc5413b9c63a0bd565aa9e06f0",
+      "source_path": "crates/schwab-rest/src/read_response/validation/market.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/read_response/validation/market.rs"
+    },
+    {
+      "adaptation": "Replaces wildcard validation imports with explicit market and trader validator lists; routing and validation behavior are unchanged.",
+      "adapted_target_sha256": "9e64019aa13ccb50aec4308d4d3558f44cc2ff106c5c41c4a04104057cc76694",
+      "change_categories": [
+        "code"
+      ],
+      "source_blob_sha256": "9584bfe3f758e326c3f5ba83ef4df4bd8bd421ac1a455e9c5ee47e30115d2ff2",
+      "source_git_blob": "d98b4bdebba84362ac3b6db1955b420a87a3c53b",
+      "source_path": "crates/schwab-rest/src/read_response/validation/mod.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/read_response/validation/mod.rs"
+    },
+    {
+      "adaptation": "Replaces wildcard imports with the explicit shared validation helpers used by trader responses; behavior is unchanged.",
+      "adapted_target_sha256": "49de96c54856f42575b2280090e0fcb524163fe86210420400ace9664e125722",
+      "change_categories": [
+        "code"
+      ],
+      "source_blob_sha256": "ee0a5339802eb1e1c9df1f2733b95631f45f866a03b0eb27f6eb58a5e4fc7cb8",
+      "source_git_blob": "ae2918ee34f8aab5dbc3249872a751f37a870a05",
+      "source_path": "crates/schwab-rest/src/read_response/validation/trader.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/read_response/validation/trader.rs"
+    },
+    {
+      "adaptation": "Uses checked integer conversions in synthetic response generation, adds scoped readability allowances for contiguous fixture cases, and keeps redaction assertion failure messages constant so protected fixture values cannot be echoed.",
+      "adapted_target_sha256": "d4c7e5b9d6bdb05a7d48e583bc32e417d5e644d20c13b38403d8625564165163",
+      "change_categories": [
+        "tests"
+      ],
+      "source_blob_sha256": "9eb74db8e6cd36c2375d1f5d544703f953c91819243ae0418b8e11740c5eb6a2",
+      "source_git_blob": "23dd8ed2dab3b8701b25198330e240b0c90761f9",
+      "source_path": "crates/schwab-rest/src/read_response_tests.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/read_response_tests.rs"
+    },
+    {
+      "adaptation": "Adds must_use annotations and documents malformed-input and request-bound errors on validated request constructors.",
+      "adapted_target_sha256": "e46a8d442744d4696202dc8106977e4c48eed03869d83e8e32d78991111ee7f3",
+      "change_categories": [
+        "code",
+        "documentation"
+      ],
+      "source_blob_sha256": "3ee32dc903c36934d75d85c3ebf441539284c5b70c1442ca0bacdae6a7c9e0fc",
+      "source_git_blob": "011fd916a6156844fb86643713e4477279557e12",
+      "source_path": "crates/schwab-rest/src/request_types.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/request_types.rs"
+    },
+    {
+      "adaptation": "Marks account response accessors must_use; serialized account response shapes are unchanged.",
+      "adapted_target_sha256": "ae207a6d59c59dd3773d60c10d26c54b318eda24f8fb77a1b6a9b010a3b8cdaa",
+      "change_categories": [
+        "code"
+      ],
+      "source_blob_sha256": "3cf8f8da3772fc8293a7c35f6b767bc58d85e8a2a567ef1847dbdcae6f97d7a4",
+      "source_git_blob": "f16e4e2a654b9e8098ac2d6746a17d07290b225e",
+      "source_path": "crates/schwab-rest/src/response_models/accounts.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/response_models/accounts.rs"
+    },
+    {
+      "adaptation": "Adds must_use annotations and documents the shared response projection error contract.",
+      "adapted_target_sha256": "9a2d6509288d03dfe76b91d3fa64900e42b2f02343df9dbc91269be014fd8942",
+      "change_categories": [
+        "code",
+        "documentation"
+      ],
+      "source_blob_sha256": "f7d48baf88dbd034db6234e7f790e07bf558c3bbbd84a3b3dab3d3aec5691399",
+      "source_git_blob": "162a0d10bdb2fe7779e3cd71b5ed83247035d951",
+      "source_path": "crates/schwab-rest/src/response_models/common.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/response_models/common.rs"
+    },
+    {
+      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adapted_target_sha256": "e41665037b4bc3e1643f926e10be50f763c6cd60bfc569a3587be862367ff3a1",
+      "change_categories": [],
+      "source_blob_sha256": "e41665037b4bc3e1643f926e10be50f763c6cd60bfc569a3587be862367ff3a1",
+      "source_git_blob": "3282fcdd1dcd5c53a4b10dff093ed09cb0133722",
+      "source_path": "crates/schwab-rest/src/response_models/mod.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/response_models/mod.rs"
+    },
+    {
+      "adaptation": "Moves the existing recognized order field names into ORDER_FIELDS for one reviewable constant; the accepted field set is unchanged.",
+      "adapted_target_sha256": "373bc23bc5ecab6d86cc6e2045b68f2a1c50bb4dee85d20daf450a6e6c600b0e",
+      "change_categories": [
+        "code"
+      ],
+      "source_blob_sha256": "dbb99a7543f970d71259036d4c151a90fd76f5ed7a6ec67ad481f36e3c1c7710",
+      "source_git_blob": "15f1304e42eae602751812a187ac6797f2519616",
+      "source_path": "crates/schwab-rest/src/response_models/orders.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/response_models/orders.rs"
+    },
+    {
+      "adaptation": "Marks preference response accessors must_use; serialized preference response shapes are unchanged.",
+      "adapted_target_sha256": "9b2fba24322d4b42a924d2dc3209b1ca1f8839da038220082ed856a1950d3db1",
+      "change_categories": [
+        "code"
+      ],
+      "source_blob_sha256": "5ebaefc76ee4d6acb8cf54a3c0f9cf42b4ba966fc4a324703f2d4b45917b34af",
+      "source_git_blob": "f9909af7a0d732681d8425e076063ce9f75d33b1",
+      "source_path": "crates/schwab-rest/src/response_models/preferences.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/response_models/preferences.rs"
+    },
+    {
+      "adaptation": "Documents the response projection failure contract without changing transaction parsing.",
+      "adapted_target_sha256": "9143af3022ca1f719195d6b150c042b6c8c189524c1ad4f05400681e9c763a81",
+      "change_categories": [
+        "documentation"
+      ],
+      "source_blob_sha256": "587faab0eba32211a830e3a49ed1e3c493b103fbf22534e7287f0fecb36889b3",
+      "source_git_blob": "11831ae7793a44012b72c1fe261e9b6cbbe3c3d0",
+      "source_path": "crates/schwab-rest/src/response_models/transactions.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/response_models/transactions.rs"
+    },
+    {
+      "adaptation": "Adds must_use annotations and documents route/request validation failures on fixed read-route constructors.",
+      "adapted_target_sha256": "950787802a68e13b4782c07ffe30bc2ce373be7936331eaf198e3fe55429683c",
+      "change_categories": [
+        "code",
+        "documentation"
+      ],
+      "source_blob_sha256": "3f2c78aaecc5b230a74d690a9c85bcc2158a2934155c951583fe877dd86cbadb",
+      "source_git_blob": "4a997795f37caf0dbe0ec163422bf4d62a9034ec",
+      "source_path": "crates/schwab-rest/src/routes.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/routes.rs"
+    },
+    {
+      "adaptation": "Replaces boolean transport checks with a typed RequestCheck result and updates fixed-route/auth/timeout/redirect/body-limit assertions.",
+      "adapted_target_sha256": "1de1ec56b1cbad120ec51362bc730f7aaaaeef26739ec6ae82cf62d8ea0139ca",
+      "change_categories": [
+        "tests"
+      ],
+      "source_blob_sha256": "9748abee906baf5c13226c0ab6cce7303df7d6279f32f18985664231ee15a05a",
+      "source_git_blob": "cc8976fbf6d7b38e0b9301de6f048b02a2114088",
+      "source_path": "crates/schwab-rest/src/tests.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/tests.rs"
+    },
+    {
+      "adaptation": "Uses checked usize-to-u32 conversion for the HTTP/2 header limit, returns client-configuration errors, and adjusts borrowed reqwest error/header handling.",
+      "adapted_target_sha256": "626098ea6d2d43132bf34fb10e8f25664742ef5c22f4fbd2eb25bd069fafb30a",
+      "change_categories": [
+        "code",
+        "documentation"
+      ],
+      "source_blob_sha256": "956dd4f8f9815b36cb26176a7f0a0dc68a9ad8ac2e5314cdc88a8577dd0b4718",
+      "source_git_blob": "adc4127a7e34a38e344e40250b5e4ee76f6785d9",
+      "source_path": "crates/schwab-rest/src/transport.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/transport.rs"
+    },
+    {
+      "adaptation": "Uses safe borrowed error assertions and write! for synthetic response construction while retaining the existing bounded TLS/transport cases.",
+      "adapted_target_sha256": "9417d957f4cb6f1e549e8e150b7447bc5d7b385ef15ec1bcfeb5d3ea0ed6e233",
+      "change_categories": [
+        "tests"
+      ],
+      "source_blob_sha256": "4e5c72dcc31303a9d6d0ad344cd117a051561fe911ebee9c93eba943dbac731a",
+      "source_git_blob": "984dae38de4a387282e2a964aaf3492c6478f902",
+      "source_path": "crates/schwab-rest/src/transport_tests.rs",
+      "target_path": "vendor/schwab/crates/schwab-rest/src/transport_tests.rs"
+    },
+    {
+      "adaptation": "Adds target workspace license metadata and pins the local schwab-rest path dependency to the exact workspace package version.",
+      "adapted_target_sha256": "3fd115ee47c9913cb2d7aec1b6e4fbf0d6b9ddc012d370f3a3e5f1ff0663a2dd",
+      "change_categories": [
+        "manifest"
+      ],
+      "source_blob_sha256": "ba9fdc8e75129e4f2bda6823cb899e24208a042ccdfea817496037c16d851216",
+      "source_git_blob": "8470691ce16d0a7b89a624913962d91787ecf02e",
+      "source_path": "crates/schwab-sdk/Cargo.toml",
+      "target_path": "vendor/schwab/crates/schwab-sdk/Cargo.toml"
+    },
+    {
+      "adaptation": "Documents that the extracted public surface is decoder and ACK state only; native credential and socket runtime remains test-only pending official endpoint evidence.",
+      "adapted_target_sha256": "c6ad0971335184304b8fb16cfac6ee767add226f96b3d11109cb589a5e305da5",
+      "change_categories": [
+        "documentation"
+      ],
+      "source_blob_sha256": "9ff2f915370f0910e255806402e2656aab3767936263504dd14b2ca14342dd3f",
+      "source_git_blob": "1245f637acc8d97bc51622cce7f464b192902534",
+      "source_path": "crates/schwab-sdk/README.md",
+      "target_path": "vendor/schwab/crates/schwab-sdk/README.md"
+    },
+    {
+      "adaptation": "Adds public read DTO and error re-exports, including StreamerInfo and redirect/read request types, so callers can use the established facade without importing internal modules.",
+      "adapted_target_sha256": "29376690e79621ff6adae3603a5ff096f92ae2cca5f9edb31b84f4cb921bd0d0",
+      "change_categories": [
+        "code"
+      ],
+      "source_blob_sha256": "474f0c6ae0ab5465d8da47244ff251fb5072d19c4da60a0f142b60eb462864cc",
+      "source_git_blob": "61413279d286f4bdfda0fb982a74ab571d6d01a1",
+      "source_path": "crates/schwab-sdk/src/lib.rs",
+      "target_path": "vendor/schwab/crates/schwab-sdk/src/lib.rs"
+    },
+    {
+      "adaptation": "Adds must_use annotations and documents read failure conditions on market-data facade methods; request and response behavior is unchanged.",
+      "adapted_target_sha256": "11f8a2d1793523cb6bdb3e5cc2743e3268b7a35fb8ec95e8b28011d08fd97417",
+      "change_categories": [
+        "code",
+        "documentation"
+      ],
+      "source_blob_sha256": "e0aaca87561361ef1195c9b562f0053cc07a2465e002a1076ad4ee7069e9e8f3",
+      "source_git_blob": "0b503d8edbd7e3e21dbe90e45a9716a46619282d",
+      "source_path": "crates/schwab-sdk/src/market_data.rs",
+      "target_path": "vendor/schwab/crates/schwab-sdk/src/market_data.rs"
+    },
+    {
+      "adaptation": "Adds must_use annotations and documents read failure conditions on trader facade methods; request and response behavior is unchanged.",
+      "adapted_target_sha256": "eddcc9c10bf95a4a3e57f6ae344948f8f1b0a81cac303432cfd2ccf12c798c75",
+      "change_categories": [
+        "code",
+        "documentation"
+      ],
+      "source_blob_sha256": "d3addd32d9fc023d5ddb7fe81d837b5b7af7e2cebb5fa3381df24d817820b440",
+      "source_git_blob": "adedcde73f48090437a02816f535b6a6da436cfc",
+      "source_path": "crates/schwab-sdk/src/trader.rs",
+      "target_path": "vendor/schwab/crates/schwab-sdk/src/trader.rs"
+    },
+    {
+      "adaptation": "Adds a bilingual module description for the existing offline read-only facade tests; test behavior is unchanged.",
+      "adapted_target_sha256": "892c41526f396d3ef3d1bc54a4f8be6f23052498d752e340b12f33eb49b3f429",
+      "change_categories": [
+        "documentation",
+        "tests"
+      ],
+      "source_blob_sha256": "b9815578fa18c2576340485ac64ccbbf9216798813d3d464bc242aa640b278ff",
+      "source_git_blob": "9166312f9d3f05c4db121634aaf9f516754dad30",
+      "source_path": "crates/schwab-sdk/tests/read_only_facade.rs",
+      "target_path": "vendor/schwab/crates/schwab-sdk/tests/read_only_facade.rs"
+    },
+    {
+      "adaptation": "Adds target workspace license metadata, moves credential/socket/session dependencies to dev-only scope with their cfg(test) modules, and pins test-only sha2 0.11.0 separately from the workspace sha2 0.10.9 dependency.",
+      "adapted_target_sha256": "7322bdca1d43f86c939753f7c8a54a13bec8b03e39e4456c1dc0489327aef5f0",
+      "change_categories": [
+        "manifest"
+      ],
+      "source_blob_sha256": "d9fe4f8bb2575aa6f05aa05d97a9ce4786399969a45b0470a073619282daa27c",
+      "source_git_blob": "8975fd7ea2d4e8ea1cf35cf3b565a18db3099467",
+      "source_path": "crates/schwab-streamer/Cargo.toml",
+      "target_path": "vendor/schwab/crates/schwab-streamer/Cargo.toml"
+    },
+    {
+      "adaptation": "Refactors the synthetic localhost WebSocket test names and assertions for readability and explicitly documents the fake-only reconnect/login test scope.",
+      "adapted_target_sha256": "9d1408d33d96f37163c03d707481da9b1e44cfb25d55a36451f715d7c5629269",
+      "change_categories": [
+        "tests"
+      ],
+      "source_blob_sha256": "0ab453e547d10b254b7ba417eb65430ac3360cb744e2f04cbec1038b746b875b",
+      "source_git_blob": "cf5a97d1512271f1811a25df18e073475ba84046",
+      "source_path": "crates/schwab-streamer/src/adapter_tests.rs",
+      "target_path": "vendor/schwab/crates/schwab-streamer/src/adapter_tests.rs"
+    },
+    {
+      "adaptation": "Adds must_use annotations to command and acknowledgement value accessors; command wire fields and state transitions are unchanged.",
+      "adapted_target_sha256": "51483b94717f040e4477dce40b4e7f02a70203d26fad25d0c62260a1760a5180",
+      "change_categories": [
+        "code"
+      ],
+      "source_blob_sha256": "31b93cd4bd5c1f283e21bec5026b1a3df6f58e5ceb96b33568889384960e4b61",
+      "source_git_blob": "640f60c54dd5a05f45288ad6c9f15f8886efc9a3",
+      "source_path": "crates/schwab-streamer/src/command.rs",
+      "target_path": "vendor/schwab/crates/schwab-streamer/src/command.rs"
+    },
+    {
+      "adaptation": "Adds complete validation error documentation and clarifies StreamerInfo terminology; renames test-only credential error variants for strict-Clippy naming without changing validation or zeroization behavior.",
+      "adapted_target_sha256": "1b8b071dc99e87a5ab8b44bb3d95d773582b0c91e966508e33323ee8b370e897",
+      "change_categories": [
+        "code",
+        "documentation"
+      ],
+      "source_blob_sha256": "c42059c26eca2ea90ff07c051379f189bfb9442e42e3e3e32b2ec607a948b945",
+      "source_git_blob": "59dc220d6b316cdb36abac658d642f2e5018abb9",
+      "source_path": "crates/schwab-streamer/src/credentials.rs",
+      "target_path": "vendor/schwab/crates/schwab-streamer/src/credentials.rs"
+    },
+    {
+      "adaptation": "Compiles the native credential/socket/login factory only for this crate's unit tests, permits only synthetic loopback ws targets, and verifies rejected remote WSS URLs fail before connector or LOGIN serialization callbacks.",
+      "adapted_target_sha256": "ad778f9870f2820c406a4322b8abd678b7a72355870e2932c607fe36081df68b",
+      "change_categories": [
+        "code",
+        "documentation"
+      ],
+      "source_blob_sha256": "b1125c66baf2cc9954e59fcd1480ef39f6ce4b0e2629f1fc431ca41506b9faeb",
+      "source_git_blob": "844375c3a157dfb6ffca476053ffd7de5814b94d",
+      "source_path": "crates/schwab-streamer/src/factory.rs",
+      "target_path": "vendor/schwab/crates/schwab-streamer/src/factory.rs"
+    },
+    {
+      "adaptation": "Restricts credentials, factory, protocol serialization, socket, and session modules/re-exports to this crate's unit tests; the downstream library exposes only decoder, service manifest, and subscription-state types.",
+      "adapted_target_sha256": "a074bef737de30b79d6df7aa747e2d3aef43c0774d780833c573be9c6834b00d",
+      "change_categories": [
+        "code",
+        "documentation"
+      ],
+      "source_blob_sha256": "40ea36e51b60979a0824ca99590443190977fcce60b583d45a0c0a05b12a15db",
+      "source_git_blob": "81964cbf0201c1663b33e4efe3c86310fe3c4de2",
+      "source_path": "crates/schwab-streamer/src/lib.rs",
+      "target_path": "vendor/schwab/crates/schwab-streamer/src/lib.rs"
+    },
+    {
+      "adaptation": "Adds must_use annotations to service manifest accessors; service names and field lists are unchanged.",
+      "adapted_target_sha256": "342b9c7f13cf393a8b6000d5ebef67d95ce86f78bfd84271ec58bed35dbe7936",
+      "change_categories": [
+        "code"
+      ],
+      "source_blob_sha256": "7773fae8b847f7f92ee950129ea6b85a2e6e0775298a9e707dccb058c2cfc91b",
+      "source_git_blob": "b22c3948be9839a51ec3b5d883c665496d532250",
+      "source_path": "crates/schwab-streamer/src/manifest.rs",
+      "target_path": "vendor/schwab/crates/schwab-streamer/src/manifest.rs"
+    },
+    {
+      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adapted_target_sha256": "e7879fbbea2b29f0b07dde3e74fa4ce2c060419a37b7049cf312e36785ab037f",
+      "change_categories": [],
+      "source_blob_sha256": "e7879fbbea2b29f0b07dde3e74fa4ce2c060419a37b7049cf312e36785ab037f",
+      "source_git_blob": "860f73317ec6aab16b6ebafa01114809f06ee954",
+      "source_path": "crates/schwab-streamer/src/protocol.rs",
+      "target_path": "vendor/schwab/crates/schwab-streamer/src/protocol.rs"
+    },
+    {
+      "adaptation": "Documents control queue errors and bounded command failure modes; removes two unused test-only market-data re-exports and renames internal SessionConfigError variants for strict-Clippy naming.",
+      "adapted_target_sha256": "85371673b8d92bf3543e1bd204e48757e9db0732e9f0202f324a1c55ce877f21",
+      "change_categories": [
+        "code",
+        "documentation"
+      ],
+      "source_blob_sha256": "f626b8dd885cababa68af7cb3cb989b7ea40ab7f3ab07eacd6bc8274ff55da69",
+      "source_git_blob": "21547909f332619ec7695840f1e3cc86f332d1e7",
+      "source_path": "crates/schwab-streamer/src/session.rs",
+      "target_path": "vendor/schwab/crates/schwab-streamer/src/session.rs"
+    },
+    {
+      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adapted_target_sha256": "b2a0f6dfc255b94dee44a28124f577114b5e381171f52d9dde29f4dc96a1d88f",
+      "change_categories": [],
+      "source_blob_sha256": "b2a0f6dfc255b94dee44a28124f577114b5e381171f52d9dde29f4dc96a1d88f",
+      "source_git_blob": "bfc603f51ee8f761315e1335d7a04b5f058cb6c3",
+      "source_path": "crates/schwab-streamer/src/session/critical.rs",
+      "target_path": "vendor/schwab/crates/schwab-streamer/src/session/critical.rs"
+    },
+    {
+      "adaptation": "Uses checked duration conversions before computing the synthetic benchmark percentage to avoid unchecked integer-to-float casts.",
+      "adapted_target_sha256": "20705c7a5cb3fab3b9489a8691b343c4186c2b41e7d9cd556286463f236d640d",
+      "change_categories": [
+        "code",
+        "tests"
+      ],
+      "source_blob_sha256": "39bed12dc6441a6d78b4e139134bdee11f440ae9711728a426c052d80b5b1ab5",
+      "source_git_blob": "b98983ed73e63dcc4f712212682f518723059300",
+      "source_path": "crates/schwab-streamer/src/session/fingerprint.rs",
+      "target_path": "vendor/schwab/crates/schwab-streamer/src/session/fingerprint.rs"
+    },
+    {
+      "adaptation": "Documents the atomic stale-check/merge invariant, compares already-validated finite timestamps explicitly, renames the one-field encoded-size variable, and uses checked synthetic benchmark values.",
+      "adapted_target_sha256": "dd4ca65c0351e4b6fae966bbfc052b9c09d844f69366f5e397252cc59c7ef680",
+      "change_categories": [
+        "code",
+        "documentation",
+        "tests"
+      ],
+      "source_blob_sha256": "824a0c6e98b35bee87de126b506b1df519cd89e84b56d84b11040531495db153",
+      "source_git_blob": "80b9a4feb02e9a57b8537aaa00cf7879d377fb8d",
+      "source_path": "crates/schwab-streamer/src/session/market_data.rs",
+      "target_path": "vendor/schwab/crates/schwab-streamer/src/session/market_data.rs"
+    },
+    {
+      "adaptation": "Rewrites synthetic connection event matches as explicit let-else checks and documents the deterministic reconnect timeline.",
+      "adapted_target_sha256": "4d0b886e86be92c0b2ed1ca56b6dc10477ba8bc6be2ff3a7ad877aac81b9e01a",
+      "change_categories": [
+        "tests"
+      ],
+      "source_blob_sha256": "fe92f57a3c77af01e2ebcc37551b812e3effc95b731aca2753c887204b7efae0",
+      "source_git_blob": "1648b093fe9d082cf1c7c3ea0fd0cb685999a73b",
+      "source_path": "crates/schwab-streamer/src/session_tests.rs",
+      "target_path": "vendor/schwab/crates/schwab-streamer/src/session_tests.rs"
+    },
+    {
+      "adaptation": "Makes the liveness event match arm explicitly empty, preserving the existing behavior of continuing the receive loop.",
+      "adapted_target_sha256": "029eaa95d99228e5b403ee3dbc1db4bad9f506bc8cc8331412aa205f719e60e6",
+      "change_categories": [
+        "code"
+      ],
+      "source_blob_sha256": "8b9eee9ee9e3fe2bd759b69a927fb850f661ea48a88f6e95540b0720f4b241bb",
+      "source_git_blob": "4ea837ff8bf6296dc8973d638bcc3bbbb34ebda6",
+      "source_path": "crates/schwab-streamer/src/socket.rs",
+      "target_path": "vendor/schwab/crates/schwab-streamer/src/socket.rs"
+    },
+    {
+      "adaptation": "Adds must_use/error docs and uses an explicit service-manifest method pointer while preserving subscription-state validation and revision behavior.",
+      "adapted_target_sha256": "2c518f37ae02306c6b2bd74ba72c01ec9449cb3fab90671746962e8bf0f44632",
+      "change_categories": [
+        "code",
+        "documentation"
+      ],
+      "source_blob_sha256": "1fd923f69a89fcf63a501bf11ed2aad0028d5d2949be45232dba8d51ddc99fb7",
+      "source_git_blob": "d45b6164046152c8a893a780f6968a804efbc737",
+      "source_path": "crates/schwab-streamer/src/state.rs",
+      "target_path": "vendor/schwab/crates/schwab-streamer/src/state.rs"
+    },
+    {
+      "adaptation": "Uses explicit service-manifest mapping, String::new, and checked synthetic benchmark conversions; protocol state assertions are unchanged.",
+      "adapted_target_sha256": "fc14ec35eeda3f623e1a833034a7a1396ca5ca9cb281ba523bc4fe98ed81c0c0",
+      "change_categories": [
+        "tests"
+      ],
+      "source_blob_sha256": "71b3f8dced1056e68c5effd272f815cf5a0ae383912c1a56dc433aa59f2567f5",
+      "source_git_blob": "11909440f65b0d16cfc16873f6a7db4f5ee9118d",
+      "source_path": "crates/schwab-streamer/src/tests.rs",
+      "target_path": "vendor/schwab/crates/schwab-streamer/src/tests.rs"
+    },
+    {
+      "adaptation": "Documents bounded JSON parse errors and converts integer timestamps through serde_json::Number to preserve JavaScript-number coercion semantics without unchecked casts.",
+      "adapted_target_sha256": "bd96477ef65b897856343d916d0aafb912958eca4d0a1fd77a7a6405d4adaf80",
+      "change_categories": [
+        "code",
+        "documentation"
+      ],
+      "source_blob_sha256": "739ad989f6576729ffdaa2bf8534503d48762858058ae9e7fa08f9f55ab06d31",
+      "source_git_blob": "15a0b3a455455b1a9775a505f1a273221063bb44",
+      "source_path": "crates/schwab-streamer/src/wire.rs",
+      "target_path": "vendor/schwab/crates/schwab-streamer/src/wire.rs"
+    },
+    {
+      "adaptation": "Adds synthetic large-integer JSON cases around JavaScript safe-number rounding and i64::MIN response codes.",
+      "adapted_target_sha256": "5091aaec7bea14f4dd36572fc6b70acdeaadd274ada406c99e00c2e8fc246ae8",
+      "change_categories": [
+        "tests"
+      ],
+      "source_blob_sha256": "7058da325a40d4d0808e6dd0998fb104b383d4e29cd2a04897d324fdfdb18927",
+      "source_git_blob": "8fd46157f48dbebd0ccb0343368e13a8b5317ab2",
+      "source_path": "crates/schwab-streamer/src/wire_tests.rs",
+      "target_path": "vendor/schwab/crates/schwab-streamer/src/wire_tests.rs"
+    },
+    {
+      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adapted_target_sha256": "84d3dc583fbe876d93930e80a0d07f436371369acc6fd5118842222ec17c43fa",
+      "change_categories": [],
+      "source_blob_sha256": "84d3dc583fbe876d93930e80a0d07f436371369acc6fd5118842222ec17c43fa",
+      "source_git_blob": "9ec721d47a17c641aa23b7430ad5614a4fa09135",
+      "source_path": "test/fixtures/rust-v2/sdk.json",
+      "target_path": "vendor/schwab/test/fixtures/rust-v2/sdk.json"
+    },
+    {
+      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adapted_target_sha256": "9b60b5befaba024943bf9ef5913c358fdb6879abab4fa312586cf95f8de2fbd1",
+      "change_categories": [],
+      "source_blob_sha256": "9b60b5befaba024943bf9ef5913c358fdb6879abab4fa312586cf95f8de2fbd1",
+      "source_git_blob": "e0f2515c2f51f73735fe165776034f3322e0c58b",
+      "source_path": "test/fixtures/rust-v2/sdk_mutation_errors_172.json",
+      "target_path": "vendor/schwab/test/fixtures/rust-v2/sdk_mutation_errors_172.json"
+    },
+    {
+      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adapted_target_sha256": "11361ddc091b2bae6352cf085f8c46e607ea2954f5c0a80906895cc08ada450f",
+      "change_categories": [],
+      "source_blob_sha256": "11361ddc091b2bae6352cf085f8c46e607ea2954f5c0a80906895cc08ada450f",
+      "source_git_blob": "2b2237d61b876b808f3a3baacb6a9d722130ab60",
+      "source_path": "test/fixtures/rust-v2/sdk_mutations.json",
+      "target_path": "vendor/schwab/test/fixtures/rust-v2/sdk_mutations.json"
+    },
+    {
+      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adapted_target_sha256": "c205aa443be6f17ecea21f51a022e9f8de04d45217adba22fbb536aa0757dc44",
+      "change_categories": [],
+      "source_blob_sha256": "c205aa443be6f17ecea21f51a022e9f8de04d45217adba22fbb536aa0757dc44",
+      "source_git_blob": "c3f5bdc580cc004ca35acba3eab343ab906b6d99",
+      "source_path": "test/fixtures/rust-v2/sdk_read_surface.json",
+      "target_path": "vendor/schwab/test/fixtures/rust-v2/sdk_read_surface.json"
+    },
+    {
+      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adapted_target_sha256": "d1a9d1c764d6594ec507d3a32d710ae5f8523c68f1bdf63983a407531cefc99b",
+      "change_categories": [],
+      "source_blob_sha256": "d1a9d1c764d6594ec507d3a32d710ae5f8523c68f1bdf63983a407531cefc99b",
+      "source_git_blob": "977ae0f9636bdc57979a85f4ae2db5845f59281c",
+      "source_path": "test/fixtures/rust-v2/sdk_response_models.json",
+      "target_path": "vendor/schwab/test/fixtures/rust-v2/sdk_response_models.json"
     }
   ],
   "source_license_status": "The source repository is private and this commit has no repository-wide open-source license. Repository-owner authorization covers only the source paths enumerated here and permits this selected project-owned code to be published in this repository under MIT OR Apache-2.0.",

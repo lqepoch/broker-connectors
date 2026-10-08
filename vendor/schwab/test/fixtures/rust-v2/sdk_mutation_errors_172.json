@@ -1,0 +1,253 @@
+{
+  "schemaVersion": 1,
+  "source": [
+    "src/clients/trader.ts",
+    "src/utils/apiClientBase.ts",
+    "src/utils/httpClient.ts",
+    "src/utils/responseMetadata.ts",
+    "src/utils/errors.ts"
+  ],
+  "evidenceLimit": "Synthetic fake-fetch characterization of TraderApiClient and HttpClient only. It records method, encoded path, exact request body, selected typed error metadata, and request counts. It does not establish broker acceptance, WAL behavior, writer fencing, final validation, or reconciliation. The external-origin Location vector is BUG_IN_LEGACY: current Node extracts the order ID from pathname without validating URL origin; it proves SDK behavior only.",
+  "request": {
+    "accountHash": "synthetic/hash+",
+    "orderId": "4242",
+    "order": {
+      "orderStrategyType": "SINGLE",
+      "session": "NORMAL",
+      "duration": "DAY",
+      "orderType": "LIMIT",
+      "price": 0.93,
+      "quantity": 2,
+      "orderLegCollection": [
+        {
+          "instruction": "BUY_TO_OPEN",
+          "quantity": 1,
+          "instrument": {
+            "symbol": "SYNTHETIC-LONG-PUT",
+            "assetType": "OPTION"
+          }
+        },
+        {
+          "instruction": "SELL_TO_OPEN",
+          "quantity": 1,
+          "instrument": {
+            "symbol": "SYNTHETIC-SHORT-PUT",
+            "assetType": "OPTION"
+          }
+        }
+      ]
+    }
+  },
+  "cases": [
+    {
+      "id": "place-400-preserves-explicit-api-error-body",
+      "operation": "place",
+      "transport": {
+        "status": 400,
+        "body": {
+          "error": "synthetic invalid order",
+          "code": "FIXTURE_400"
+        }
+      },
+      "unsafeRetryOverride": true,
+      "expected": {
+        "requests": [
+          {
+            "attempt": 1,
+            "method": "POST",
+            "pathname": "/trader/v1/accounts/synthetic%2Fhash%2B/orders",
+            "bodyJson": "{\"orderStrategyType\":\"SINGLE\",\"session\":\"NORMAL\",\"duration\":\"DAY\",\"orderType\":\"LIMIT\",\"price\":0.93,\"quantity\":2,\"orderLegCollection\":[{\"instruction\":\"BUY_TO_OPEN\",\"quantity\":1,\"instrument\":{\"symbol\":\"SYNTHETIC-LONG-PUT\",\"assetType\":\"OPTION\"}},{\"instruction\":\"SELL_TO_OPEN\",\"quantity\":1,\"instrument\":{\"symbol\":\"SYNTHETIC-SHORT-PUT\",\"assetType\":\"OPTION\"}}]}"
+          }
+        ],
+        "attempts": 1,
+        "retryEvents": 0,
+        "previewRequests": 0,
+        "inputBodyUnchanged": true,
+        "outcome": {
+          "kind": "api-error",
+          "name": "SchwabApiError",
+          "status": 400,
+          "method": "POST",
+          "attempt": 1,
+          "isRateLimited": false,
+          "body": {
+            "error": "synthetic invalid order",
+            "code": "FIXTURE_400"
+          },
+          "retryAfterMs": null,
+          "rateLimit": {
+            "headers": {},
+            "limit": null,
+            "remaining": null,
+            "reset": null,
+            "retryAfterMs": null
+          }
+        }
+      }
+    },
+    {
+      "id": "replace-429-preserves-rate-limit-metadata-without-retry",
+      "operation": "replace",
+      "transport": {
+        "status": 429,
+        "body": {
+          "error": "synthetic rate limit",
+          "code": "FIXTURE_429"
+        },
+        "headers": {
+          "Retry-After": "17",
+          "RateLimit-Limit": "120",
+          "RateLimit-Remaining": "0",
+          "RateLimit-Reset": "1800000000"
+        }
+      },
+      "unsafeRetryOverride": true,
+      "expected": {
+        "requests": [
+          {
+            "attempt": 1,
+            "method": "PUT",
+            "pathname": "/trader/v1/accounts/synthetic%2Fhash%2B/orders/4242",
+            "bodyJson": "{\"orderStrategyType\":\"SINGLE\",\"session\":\"NORMAL\",\"duration\":\"DAY\",\"orderType\":\"LIMIT\",\"price\":0.93,\"quantity\":2,\"orderLegCollection\":[{\"instruction\":\"BUY_TO_OPEN\",\"quantity\":1,\"instrument\":{\"symbol\":\"SYNTHETIC-LONG-PUT\",\"assetType\":\"OPTION\"}},{\"instruction\":\"SELL_TO_OPEN\",\"quantity\":1,\"instrument\":{\"symbol\":\"SYNTHETIC-SHORT-PUT\",\"assetType\":\"OPTION\"}}]}"
+          }
+        ],
+        "attempts": 1,
+        "retryEvents": 0,
+        "previewRequests": 0,
+        "inputBodyUnchanged": true,
+        "outcome": {
+          "kind": "api-error",
+          "name": "SchwabApiError",
+          "status": 429,
+          "method": "PUT",
+          "attempt": 1,
+          "isRateLimited": true,
+          "body": {
+            "error": "synthetic rate limit",
+            "code": "FIXTURE_429"
+          },
+          "retryAfterMs": 17000,
+          "rateLimit": {
+            "headers": {
+              "ratelimit-limit": "120",
+              "ratelimit-remaining": "0",
+              "ratelimit-reset": "1800000000",
+              "retry-after": "17"
+            },
+            "limit": 120,
+            "remaining": 0,
+            "reset": 1800000000,
+            "retryAfterMs": 17000
+          }
+        }
+      }
+    },
+    {
+      "id": "replace-success-with-unusable-location-is-unknown",
+      "operation": "replace",
+      "transport": {
+        "status": 200,
+        "location": "/trader/v1/accounts/synthetic%2Fhash%2B/order/4242"
+      },
+      "unsafeRetryOverride": false,
+      "expected": {
+        "requests": [
+          {
+            "attempt": 1,
+            "method": "PUT",
+            "pathname": "/trader/v1/accounts/synthetic%2Fhash%2B/orders/4242",
+            "bodyJson": "{\"orderStrategyType\":\"SINGLE\",\"session\":\"NORMAL\",\"duration\":\"DAY\",\"orderType\":\"LIMIT\",\"price\":0.93,\"quantity\":2,\"orderLegCollection\":[{\"instruction\":\"BUY_TO_OPEN\",\"quantity\":1,\"instrument\":{\"symbol\":\"SYNTHETIC-LONG-PUT\",\"assetType\":\"OPTION\"}},{\"instruction\":\"SELL_TO_OPEN\",\"quantity\":1,\"instrument\":{\"symbol\":\"SYNTHETIC-SHORT-PUT\",\"assetType\":\"OPTION\"}}]}"
+          }
+        ],
+        "attempts": 1,
+        "retryEvents": 0,
+        "previewRequests": 0,
+        "inputBodyUnchanged": true,
+        "outcome": {
+          "kind": "unknown",
+          "errorCode": "SCHWAB_UNKNOWN_OUTCOME",
+          "operation": "REPLACE_ORDER",
+          "method": "PUT",
+          "path": "/accounts/synthetic%2Fhash%2B/orders/4242",
+          "status": 200,
+          "location": "/trader/v1/accounts/synthetic%2Fhash%2B/order/4242"
+        }
+      }
+    },
+    {
+      "id": "cancel-409-preserves-explicit-api-error-body",
+      "operation": "cancel",
+      "transport": {
+        "status": 409,
+        "body": {
+          "error": "synthetic cancel conflict",
+          "code": "FIXTURE_409"
+        }
+      },
+      "unsafeRetryOverride": true,
+      "expected": {
+        "requests": [
+          {
+            "attempt": 1,
+            "method": "DELETE",
+            "pathname": "/trader/v1/accounts/synthetic%2Fhash%2B/orders/4242",
+            "bodyJson": null
+          }
+        ],
+        "attempts": 1,
+        "retryEvents": 0,
+        "previewRequests": 0,
+        "outcome": {
+          "kind": "api-error",
+          "name": "SchwabApiError",
+          "status": 409,
+          "method": "DELETE",
+          "attempt": 1,
+          "isRateLimited": false,
+          "body": {
+            "error": "synthetic cancel conflict",
+            "code": "FIXTURE_409"
+          },
+          "retryAfterMs": null,
+          "rateLimit": {
+            "headers": {},
+            "limit": null,
+            "remaining": null,
+            "reset": null,
+            "retryAfterMs": null
+          }
+        }
+      }
+    },
+    {
+      "id": "replace-absolute-external-location-is-accepted",
+      "operation": "replace",
+      "transport": {
+        "status": 200,
+        "location": "https://outside.example.invalid/trader/v1/accounts/synthetic%2Fhash%2B/orders/4242"
+      },
+      "unsafeRetryOverride": false,
+      "classification": "BUG_IN_LEGACY",
+      "expected": {
+        "requests": [
+          {
+            "attempt": 1,
+            "method": "PUT",
+            "pathname": "/trader/v1/accounts/synthetic%2Fhash%2B/orders/4242",
+            "bodyJson": "{\"orderStrategyType\":\"SINGLE\",\"session\":\"NORMAL\",\"duration\":\"DAY\",\"orderType\":\"LIMIT\",\"price\":0.93,\"quantity\":2,\"orderLegCollection\":[{\"instruction\":\"BUY_TO_OPEN\",\"quantity\":1,\"instrument\":{\"symbol\":\"SYNTHETIC-LONG-PUT\",\"assetType\":\"OPTION\"}},{\"instruction\":\"SELL_TO_OPEN\",\"quantity\":1,\"instrument\":{\"symbol\":\"SYNTHETIC-SHORT-PUT\",\"assetType\":\"OPTION\"}}]}"
+          }
+        ],
+        "attempts": 1,
+        "retryEvents": 0,
+        "previewRequests": 0,
+        "inputBodyUnchanged": true,
+        "outcome": {
+          "kind": "returned",
+          "status": 200,
+          "location": "https://outside.example.invalid/trader/v1/accounts/synthetic%2Fhash%2B/orders/4242",
+          "orderId": "4242"
+        }
+      }
+    }
+  ]
+}
