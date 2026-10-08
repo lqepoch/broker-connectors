@@ -150,7 +150,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "a6a4679f6303a53bc26ef3feb3405ff6af8d52924326290b632e032319dae611",
+      "sha256": "175500cc4446c0d5d2cee001d75cdce3b97e97c1d658887a6d9d44ebce905a67",
       "target_path": "crates/broker-ports/src/raw_capture.rs"
     },
     {

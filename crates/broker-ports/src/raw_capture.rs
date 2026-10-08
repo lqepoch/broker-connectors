@@ -732,6 +732,7 @@ fn numeric_encoding_tag(encoding: Option<NumericEncodingV1>) -> u8 {
         Some(NumericEncodingV1::BinaryFloat32ShortestDecimal) => 4,
         Some(NumericEncodingV1::BinaryFloat64ShortestDecimal) => 5,
         Some(NumericEncodingV1::RawMessagePackBytes) => 6,
+        Some(NumericEncodingV1::RawJsonBytes) => 7,
     }
 }
 
@@ -828,6 +829,39 @@ mod tests {
                 )
                 .expect("valid changed summary")
             )
+        );
+    }
+
+    #[test]
+    fn raw_json_and_messagepack_finalizations_have_distinct_stable_tags() {
+        assert_eq!(numeric_encoding_tag(None), 0);
+        assert_eq!(
+            numeric_encoding_tag(Some(NumericEncodingV1::Unspecified)),
+            1
+        );
+        assert_eq!(
+            numeric_encoding_tag(Some(NumericEncodingV1::DecimalToken)),
+            2
+        );
+        assert_eq!(
+            numeric_encoding_tag(Some(NumericEncodingV1::IntegerToken)),
+            3
+        );
+        assert_eq!(
+            numeric_encoding_tag(Some(NumericEncodingV1::BinaryFloat32ShortestDecimal)),
+            4
+        );
+        assert_eq!(
+            numeric_encoding_tag(Some(NumericEncodingV1::BinaryFloat64ShortestDecimal)),
+            5
+        );
+        assert_eq!(
+            numeric_encoding_tag(Some(NumericEncodingV1::RawMessagePackBytes)),
+            6
+        );
+        assert_eq!(
+            numeric_encoding_tag(Some(NumericEncodingV1::RawJsonBytes)),
+            7
         );
     }
 
