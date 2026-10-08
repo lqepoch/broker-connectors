@@ -51,6 +51,7 @@ dependencies = [
  "alpaca-rest-http",
  "chrono",
  "market-contracts",
+ "serde_json",
  "tokio",
  "zeroize",
 ]

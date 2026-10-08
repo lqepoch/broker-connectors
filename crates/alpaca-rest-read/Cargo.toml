@@ -15,5 +15,8 @@ market-contracts.workspace = true
 tokio.workspace = true
 zeroize.workspace = true
 
+[dev-dependencies]
+serde_json = { version = "=1.0.151", features = ["arbitrary_precision"] }
+
 [lints]
 workspace = true

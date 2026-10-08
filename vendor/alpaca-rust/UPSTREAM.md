@@ -43,8 +43,12 @@ upstream files. Its hash and the source/adapted file hashes are in
 - Limit response bodies to 8 MiB using a declared-length precheck and an
   incremental chunk counter. Oversized data fails before full body buffering.
 - Add a finite total retry-wait budget to the HTTP retry policy.
+- Parse SDK decimal wire values with exact decimal parsing; reject excess scale,
+  underflow, or coefficient overflow instead of silently rounding.
+- Box diagnostic metadata inside transport errors so rich request/response
+  context does not inflate every public `Result` error value.
 - Add synthetic unit coverage for credential redaction, origin rejection,
-  response-size limits, and retry budgets.
+  response-size limits, retry budgets, and exact numeric/string JSON decimals.
 
 The root `Cargo.lock` is the canonical workspace/runtime dependency lock. The
 nested `vendor/alpaca-rust/Cargo.lock` exists only to make the standalone

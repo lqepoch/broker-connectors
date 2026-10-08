@@ -20,8 +20,21 @@ where
         StringOrNumber::Number(value) => value.to_string(),
     };
 
-    Decimal::from_str(&raw)
+    parse_decimal_exact(&raw)
         .map_err(|error| E::custom(format!("invalid decimal value `{raw}`: {error}")))
+}
+
+fn parse_decimal_exact(value: &str) -> Result<Decimal, rust_decimal::Error> {
+    match value.find(['e', 'E']) {
+        Some(exponent_index) => {
+            // `Decimal::from_scientific` parses its mantissa with `FromStr`, which may round
+            // excess precision. Validate the mantissa first so scientific notation can only
+            // proceed when the original digits fit exactly.
+            Decimal::from_str_exact(&value[..exponent_index])?;
+            Decimal::from_scientific(value)
+        }
+        None => Decimal::from_str_exact(value),
+    }
 }
 
 fn rounded(value: &Decimal, scale: u32) -> Decimal {
@@ -112,8 +125,8 @@ where
 
 pub fn parse_json_decimal(value: Option<&Value>) -> Option<Decimal> {
     value.and_then(|value| match value {
-        Value::String(raw) => Decimal::from_str(raw).ok(),
-        Value::Number(raw) => Decimal::from_str(&raw.to_string()).ok(),
+        Value::String(raw) => parse_decimal_exact(raw).ok(),
+        Value::Number(raw) => parse_decimal_exact(&raw.to_string()).ok(),
         _ => None,
     })
 }

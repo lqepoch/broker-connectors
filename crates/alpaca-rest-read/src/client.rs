@@ -620,6 +620,52 @@ mod tests {
     }
 
     #[test]
+    fn sdk_wire_decimal_numbers_and_strings_are_exact_or_rejected() {
+        use alpaca_data::options::Quote;
+
+        let exact_number: Quote = serde_json::from_str(r#"{"bp":0.1234567890123456789012345678}"#)
+            .expect("representable synthetic JSON number preserves all decimal digits");
+        assert_eq!(
+            exact_number.bp.expect("bid price is present").to_string(),
+            "0.1234567890123456789012345678"
+        );
+
+        let exact_string: Quote =
+            serde_json::from_str(r#"{"bp":"0.1234567890123456789012345678"}"#)
+                .expect("representable synthetic JSON string preserves all decimal digits");
+        assert_eq!(
+            exact_string.bp.expect("bid price is present").to_string(),
+            "0.1234567890123456789012345678"
+        );
+
+        for raw in [
+            r#"{"bp":0.12345678901234567890123456789}"#,
+            r#"{"bp":"0.12345678901234567890123456789"}"#,
+            r#"{"bp":1.2345e-28}"#,
+            r#"{"bp":"1.2345e-28"}"#,
+            r#"{"bp":79228162514264337593543950336}"#,
+            r#"{"bp":"79228162514264337593543950336"}"#,
+        ] {
+            assert!(
+                serde_json::from_str::<Quote>(raw).is_err(),
+                "inexact or out-of-range synthetic quote was accepted: {raw}"
+            );
+        }
+
+        for raw in [
+            r#"{"bp":1.234567890123456789012345678e-1}"#,
+            r#"{"bp":"1.234567890123456789012345678e-1"}"#,
+        ] {
+            let quote: Quote = serde_json::from_str(raw)
+                .expect("exact representable synthetic scientific token is accepted");
+            assert_eq!(
+                quote.bp.expect("bid price is present").to_string(),
+                "0.1234567890123456789012345678"
+            );
+        }
+    }
+
+    #[test]
     fn incomplete_or_invalid_sdk_values_fail_closed() {
         let no_timestamp = map_quote(
             RequestedOptionsFeed::Indicative,

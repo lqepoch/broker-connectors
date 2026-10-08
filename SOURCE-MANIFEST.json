@@ -10,6 +10,11 @@
   "new_project_code": [
     {
       "origin": "new project-owned code",
+      "sha256": "2a3594474afc172c58fc30cd7ca06e6f32e065f060313a5141c8ed6bb39f8d99",
+      "target_path": ".gitattributes"
+    },
+    {
+      "origin": "new project-owned code",
       "sha256": "fae4bed0eeceb4c112dc08042534a86ecba87593601ba1684f61c81d26502e64",
       "target_path": "AGENTS.md"
     },
@@ -20,7 +25,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "9a08cf6e38d99e386a750e4347f486d759509fffa8fee4c20ade75aefd6f25ed",
+      "sha256": "1e7d780a40ad58fa8d1104612d0e656b593df12fd4b37f7c65669a12570997d1",
       "target_path": "Cargo.lock"
     },
     {
@@ -45,22 +50,22 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "c40294214692eebf09329a55d4d8f381058bc25ecf9eeaffe481f44e1515ecd5",
+      "sha256": "ff2a8a3bc2816a8c0e83032df6f9671edfce76ee9f736e3d5623934e29759a77",
       "target_path": "SBOM.spdx.json"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "cb3a4457ad7094f03ad0645d78f6e6ede9784de661f42752d56335f99d280b6c",
+      "sha256": "487e6b013507372e15edd836b5d99f6432d91ee0be1d4d032eb0de37fb86f12a",
       "target_path": "crates/alpaca-rest-read/Cargo.toml"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "28faf78ddd1be24302390e13c9e2b57e3815f8415702f9bfbdc3038d1d79b9e5",
+      "sha256": "609a4465a81321f6616cbb2ef7f73aeb62c4c529991ba0f714d38f34a261e406",
       "target_path": "crates/alpaca-rest-read/README.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "ef190c25323c4a7705f4a4da62641a289eac2bc01053c71b00c002d35ab66e6e",
+      "sha256": "7b848cc709a0dd45ac17c7da8f8aec461fc9e9f1272232d847536a37c8cf46bb",
       "target_path": "crates/alpaca-rest-read/src/client.rs"
     },
     {
@@ -190,12 +195,12 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "87b0b4a9b29cda05514b30e03d40d438bafa8ab59cf0a8a47c666ecebd4d8d48",
+      "sha256": "3482bb728e57527535a58aa25550a0780eb8e57e4643cf1a531542cb92e78ebc",
       "target_path": "vendor/alpaca-rust/LOCAL-PATCHES.patch"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "f3e0789344428d3368fc7ddfd0c6b79bafae28f69b64d5259c54bfedb2bcc76f",
+      "sha256": "3a3f55a2b4c653fd085443d879b2820d06f2d9f91c53c49eca04057a176a374f",
       "target_path": "vendor/alpaca-rust/UPSTREAM.md"
     },
     {
@@ -434,7 +439,7 @@
         }
       ],
       "local_patch_path": "vendor/alpaca-rust/LOCAL-PATCHES.patch",
-      "local_patch_sha256": "87b0b4a9b29cda05514b30e03d40d438bafa8ab59cf0a8a47c666ecebd4d8d48",
+      "local_patch_sha256": "3482bb728e57527535a58aa25550a0780eb8e57e4643cf1a531542cb92e78ebc",
       "maintenance_status": "Community-made Rust SDK; Alpaca lists it as community-made and does not identify it as an Alpaca-maintained or supported SDK.",
       "package_edition": "2024",
       "package_msrv": "1.99.0",
@@ -517,7 +522,7 @@
           "target_path": "vendor/alpaca-rust/crates/alpaca-core/src/auth.rs"
         },
         {
-          "adapted_target_sha256": "b6c7f06f5b56167758b2f9281caff2e42fb5d87c493172fa86667832ed2bdbff",
+          "adapted_target_sha256": "ec18aeed9992b436bd2cd7b3105cb9ceb5d1b5ef0376fcb3aba73c4dd2a259d5",
           "source_file_sha256": "b6c7f06f5b56167758b2f9281caff2e42fb5d87c493172fa86667832ed2bdbff",
           "source_path": "crates/alpaca-core/src/decimal.rs",
           "target_path": "vendor/alpaca-rust/crates/alpaca-core/src/decimal.rs"
@@ -829,7 +834,7 @@
           "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/stocks/request.rs"
         },
         {
-          "adapted_target_sha256": "3f40179880f23e667345a8a6d28d8a94d64e461e28a4119e01629992b505ab23",
+          "adapted_target_sha256": "5073289afd57d26e9a05c6b3f1afcfea437e67d9a3a1d0639bcb0d56efe35e02",
           "source_file_sha256": "f98ce26385fec14f85030d53e29be3aefb0836a96ee62b541f75953c407e2a71",
           "source_path": "crates/alpaca-data/src/stocks/response.rs",
           "target_path": "vendor/alpaca-rust/crates/alpaca-data/src/stocks/response.rs"
@@ -859,13 +864,13 @@
           "target_path": "vendor/alpaca-rust/crates/alpaca-http/src/auth.rs"
         },
         {
-          "adapted_target_sha256": "a9bb54200b636f51f27cda8108c8664ba9fdd6aafe52abb9d3e9000ec0e1d13c",
+          "adapted_target_sha256": "8d04bb199a8c5752c2bcbc39d14a969caf5e32023f7c4a987566281b58744ce2",
           "source_file_sha256": "a0f5e0f5fda7db6aac82bd7cf05250982409e2b925ca539553e36c6b5c87dc37",
           "source_path": "crates/alpaca-http/src/client.rs",
           "target_path": "vendor/alpaca-rust/crates/alpaca-http/src/client.rs"
         },
         {
-          "adapted_target_sha256": "5608c804245dcc3eea05fa5ce865b7eff5a5b79217dc6164b009f9970e1f1bbb",
+          "adapted_target_sha256": "d0d8caf605275e89427d83e33ddfbfcc51dc9eb2354eb39699c6aa984b16c8e6",
           "source_file_sha256": "06005ea72939475bee52203d475f4e20a417df815720948f353ac9d920ddcd59",
           "source_path": "crates/alpaca-http/src/error.rs",
           "target_path": "vendor/alpaca-rust/crates/alpaca-http/src/error.rs"

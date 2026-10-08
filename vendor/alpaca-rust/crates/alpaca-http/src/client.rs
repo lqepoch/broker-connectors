@@ -74,7 +74,7 @@ impl HttpClient {
             let meta = ErrorMeta::from_response_meta(response.meta.clone(), response.body.clone());
             let error = Error::Deserialize {
                 message: error.to_string(),
-                meta: Some(meta.clone()),
+                meta: Some(Box::new(meta.clone())),
             };
             self.observer.on_error(&ErrorEvent { meta: Some(meta) });
             error
@@ -102,7 +102,7 @@ impl HttpClient {
             let meta = ErrorMeta::from_response_meta(response.meta.clone(), response.body.clone());
             let error = Error::Deserialize {
                 message: error.to_string(),
-                meta: Some(meta.clone()),
+                meta: Some(Box::new(meta.clone())),
             };
             self.observer.on_error(&ErrorEvent { meta: Some(meta) });
             error
@@ -134,7 +134,7 @@ impl HttpClient {
                     ErrorMeta::from_response_meta(response.meta.clone(), response.body.clone());
                 let error = Error::Deserialize {
                     message: error.to_string(),
-                    meta: Some(meta.clone()),
+                    meta: Some(Box::new(meta.clone())),
                 };
                 self.observer.on_error(&ErrorEvent { meta: Some(meta) });
                 error
@@ -186,7 +186,7 @@ impl HttpClient {
                     "expected an empty response body for HTTP {}",
                     expected_status.as_u16()
                 ),
-                meta: Some(meta.clone()),
+                meta: Some(Box::new(meta.clone())),
             };
             self.observer.on_error(&ErrorEvent {
                 meta: Some(meta.clone()),
@@ -210,7 +210,7 @@ impl HttpClient {
         }
 
         let meta = ErrorMeta::from_response_meta(response.meta, response.body);
-        let error = Error::HttpStatus(meta.clone());
+        let error = Error::HttpStatus(Box::new(meta.clone()));
         self.observer.on_error(&ErrorEvent { meta: Some(meta) });
         Err(error)
     }
@@ -280,7 +280,7 @@ impl HttpClient {
                 Ok(body) => body,
                 Err(ResponseBodyError::TooLarge) => {
                     let error_meta = ErrorMeta::from_response_meta(meta, String::new());
-                    let error = Error::ResponseBodyTooLarge(error_meta.clone());
+                    let error = Error::ResponseBodyTooLarge(Box::new(error_meta.clone()));
                     self.observer.on_error(&ErrorEvent {
                         meta: Some(error_meta),
                     });
@@ -288,7 +288,7 @@ impl HttpClient {
                 }
                 Err(ResponseBodyError::InvalidUtf8) => {
                     let error_meta = ErrorMeta::from_response_meta(meta, String::new());
-                    let error = Error::InvalidResponseEncoding(error_meta.clone());
+                    let error = Error::InvalidResponseEncoding(Box::new(error_meta.clone()));
                     self.observer.on_error(&ErrorEvent {
                         meta: Some(error_meta),
                     });
@@ -355,9 +355,9 @@ impl HttpClient {
 
             let error_meta = ErrorMeta::from_response_meta(meta, body);
             let error = if status == reqwest::StatusCode::TOO_MANY_REQUESTS {
-                Error::RateLimited(error_meta.clone())
+                Error::RateLimited(Box::new(error_meta.clone()))
             } else {
-                Error::HttpStatus(error_meta.clone())
+                Error::HttpStatus(Box::new(error_meta.clone()))
             };
             self.observer.on_error(&ErrorEvent {
                 meta: Some(error_meta),

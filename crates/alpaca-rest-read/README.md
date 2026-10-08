@@ -14,7 +14,9 @@ window defaults to 20 seconds, and retry waiting defaults to 500 ms with at
 most one retry. Hard limits are 20 seconds per request, 60 seconds per window,
 2 seconds of retry wait, and two in-flight requests per client. The patched
 HTTP transport rejects response bodies larger than 8 MiB, including chunked
-responses.
+responses. SDK JSON number and string decimals are parsed exactly; values that
+would require rounding, underflow, or exceed the decimal coefficient range are
+rejected before mapping.
 
 Credentials are supplied explicitly with `AlpacaRestCredentials`; this crate
 does not read environment variables or load dotenv files. Long-lived owned
