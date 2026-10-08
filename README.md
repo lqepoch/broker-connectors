@@ -17,11 +17,13 @@ Capture excludes outbound authentication and subscription frames. A frame is
 limited to 1 MiB; outstanding frame leases are limited to 16 MiB and 1,024
 records process-wide. Exceeding a bound terminates that generation with a fixed
 failure. Unknown/provider-error frames that reach the lane retain diagnostic raw
-bytes and cannot qualify a complete event archive. A frame that fails decoding
-currently produces fixed diagnostics but is not preserved as raw bytes. This
-workspace transports accepted raw frames in memory only; it has no awaited
-durable capture sink. Durable Parquet storage and research qualification belong
-to the separately versioned market-data pipeline, not this adapter.
+bytes and cannot qualify a complete event archive. In active market-data and
+subscription-handshake capture modes, a frame that fails decoding is also
+published as a `DecodeFailure` raw record. Capture currently decodes and
+analyzes the frame before publishing that in-memory record; it has no awaited
+durable capture sink or persistence acknowledgement. Durable Parquet storage and
+research qualification belong to the separately versioned market-data
+pipeline, not this adapter.
 
 The initial implementation reuses the audited source `schwab_auto_bot@c907d18bc31790ede4cf36a4312a6813467506f0` for `alpaca-stream` protocol/session mechanics, with source-level provenance in `SOURCE-MANIFEST.json`. New public package files use the project-authorized `MIT OR Apache-2.0` license; upstream dependency license terms remain separate and are recorded in the manifest/SBOM.
 
