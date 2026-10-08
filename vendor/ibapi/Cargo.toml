@@ -1,0 +1,34 @@
+[workspace]
+
+[package]
+name = "ibapi"
+version = "5.0.0"
+edition = "2021"
+rust-version = "1.88"
+authors = ["Wil Boayue <wil@wsblabs.com>"]
+description = "An unofficial Rust client for the Interactive Brokers TWS API. Async (Tokio) and blocking clients for TWS and IB Gateway."
+repository = "https://github.com/wboayue/rust-ibapi/"
+license = "MIT"
+
+[features]
+default = ["async"]
+async = ["dep:tokio", "dep:tokio-stream", "dep:futures", "dep:async-trait"]
+sync = ["dep:crossbeam"]
+utoipa-6 = ["utoipa", "dep:utoipa6"]
+utoipa = []
+
+[dependencies]
+byteorder = "1.5.0"
+crossbeam = { version = "0.8.4", optional = true }
+log = "0.4.22"
+thiserror = "2.0"
+time = { version = "0.3.47", features = ["formatting", "macros", "local-offset", "parsing", "serde"] }
+time-tz = "2.0.0"
+serde = { version = "1.0.214", features = ["derive"] }
+serde_json = "1.0"
+prost = "0.14"
+utoipa6 = { package = "utoipa", version = "6", optional = true, features = ["time"] }
+tokio = { version = "1.41", features = ["net", "rt-multi-thread", "sync", "time", "macros", "io-util"], optional = true }
+tokio-stream = { version = "0.1", default-features = false, features = ["sync"], optional = true }
+futures = { version = "0.3.31", optional = true }
+async-trait = { version = "0.1.83", optional = true }
