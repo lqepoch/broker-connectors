@@ -1,3 +1,9 @@
+//! Offline checks for the public read-only Schwab SDK facade.
+//!
+//! # 简体中文
+//!
+//! Schwab 只读 SDK facade 的离线检查。
+
 #![forbid(unsafe_code)]
 
 use schwab_sdk::{

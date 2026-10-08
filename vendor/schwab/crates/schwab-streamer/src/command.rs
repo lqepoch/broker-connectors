@@ -17,6 +17,7 @@ impl ConnectionGeneration {
 
     /// Returns the numeric generation to attach to callbacks from this socket.
     /// 中文摘要：返回用于隔离不同 socket 生命周期的连接代次数值。
+    #[must_use]
     pub const fn value(self) -> u64 {
         self.0
     }
@@ -34,12 +35,14 @@ impl RequestId {
 
     /// Returns the numeric request identifier.
     /// 中文摘要：返回用于关联命令与确认的单调请求编号。
+    #[must_use]
     pub const fn value(self) -> u64 {
         self.0
     }
 
     /// Returns the decimal representation expected by a JSON wire adapter.
     /// 中文摘要：生成供 JSON wire adapter 使用的十进制文本。
+    #[must_use]
     pub fn as_wire_value(self) -> String {
         self.0.to_string()
     }
@@ -66,6 +69,7 @@ pub enum SubscriptionCommand {
 impl SubscriptionCommand {
     /// Returns the exact Streamer command name.
     /// 中文摘要：返回 SUBS、ADD、UNSUBS 或 VIEW 的准确 wire 命令名。
+    #[must_use]
     pub const fn name(self) -> &'static str {
         match self {
             Self::Subs => "SUBS",
@@ -125,36 +129,42 @@ impl StreamerCommand {
 
     /// Returns the socket generation that must match the ACK.
     /// 中文摘要：返回该命令或 ACK 捕获的 socket 代次；旧代次不能推进当前状态。
+    #[must_use]
     pub const fn connection_generation(&self) -> ConnectionGeneration {
         self.connection_generation
     }
 
     /// Returns the request correlation ID.
     /// 中文摘要：返回用于将命令与 ACK 匹配的请求编号。
+    #[must_use]
     pub const fn request_id(&self) -> RequestId {
         self.request_id
     }
 
     /// Returns the target service.
     /// 中文摘要：返回此命令或 ACK 指定的独立跟踪服务。
+    #[must_use]
     pub const fn service(&self) -> StreamerService {
         self.service
     }
 
     /// Returns the planned mutation.
     /// 中文摘要：返回此命令或 ACK 表示的订阅操作。
+    #[must_use]
     pub const fn command(&self) -> SubscriptionCommand {
         self.command
     }
 
     /// Returns the desired-state revision captured when this command was planned.
     /// 中文摘要：返回规划该命令时捕获的期望状态修订号。
+    #[must_use]
     pub const fn desired_revision(&self) -> u64 {
         self.desired_revision
     }
 
     /// Returns the immutable field snapshot carried by this command.
     /// 中文摘要：返回该命令按固定服务 manifest 编码的字段列表。
+    #[must_use]
     pub const fn fields(&self) -> &'static str {
         self.fields
     }
@@ -167,6 +177,7 @@ impl StreamerCommand {
 
     /// Returns the comma-separated key payload for a wire adapter.
     /// 中文摘要：将命令中的有界 key 编码为逗号分隔的 wire 值。
+    #[must_use]
     pub fn keys_csv(&self) -> String {
         self.keys.to_csv()
     }
@@ -190,6 +201,7 @@ pub struct CommandAcknowledgement {
 impl CommandAcknowledgement {
     /// Creates an ACK value from already parsed wire fields.
     /// 中文摘要：校验输入并构造该类型的值；具体格式、大小上限和脱敏边界见类型说明。
+    #[must_use]
     pub const fn new(
         connection_generation: ConnectionGeneration,
         request_id: RequestId,
@@ -208,30 +220,35 @@ impl CommandAcknowledgement {
 
     /// Returns the callback's socket generation.
     /// 中文摘要：返回该命令或 ACK 捕获的 socket 代次；旧代次不能推进当前状态。
+    #[must_use]
     pub const fn connection_generation(self) -> ConnectionGeneration {
         self.connection_generation
     }
 
     /// Returns the request correlation ID.
     /// 中文摘要：返回用于将命令与 ACK 匹配的请求编号。
+    #[must_use]
     pub const fn request_id(self) -> RequestId {
         self.request_id
     }
 
     /// Returns the service named by the response.
     /// 中文摘要：返回此命令或 ACK 指定的独立跟踪服务。
+    #[must_use]
     pub const fn service(self) -> StreamerService {
         self.service
     }
 
     /// Returns the command named by the response.
     /// 中文摘要：返回此命令或 ACK 表示的订阅操作。
+    #[must_use]
     pub const fn command(self) -> SubscriptionCommand {
         self.command
     }
 
     /// Returns whether the wire adapter classified the response as accepted.
     /// 中文摘要：返回 wire 适配器对 ACK 是否接受的分类；状态管理器仍须校验关联信息后才应用。
+    #[must_use]
     pub const fn accepted(self) -> bool {
         self.accepted
     }
@@ -330,12 +347,14 @@ impl ReplayPlan {
     /// Returns the unique request identifier reserved for this socket's
     /// correlated `ADMIN/LOGIN` handshake.
     /// 中文摘要：返回为该连接的 `ADMIN/LOGIN` 握手预留的请求编号。
+    #[must_use]
     pub const fn login_request_id(&self) -> RequestId {
         self.login_request_id
     }
 
     /// Returns the replay command for a service, if that service has desired keys.
     /// 中文摘要：读取
+    #[must_use]
     pub fn get(&self, service: StreamerService) -> Option<&StreamerCommand> {
         self.commands[service.index()].as_ref()
     }

@@ -14,7 +14,7 @@ domain.workspace = true
 market-contracts.workspace = true
 schwab-sdk = { path = "../../vendor/schwab/crates/schwab-sdk" }
 schwab-streamer = { path = "../../vendor/schwab/crates/schwab-streamer" }
-url = "=2.5.8"
+url.workspace = true
 zeroize.workspace = true
 
 [dev-dependencies]

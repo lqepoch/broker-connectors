@@ -73,9 +73,9 @@ async fn next_json(socket: &mut TestWebSocket) -> Value {
                     .await
                     .expect("test peer returns a pong");
             }
-            Ok(Message::Pong(_)) | Ok(Message::Frame(_)) => {}
+            Ok(Message::Pong(_) | Message::Frame(_)) => {}
             Ok(Message::Close(_)) => panic!("socket closed before expected JSON frame"),
-            Err(_) => panic!("loopback websocket read failed"),
+            Err(error) => panic!("loopback websocket read failed: {error}"),
         }
     }
 }
@@ -181,30 +181,33 @@ async fn next_activity(receiver: &mut CriticalEventReceiver) {
 }
 
 #[tokio::test]
+// One fake loopback server exercises login, service-local rejection, and
+// reconnect sequencing without contacting an external provider.
+#[allow(clippy::too_many_lines)]
 async fn one_socket_factory_login_and_runtime_keep_service_failure_local() {
     let (listener, endpoint) = listen().await;
     let (force_reconnect_sender, force_reconnect_receiver) = oneshot::channel();
     let (shutdown_server_sender, shutdown_server_receiver) = oneshot::channel();
     let server = tokio::spawn(async move {
-        let mut first = accept(&listener).await;
-        let login = next_request(&mut first).await;
+        let mut initial_peer = accept(&listener).await;
+        let login = next_request(&mut initial_peer).await;
         assert_login(&login, "1");
 
         let ping = b"synthetic-ping".to_vec();
-        first
+        initial_peer
             .send(Message::Ping(ping.clone().into()))
             .await
             .expect("test peer sends WebSocket ping");
-        let pong = timeout(Duration::from_secs(1), first.next())
+        let returned_frame = timeout(Duration::from_secs(1), initial_peer.next())
             .await
             .expect("client returns a bounded PONG")
             .expect("client keeps socket open")
             .expect("client PONG frame is valid");
-        assert!(matches!(pong, Message::Pong(payload) if payload.as_ref() == ping));
+        assert!(matches!(returned_frame, Message::Pong(payload) if payload.as_ref() == ping));
 
         // A stale/unrelated ADMIN ACK cannot authenticate this socket.
         send_json(
-            &mut first,
+            &mut initial_peer,
             json!({"response": [{
                 "service": "ADMIN",
                 "requestid": "999",
@@ -215,33 +218,33 @@ async fn one_socket_factory_login_and_runtime_keep_service_failure_local() {
         )
         .await;
         sleep(Duration::from_millis(30)).await;
-        send_ack(&mut first, &login, 0).await;
+        send_ack(&mut initial_peer, &login, 0).await;
 
-        let first_requests = [
-            next_request(&mut first).await,
-            next_request(&mut first).await,
-            next_request(&mut first).await,
+        let queued_requests = [
+            next_request(&mut initial_peer).await,
+            next_request(&mut initial_peer).await,
+            next_request(&mut initial_peer).await,
         ];
-        assert_eq!(first_requests[0]["service"], "ACCT_ACTIVITY");
-        assert_eq!(first_requests[0]["requestid"], "2");
-        assert_eq!(first_requests[0]["command"], "SUBS");
-        assert_eq!(first_requests[0]["parameters"]["keys"], "Account Activity");
-        assert_eq!(first_requests[0]["parameters"]["fields"], "0,1,2,3");
-        assert_eq!(first_requests[1]["service"], "LEVELONE_EQUITIES");
-        assert_eq!(first_requests[1]["requestid"], "3");
-        assert_eq!(first_requests[1]["parameters"]["keys"], "SYNTH-EQ");
-        assert_eq!(first_requests[1]["parameters"]["fields"], "0,45,46,51,52");
-        assert_eq!(first_requests[2]["service"], "LEVELONE_OPTIONS");
-        assert_eq!(first_requests[2]["requestid"], "4");
-        assert_eq!(first_requests[2]["parameters"]["keys"], "SYNTH-OPTION");
-        assert_eq!(first_requests[2]["parameters"]["fields"], "0,2,3,38");
+        assert_eq!(queued_requests[0]["service"], "ACCT_ACTIVITY");
+        assert_eq!(queued_requests[0]["requestid"], "2");
+        assert_eq!(queued_requests[0]["command"], "SUBS");
+        assert_eq!(queued_requests[0]["parameters"]["keys"], "Account Activity");
+        assert_eq!(queued_requests[0]["parameters"]["fields"], "0,1,2,3");
+        assert_eq!(queued_requests[1]["service"], "LEVELONE_EQUITIES");
+        assert_eq!(queued_requests[1]["requestid"], "3");
+        assert_eq!(queued_requests[1]["parameters"]["keys"], "SYNTH-EQ");
+        assert_eq!(queued_requests[1]["parameters"]["fields"], "0,45,46,51,52");
+        assert_eq!(queued_requests[2]["service"], "LEVELONE_OPTIONS");
+        assert_eq!(queued_requests[2]["requestid"], "4");
+        assert_eq!(queued_requests[2]["parameters"]["keys"], "SYNTH-OPTION");
+        assert_eq!(queued_requests[2]["parameters"]["fields"], "0,2,3,38");
 
         // A failed OPTIONS service does not tear down the shared socket.
-        send_ack(&mut first, &first_requests[2], 90).await;
-        send_ack(&mut first, &first_requests[0], 26).await;
-        send_ack(&mut first, &first_requests[1], 26).await;
+        send_ack(&mut initial_peer, &queued_requests[2], 90).await;
+        send_ack(&mut initial_peer, &queued_requests[0], 26).await;
+        send_ack(&mut initial_peer, &queued_requests[1], 26).await;
         send_json(
-            &mut first,
+            &mut initial_peer,
             json!({"data": [{
                 "service": "ACCT_ACTIVITY",
                 "timestamp": 2,
@@ -251,11 +254,11 @@ async fn one_socket_factory_login_and_runtime_keep_service_failure_local() {
         )
         .await;
         let _ = force_reconnect_receiver.await;
-        first
+        initial_peer
             .send(Message::Close(None))
             .await
             .expect("test peer closes first socket");
-        drop(first);
+        drop(initial_peer);
 
         let mut second = accept(&listener).await;
         let login = next_request(&mut second).await;

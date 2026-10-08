@@ -311,6 +311,146 @@ def check_ibkr_adapter_boundary() -> None:
         raise ValueError("IBKR lookup cancellation must poison and release its SDK owner")
 
 
+def check_shared_contract_revision(
+    document: dict,
+    locked_packages: dict[tuple[str, str], dict],
+    sbom_packages: dict[tuple[str, str], dict],
+) -> None:
+    entries = document.get("shared_contract_dependencies", [])
+    packages = {entry["package"]: entry for entry in entries}
+    expected_packages = {"domain", "market-contracts", "exact-decimal"}
+    if set(packages) != expected_packages:
+        raise ValueError("shared trading-core package inventory changed")
+    commits = {entry["commit"] for entry in entries}
+    trees = {entry["git_tree"] for entry in entries}
+    if len(commits) != 1 or len(trees) != 1:
+        raise ValueError("shared trading-core packages do not use one immutable source revision")
+
+    commit = next(iter(commits))
+    require_git_sha(commit, "shared trading-core commit")
+    require_git_sha(next(iter(trees)), "shared trading-core tree")
+    source = "git+https://github.com/lqepoch/trading-core.git" f"?rev={commit}#{commit}"
+    workspace = tomllib.loads(checked_path("Cargo.toml").read_text(encoding="utf-8"))[
+        "workspace"
+    ]["dependencies"]
+    for package_name in ("domain", "market-contracts"):
+        dependency = workspace.get(package_name)
+        if not isinstance(dependency, dict) or dependency.get("rev") != commit:
+            raise ValueError(f"workspace {package_name} pin differs from the shared core revision")
+
+    for package_name, entry in packages.items():
+        package_version = entry["package_version"]
+        locked = locked_packages.get((package_name, package_version))
+        sbom = sbom_packages.get((package_name, package_version))
+        if locked is None or locked.get("source") != source:
+            raise ValueError(f"Cargo.lock core source differs from the shared revision: {package_name}")
+        if sbom is None or source not in sbom.get("sourceInfo", ""):
+            raise ValueError(f"SPDX core source differs from the shared revision: {package_name}")
+
+
+def check_schwab_extraction(document: dict, project_paths: set[str]) -> None:
+    target_root = "vendor/schwab"
+    manifest_path = f"{target_root}/SOURCE-MANIFEST.json"
+    extraction = json.loads(checked_path(manifest_path).read_text(encoding="utf-8"))
+    if (
+        extraction.get("source_repository") != document.get("source_repository")
+        or extraction.get("source_commit") != document.get("source_commit")
+        or extraction.get("target_root") != target_root
+    ):
+        raise ValueError("Schwab extraction pin does not match the root source manifest")
+    require_git_sha(extraction.get("source_commit"), "Schwab source commit")
+    require_git_sha(extraction.get("source_tree"), "Schwab source tree")
+    if extraction.get("file_count") != len(extraction.get("files", [])):
+        raise ValueError("Schwab extraction file count does not match its file list")
+    if not {manifest_path, f"{target_root}/UPSTREAM.md"}.issubset(project_paths):
+        raise ValueError("Schwab provenance documentation is missing from the root source manifest")
+    if not extraction.get("source_license_status") or "authorization" not in extraction[
+        "source_license_status"
+    ].lower():
+        raise ValueError("Schwab selected-path owner authorization is not documented")
+
+    root_sources = {entry["target_path"]: entry for entry in document["source_files"]}
+    selected_targets: set[str] = set()
+    for entry in extraction["files"]:
+        target_name = entry["target_path"]
+        if not target_name.startswith(f"{target_root}/") or target_name in selected_targets:
+            raise ValueError(f"invalid or duplicate Schwab source target: {target_name}")
+        selected_targets.add(target_name)
+        require_hash(entry.get("source_sha256"), f"Schwab source {entry['source_path']}")
+        require_git_sha(entry.get("source_git_blob"), f"Schwab Git blob {entry['source_path']}")
+        target = checked_path(target_name)
+        if not target.is_file() or sha256(target) != entry.get("target_sha256"):
+            raise ValueError(f"Schwab target hash mismatch: {target_name}")
+        root_entry = root_sources.get(target_name)
+        if (
+            root_entry is None
+            or root_entry.get("source_path") != entry["source_path"]
+            or root_entry.get("source_blob_sha256") != entry["source_sha256"]
+            or root_entry.get("source_git_blob") != entry["source_git_blob"]
+            or root_entry.get("adapted_target_sha256") != entry["target_sha256"]
+        ):
+            raise ValueError(f"Schwab root and selected-source manifests disagree: {target_name}")
+
+    root_selected_targets = {
+        target for target in root_sources if target.startswith(f"{target_root}/")
+    }
+    if root_selected_targets != selected_targets:
+        raise ValueError("root manifest Schwab source set differs from the selected extraction")
+
+    expected_vendor_files = selected_targets | {
+        manifest_path,
+        f"{target_root}/UPSTREAM.md",
+    }
+    vendor_dir = checked_path(target_root)
+    actual_vendor_files = set()
+    for candidate in vendor_dir.rglob("*"):
+        if candidate.is_symlink():
+            raise ValueError(f"Schwab vendor tree contains a symlink: {candidate.relative_to(ROOT)}")
+        if candidate.is_file():
+            actual_vendor_files.add(candidate.relative_to(ROOT).as_posix())
+    if actual_vendor_files != expected_vendor_files:
+        raise ValueError(
+            "Schwab vendor inventory mismatch: "
+            f"unrecorded={sorted(actual_vendor_files - expected_vendor_files)[:5]} "
+            f"missing={sorted(expected_vendor_files - actual_vendor_files)[:5]}"
+        )
+
+    package_records = extraction.get("packages", [])
+    if {package["name"] for package in package_records} != {
+        "schwab-rest", "schwab-sdk", "schwab-streamer"
+    }:
+        raise ValueError("Schwab extraction package inventory changed")
+    workspace_package = tomllib.loads(checked_path("Cargo.toml").read_text(encoding="utf-8"))[
+        "workspace"
+    ]["package"]
+    lock = tomllib.loads(checked_path("Cargo.lock").read_text(encoding="utf-8"))
+    locked = {(package["name"], package["version"]): package for package in lock["package"]}
+    sbom = json.loads(checked_path("SBOM.spdx.json").read_text(encoding="utf-8"))
+    sbom_packages = {
+        (package["name"], package["versionInfo"]): package for package in sbom["packages"]
+    }
+    for package in package_records:
+        manifest = tomllib.loads(checked_path(package["target_manifest"]).read_text(encoding="utf-8"))
+        metadata = manifest.get("package", {})
+        key = (package["name"], package["version"])
+        sbom_item = sbom_packages.get(key)
+        expected_origin = f"{extraction['source_repository']}@{extraction['source_commit']}"
+        if (
+            metadata.get("name") != package["name"]
+            or metadata.get("version") != {"workspace": True}
+            or metadata.get("license") != {"workspace": True}
+            or workspace_package.get("version") != package["version"]
+            or workspace_package.get("license") != package["license"]
+            or package["license"] != "MIT OR Apache-2.0"
+            or key not in locked
+            or sbom_item is None
+            or sbom_item.get("licenseDeclared") != package["license"]
+            or expected_origin not in sbom_item.get("sourceInfo", "")
+            or manifest_path not in sbom_item.get("sourceInfo", "")
+        ):
+            raise ValueError(f"Schwab source package metadata mismatch: {key}")
+
+
 def main() -> None:
     document = json.loads(MANIFEST.read_text(encoding="utf-8"))
     for entry in document.get("source_files", []):
@@ -358,6 +498,7 @@ def main() -> None:
     sbom_packages = {
         (package["name"], package["versionInfo"]): package for package in sbom["packages"]
     }
+    check_shared_contract_revision(document, locked_packages, sbom_packages)
     for upstream in upstreams:
         for package in upstream["packages"]:
             key = (package["name"], package["version"])
@@ -387,13 +528,14 @@ def main() -> None:
     if re.search(r"\.\w*_all\s*\(", alpaca_source):
         raise ValueError("alpaca-rest-read must keep pagination finite")
     check_ibkr_adapter_boundary()
+    check_schwab_extraction(document, project_paths)
 
     summary = ", ".join(
         f"{upstream['source_repository']}@{upstream['source_commit']} "
         f"({len(upstream['source_files'])} source files, {len(upstream['packages'])} packages)"
         for upstream in upstreams
     )
-    print(f"vendor provenance passed: {summary}")
+    print(f"vendor and selected-source provenance passed: {summary}; Schwab selected files checked")
 
 
 if __name__ == "__main__":

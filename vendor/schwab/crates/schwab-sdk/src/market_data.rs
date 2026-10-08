@@ -31,12 +31,18 @@ where
 {
     /// Reads quotes for validated symbols and fields.
     /// 中文摘要：按已校验的查询参数读取市场报价。
+    ///
+    /// # Errors
+    /// Returns [`ReadApiError`] when request validation, admission, transport, or response projection fails.
     pub async fn quotes(&self, query: QuotesQuery) -> Result<TypedReadResponse, ReadApiError> {
         self.client.quotes(query).await
     }
 
     /// Reads one symbol's quote response.
     /// 中文摘要：按单个路径段读取交易代码报价。
+    ///
+    /// # Errors
+    /// Returns [`ReadApiError`] when request validation, admission, transport, or response projection fails.
     pub async fn quote(
         &self,
         symbol: impl AsRef<str>,
@@ -47,6 +53,9 @@ where
 
     /// Reads one option quote using the existing REST response validation.
     /// 中文摘要：构造单个规范化期权报价读取请求。
+    ///
+    /// # Errors
+    /// Returns [`ReadApiError`] when request validation, admission, transport, or response projection fails.
     pub async fn option_quote(
         &self,
         symbol: impl AsRef<str>,
@@ -56,6 +65,9 @@ where
 
     /// Reads multiple option quotes using the existing REST response validation.
     /// 中文摘要：将 broker option-quote map 按规则解析为有序结构化报价；不判定新鲜度。
+    ///
+    /// # Errors
+    /// Returns [`ReadApiError`] when request validation, admission, transport, or response projection fails.
     pub async fn option_quotes<I, S>(&self, symbols: I) -> Result<TypedReadResponse, ReadApiError>
     where
         I: IntoIterator<Item = S>,
@@ -69,6 +81,9 @@ where
     /// `observed_at_ms` is supplied by the caller for deterministic age
     /// diagnostics. The result does not prove quote freshness or tradeability.
     /// 中文摘要：读取规范化期权报价并同时保留原始响应元数据；不判定 freshness 或 tradability。
+    ///
+    /// # Errors
+    /// Returns [`ReadApiError`] when request validation, admission, transport, or response projection fails.
     pub async fn normalized_option_quotes<I, S>(
         &self,
         symbols: I,
@@ -86,6 +101,9 @@ where
 
     /// Reads two option legs through the existing typed GET route.
     /// 中文摘要：构造按 long/short 顺序读取双腿报价的请求。
+    ///
+    /// # Errors
+    /// Returns [`ReadApiError`] when request validation, admission, transport, or response projection fails.
     pub async fn vertical_option_quote(
         &self,
         long_symbol: impl AsRef<str>,
@@ -98,6 +116,9 @@ where
 
     /// Reads an option chain.
     /// 中文摘要：读取期权链 DTO。
+    ///
+    /// # Errors
+    /// Returns [`ReadApiError`] when request validation, admission, transport, or response projection fails.
     pub async fn option_chains(
         &self,
         query: OptionChainQuery,
@@ -107,6 +128,9 @@ where
 
     /// Reads option expiration dates.
     /// 中文摘要：读取期权到期日链 DTO。
+    ///
+    /// # Errors
+    /// Returns [`ReadApiError`] when request validation, admission, transport, or response projection fails.
     pub async fn option_expiration_chain(
         &self,
         query: OptionExpirationQuery,
@@ -116,6 +140,9 @@ where
 
     /// Reads price history.
     /// 中文摘要：按查询参数读取历史价格。
+    ///
+    /// # Errors
+    /// Returns [`ReadApiError`] when request validation, admission, transport, or response projection fails.
     pub async fn price_history(
         &self,
         query: PriceHistoryQuery,
@@ -125,6 +152,9 @@ where
 
     /// Reads market movers for one market symbol.
     /// 中文摘要：读取指定标的或市场的涨跌榜。
+    ///
+    /// # Errors
+    /// Returns [`ReadApiError`] when request validation, admission, transport, or response projection fails.
     pub async fn movers(
         &self,
         symbol: impl AsRef<str>,
@@ -135,12 +165,18 @@ where
 
     /// Reads market hours for a set of markets.
     /// 中文摘要：读取所选市场的交易时间。
+    ///
+    /// # Errors
+    /// Returns [`ReadApiError`] when request validation, admission, transport, or response projection fails.
     pub async fn markets(&self, query: MarketsQuery) -> Result<TypedReadResponse, ReadApiError> {
         self.client.markets(query).await
     }
 
     /// Reads market hours for one market.
     /// 中文摘要：读取指定市场的交易时间。
+    ///
+    /// # Errors
+    /// Returns [`ReadApiError`] when request validation, admission, transport, or response projection fails.
     pub async fn market_hours(
         &self,
         market: impl AsRef<str>,
@@ -151,6 +187,9 @@ where
 
     /// Searches instruments.
     /// 中文摘要：按已校验查询条件搜索标的。
+    ///
+    /// # Errors
+    /// Returns [`ReadApiError`] when request validation, admission, transport, or response projection fails.
     pub async fn search_instruments(
         &self,
         query: InstrumentSearchQuery,
@@ -160,6 +199,9 @@ where
 
     /// Reads an instrument by CUSIP.
     /// 中文摘要：按 CUSIP 路径段读取标的详情。
+    ///
+    /// # Errors
+    /// Returns [`ReadApiError`] when request validation, admission, transport, or response projection fails.
     pub async fn instrument_by_cusip(
         &self,
         cusip: impl AsRef<str>,

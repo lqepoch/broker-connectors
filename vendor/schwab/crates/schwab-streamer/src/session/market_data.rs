@@ -283,6 +283,9 @@ impl MarketDataBuffer {
         self.notify.notify_waiters();
     }
 
+    // Keep the two-phase stale check, hashing outside the lock, and atomic
+    // merge/fence update adjacent so the bounded buffer invariant is reviewable.
+    #[allow(clippy::too_many_lines)]
     pub(super) async fn push_delta(
         &self,
         service: StreamerService,
@@ -348,7 +351,8 @@ impl MarketDataBuffer {
             if source_timestamp < fence.source_timestamp {
                 return Ok(());
             }
-            if source_timestamp == fence.source_timestamp
+            if source_timestamp.partial_cmp(&fence.source_timestamp)
+                == Some(std::cmp::Ordering::Equal)
                 && raw_delta_fingerprint == fence.raw_delta_fingerprint
             {
                 return Ok(());
@@ -590,11 +594,11 @@ fn encoded_market_fields_size(fields: &BTreeMap<String, Value>) -> Result<usize,
         let key_and_colon_size = serialized_json_size(field)?
             .checked_add(1)
             .ok_or(SessionRunError::MarketDataCapacityExceeded)?;
-        let encoded_field_size = key_and_colon_size
+        let encoded_one_field_size = key_and_colon_size
             .checked_add(serialized_json_size(value)?)
             .ok_or(SessionRunError::MarketDataCapacityExceeded)?;
         encoded_fields_size = encoded_fields_size
-            .checked_add(encoded_field_size)
+            .checked_add(encoded_one_field_size)
             .ok_or(SessionRunError::MarketDataCapacityExceeded)?;
     }
     let encoded_size = 2usize
@@ -638,6 +642,9 @@ mod market_data_buffer_tests {
     use super::*;
 
     #[tokio::test]
+    // This benchmark intentionally reports setup, workload, and percentile
+    // calculation together so its synthetic work is easy to audit.
+    #[allow(clippy::too_many_lines)]
     #[ignore = "deterministic local-only market row performance benchmark"]
     async fn ignored_market_row_sparse_update_benchmark() {
         const KEY_COUNT: usize = 1024;
@@ -673,7 +680,10 @@ mod market_data_buffer_tests {
                     .map(|(field_index, name)| {
                         (
                             name.clone(),
-                            Value::from((key_index * 100 + field_index) as i64),
+                            Value::from(
+                                i64::try_from(key_index * 100 + field_index)
+                                    .expect("synthetic field value fits i64"),
+                            ),
                         )
                     })
                     .collect();
@@ -689,7 +699,7 @@ mod market_data_buffer_tests {
                     .expect("synthetic initial rows fit the configured bounds");
             }
 
-            let mut batch_nanos = Vec::with_capacity(UPDATES_PER_KEY);
+            let mut batch_durations = Vec::with_capacity(UPDATES_PER_KEY);
             let started = std::time::Instant::now();
             for batch in 0..UPDATES_PER_KEY {
                 let batch_started = std::time::Instant::now();
@@ -698,32 +708,42 @@ mod market_data_buffer_tests {
                     let mut fields = BTreeMap::new();
                     fields.insert(
                         field_names[field_index].clone(),
-                        Value::from((batch * KEY_COUNT + key_index) as i64),
+                        Value::from(
+                            i64::try_from(batch * KEY_COUNT + key_index)
+                                .expect("synthetic update value fits i64"),
+                        ),
                     );
                     buffer
                         .push_delta(
                             StreamerService::LevelOneEquities,
                             generation,
                             key.clone(),
-                            (batch + 1) as f64,
+                            f64::from(
+                                u32::try_from(batch + 1)
+                                    .expect("synthetic timestamp fits u32"),
+                            ),
                             fields,
                         )
                         .await
                         .expect("synthetic sparse updates fit the configured bounds");
                 }
-                batch_nanos.push(batch_started.elapsed().as_nanos());
+                batch_durations.push(batch_started.elapsed());
             }
-            let elapsed_nanos = started.elapsed().as_nanos();
-            batch_nanos.sort_unstable();
-            let p95_batch_nanos = batch_nanos[(batch_nanos.len() * 95).div_ceil(100) - 1];
+            let elapsed = started.elapsed();
+            batch_durations.sort_unstable();
+            let p95_batch = batch_durations[(batch_durations.len() * 95).div_ceil(100) - 1];
             let updates = KEY_COUNT * UPDATES_PER_KEY;
-            let throughput_updates_per_second =
-                updates as f64 / (elapsed_nanos as f64 / 1_000_000_000.0);
+            let throughput_updates_per_second = f64::from(
+                u32::try_from(updates).expect("synthetic benchmark update count fits u32"),
+            ) / elapsed.as_secs_f64();
+            let amortized_p95_update_nanos = p95_batch.as_secs_f64() * 1_000_000_000.0
+                / f64::from(u32::try_from(KEY_COUNT).expect("key count fits u32"));
 
             println!(
-                "MARKET_ROW_BENCH profile={profile} keys={KEY_COUNT} updates_per_key={UPDATES_PER_KEY} fields_per_row={} total_updates={updates} elapsed_ns={elapsed_nanos} throughput_updates_per_second={throughput_updates_per_second:.3} p95_batch_updates={KEY_COUNT} p95_batch_ns={p95_batch_nanos} p95_batch_amortized_update_ns={:.3}",
+                "MARKET_ROW_BENCH profile={profile} keys={KEY_COUNT} updates_per_key={UPDATES_PER_KEY} fields_per_row={} total_updates={updates} elapsed_ns={} throughput_updates_per_second={throughput_updates_per_second:.3} p95_batch_updates={KEY_COUNT} p95_batch_ns={} p95_batch_amortized_update_ns={amortized_p95_update_nanos:.3}",
                 field_names.len(),
-                p95_batch_nanos as f64 / KEY_COUNT as f64,
+                elapsed.as_nanos(),
+                p95_batch.as_nanos(),
             );
         }
     }
@@ -875,7 +895,12 @@ mod market_data_buffer_tests {
     async fn field_cap_accepts_128_fields_and_rejects_129_transactionally() {
         let (buffer, generation) = active_buffer().await;
         let fields = (0..MAX_MERGED_MARKET_FIELDS)
-            .map(|index| (format!("field-{index:03}"), Value::from(index as i64)))
+            .map(|index| {
+                (
+                    format!("field-{index:03}"),
+                    Value::from(i64::try_from(index).expect("bounded field index fits i64")),
+                )
+            })
             .collect();
         push_row(&buffer, generation, "SYNTH-FIELDS", 1.0, fields)
             .await
@@ -922,7 +947,10 @@ mod market_data_buffer_tests {
         let names = ["0", "45", "escaped\"key", "nested", "nullable"];
         let mut initial = BTreeMap::new();
         for (index, name) in names.iter().enumerate() {
-            initial.insert(name.to_string(), Value::from(index as i64));
+            initial.insert(
+                name.to_string(),
+                Value::from(i64::try_from(index).expect("bounded field index fits i64")),
+            );
         }
         push_row(&buffer, generation, "SYNTH-GENERATED", 0.0, initial)
             .await
@@ -930,13 +958,15 @@ mod market_data_buffer_tests {
 
         for step in 0..512usize {
             let value = match step % 7 {
-                0 => Value::from((step as i64) * -17),
+                0 => Value::from(i64::try_from(step).expect("generated step fits i64") * -17),
                 1 => Value::String(format!("quote=\"{step}\" slash=\\ line=\n")),
                 2 => Value::Null,
                 3 => serde_json::json!({"nested": [step, null, {"enabled": true}]}),
                 4 => Value::Bool(step % 2 == 0),
                 5 => serde_json::json!(["array", step, {"escape\"key": "value\t"}]),
-                _ => serde_json::json!(step as f64 / 13.0),
+                _ => serde_json::json!(
+                    f64::from(u32::try_from(step).expect("generated step fits u32")) / 13.0
+                ),
             };
             let mut delta = BTreeMap::new();
             delta.insert(names[step % names.len()].to_owned(), value);
@@ -944,7 +974,7 @@ mod market_data_buffer_tests {
                 &buffer,
                 generation,
                 "SYNTH-GENERATED",
-                (step + 1) as f64,
+                f64::from(u32::try_from(step + 1).expect("generated timestamp fits u32")),
                 delta,
             )
             .await
@@ -954,6 +984,9 @@ mod market_data_buffer_tests {
     }
 
     #[tokio::test]
+    // Keep the sparse merge/provenance timeline together as one executable
+    // contract; splitting it would hide the ordering relationships.
+    #[allow(clippy::too_many_lines)]
     async fn coalesced_fields_keep_independent_last_changed_provenance() {
         let (buffer, generation) = active_buffer().await;
         push_row(
@@ -1130,6 +1163,9 @@ mod market_data_buffer_tests {
     }
 
     #[tokio::test]
+    // This scenario covers delivery, duplicate suppression, reconnect, and
+    // stale-tail rejection in one deterministic state-machine trace.
+    #[allow(clippy::too_many_lines)]
     async fn ordering_fences_survive_delivery_and_reset_rejects_old_generation_tail() {
         let (buffer, generation) = active_buffer().await;
         push_row(
@@ -1347,6 +1383,9 @@ mod market_data_buffer_tests {
     }
 
     #[tokio::test]
+    // This scenario checks exact byte/key boundaries and confirms a rejected
+    // addition never evicts the existing ordering fence.
+    #[allow(clippy::too_many_lines)]
     async fn ordering_fence_key_and_entry_limits_fail_closed_without_eviction() {
         let generation = ConnectionGeneration::new(29);
         let per_entry_limit =

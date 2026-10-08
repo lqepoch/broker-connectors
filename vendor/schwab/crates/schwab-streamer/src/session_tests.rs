@@ -983,6 +983,9 @@ async fn aborting_runtime_discards_pending_quotes_before_receiver_returns_none()
 }
 
 #[tokio::test]
+// Keep the reconnect timeline in one deterministic integration test so each
+// observed quote and generation transition has a visible predecessor.
+#[allow(clippy::too_many_lines)]
 async fn delivered_market_rows_keep_order_fences_across_reconnect_generations() {
     let first_session = mock_session();
     let second_session = mock_session();
@@ -996,9 +999,12 @@ async fn delivered_market_rows_keep_order_fences_across_reconnect_generations() 
     let task = tokio::spawn(runtime.run());
 
     let first_connection = next_connection_event(&mut channels.critical, true).await;
-    let first_generation = match first_connection {
-        SessionEvent::Connection { generation, .. } => generation,
-        _ => unreachable!("connection helper returns a connection event"),
+    let SessionEvent::Connection {
+        generation: first_generation,
+        ..
+    } = first_connection
+    else {
+        unreachable!("connection helper returns a connection event");
     };
     let first_peer = peers.first_mut().expect("first mock connection exists");
     let activity = first_peer.next_command().await;
@@ -1069,9 +1075,12 @@ async fn delivered_market_rows_keep_order_fences_across_reconnect_generations() 
         }
     ));
     let second_connection = next_connection_event(&mut channels.critical, true).await;
-    let second_generation = match second_connection {
-        SessionEvent::Connection { generation, .. } => generation,
-        _ => unreachable!("connection helper returns a connection event"),
+    let SessionEvent::Connection {
+        generation: second_generation,
+        ..
+    } = second_connection
+    else {
+        unreachable!("connection helper returns a connection event");
     };
     assert!(second_generation.value() > first_generation.value());
 

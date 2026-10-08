@@ -15,6 +15,9 @@ use super::{ExactDecimal, ExactRatio, ParsedReadResponse, ReadResponseError, Rea
 impl ParsedReadResponse {
     /// Normalizes requested option codes and projects matching rows in caller order; duplicate or missing contracts return fixed errors.
     /// 按 Node 兼容规则归一化交易代码后读取期权报价。
+    ///
+    /// # Errors
+    /// Returns [`ReadResponseError`] when the response kind, structure, required values, or numeric bounds do not satisfy this projection.
     pub fn option_quotes(
         &self,
         requested_symbols: &[&str],
@@ -94,6 +97,9 @@ impl ParsedReadResponse {
     /// Returns validated normalized legs in caller order. Synthetic spread
     /// prices are intentionally left to the Decimal pricing crate.
     /// 中文摘要：返回精确保留 long/short 顺序的两条报价腿。
+    ///
+    /// # Errors
+    /// Returns [`ReadResponseError`] when the response kind, structure, required values, or numeric bounds do not satisfy this projection.
     pub fn vertical_quote_legs(
         &self,
         long_symbol: &str,
@@ -502,8 +508,10 @@ fn optional_decimal(
     key: &str,
 ) -> Result<Option<ExactDecimal>, ReadResponseError> {
     match object.get(key) {
-        None => Ok(None),
+        None
+        | Some(
+            Value::Null | Value::Bool(_) | Value::String(_) | Value::Array(_) | Value::Object(_),
+        ) => Ok(None),
         Some(Value::Number(number)) => ExactDecimal::from_number(number).map(Some),
-        Some(_) => Ok(None),
     }
 }

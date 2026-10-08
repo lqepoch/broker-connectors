@@ -8,9 +8,8 @@ use std::fmt;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
-use broker_ports::{
-    AccountNamespace, PortFuture, ReadAdmissionEvidence, ReadAdmissionProvenance, ReadRequestId,
-};
+use broker_ports::{PortFuture, ReadAdmissionEvidence, ReadRequestId};
+use domain::AccountNamespace;
 use schwab_sdk::{ReadAdmissionError, ReadAdmissionPort, ReadPriority};
 
 /// One Schwab REST operation that must be covered by the shared read budget.
@@ -156,7 +155,7 @@ impl<A: SchwabReadAdmissionOwner> fmt::Debug for AdmissionBridge<A> {
             .field("request_id", &self.request_id)
             .field("operation", &self.operation)
             .field("permit", &"[REDACTED]")
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 

@@ -101,7 +101,7 @@ impl StreamerSocket for SchwabStreamerSocket {
         loop {
             match self.read_event().await? {
                 Some(SocketEvent::Frame(bytes)) => return Ok(Some(bytes)),
-                Some(SocketEvent::Liveness) => continue,
+                Some(SocketEvent::Liveness) => {}
                 None => return Ok(None),
             }
         }

@@ -5,24 +5,27 @@
 //! 通过 vendored `schwab-sdk` 实现只读账户和单页持仓读取。
 
 use broker_ports::{
-    AccountNamespace, AccountReadRequest, BrokerReadError, BrokerReadPage, BrokerReadPageRequest,
-    BrokerReadPort, ExecutionBrokerId, ObservedRead, PortFuture, ReadAdmissionEvidence,
-    ReadAdmissionNamespace, ReadEvidence, ReadRequestId,
+    AccountReadRequest, BrokerReadError, BrokerReadPage, BrokerReadPageRequest, BrokerReadPort,
+    ObservedRead, PortFuture, ReadAdmissionEvidence, ReadAdmissionNamespace, ReadEvidence,
+    ReadRequestId,
 };
 use chrono::{SecondsFormat, Utc};
-use domain::ExactDecimal;
+use domain::{AccountNamespace, ExactDecimal, ExecutionBrokerId};
 use market_contracts::UtcTimestamp;
 use schwab_sdk::{
     AccessTokenProvider, AccountResponse, AccountsQuery, BalanceSnapshot, HttpTransport, QueryText,
-    ReadAdmissionError, ReadApiError, ReadPriority, ReadRequestError, RestError, SchwabSdk,
-    SecuritiesAccount, TraderReadResponse, TypedReadResponse, WireNumber,
+    ReadAdmissionError, ReadApiError, ReadRequestError, RestError, SchwabSdk, SecuritiesAccount,
+    TraderReadResponse, TypedReadResponse, WireNumber,
 };
 use std::collections::BTreeMap;
 use std::fmt;
 use std::sync::Arc;
 use zeroize::Zeroizing;
 
-use crate::admission::{AdmissionBridge, SchwabReadAdmissionOwner, SchwabReadOperation};
+use crate::admission::{
+    AdmissionBridge, SchwabReadAdmissionOwner, SchwabReadOperation, SharedHttpTransport,
+    SharedTokenProvider,
+};
 
 /// Explicit Schwab account namespace and opaque account-hash route binding.
 ///
@@ -40,6 +43,11 @@ pub struct SchwabAccountBinding {
 impl SchwabAccountBinding {
     /// Validates and binds one Schwab account namespace to its broker hash.
     /// 校验并将 Schwab 账户命名空间绑定到 broker hash。
+    ///
+    /// # Errors
+    /// Returns [`SchwabAccountBindingError::WrongBroker`] when the namespace is
+    /// not scoped to Schwab, or [`SchwabAccountBindingError::InvalidAccountHash`]
+    /// when the opaque route identifier is malformed or outside its bounds.
     pub fn new(
         namespace: AccountNamespace,
         account_hash: impl Into<String>,
@@ -613,9 +621,10 @@ fn map_request_error(_error: ReadRequestError) -> BrokerReadError {
 
 fn map_read_error(error: ReadApiError) -> BrokerReadError {
     match error {
-        ReadApiError::Request(_) => BrokerReadError::InvalidRequest,
+        ReadApiError::Request(_) | ReadApiError::Rest(RestError::Request(_)) => {
+            BrokerReadError::InvalidRequest
+        }
         ReadApiError::Response { .. } => BrokerReadError::InvalidResponse,
-        ReadApiError::Rest(RestError::Request(_)) => BrokerReadError::InvalidRequest,
         ReadApiError::Rest(RestError::Admission(error)) => map_admission_error(error),
         ReadApiError::Rest(RestError::Token(_)) => BrokerReadError::Unauthorized,
         ReadApiError::Rest(RestError::Transport(error)) => match error {

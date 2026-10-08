@@ -15,7 +15,7 @@ use crate::client::{
 };
 
 const CONNECT_TIMEOUT: Duration = Duration::from_secs(5);
-const MAX_HTTP2_HEADER_LIST_BYTES: u32 = (MAX_RESPONSE_HEADER_BYTES + MAX_HEADER_COUNT * 32) as u32;
+const MAX_HTTP2_HEADER_LIST_BYTES: usize = MAX_RESPONSE_HEADER_BYTES + MAX_HEADER_COUNT * 32;
 
 /// Production read-only HTTPS adapter. It owns a client configured for the
 /// fixed Schwab API origin and exposes no origin or request-method override.
@@ -29,6 +29,9 @@ impl SchwabHttpsTransport {
     /// Creates the production adapter with platform-verified rustls roots.
     /// Failure to initialize the TLS verifier or HTTP client fails closed.
     /// 中文摘要：校验输入并构造该类型的值；具体格式、大小上限和脱敏边界见类型说明。
+    ///
+    /// # Errors
+    /// Returns [`HttpTransportError`] if the fixed-origin HTTPS client cannot be configured.
     pub fn new() -> Result<Self, HttpTransportError> {
         let origin = Url::parse(SCHWAB_API_ROOT).map_err(|_| HttpTransportError::Configuration)?;
         let client = build_client()?;
@@ -74,7 +77,7 @@ impl HttpTransport for SchwabHttpsTransport {
                 .header(AUTHORIZATION, authorization_header)
                 .send()
                 .await
-                .map_err(classify_send_error)?;
+                .map_err(|error| classify_send_error(&error))?;
 
             if response.status().is_redirection() {
                 return Err(HttpTransportError::Redirect);
@@ -86,7 +89,7 @@ impl HttpTransport for SchwabHttpsTransport {
                 .get_all("retry-after")
                 .iter()
                 .take(MAX_HEADER_COUNT + 1)
-                .map(|value| value.as_bytes())
+                .map(reqwest::header::HeaderValue::as_bytes)
                 .collect::<Vec<_>>();
             request
                 .observe_response_head(status, &retry_after_values)
@@ -108,7 +111,11 @@ impl HttpTransport for SchwabHttpsTransport {
                 .unwrap_or(0)
                 .min(max_body_bytes);
             let mut body = Vec::with_capacity(capacity);
-            while let Some(chunk) = response.chunk().await.map_err(classify_receive_error)? {
+            while let Some(chunk) = response
+                .chunk()
+                .await
+                .map_err(|error| classify_receive_error(&error))?
+            {
                 let new_length = body
                     .len()
                     .checked_add(chunk.len())
@@ -166,8 +173,10 @@ fn resolve_request_url(origin: &Url, path: &str) -> Result<Url, HttpTransportErr
     Ok(target)
 }
 
-fn client_builder() -> ClientBuilder {
-    Client::builder()
+fn client_builder() -> Result<ClientBuilder, HttpTransportError> {
+    let max_http2_header_list_bytes = u32::try_from(MAX_HTTP2_HEADER_LIST_BYTES)
+        .map_err(|_| HttpTransportError::Configuration)?;
+    Ok(Client::builder()
         .use_rustls_tls()
         .https_only(true)
         .no_proxy()
@@ -183,11 +192,11 @@ fn client_builder() -> ClientBuilder {
         .http1_max_headers(MAX_HEADER_COUNT + 1)
         // HTTP/2 accounts for 32 bytes of per-field overhead in addition to
         // names and values; keep the parser close to the REST contract limit.
-        .http2_max_header_list_size(MAX_HTTP2_HEADER_LIST_BYTES)
+        .http2_max_header_list_size(max_http2_header_list_bytes))
 }
 
 fn build_client() -> Result<Client, HttpTransportError> {
-    client_builder()
+    client_builder()?
         .build()
         .map_err(|_| HttpTransportError::Configuration)
 }
@@ -197,7 +206,7 @@ fn build_test_client(trusted_certificate: Certificate) -> Result<Client, HttpTra
     // Tests trust only the ephemeral local certificate. Certificate-chain
     // and hostname verification remain enabled; invalid certificates are
     // never accepted by this adapter.
-    client_builder()
+    client_builder()?
         .tls_certs_only([trusted_certificate])
         .build()
         .map_err(|_| HttpTransportError::Configuration)
@@ -211,7 +220,7 @@ fn bounded_headers(
     }
 
     let mut total_bytes = 0usize;
-    for (name, value) in headers.iter() {
+    for (name, value) in headers {
         let name_bytes = name.as_str().as_bytes();
         let value_bytes = value.as_bytes();
         if name_bytes.is_empty() || name_bytes.len() > MAX_HEADER_NAME_BYTES {
@@ -230,7 +239,7 @@ fn bounded_headers(
     }
 
     let mut bounded = Vec::with_capacity(headers.len());
-    for (name, value) in headers.iter() {
+    for (name, value) in headers {
         // HeaderMap only contains syntactically valid HTTP names. Reparse here
         // to keep the public response boundary independent of reqwest types.
         let parsed_name = HeaderName::from_bytes(name.as_str().as_bytes())
@@ -245,7 +254,7 @@ fn bounded_headers(
     Ok(bounded)
 }
 
-fn classify_send_error(error: reqwest::Error) -> HttpTransportError {
+fn classify_send_error(error: &reqwest::Error) -> HttpTransportError {
     // Reqwest can mark a connection-establishment timeout as both a timeout
     // and a connect failure. Preserve the pre-dispatch classification first;
     // timeouts outside connection establishment remain potentially sent.
@@ -264,7 +273,7 @@ fn classify_send_error(error: reqwest::Error) -> HttpTransportError {
     }
 }
 
-fn classify_receive_error(error: reqwest::Error) -> HttpTransportError {
+fn classify_receive_error(error: &reqwest::Error) -> HttpTransportError {
     if error.is_timeout() {
         HttpTransportError::Timeout
     } else {

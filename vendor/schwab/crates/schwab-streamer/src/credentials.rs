@@ -30,6 +30,10 @@ impl StreamerLoginSecret {
     /// Takes ownership of a bearer value, validates its bounded RFC 6750 token
     /// alphabet, and stores it in a zeroizing buffer.
     /// 中文摘要：校验输入并构造该类型的值；具体格式、大小上限和脱敏边界见类型说明。
+    ///
+    /// # Errors
+    /// Returns [`CredentialInputError::InvalidBearer`] for an empty, oversized,
+    /// or malformed bearer value.
     pub fn new(value: impl Into<String>) -> Result<Self, CredentialInputError> {
         Self::from_zeroizing(Zeroizing::new(value.into()))
     }
@@ -37,6 +41,10 @@ impl StreamerLoginSecret {
     /// Takes ownership of an already-zeroizing bearer value without making an
     /// additional application-level copy.
     /// 中文摘要：校验已启用 zeroize 的 bearer 缓冲区并接管所有权，不额外创建应用层副本。
+    ///
+    /// # Errors
+    /// Returns [`CredentialInputError::InvalidBearer`] for an empty, oversized,
+    /// or malformed bearer value.
     pub fn from_zeroizing(value: Zeroizing<String>) -> Result<Self, CredentialInputError> {
         if !is_valid_bearer(value.as_str()) {
             return Err(CredentialInputError::InvalidBearer);
@@ -77,6 +85,11 @@ impl StreamerSessionCredentials {
     /// Validates an HTTPS-protected dynamic Streamer endpoint and the five
     /// fields proven by the current Node `StreamerInfoSchema`/LOGIN request.
     /// 中文摘要：校验输入并构造该类型的值；具体格式、大小上限和脱敏边界见类型说明。
+    ///
+    /// # Errors
+    /// Returns [`CredentialInputError::InvalidSocketUrl`] when the endpoint is
+    /// malformed or insecure, or [`CredentialInputError::InvalidMetadata`]
+    /// when a required login field is empty, oversized, or contains controls.
     pub fn new(
         socket_url: impl Into<String>,
         customer_id: impl Into<String>,
@@ -146,7 +159,7 @@ impl StreamerSessionCredentials {
     }
 }
 
-/// Async source for fresh authorization material and dynamic StreamerInfo.
+/// Async source for fresh authorization material and dynamic `StreamerInfo`.
 ///
 /// A production implementation must obtain the token from the credential
 /// lease and metadata from the authorized read-only user-preferences flow. It
@@ -163,7 +176,7 @@ impl StreamerSessionCredentials {
 pub trait StreamerCredentialProvider: Send + 'static {
     /// Loads one bounded session context. Reconnect calls this again so the
     /// provider can refresh access material while retaining its reviewed
-    /// StreamerInfo caching policy.
+    /// `StreamerInfo` caching policy.
     /// 中文摘要：为一次连接尝试加载新的有界凭证；重连会再次调用提供器，连接期限到达时取消该 future。
     fn load_session_credentials(
         &mut self,

@@ -9,12 +9,12 @@
   "file_count": 66,
   "files": [
     {
-      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adaptation": "Target-only package metadata inherits the target license authorized for this selected extraction; source path and runtime behavior remain unchanged.",
       "source_git_blob": "dd4c3a7cac0c2c4b4d3e9f696c74af0003b18347",
       "source_path": "crates/schwab-rest/Cargo.toml",
       "source_sha256": "64e509e4bbcd1a5c78c9b9b80df86a58e5ad87b5e7cc1b576e51a14a088492c5",
       "target_path": "vendor/schwab/crates/schwab-rest/Cargo.toml",
-      "target_sha256": "64e509e4bbcd1a5c78c9b9b80df86a58e5ad87b5e7cc1b576e51a14a088492c5"
+      "target_sha256": "510fd87e3c8eec66a9a6a28ea5d54350b1783c44088f7477650f32b72e678ab1"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -46,7 +46,7 @@
       "source_path": "crates/schwab-rest/src/client.rs",
       "source_sha256": "d8f8759c7252431e256228698b7a628cdc35f8e86ac2ff14e5c62070ddce0f7e",
       "target_path": "vendor/schwab/crates/schwab-rest/src/client.rs",
-      "target_sha256": "d8f8759c7252431e256228698b7a628cdc35f8e86ac2ff14e5c62070ddce0f7e"
+      "target_sha256": "afd0c45eb32c2675fa84ead17e26cca5599cbc799468eac01c4e65a997b34386"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -118,7 +118,7 @@
       "source_path": "crates/schwab-rest/src/mutation_contract.rs",
       "source_sha256": "b2e1c816e4679356c69b1552ae05658831e4553ca62269d5c0d3100828ab898d",
       "target_path": "vendor/schwab/crates/schwab-rest/src/mutation_contract.rs",
-      "target_sha256": "b2e1c816e4679356c69b1552ae05658831e4553ca62269d5c0d3100828ab898d"
+      "target_sha256": "3a6b48e8221818e185954d6ceb35fc54dc6e29c2a59d94b0d65c9e863c080429"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -126,7 +126,7 @@
       "source_path": "crates/schwab-rest/src/normalized_option_quote_api.rs",
       "source_sha256": "e87082620135b798ce0bb37e04d8bfae45280f1662d1cba872c3b13a3a88274a",
       "target_path": "vendor/schwab/crates/schwab-rest/src/normalized_option_quote_api.rs",
-      "target_sha256": "e87082620135b798ce0bb37e04d8bfae45280f1662d1cba872c3b13a3a88274a"
+      "target_sha256": "3459de92ba816b4f71afeb567e3dbb0e80021452664838a58ba37f7cfd869d8f"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -134,7 +134,7 @@
       "source_path": "crates/schwab-rest/src/query_encoding.rs",
       "source_sha256": "4aef4160b54d10592dc7f8a7bf88be313f98d47b710d189d73ed72804a017ca3",
       "target_path": "vendor/schwab/crates/schwab-rest/src/query_encoding.rs",
-      "target_sha256": "4aef4160b54d10592dc7f8a7bf88be313f98d47b710d189d73ed72804a017ca3"
+      "target_sha256": "1671cfebe5c320daf32cdecb2d7303f50d29e9bdfee188f41f9e39a5d8790c84"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -142,7 +142,7 @@
       "source_path": "crates/schwab-rest/src/read_api.rs",
       "source_sha256": "a64f94f3a630c17d61ff938e4e7e8a25a44c2b4e77449216897d426b98191e8a",
       "target_path": "vendor/schwab/crates/schwab-rest/src/read_api.rs",
-      "target_sha256": "a64f94f3a630c17d61ff938e4e7e8a25a44c2b4e77449216897d426b98191e8a"
+      "target_sha256": "a676a93253930ba0f645f9d07ee45f1d310432a66ba47437ff4de04c3f4f63f4"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -150,7 +150,7 @@
       "source_path": "crates/schwab-rest/src/read_api_tests.rs",
       "source_sha256": "37886a78fbf52e266c3ce5538b936da5055b9b8a00b709c69ba08ac15e23c5ff",
       "target_path": "vendor/schwab/crates/schwab-rest/src/read_api_tests.rs",
-      "target_sha256": "37886a78fbf52e266c3ce5538b936da5055b9b8a00b709c69ba08ac15e23c5ff"
+      "target_sha256": "ebeb2d5061535e227b73a235ddf10afd4ab16c1545ee8ad352cea8a00bdd3c54"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -158,7 +158,7 @@
       "source_path": "crates/schwab-rest/src/read_response/decimal.rs",
       "source_sha256": "f94d09e0ac4600c8552114fc870810a904647062831e204144e8a7d8e746072d",
       "target_path": "vendor/schwab/crates/schwab-rest/src/read_response/decimal.rs",
-      "target_sha256": "f94d09e0ac4600c8552114fc870810a904647062831e204144e8a7d8e746072d"
+      "target_sha256": "ea04f20fa2dcb76280c98f9c9055cfd27290f61bf6339ac47aa54a667f4e4bbb"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -166,7 +166,7 @@
       "source_path": "crates/schwab-rest/src/read_response/mod.rs",
       "source_sha256": "237b28d43bed29440ebfe09776dbbe41f4dd068305d96a631872fec1d7f76063",
       "target_path": "vendor/schwab/crates/schwab-rest/src/read_response/mod.rs",
-      "target_sha256": "237b28d43bed29440ebfe09776dbbe41f4dd068305d96a631872fec1d7f76063"
+      "target_sha256": "dbce0e5f8951c6f9675443232e4933a2ae7a9034fddcb09eee6a85beb2bdbe6b"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -174,7 +174,7 @@
       "source_path": "crates/schwab-rest/src/read_response/option_quote.rs",
       "source_sha256": "c7060dcf9b9dc8df580e52d166756a7e0ec56900eb9f6ddb9946daba01b7b6e1",
       "target_path": "vendor/schwab/crates/schwab-rest/src/read_response/option_quote.rs",
-      "target_sha256": "c7060dcf9b9dc8df580e52d166756a7e0ec56900eb9f6ddb9946daba01b7b6e1"
+      "target_sha256": "0a9842af71b70cddee53c81e9d368c513cebf9b65071c9d96abbe9d3bf0294b6"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -190,7 +190,7 @@
       "source_path": "crates/schwab-rest/src/read_response/validation/market.rs",
       "source_sha256": "3e94e36bd64dbfb0a631408251dfd33f773569a4679636d23e014d8d42810d4d",
       "target_path": "vendor/schwab/crates/schwab-rest/src/read_response/validation/market.rs",
-      "target_sha256": "3e94e36bd64dbfb0a631408251dfd33f773569a4679636d23e014d8d42810d4d"
+      "target_sha256": "5599b48c83f2c994039f3735c62d99e16510fcafa1c020b675e78e1f9b0e1a94"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -198,7 +198,7 @@
       "source_path": "crates/schwab-rest/src/read_response/validation/mod.rs",
       "source_sha256": "9584bfe3f758e326c3f5ba83ef4df4bd8bd421ac1a455e9c5ee47e30115d2ff2",
       "target_path": "vendor/schwab/crates/schwab-rest/src/read_response/validation/mod.rs",
-      "target_sha256": "9584bfe3f758e326c3f5ba83ef4df4bd8bd421ac1a455e9c5ee47e30115d2ff2"
+      "target_sha256": "9e64019aa13ccb50aec4308d4d3558f44cc2ff106c5c41c4a04104057cc76694"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -206,7 +206,7 @@
       "source_path": "crates/schwab-rest/src/read_response/validation/trader.rs",
       "source_sha256": "ee0a5339802eb1e1c9df1f2733b95631f45f866a03b0eb27f6eb58a5e4fc7cb8",
       "target_path": "vendor/schwab/crates/schwab-rest/src/read_response/validation/trader.rs",
-      "target_sha256": "ee0a5339802eb1e1c9df1f2733b95631f45f866a03b0eb27f6eb58a5e4fc7cb8"
+      "target_sha256": "49de96c54856f42575b2280090e0fcb524163fe86210420400ace9664e125722"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -214,7 +214,7 @@
       "source_path": "crates/schwab-rest/src/read_response_tests.rs",
       "source_sha256": "9eb74db8e6cd36c2375d1f5d544703f953c91819243ae0418b8e11740c5eb6a2",
       "target_path": "vendor/schwab/crates/schwab-rest/src/read_response_tests.rs",
-      "target_sha256": "9eb74db8e6cd36c2375d1f5d544703f953c91819243ae0418b8e11740c5eb6a2"
+      "target_sha256": "d641d6e3b4164d1a33e083be588bc50faa6f14500c13cf07713053ff1f7807a7"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -222,7 +222,7 @@
       "source_path": "crates/schwab-rest/src/request_types.rs",
       "source_sha256": "3ee32dc903c36934d75d85c3ebf441539284c5b70c1442ca0bacdae6a7c9e0fc",
       "target_path": "vendor/schwab/crates/schwab-rest/src/request_types.rs",
-      "target_sha256": "3ee32dc903c36934d75d85c3ebf441539284c5b70c1442ca0bacdae6a7c9e0fc"
+      "target_sha256": "e46a8d442744d4696202dc8106977e4c48eed03869d83e8e32d78991111ee7f3"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -230,7 +230,7 @@
       "source_path": "crates/schwab-rest/src/response_models/accounts.rs",
       "source_sha256": "3cf8f8da3772fc8293a7c35f6b767bc58d85e8a2a567ef1847dbdcae6f97d7a4",
       "target_path": "vendor/schwab/crates/schwab-rest/src/response_models/accounts.rs",
-      "target_sha256": "3cf8f8da3772fc8293a7c35f6b767bc58d85e8a2a567ef1847dbdcae6f97d7a4"
+      "target_sha256": "ae207a6d59c59dd3773d60c10d26c54b318eda24f8fb77a1b6a9b010a3b8cdaa"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -238,7 +238,7 @@
       "source_path": "crates/schwab-rest/src/response_models/common.rs",
       "source_sha256": "f7d48baf88dbd034db6234e7f790e07bf558c3bbbd84a3b3dab3d3aec5691399",
       "target_path": "vendor/schwab/crates/schwab-rest/src/response_models/common.rs",
-      "target_sha256": "f7d48baf88dbd034db6234e7f790e07bf558c3bbbd84a3b3dab3d3aec5691399"
+      "target_sha256": "9a2d6509288d03dfe76b91d3fa64900e42b2f02343df9dbc91269be014fd8942"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -254,7 +254,7 @@
       "source_path": "crates/schwab-rest/src/response_models/orders.rs",
       "source_sha256": "dbb99a7543f970d71259036d4c151a90fd76f5ed7a6ec67ad481f36e3c1c7710",
       "target_path": "vendor/schwab/crates/schwab-rest/src/response_models/orders.rs",
-      "target_sha256": "dbb99a7543f970d71259036d4c151a90fd76f5ed7a6ec67ad481f36e3c1c7710"
+      "target_sha256": "373bc23bc5ecab6d86cc6e2045b68f2a1c50bb4dee85d20daf450a6e6c600b0e"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -262,7 +262,7 @@
       "source_path": "crates/schwab-rest/src/response_models/preferences.rs",
       "source_sha256": "5ebaefc76ee4d6acb8cf54a3c0f9cf42b4ba966fc4a324703f2d4b45917b34af",
       "target_path": "vendor/schwab/crates/schwab-rest/src/response_models/preferences.rs",
-      "target_sha256": "5ebaefc76ee4d6acb8cf54a3c0f9cf42b4ba966fc4a324703f2d4b45917b34af"
+      "target_sha256": "9b2fba24322d4b42a924d2dc3209b1ca1f8839da038220082ed856a1950d3db1"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -270,7 +270,7 @@
       "source_path": "crates/schwab-rest/src/response_models/transactions.rs",
       "source_sha256": "587faab0eba32211a830e3a49ed1e3c493b103fbf22534e7287f0fecb36889b3",
       "target_path": "vendor/schwab/crates/schwab-rest/src/response_models/transactions.rs",
-      "target_sha256": "587faab0eba32211a830e3a49ed1e3c493b103fbf22534e7287f0fecb36889b3"
+      "target_sha256": "9143af3022ca1f719195d6b150c042b6c8c189524c1ad4f05400681e9c763a81"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -278,7 +278,7 @@
       "source_path": "crates/schwab-rest/src/routes.rs",
       "source_sha256": "3f2c78aaecc5b230a74d690a9c85bcc2158a2934155c951583fe877dd86cbadb",
       "target_path": "vendor/schwab/crates/schwab-rest/src/routes.rs",
-      "target_sha256": "3f2c78aaecc5b230a74d690a9c85bcc2158a2934155c951583fe877dd86cbadb"
+      "target_sha256": "950787802a68e13b4782c07ffe30bc2ce373be7936331eaf198e3fe55429683c"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -286,7 +286,7 @@
       "source_path": "crates/schwab-rest/src/tests.rs",
       "source_sha256": "9748abee906baf5c13226c0ab6cce7303df7d6279f32f18985664231ee15a05a",
       "target_path": "vendor/schwab/crates/schwab-rest/src/tests.rs",
-      "target_sha256": "9748abee906baf5c13226c0ab6cce7303df7d6279f32f18985664231ee15a05a"
+      "target_sha256": "1de1ec56b1cbad120ec51362bc730f7aaaaeef26739ec6ae82cf62d8ea0139ca"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -294,7 +294,7 @@
       "source_path": "crates/schwab-rest/src/transport.rs",
       "source_sha256": "956dd4f8f9815b36cb26176a7f0a0dc68a9ad8ac2e5314cdc88a8577dd0b4718",
       "target_path": "vendor/schwab/crates/schwab-rest/src/transport.rs",
-      "target_sha256": "956dd4f8f9815b36cb26176a7f0a0dc68a9ad8ac2e5314cdc88a8577dd0b4718"
+      "target_sha256": "626098ea6d2d43132bf34fb10e8f25664742ef5c22f4fbd2eb25bd069fafb30a"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -302,15 +302,15 @@
       "source_path": "crates/schwab-rest/src/transport_tests.rs",
       "source_sha256": "4e5c72dcc31303a9d6d0ad344cd117a051561fe911ebee9c93eba943dbac731a",
       "target_path": "vendor/schwab/crates/schwab-rest/src/transport_tests.rs",
-      "target_sha256": "4e5c72dcc31303a9d6d0ad344cd117a051561fe911ebee9c93eba943dbac731a"
+      "target_sha256": "9417d957f4cb6f1e549e8e150b7447bc5d7b385ef15ec1bcfeb5d3ea0ed6e233"
     },
     {
-      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adaptation": "Target-only package metadata inherits the target license authorized for this selected extraction; source path and runtime behavior remain unchanged.",
       "source_git_blob": "8470691ce16d0a7b89a624913962d91787ecf02e",
       "source_path": "crates/schwab-sdk/Cargo.toml",
       "source_sha256": "ba9fdc8e75129e4f2bda6823cb899e24208a042ccdfea817496037c16d851216",
       "target_path": "vendor/schwab/crates/schwab-sdk/Cargo.toml",
-      "target_sha256": "ba9fdc8e75129e4f2bda6823cb899e24208a042ccdfea817496037c16d851216"
+      "target_sha256": "96d1fad9d3125ff32cc8b388ad1482000a0fa286d3a4de5daa7b76f0347e1821"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -321,12 +321,12 @@
       "target_sha256": "9ff2f915370f0910e255806402e2656aab3767936263504dd14b2ca14342dd3f"
     },
     {
-      "adaptation": "Target-only public re-exports for account response DTOs and ReadRequestError; source pin and source bytes remain unchanged.",
+      "adaptation": "Target-only public re-exports for account response DTOs, ReadRequestError, and RedirectPolicy; source pin and other source bytes remain unchanged.",
       "source_git_blob": "61413279d286f4bdfda0fb982a74ab571d6d01a1",
       "source_path": "crates/schwab-sdk/src/lib.rs",
       "source_sha256": "474f0c6ae0ab5465d8da47244ff251fb5072d19c4da60a0f142b60eb462864cc",
       "target_path": "vendor/schwab/crates/schwab-sdk/src/lib.rs",
-      "target_sha256": "1a698e136e145f0cb1c2be03b33cae21a1a35fea07f27d57d510c914b96c1fae"
+      "target_sha256": "29376690e79621ff6adae3603a5ff096f92ae2cca5f9edb31b84f4cb921bd0d0"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -334,7 +334,7 @@
       "source_path": "crates/schwab-sdk/src/market_data.rs",
       "source_sha256": "e0aaca87561361ef1195c9b562f0053cc07a2465e002a1076ad4ee7069e9e8f3",
       "target_path": "vendor/schwab/crates/schwab-sdk/src/market_data.rs",
-      "target_sha256": "e0aaca87561361ef1195c9b562f0053cc07a2465e002a1076ad4ee7069e9e8f3"
+      "target_sha256": "11f8a2d1793523cb6bdb3e5cc2743e3268b7a35fb8ec95e8b28011d08fd97417"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -342,23 +342,23 @@
       "source_path": "crates/schwab-sdk/src/trader.rs",
       "source_sha256": "d3addd32d9fc023d5ddb7fe81d837b5b7af7e2cebb5fa3381df24d817820b440",
       "target_path": "vendor/schwab/crates/schwab-sdk/src/trader.rs",
-      "target_sha256": "d3addd32d9fc023d5ddb7fe81d837b5b7af7e2cebb5fa3381df24d817820b440"
+      "target_sha256": "eddcc9c10bf95a4a3e57f6ae344948f8f1b0a81cac303432cfd2ccf12c798c75"
     },
     {
-      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adaptation": "Target-only bilingual crate documentation satisfies the root workspace missing_docs lint; synthetic facade assertions and source pin remain unchanged.",
       "source_git_blob": "9166312f9d3f05c4db121634aaf9f516754dad30",
       "source_path": "crates/schwab-sdk/tests/read_only_facade.rs",
       "source_sha256": "b9815578fa18c2576340485ac64ccbbf9216798813d3d464bc242aa640b278ff",
       "target_path": "vendor/schwab/crates/schwab-sdk/tests/read_only_facade.rs",
-      "target_sha256": "b9815578fa18c2576340485ac64ccbbf9216798813d3d464bc242aa640b278ff"
+      "target_sha256": "892c41526f396d3ef3d1bc54a4f8be6f23052498d752e340b12f33eb49b3f429"
     },
     {
-      "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
+      "adaptation": "Target-only package metadata inherits the target license authorized for this selected extraction; sha2 is pinned directly to 0.11.0 to preserve the existing workspace sha2 0.10.9 dependency.",
       "source_git_blob": "8975fd7ea2d4e8ea1cf35cf3b565a18db3099467",
       "source_path": "crates/schwab-streamer/Cargo.toml",
       "source_sha256": "d9fe4f8bb2575aa6f05aa05d97a9ce4786399969a45b0470a073619282daa27c",
       "target_path": "vendor/schwab/crates/schwab-streamer/Cargo.toml",
-      "target_sha256": "d9fe4f8bb2575aa6f05aa05d97a9ce4786399969a45b0470a073619282daa27c"
+      "target_sha256": "6893130683a31aa0c6e50ae506ddec827a266ac44db9ec23e8f9a00ea5cdeab7"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -366,7 +366,7 @@
       "source_path": "crates/schwab-streamer/src/adapter_tests.rs",
       "source_sha256": "0ab453e547d10b254b7ba417eb65430ac3360cb744e2f04cbec1038b746b875b",
       "target_path": "vendor/schwab/crates/schwab-streamer/src/adapter_tests.rs",
-      "target_sha256": "0ab453e547d10b254b7ba417eb65430ac3360cb744e2f04cbec1038b746b875b"
+      "target_sha256": "9d1408d33d96f37163c03d707481da9b1e44cfb25d55a36451f715d7c5629269"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -374,7 +374,7 @@
       "source_path": "crates/schwab-streamer/src/command.rs",
       "source_sha256": "31b93cd4bd5c1f283e21bec5026b1a3df6f58e5ceb96b33568889384960e4b61",
       "target_path": "vendor/schwab/crates/schwab-streamer/src/command.rs",
-      "target_sha256": "31b93cd4bd5c1f283e21bec5026b1a3df6f58e5ceb96b33568889384960e4b61"
+      "target_sha256": "51483b94717f040e4477dce40b4e7f02a70203d26fad25d0c62260a1760a5180"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -382,7 +382,7 @@
       "source_path": "crates/schwab-streamer/src/credentials.rs",
       "source_sha256": "c42059c26eca2ea90ff07c051379f189bfb9442e42e3e3e32b2ec607a948b945",
       "target_path": "vendor/schwab/crates/schwab-streamer/src/credentials.rs",
-      "target_sha256": "c42059c26eca2ea90ff07c051379f189bfb9442e42e3e3e32b2ec607a948b945"
+      "target_sha256": "ac2e29761d3aa22f741c47e876071e098ec91fa4adac093065c28e912507f2fe"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -390,7 +390,7 @@
       "source_path": "crates/schwab-streamer/src/factory.rs",
       "source_sha256": "b1125c66baf2cc9954e59fcd1480ef39f6ce4b0e2629f1fc431ca41506b9faeb",
       "target_path": "vendor/schwab/crates/schwab-streamer/src/factory.rs",
-      "target_sha256": "b1125c66baf2cc9954e59fcd1480ef39f6ce4b0e2629f1fc431ca41506b9faeb"
+      "target_sha256": "fd46401c25dc0e3048b673a30095ada70609bde5ff1b1a71a9b54db89da0711c"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -398,7 +398,7 @@
       "source_path": "crates/schwab-streamer/src/lib.rs",
       "source_sha256": "40ea36e51b60979a0824ca99590443190977fcce60b583d45a0c0a05b12a15db",
       "target_path": "vendor/schwab/crates/schwab-streamer/src/lib.rs",
-      "target_sha256": "40ea36e51b60979a0824ca99590443190977fcce60b583d45a0c0a05b12a15db"
+      "target_sha256": "4b39c251e14880353919a1509101d76852834619c00a16e8299c7d5b4d4066ae"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -406,7 +406,7 @@
       "source_path": "crates/schwab-streamer/src/manifest.rs",
       "source_sha256": "7773fae8b847f7f92ee950129ea6b85a2e6e0775298a9e707dccb058c2cfc91b",
       "target_path": "vendor/schwab/crates/schwab-streamer/src/manifest.rs",
-      "target_sha256": "7773fae8b847f7f92ee950129ea6b85a2e6e0775298a9e707dccb058c2cfc91b"
+      "target_sha256": "342b9c7f13cf393a8b6000d5ebef67d95ce86f78bfd84271ec58bed35dbe7936"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -422,7 +422,7 @@
       "source_path": "crates/schwab-streamer/src/session.rs",
       "source_sha256": "f626b8dd885cababa68af7cb3cb989b7ea40ab7f3ab07eacd6bc8274ff55da69",
       "target_path": "vendor/schwab/crates/schwab-streamer/src/session.rs",
-      "target_sha256": "f626b8dd885cababa68af7cb3cb989b7ea40ab7f3ab07eacd6bc8274ff55da69"
+      "target_sha256": "b1ec79aa632b12f716ab6bc965c57d59cdce5276ffb6626e03e76c862222281f"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -438,7 +438,7 @@
       "source_path": "crates/schwab-streamer/src/session/fingerprint.rs",
       "source_sha256": "39bed12dc6441a6d78b4e139134bdee11f440ae9711728a426c052d80b5b1ab5",
       "target_path": "vendor/schwab/crates/schwab-streamer/src/session/fingerprint.rs",
-      "target_sha256": "39bed12dc6441a6d78b4e139134bdee11f440ae9711728a426c052d80b5b1ab5"
+      "target_sha256": "20705c7a5cb3fab3b9489a8691b343c4186c2b41e7d9cd556286463f236d640d"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -446,7 +446,7 @@
       "source_path": "crates/schwab-streamer/src/session/market_data.rs",
       "source_sha256": "824a0c6e98b35bee87de126b506b1df519cd89e84b56d84b11040531495db153",
       "target_path": "vendor/schwab/crates/schwab-streamer/src/session/market_data.rs",
-      "target_sha256": "824a0c6e98b35bee87de126b506b1df519cd89e84b56d84b11040531495db153"
+      "target_sha256": "ca380d7ed246f45ac9d04509c3e342bb47c3b0497b6baf4bbe8fece6226eeba8"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -454,7 +454,7 @@
       "source_path": "crates/schwab-streamer/src/session_tests.rs",
       "source_sha256": "fe92f57a3c77af01e2ebcc37551b812e3effc95b731aca2753c887204b7efae0",
       "target_path": "vendor/schwab/crates/schwab-streamer/src/session_tests.rs",
-      "target_sha256": "fe92f57a3c77af01e2ebcc37551b812e3effc95b731aca2753c887204b7efae0"
+      "target_sha256": "4d0b886e86be92c0b2ed1ca56b6dc10477ba8bc6be2ff3a7ad877aac81b9e01a"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -462,7 +462,7 @@
       "source_path": "crates/schwab-streamer/src/socket.rs",
       "source_sha256": "8b9eee9ee9e3fe2bd759b69a927fb850f661ea48a88f6e95540b0720f4b241bb",
       "target_path": "vendor/schwab/crates/schwab-streamer/src/socket.rs",
-      "target_sha256": "8b9eee9ee9e3fe2bd759b69a927fb850f661ea48a88f6e95540b0720f4b241bb"
+      "target_sha256": "029eaa95d99228e5b403ee3dbc1db4bad9f506bc8cc8331412aa205f719e60e6"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -470,7 +470,7 @@
       "source_path": "crates/schwab-streamer/src/state.rs",
       "source_sha256": "1fd923f69a89fcf63a501bf11ed2aad0028d5d2949be45232dba8d51ddc99fb7",
       "target_path": "vendor/schwab/crates/schwab-streamer/src/state.rs",
-      "target_sha256": "1fd923f69a89fcf63a501bf11ed2aad0028d5d2949be45232dba8d51ddc99fb7"
+      "target_sha256": "2c518f37ae02306c6b2bd74ba72c01ec9449cb3fab90671746962e8bf0f44632"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -478,7 +478,7 @@
       "source_path": "crates/schwab-streamer/src/tests.rs",
       "source_sha256": "71b3f8dced1056e68c5effd272f815cf5a0ae383912c1a56dc433aa59f2567f5",
       "target_path": "vendor/schwab/crates/schwab-streamer/src/tests.rs",
-      "target_sha256": "71b3f8dced1056e68c5effd272f815cf5a0ae383912c1a56dc433aa59f2567f5"
+      "target_sha256": "fc14ec35eeda3f623e1a833034a7a1396ca5ca9cb281ba523bc4fe98ed81c0c0"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -486,7 +486,7 @@
       "source_path": "crates/schwab-streamer/src/wire.rs",
       "source_sha256": "739ad989f6576729ffdaa2bf8534503d48762858058ae9e7fa08f9f55ab06d31",
       "target_path": "vendor/schwab/crates/schwab-streamer/src/wire.rs",
-      "target_sha256": "739ad989f6576729ffdaa2bf8534503d48762858058ae9e7fa08f9f55ab06d31"
+      "target_sha256": "bd96477ef65b897856343d916d0aafb912958eca4d0a1fd77a7a6405d4adaf80"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -494,7 +494,7 @@
       "source_path": "crates/schwab-streamer/src/wire_tests.rs",
       "source_sha256": "7058da325a40d4d0808e6dd0998fb104b383d4e29cd2a04897d324fdfdb18927",
       "target_path": "vendor/schwab/crates/schwab-streamer/src/wire_tests.rs",
-      "target_sha256": "7058da325a40d4d0808e6dd0998fb104b383d4e29cd2a04897d324fdfdb18927"
+      "target_sha256": "5091aaec7bea14f4dd36572fc6b70acdeaadd274ada406c99e00c2e8fc246ae8"
     },
     {
       "adaptation": "Exact source-pin copy; no code or fixture edits in the vendor import stage.",
@@ -538,6 +538,29 @@
     }
   ],
   "manifest_version": 1,
+  "packages": [
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "schwab-rest",
+      "source_path": "crates/schwab-rest",
+      "target_manifest": "vendor/schwab/crates/schwab-rest/Cargo.toml",
+      "version": "0.1.0"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "schwab-sdk",
+      "source_path": "crates/schwab-sdk",
+      "target_manifest": "vendor/schwab/crates/schwab-sdk/Cargo.toml",
+      "version": "0.1.0"
+    },
+    {
+      "license": "MIT OR Apache-2.0",
+      "name": "schwab-streamer",
+      "source_path": "crates/schwab-streamer",
+      "target_manifest": "vendor/schwab/crates/schwab-streamer/Cargo.toml",
+      "version": "0.1.0"
+    }
+  ],
   "scope": [
     "crates/schwab-sdk",
     "crates/schwab-rest",
@@ -546,7 +569,14 @@
   ],
   "source_commit": "c907d18bc31790ede4cf36a4312a6813467506f0",
   "source_license_status": "Project-owned Rust packages; extracted under explicit project owner authorization for the public target license. No upstream third-party SDK license is asserted.",
-  "source_repository": "private project repository schwab_auto_bot",
+  "source_repository": "lqepoch/schwab_auto_bot",
   "source_tree": "d0e08a6a7ef030edcd032157375395926514125b",
-  "target_license": "MIT OR Apache-2.0 (project-authorized extraction)"
+  "target_license": "MIT OR Apache-2.0 (project-authorized extraction)",
+  "target_root": "vendor/schwab",
+  "workspace_integration": {
+    "package_license": "The three extracted Cargo packages inherit MIT OR Apache-2.0 for this target under explicit owner authorization; no source-repository license is changed.",
+    "reqwest": "schwab-rest retains exact reqwest 0.13.5 with rustls; localhost TLS tests retain exact rcgen 0.14.10 and tokio-rustls 0.26.5.",
+    "serde_json": "Exact 1.0.151 with arbitrary_precision preserves the target workspace decimal representation.",
+    "sha2": "schwab-streamer pins sha2 0.11.0 directly so the existing Alpaca workspace sha2 0.10.9 remains unchanged."
+  }
 }

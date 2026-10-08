@@ -84,6 +84,7 @@ pub enum ReadAdmissionError {
 impl ReadAdmissionError {
     /// Returns the stable machine-readable error code.
     /// 返回稳定的机器可读错误代码。
+    #[must_use]
     pub const fn code(self) -> &'static str {
         match self {
             Self::QueueFull => "READ_ADMISSION_QUEUE_FULL",
@@ -136,6 +137,9 @@ pub struct AccessToken(Zeroizing<String>);
 impl AccessToken {
     /// Validates the RFC 6750 `b64token` character set and length.
     /// 中文摘要：校验输入并构造该类型的值；具体格式、大小上限和脱敏边界见类型说明。
+    ///
+    /// # Errors
+    /// Returns [`TokenProviderError::InvalidToken`] when the token is empty, over its byte limit, or contains a disallowed character.
     pub fn new(value: impl Into<String>) -> Result<Self, TokenProviderError> {
         let value = Zeroizing::new(value.into());
         let bytes = value.as_bytes();
@@ -213,6 +217,7 @@ pub enum HttpMethod {
 impl HttpMethod {
     /// Returns `GET`, the only HTTP verb admitted by this client.
     /// 返回该已校验值的文本表示。
+    #[must_use]
     pub const fn as_str(self) -> &'static str {
         match self {
             Self::Get => "GET",
@@ -264,6 +269,7 @@ impl ReadEndpoint {
 
     /// Returns the stable route label used in diagnostics without exposing dynamic path or query values.
     /// 返回用于诊断的稳定路由标签，不暴露动态路径或查询值。
+    #[must_use]
     pub fn route_name(&self) -> &'static str {
         self.route_name
     }
@@ -324,12 +330,14 @@ impl HttpRequest {
 
     /// Returns the fixed `GET` method bound to this read request/response.
     /// 返回该只读请求绑定的固定 `GET` 方法。
+    #[must_use]
     pub const fn method(&self) -> HttpMethod {
         HttpMethod::Get
     }
 
     /// Returns the fixed allowlisted route selected for this request.
     /// 返回该请求选择的固定 allowlist 端点。
+    #[must_use]
     pub const fn endpoint(&self) -> &ReadEndpoint {
         &self.endpoint
     }
@@ -341,18 +349,21 @@ impl HttpRequest {
 
     /// Returns the finite deadline applied to this transport request.
     /// 返回应用于该传输请求的有限期限。
+    #[must_use]
     pub const fn timeout(&self) -> Duration {
         self.timeout
     }
 
     /// Returns `Disabled`; transports must reject redirects instead of following them.
     /// 返回 `Disabled`；传输实现必须拒绝重定向，不能跟随至其他目标。
+    #[must_use]
     pub const fn redirect_policy(&self) -> RedirectPolicy {
         RedirectPolicy::Disabled
     }
 
     /// Returns the fixed `application/json` response media type.
     /// 返回固定的 `application/json` 响应媒体类型。
+    #[must_use]
     pub const fn accept(&self) -> &'static str {
         "application/json"
     }
@@ -366,6 +377,7 @@ impl HttpRequest {
 
     /// Returns the maximum response-body size the transport may retain.
     /// 返回传输实现可保留的响应正文最大字节数。
+    #[must_use]
     pub const fn max_response_body_bytes(&self) -> usize {
         MAX_RESPONSE_BODY_BYTES
     }
@@ -374,6 +386,9 @@ impl HttpRequest {
     /// body. Only Retry-After values are supplied; the gate retains neither
     /// credentials nor raw header/body data.
     /// 中文摘要：仅对 HTTP 429，在处理正文前把 Retry-After 值交给共享准入 gate；其他状态不操作，也不保留凭证或正文。
+    ///
+    /// # Errors
+    /// Returns the shared admission gate error if it rejects the bounded rate-limit metadata.
     pub async fn observe_response_head(
         &self,
         status: u16,
@@ -412,7 +427,7 @@ impl fmt::Debug for HttpRequest {
             .field("timeout", &self.timeout())
             .field("redirect_policy", &self.redirect_policy())
             .field("bearer_token", &"[REDACTED]")
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 
@@ -470,6 +485,7 @@ pub enum RequestDispatchCertainty {
 impl HttpTransportError {
     /// Returns a stable machine-readable error code without exposing upstream error text.
     /// 返回稳定的机器可读错误代码，不暴露上游错误文本。
+    #[must_use]
     pub const fn code(self) -> &'static str {
         match self {
             Self::Connect => "REST_TRANSPORT_CONNECT_FAILED",
@@ -489,6 +505,7 @@ impl HttpTransportError {
     /// failure category. Connection establishment and local configuration
     /// failures occur before an HTTP request can be sent.
     /// 中文摘要：报告本地是否能确定请求未发送。
+    #[must_use]
     pub const fn request_dispatch_certainty(self) -> RequestDispatchCertainty {
         match self {
             Self::Connect | Self::Configuration => RequestDispatchCertainty::DefinitelyNotSent,
@@ -541,6 +558,9 @@ impl HttpResponse {
     /// Validates response metadata and payload bounds. A real streaming
     /// transport must apply these caps during receipt as well as here.
     /// 中文摘要：校验输入并构造该类型的值；具体格式、大小上限和脱敏边界见类型说明。
+    ///
+    /// # Errors
+    /// Returns [`ResponseLimitError`] when the status, headers, or body violate the response bounds.
     pub fn new(
         status: u16,
         headers: impl IntoIterator<Item = (String, Vec<u8>)>,
@@ -588,6 +608,7 @@ impl HttpResponse {
 
     /// Returns the broker HTTP status code.
     /// 返回 broker 报告的 HTTP 状态码。
+    #[must_use]
     pub const fn status(&self) -> u16 {
         self.status
     }
@@ -602,6 +623,7 @@ impl HttpResponse {
 
     /// Borrows the response body, capped by `MAX_RESPONSE_BODY_BYTES`.
     /// 借用受 `MAX_RESPONSE_BODY_BYTES` 限制的响应正文。
+    #[must_use]
     pub fn body(&self) -> &[u8] {
         &self.body
     }
@@ -674,12 +696,14 @@ pub struct RestResponse {
 impl RestResponse {
     /// Returns the fixed `GET` method bound to this read request/response.
     /// 返回该只读请求绑定的固定 `GET` 方法。
+    #[must_use]
     pub const fn method(&self) -> HttpMethod {
         HttpMethod::Get
     }
 
     /// Returns the fixed allowlisted route selected for this request.
     /// 返回该请求选择的固定 allowlist 端点。
+    #[must_use]
     pub const fn endpoint(&self) -> &ReadEndpoint {
         &self.endpoint
     }
@@ -691,12 +715,14 @@ impl RestResponse {
 
     /// Returns the number of transport attempts; this client never retries automatically.
     /// 返回传输尝试次数；该 client 不自动重试。
+    #[must_use]
     pub const fn attempts(&self) -> u8 {
         1
     }
 
     /// Returns the broker HTTP status code.
     /// 返回 broker 报告的 HTTP 状态码。
+    #[must_use]
     pub const fn status(&self) -> u16 {
         self.response.status()
     }
@@ -709,6 +735,7 @@ impl RestResponse {
 
     /// Borrows the response body, capped by `MAX_RESPONSE_BODY_BYTES`.
     /// 借用受 `MAX_RESPONSE_BODY_BYTES` 限制的响应正文。
+    #[must_use]
     pub fn body(&self) -> &[u8] {
         self.response.body()
     }
@@ -752,6 +779,7 @@ impl RestError {
     /// non-2xx response is deliberately conservative: its status does not
     /// prove that a mutation had no side effect.
     /// 中文摘要：报告本地是否能确定请求未发送。
+    #[must_use]
     pub const fn request_dispatch_certainty(&self) -> RequestDispatchCertainty {
         match self {
             Self::Request(_) | Self::Admission(_) | Self::Token(_) => {
@@ -764,6 +792,7 @@ impl RestError {
 
     /// Returns a stable machine-readable error code without exposing upstream error text.
     /// 返回稳定的机器可读错误代码，不暴露上游错误文本。
+    #[must_use]
     pub const fn code(&self) -> &'static str {
         match self {
             Self::Admission(error) => error.code(),
@@ -808,6 +837,7 @@ impl RestError {
 
     /// Returns the raw REST response when the result type contains one.
     /// 返回该错误中保留的原始 REST 响应（若错误类别包含响应）。
+    #[must_use]
     pub fn response(&self) -> Option<&RestResponse> {
         match self {
             Self::HttpStatus(response) => Some(response),
@@ -817,11 +847,10 @@ impl RestError {
 
     /// Returns the number of transport attempts; this client never retries automatically.
     /// 返回传输尝试次数；该 client 不自动重试。
+    #[must_use]
     pub const fn attempts(&self) -> u8 {
         match self {
-            Self::Request(_) => 0,
-            Self::Admission(_) => 0,
-            Self::Token(_) => 0,
+            Self::Request(_) | Self::Admission(_) | Self::Token(_) => 0,
             Self::Transport(_) | Self::HttpStatus(_) => 1,
         }
     }
@@ -899,6 +928,9 @@ where
 
     /// Fetches account-number/hash data as a raw bounded response; use the typed read facade for schema validation.
     /// 读取账户编号映射响应。
+    ///
+    /// # Errors
+    /// Returns [`RestError`] when request validation, admission, token lookup, transport, or the HTTP response fails.
     pub async fn account_numbers(&self) -> Result<RestResponse, RestError> {
         self.get_endpoint(ReadEndpoint::AccountNumbers, ReadPriority::Urgent)
             .await
@@ -906,6 +938,9 @@ where
 
     /// Fetches user-preference data as a raw bounded response; use the typed read facade for schema validation.
     /// 读取用户偏好 DTO，不从该响应直接授权网络目标。
+    ///
+    /// # Errors
+    /// Returns [`RestError`] when request validation, admission, token lookup, transport, or the HTTP response fails.
     pub async fn user_preferences(&self) -> Result<RestResponse, RestError> {
         self.get_endpoint(ReadEndpoint::UserPreferences, ReadPriority::Urgent)
             .await

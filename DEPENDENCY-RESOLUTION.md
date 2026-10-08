@@ -24,6 +24,20 @@ evidence from the engine probe and intentionally retains its original Rust
 `alpaca-rest-read` consumer uses the pinned SDK, while `broker-execution` itself
 still declares MSRV 1.98.1.
 
+The current public Schwab extraction is a narrower package set and no longer
+uses the source workspace's former `serde_json=1.0.149` selection. Its target
+workspace uses exact `serde_json=1.0.151` with `arbitrary_precision`, matching
+the pinned `market-contracts` dependency and preserving decimal lexical
+precision. The source-to-target version adaptation is recorded in
+`vendor/schwab/SOURCE-MANIFEST.json`.
+
+The current workspace pins `domain` and `market-contracts`, and their transitive
+`exact-decimal` package, to the same immutable RawCore7 revision
+`ebfe606b381011b4a7ad3dfdc673c8e8f6651a08` (tree
+`64f964908d00960740a33f29369b702b83f38526`). Cargo.lock records one shared
+revision so adapters and consumers use the same Rust domain and market-contract
+types. `SOURCE-MANIFEST.json` records that pin for all three packages.
+
 The pinned Alpaca REST stack's target-union dependency graph includes
 `webpki-root-certs 1.0.9`: the SDK enables reqwest 0.13.5's `rustls` feature,
 which includes `rustls-platform-verifier 0.7.1`, whose wasm32 target dependency

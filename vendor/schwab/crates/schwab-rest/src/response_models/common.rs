@@ -46,12 +46,16 @@ pub struct WireNumber(String);
 impl WireNumber {
     /// Returns the exact numeric token, including exponent and trailing zeros.
     /// 中文摘要：返回该值的文本或 wire 表示。
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
 
     /// Converts to the crate's bounded exact-decimal arithmetic representation.
     /// 中文摘要：将精确 JSON 数值解析为有界十进制表示；精度超界时返回固定错误。
+    ///
+    /// # Errors
+    /// Returns [`ReadResponseError`] when the response kind, structure, required values, or numeric bounds do not satisfy this projection.
     pub fn exact_decimal(&self) -> Result<ExactDecimal, ReadResponseError> {
         ExactDecimal::parse(&self.0)
     }
@@ -75,6 +79,7 @@ pub struct UnknownFields(BTreeMap<String, Value>);
 impl UnknownFields {
     /// Reads one unrecognized field.
     /// 中文摘要：读取
+    #[must_use]
     pub fn get(&self, key: &str) -> Option<&Value> {
         self.0.get(key)
     }
@@ -87,6 +92,7 @@ impl UnknownFields {
 
     /// Returns whether no unrecognized fields were present.
     /// 中文摘要：判断该值是否为空。
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }

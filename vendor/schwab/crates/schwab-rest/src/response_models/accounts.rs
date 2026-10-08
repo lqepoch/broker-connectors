@@ -159,6 +159,7 @@ pub struct BalanceSnapshot {
 impl BalanceSnapshot {
     /// Returns an exact wire number for a recognized balance key.
     /// 中文摘要：读取
+    #[must_use]
     pub fn get(&self, key: &str) -> Option<&WireNumber> {
         self.values.get(key)
     }
@@ -171,6 +172,7 @@ impl BalanceSnapshot {
 
     /// Returns unrecognized balance values without interpreting them.
     /// 中文摘要：返回未识别的余额字段，不为其推断资金含义或 authority。
+    #[must_use]
     pub const fn unknown_fields(&self) -> &UnknownFields {
         &self.unknown_fields
     }

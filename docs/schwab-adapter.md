@@ -22,10 +22,31 @@ claim to grant Schwab API access, account authority, or market-data rights.
 
 The source packages retain their fixed HTTPS GET routes, injected token and
 transport ports, bounded response parser, no-auto-retry behavior, source SDK
-error categories, and native Streamer protocol/runtime. Any manifest version
-adaptation is recorded in the per-file provenance manifest and will be folded
-into the root source manifest after the serialized Cargo/SBOM integration
-stage.
+error categories, and native Streamer protocol/runtime. The three Cargo
+packages inherit the target's authorized `MIT OR Apache-2.0` metadata. The
+workspace pins `serde_json=1.0.151` with `arbitrary_precision`; `schwab-streamer`
+pins `sha2=0.11.0` directly while the existing Alpaca stream keeps its
+`sha2=0.10.9` workspace pin. `schwab-rest` retains exact `reqwest=0.13.5`
+with rustls and localhost-only TLS test dependencies `rcgen=0.14.10` and
+`tokio-rustls=0.26.5`. All target adaptations and source hashes are recorded
+per file in both manifests.
+
+## Capability report
+
+| Capability | Status in this workspace | Evidence and boundary |
+| --- | --- | --- |
+| Account summary read | Available as a bounded read-only adapter call | Uses the pinned SDK's account `GET`, an explicit opaque broker hash, and the injected shared read-budget owner; account numbers are discarded. |
+| Positions read | Available as one bounded page | Rejects caller cursors and oversized responses; it does not invent continuation or completeness evidence. |
+| Open orders and fills | Unsupported | The selected source query contract has no cursor/completeness proof, so the adapter returns `Unsupported` without sending a request. |
+| Schwab Streamer protocol | Synthetic protocol path only | The extracted runtime is driven by a fake socket; ACK, generation, sparse revisions, and raw field keys are tested without assigning field meanings. |
+| Stream-to-market-event conversion | Blocked | Numeric field IDs remain opaque; no quote/Greek mapping, SIP/OPRA label, or timestamp unit is inferred. |
+| Stream bootstrap and provider connection | Blocked | The gate requires an injected fresh bootstrap source, zeroizing token lease, and exact WSS host/port allowlist. This repository supplies no production bootstrap owner or provider allowlist. |
+| Order placement, replace, cancel, or OAuth | Not implemented | No write facade, OAuth flow, or broker call is included in this extraction. |
+| Generic account-event port | No provider implementation | The shared contract exists, but this adapter does not publish account events. |
+
+These statuses describe local adapter capabilities, not Schwab provider
+readiness. Synthetic tests do not establish remote compatibility, account
+authority, entitlement, or live safety.
 
 ## REST read behavior
 
@@ -79,11 +100,25 @@ or market-data acceptance evidence.
 
 ## Validation status
 
-No Cargo build or test has been run for this target slice yet because the
-workspace dependency and lockfile integration is serialized with the Alpaca
-and IBKR owners. The first permitted local validation after that integration
-will include the complete `schwab-sdk`, `schwab-rest`, `schwab-streamer`, and
-`schwab-adapter` test suites, formatting, Clippy, dependency/SBOM checks,
-source-manifest hash validation, and secret scanning. Real Schwab REST/Streamer
-access, OAuth, live accounts, Windows/macOS execution, and market-data
-entitlement are **NOT RUN**.
+The offline Schwab and shared-port test suites passed on the RawCore7-pinned
+workspace snapshot:
+
+```text
+CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR=/root/.cache/lqepoch/broker-connectors-target \
+  cargo +1.99.0 test -p broker-ports -p schwab-rest -p schwab-sdk \
+  -p schwab-streamer -p schwab-adapter --locked --offline
+184 passed; 4 ignored
+
+CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR=/root/.cache/lqepoch/broker-connectors-target \
+  cargo +1.99.0 clippy -p schwab-rest -p schwab-sdk -p schwab-streamer \
+  -p schwab-adapter --all-targets --no-deps --locked --offline -- -D warnings
+passed
+```
+
+Static source-hash checks also matched all 88 root imported-source entries and
+66 selected Schwab source entries to their recorded target hashes; all 66
+selected source hashes and Git blobs matched the immutable source pin. Final
+workspace formatting, integrated SBOM/provenance regeneration, full-workspace
+gates, and secret scanning remain pending on the final integrated head. Real
+Schwab REST/Streamer access, OAuth, live accounts, Windows/macOS execution, and
+market-data entitlement are **NOT RUN**.

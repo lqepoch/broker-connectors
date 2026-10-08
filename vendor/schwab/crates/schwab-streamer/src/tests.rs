@@ -126,7 +126,7 @@ fn reconnect_replays_only_current_desired_keys_with_fresh_subs_fences() {
             .value(),
         2
     );
-    for service in SERVICE_MANIFESTS.map(|manifest| manifest.service()) {
+    for service in SERVICE_MANIFESTS.map(super::manifest::ServiceManifest::service) {
         let command = first_replay
             .get(service)
             .expect("all three services have desired keys");
@@ -152,7 +152,7 @@ fn reconnect_replays_only_current_desired_keys_with_fresh_subs_fences() {
             .value()
             > old_generation.value()
     );
-    for service in SERVICE_MANIFESTS.map(|manifest| manifest.service()) {
+    for service in SERVICE_MANIFESTS.map(super::manifest::ServiceManifest::service) {
         let command = second_replay
             .get(service)
             .expect("desired keys survive reconnect");
@@ -808,7 +808,7 @@ fn subscription_state_debug_redacts_desired_acknowledged_and_pending_keys() {
 #[test]
 fn market_row_key_normalization_matches_single_key_set_validation() {
     let mut cases = vec![
-        "".to_owned(),
+        String::new(),
         " \t\n".to_owned(),
         "QQQ".to_owned(),
         "  QQQ  ".to_owned(),
@@ -871,7 +871,7 @@ fn market_row_key_normalization_matches_single_key_set_validation() {
 #[ignore = "repeatable local-only benchmark for per-row Streamer key validation"]
 fn ignored_market_row_key_validation_benchmark() {
     use std::hint::black_box;
-    use std::time::Instant;
+    use std::time::{Duration, Instant};
 
     const SAMPLES: usize = 7;
     const ITERATIONS_PER_SAMPLE: usize = 250_000;
@@ -911,11 +911,21 @@ fn ignored_market_row_key_validation_benchmark() {
     }
     baseline.sort_unstable();
     candidate.sort_unstable();
+    let baseline_median_ns = baseline[SAMPLES / 2];
+    let candidate_median_ns = candidate[SAMPLES / 2];
+    let baseline_median_seconds = Duration::from_nanos(
+        u64::try_from(baseline_median_ns).expect("local benchmark duration fits u64 nanoseconds"),
+    )
+    .as_secs_f64();
+    let candidate_median_seconds = Duration::from_nanos(
+        u64::try_from(candidate_median_ns).expect("local benchmark duration fits u64 nanoseconds"),
+    )
+    .as_secs_f64();
     println!(
         "MARKET_KEY_BENCH samples={SAMPLES} iterations_per_sample={ITERATIONS_PER_SAMPLE} corpus_keys={} baseline_median_ns={} candidate_median_ns={} speedup_percent={:.2}",
         keys.len(),
-        baseline[SAMPLES / 2],
-        candidate[SAMPLES / 2],
-        (baseline[SAMPLES / 2] as f64 / candidate[SAMPLES / 2] as f64 - 1.0) * 100.0,
+        baseline_median_ns,
+        candidate_median_ns,
+        (baseline_median_seconds / candidate_median_seconds - 1.0) * 100.0,
     );
 }

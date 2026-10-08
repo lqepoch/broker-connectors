@@ -9,6 +9,45 @@ use super::common::{
     optional_object, project_instrument, string, unknown_fields,
 };
 
+const ORDER_FIELDS: &[&str] = &[
+    "session",
+    "duration",
+    "orderType",
+    "cancelTime",
+    "complexOrderStrategyType",
+    "quantity",
+    "filledQuantity",
+    "remainingQuantity",
+    "requestedDestination",
+    "destinationLinkName",
+    "releaseTime",
+    "stopPrice",
+    "stopPriceLinkBasis",
+    "stopPriceLinkType",
+    "stopPriceOffset",
+    "stopType",
+    "priceLinkBasis",
+    "priceLinkType",
+    "price",
+    "taxLotMethod",
+    "orderLegCollection",
+    "activationPrice",
+    "specialInstruction",
+    "orderStrategyType",
+    "orderId",
+    "cancelable",
+    "editable",
+    "status",
+    "enteredTime",
+    "closeTime",
+    "tag",
+    "accountNumber",
+    "orderActivityCollection",
+    "replacingOrderCollection",
+    "childOrderStrategies",
+    "statusDescription",
+];
+
 /// A Schwab order, including nested strategy orders and execution activity.
 /// 中文摘要：Schwab 订单响应的只读投影，包含策略子订单和成交活动；状态或 cancelable 标记不提供写操作能力。
 #[derive(Clone, PartialEq)]
@@ -230,44 +269,6 @@ pub(super) fn project_order(value: &Value, depth: usize) -> Result<Order, ReadRe
         return Err(ReadResponseError::JsonTooComplex);
     }
     let fields = object(value, "order")?;
-    let known = [
-        "session",
-        "duration",
-        "orderType",
-        "cancelTime",
-        "complexOrderStrategyType",
-        "quantity",
-        "filledQuantity",
-        "remainingQuantity",
-        "requestedDestination",
-        "destinationLinkName",
-        "releaseTime",
-        "stopPrice",
-        "stopPriceLinkBasis",
-        "stopPriceLinkType",
-        "stopPriceOffset",
-        "stopType",
-        "priceLinkBasis",
-        "priceLinkType",
-        "price",
-        "taxLotMethod",
-        "orderLegCollection",
-        "activationPrice",
-        "specialInstruction",
-        "orderStrategyType",
-        "orderId",
-        "cancelable",
-        "editable",
-        "status",
-        "enteredTime",
-        "closeTime",
-        "tag",
-        "accountNumber",
-        "orderActivityCollection",
-        "replacingOrderCollection",
-        "childOrderStrategies",
-        "statusDescription",
-    ];
     Ok(Order {
         session: string(fields, "session", "order.session")?,
         duration: string(fields, "duration", "order.duration")?,
@@ -340,7 +341,7 @@ pub(super) fn project_order(value: &Value, depth: usize) -> Result<Order, ReadRe
             |child| project_order(child, depth + 1),
         )?,
         status_description: string(fields, "statusDescription", "order.statusDescription")?,
-        unknown_fields: unknown_fields(fields, &known),
+        unknown_fields: unknown_fields(fields, ORDER_FIELDS),
     })
 }
 

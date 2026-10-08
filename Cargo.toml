@@ -5,6 +5,10 @@ members = [
     "crates/alpaca-stream",
     "crates/alpaca-rest-read",
     "crates/ibkr-read",
+    "crates/schwab-adapter",
+    "vendor/schwab/crates/schwab-rest",
+    "vendor/schwab/crates/schwab-sdk",
+    "vendor/schwab/crates/schwab-streamer",
 ]
 resolver = "3"
 exclude = ["vendor/alpaca-rust", "vendor/ibapi"]
@@ -19,14 +23,17 @@ repository = "https://github.com/lqepoch/broker-connectors"
 [workspace.dependencies]
 broker-ports = { path = "crates/broker-ports", version = "=0.1.0" }
 chrono = { version = "=0.4.45", default-features = false, features = ["std"] }
-domain = { git = "https://github.com/lqepoch/trading-core.git", rev = "0a2eaff08d45e8abc1a0137dab17d5d3ef5553c8", version = "=0.1.0" }
+domain = { git = "https://github.com/lqepoch/trading-core.git", rev = "ebfe606b381011b4a7ad3dfdc673c8e8f6651a08", version = "=0.1.0" }
 futures-util = "=0.3.34"
-market-contracts = { git = "https://github.com/lqepoch/trading-core.git", rev = "0a2eaff08d45e8abc1a0137dab17d5d3ef5553c8", version = "=0.1.0" }
+market-contracts = { git = "https://github.com/lqepoch/trading-core.git", rev = "ebfe606b381011b4a7ad3dfdc673c8e8f6651a08", version = "=0.1.0" }
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = { version = "=1.0.151", features = ["arbitrary_precision"] }
 alpaca-data = { path = "vendor/alpaca-rust/crates/alpaca-data", version = "=0.33.3" }
 alpaca-rest-http = { path = "vendor/alpaca-rust/crates/alpaca-http", version = "=0.33.3" }
 ibapi = { path = "vendor/ibapi", version = "=5.0.0", default-features = false }
 rmpv = "=1.3.1"
 sha2 = "=0.10.9"
+url = "=2.5.8"
 tokio = { version = "=1.53.1", default-features = false, features = ["macros", "net", "rt-multi-thread", "sync", "time"] }
 tokio-tungstenite = { version = "=0.30.0", default-features = false, features = ["connect", "rustls-tls-native-roots"] }
 zeroize = "=1.9.0"

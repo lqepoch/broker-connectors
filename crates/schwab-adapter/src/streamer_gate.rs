@@ -13,12 +13,12 @@
 
 use std::collections::BTreeSet;
 use std::fmt;
-use std::future::Future;
 use std::net::IpAddr;
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use broker_ports::{AccountNamespace, ExecutionBrokerId, PortFuture};
+use broker_ports::PortFuture;
+use domain::{AccountNamespace, ExecutionBrokerId};
 use schwab_streamer::{
     CredentialInputError, CredentialProviderFailure, StreamerCredentialProvider,
     StreamerLoginSecret, StreamerSessionCredentials,
@@ -36,6 +36,10 @@ pub struct TrustedWssEndpoint {
 impl TrustedWssEndpoint {
     /// Validates one lowercase DNS hostname and nonzero explicit port.
     /// 校验一个小写 DNS 主机名和非零显式端口。
+    ///
+    /// # Errors
+    /// Returns [`SchwabStreamerGateError::InvalidAllowlist`] when the hostname
+    /// is not a valid lowercase DNS name or the port is zero.
     pub fn new(host: impl Into<String>, port: u16) -> Result<Self, SchwabStreamerGateError> {
         let host = host.into();
         if port == 0 || !valid_dns_host(&host) {
@@ -85,6 +89,10 @@ pub struct SchwabStreamerBootstrapLease {
 impl SchwabStreamerBootstrapLease {
     /// Takes ownership of a fresh metadata snapshot and short-lived token lease.
     /// 接管新鲜元数据快照与短时 token lease。
+    ///
+    /// # Errors
+    /// Returns [`SchwabStreamerGateError::InvalidBootstrapMaterial`] when a
+    /// field is empty, malformed, or exceeds the source SDK's fixed size bound.
     #[allow(clippy::too_many_arguments)]
     pub fn new(
         socket_url: impl Into<String>,
@@ -195,6 +203,10 @@ pub struct SchwabStreamerGate<B: SchwabStreamerBootstrapPort> {
 impl<B: SchwabStreamerBootstrapPort> SchwabStreamerGate<B> {
     /// Requires a Schwab namespace, at least one exact WSS endpoint, and an injected bootstrap source.
     /// 必须提供 Schwab 命名空间、至少一个精确 WSS endpoint 和注入的 bootstrap 来源。
+    ///
+    /// # Errors
+    /// Returns [`SchwabStreamerGateError::InvalidAllowlist`] if the namespace
+    /// is not Schwab-scoped or the endpoint allowlist is empty.
     pub fn new(
         namespace: AccountNamespace,
         endpoints: impl IntoIterator<Item = TrustedWssEndpoint>,
@@ -263,15 +275,12 @@ impl<B: SchwabStreamerBootstrapPort> fmt::Debug for SchwabStreamerGate<B> {
 }
 
 impl<B: SchwabStreamerBootstrapPort> StreamerCredentialProvider for SchwabStreamerGate<B> {
-    fn load_session_credentials(
+    async fn load_session_credentials(
         &mut self,
-    ) -> impl Future<Output = Result<StreamerSessionCredentials, CredentialProviderFailure>> + Send
-    {
-        async move {
-            self.load_credentials()
-                .await
-                .map_err(|_| CredentialProviderFailure::Unavailable)
-        }
+    ) -> Result<StreamerSessionCredentials, CredentialProviderFailure> {
+        self.load_credentials()
+            .await
+            .map_err(|_| CredentialProviderFailure::Unavailable)
     }
 }
 

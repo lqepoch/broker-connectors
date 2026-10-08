@@ -241,7 +241,11 @@ mod tests {
             let p50_candidate_vs_legacy_pct = if reference.0 == 0 {
                 0.0
             } else {
-                (candidate.0 as f64 / reference.0 as f64 - 1.0) * 100.0
+                let candidate_ns = u32::try_from(candidate.0)
+                    .expect("one-call benchmark duration fits u32 nanoseconds");
+                let reference_ns = u32::try_from(reference.0)
+                    .expect("one-call benchmark duration fits u32 nanoseconds");
+                (f64::from(candidate_ns) / f64::from(reference_ns) - 1.0) * 100.0
             };
             println!(
                 "SPARSE_FINGERPRINT_BENCH profile={profile} fields={} rounds={ROUNDS} iterations_per_sample={ITERATIONS_PER_SAMPLE} nearest_rank_ns_per_call legacy_p50={} legacy_p95={} legacy_p99={} candidate_p50={} candidate_p95={} candidate_p99={} p50_candidate_vs_legacy_pct={p50_candidate_vs_legacy_pct:.3}",

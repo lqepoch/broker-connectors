@@ -227,6 +227,12 @@ impl Error for StreamerWireError {}
 
 /// Parses one bounded JSON frame without network or socket access.
 /// 中文摘要：在帧字节数、嵌套深度和数组条目上限内解码 JSON；错误不包含原始字节或 payload 值。
+///
+/// # Errors
+/// Returns [`StreamerWireError::EmptyFrame`] for empty input,
+/// [`StreamerWireError::FrameTooLarge`] above the frame bound,
+/// [`StreamerWireError::MalformedJson`] for invalid bounded JSON, or
+/// [`StreamerWireError::InvalidSchema`] when fields violate the local schema.
 pub fn parse_streamer_frame(bytes: &[u8]) -> Result<StreamerWireFrame, StreamerWireError> {
     if bytes.is_empty() {
         return Err(StreamerWireError::EmptyFrame);
@@ -254,6 +260,7 @@ pub fn parse_streamer_frame(bytes: &[u8]) -> Result<StreamerWireFrame, StreamerW
 /// SUBS/UNSUBS/ADD/VIEW respectively. No service-specific override currently
 /// exists in `src/types/streamer.ts`.
 /// 中文摘要：按协议成功码范围分类命令结果；不负责关联响应或推进状态。
+#[must_use]
 pub fn is_successful_streamer_command(_service: &str, command: &str, code: i64) -> bool {
     if code == 0 {
         return true;
@@ -490,6 +497,16 @@ where
 
 struct JavascriptNumberVisitor;
 
+fn integer_as_javascript_number<E, N>(value: N) -> Result<f64, E>
+where
+    E: de::Error,
+    serde_json::Number: From<N>,
+{
+    serde_json::Number::from(value)
+        .as_f64()
+        .ok_or_else(|| E::custom("timestamp must coerce to a finite number"))
+}
+
 impl<'de> Visitor<'de> for JavascriptNumberVisitor {
     type Value = f64;
 
@@ -508,28 +525,28 @@ impl<'de> Visitor<'de> for JavascriptNumberVisitor {
     where
         E: de::Error,
     {
-        Ok(value as f64)
+        integer_as_javascript_number(value)
     }
 
     fn visit_i128<E>(self, value: i128) -> Result<Self::Value, E>
     where
         E: de::Error,
     {
-        Ok(value as f64)
+        integer_as_javascript_number(value)
     }
 
     fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
     where
         E: de::Error,
     {
-        Ok(value as f64)
+        integer_as_javascript_number(value)
     }
 
     fn visit_u128<E>(self, value: u128) -> Result<Self::Value, E>
     where
         E: de::Error,
     {
-        Ok(value as f64)
+        integer_as_javascript_number(value)
     }
 
     fn visit_f32<E>(self, value: f32) -> Result<Self::Value, E>
@@ -683,12 +700,12 @@ fn integer_from_number(number: &Number) -> Option<i64> {
     let value = number.as_f64()?;
     if !value.is_finite()
         || value.fract() != 0.0
-        || value < i64::MIN as f64
+        || value < -9_223_372_036_854_775_808.0
         || value >= 9_223_372_036_854_775_808.0
     {
         return None;
     }
-    Some(value as i64)
+    format!("{value:.0}").parse().ok()
 }
 
 fn integer_from_string(value: &str) -> Option<i64> {
@@ -708,6 +725,7 @@ fn deserialize_request_id<'de, D>(deserializer: D) -> Result<String, D::Error>
 where
     D: Deserializer<'de>,
 {
+    const MAX_SAFE_INTEGER: f64 = 9_007_199_254_740_991.0;
     let value = Value::deserialize(deserializer)?;
     match value {
         Value::String(value) => Ok(value),
@@ -717,13 +735,12 @@ where
                     "requestid must be a string or safe integer",
                 ));
             };
-            const MAX_SAFE_INTEGER: f64 = 9_007_199_254_740_991.0;
             if !value.is_finite() || value.fract() != 0.0 || value.abs() > MAX_SAFE_INTEGER {
                 return Err(de::Error::custom(
                     "requestid must be a string or safe integer",
                 ));
             }
-            Ok((value as i64).to_string())
+            Ok(format!("{value:.0}"))
         }
         _ => Err(de::Error::custom(
             "requestid must be a string or safe integer",

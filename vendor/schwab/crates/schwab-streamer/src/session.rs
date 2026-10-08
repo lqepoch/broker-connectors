@@ -526,6 +526,12 @@ impl StreamerControl {
     /// snapshots. Repeating an unchanged set is safe and retries an unconfirmed
     /// service without sending a command for already acknowledged services.
     /// 中文摘要：有界校验后替换单个服务的期望 key；更新经有界控制队列发送给 runtime。
+    ///
+    /// # Errors
+    /// Returns [`SessionControlError::InvalidKeys`] when the supplied key set
+    /// violates a hard state bound, [`SessionControlError::MandatoryActivitySubscription`]
+    /// when an actor attempts to remove the required activity key, or a queue
+    /// error when the runtime cannot accept the command.
     pub fn set_desired<I, K>(
         &self,
         service: StreamerService,
@@ -547,12 +553,20 @@ impl StreamerControl {
     /// Retries one service after a prior rejection/timeout without disturbing
     /// other services or the shared activity socket.
     /// 中文摘要：请求重新同步单个服务，不改变其期望 key。
+    ///
+    /// # Errors
+    /// Returns [`SessionControlError::QueueFull`] when the bounded mailbox is
+    /// full or [`SessionControlError::RuntimeStopped`] after shutdown.
     pub fn retry(&self, service: StreamerService) -> Result<(), SessionControlError> {
         self.enqueue(ControlMessage::Retry(service))
     }
 
     /// Requests a read-only VIEW of one market-data service.
     /// 中文摘要：请求只读查看单个服务的当前订阅，不修改期望状态。
+    ///
+    /// # Errors
+    /// Returns [`SessionControlError::ViewUnsupported`] for account activity,
+    /// or a queue error when the runtime cannot accept the command.
     pub fn view(&self, service: StreamerService) -> Result<(), SessionControlError> {
         if service == StreamerService::AcctActivity {
             return Err(SessionControlError::ViewUnsupported);
@@ -562,6 +576,10 @@ impl StreamerControl {
 
     /// Requests orderly runtime shutdown.
     /// 中文摘要：通过控制队列请求 owner task 关闭；队列已满或已关闭时返回错误。
+    ///
+    /// # Errors
+    /// Returns [`SessionControlError::QueueFull`] when the bounded mailbox is
+    /// full or [`SessionControlError::RuntimeStopped`] after shutdown.
     pub fn shutdown(&self) -> Result<(), SessionControlError> {
         self.enqueue(ControlMessage::Shutdown)
     }
@@ -681,6 +699,10 @@ pub struct StreamerRuntime<F: AuthenticatedSessionFactory> {
 impl<F: AuthenticatedSessionFactory> StreamerRuntime<F> {
     /// Creates an owner task and its bounded actor/event channels.
     /// 中文摘要：校验输入并构造该类型的值；具体格式、大小上限和脱敏边界见类型说明。
+    ///
+    /// # Errors
+    /// Returns [`SessionConfigError`] when any configured capacity or duration
+    /// is zero, exceeds its fixed bound, or has an invalid ordering.
     pub fn new(
         factory: F,
         config: SessionConfig,
@@ -722,6 +744,10 @@ impl<F: AuthenticatedSessionFactory> StreamerRuntime<F> {
     /// If the owner task is aborted, the market-data receiver performs that
     /// discard on its next poll before returning None.
     /// 中文摘要：运行单 socket 会话状态机，处理 ACK、心跳和重连计时器。
+    ///
+    /// # Errors
+    /// Returns [`SessionRunError`] when bounded event delivery, market-data
+    /// delivery, or a monotonic state counter can no longer proceed safely.
     pub async fn run(mut self) -> Result<(), SessionRunError> {
         let result = self.run_loop().await;
         self.close_channels().await;
@@ -802,6 +828,9 @@ impl<F: AuthenticatedSessionFactory> StreamerRuntime<F> {
         }
     }
 
+    // Keep connection I/O, ACK correlation, and heartbeat deadlines visible
+    // in one state-machine method; splitting them obscures cancellation order.
+    #[allow(clippy::too_many_lines)]
     async fn serve_connection(
         &mut self,
         mut socket: F::Socket,
@@ -897,10 +926,10 @@ impl<F: AuthenticatedSessionFactory> StreamerRuntime<F> {
                         Err(failure) => return Ok(ConnectionEnd::Disconnected(failure)),
                     }
                 }
-                _ = wait_for_deadline(next_deadline), if next_deadline.is_some() => {
+                () = wait_for_deadline(next_deadline), if next_deadline.is_some() => {
                     self.expire_acknowledgements(generation, &mut deadlines).await?;
                 }
-                _ = sleep_until(next_client_ping) => {
+                () = sleep_until(next_client_ping) => {
                     next_client_ping = Instant::now() + self.config.client_ping_interval;
                     match timeout(self.config.send_timeout, socket.send_ping()).await {
                         Ok(Ok(())) => {}
@@ -908,7 +937,7 @@ impl<F: AuthenticatedSessionFactory> StreamerRuntime<F> {
                         Err(_) => return Ok(ConnectionEnd::Disconnected(PortFailure::SendFailed)),
                     }
                 }
-                _ = sleep_until(next_heartbeat_check) => {
+                () = sleep_until(next_heartbeat_check) => {
                     let now = Instant::now();
                     if now.saturating_duration_since(last_peer_liveness) >= self.config.heartbeat_timeout {
                         return Ok(ConnectionEnd::Disconnected(PortFailure::ReceiveFailed));
@@ -970,6 +999,9 @@ impl<F: AuthenticatedSessionFactory> StreamerRuntime<F> {
         }
     }
 
+    // Frame routing updates subscription state and bounded market data as one
+    // ordered transition, so retain its local sequencing in one function.
+    #[allow(clippy::too_many_lines)]
     async fn route_frame(
         &mut self,
         frame: crate::StreamerWireFrame,
@@ -1184,7 +1216,7 @@ impl<F: AuthenticatedSessionFactory> StreamerRuntime<F> {
         let deadline = Instant::now() + self.reconnect_delay(attempt);
         loop {
             tokio::select! {
-                _ = sleep_until(deadline) => return Ok(false),
+                () = sleep_until(deadline) => return Ok(false),
                 command = self.controls.recv() => {
                     let Some(command) = command else {
                         return Ok(true);
@@ -1236,7 +1268,7 @@ impl<F: AuthenticatedSessionFactory> StreamerRuntime<F> {
             failure: Some(failure),
         })
         .await?;
-        for service in crate::SERVICE_MANIFESTS.map(|manifest| manifest.service()) {
+        for service in crate::SERVICE_MANIFESTS.map(super::manifest::ServiceManifest::service) {
             let readiness = self.subscriptions.readiness(service);
             if readiness != ServiceReadiness::NotDesired {
                 self.push_critical(SessionEvent::ServiceStatus {
@@ -1285,8 +1317,9 @@ enum ControlMessage {
 impl ControlMessage {
     fn service(&self) -> StreamerService {
         match self {
-            Self::SetDesired { service, .. } => *service,
-            Self::Retry(service) | Self::View(service) => *service,
+            Self::SetDesired { service, .. } | Self::Retry(service) | Self::View(service) => {
+                *service
+            }
             Self::Shutdown => StreamerService::AcctActivity,
         }
     }

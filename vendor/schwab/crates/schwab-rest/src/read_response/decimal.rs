@@ -22,6 +22,9 @@ pub struct ExactDecimal {
 impl ExactDecimal {
     /// Performs parse for exact decimal.
     /// 执行 exact decimal 的 parse 操作。
+    ///
+    /// # Errors
+    /// Returns [`ReadResponseError`] when the response kind, structure, required values, or numeric bounds do not satisfy this projection.
     pub fn parse(value: &str) -> Result<Self, ReadResponseError> {
         if value.is_empty() || value.len() > MAX_DECIMAL_BYTES {
             return Err(ReadResponseError::DecimalOutOfRange);
@@ -106,6 +109,7 @@ impl ExactDecimal {
 
     /// Performs as string for exact decimal.
     /// 执行 exact decimal 的 as string 操作。
+    #[must_use]
     pub fn as_string(&self) -> String {
         let negative = self.coefficient < 0;
         let mut digits = self.coefficient.unsigned_abs().to_string();
@@ -248,12 +252,14 @@ pub struct ExactRatio {
 impl ExactRatio {
     /// Performs numerator for exact ratio.
     /// 执行 exact ratio 的 numerator 操作。
+    #[must_use]
     pub fn numerator(&self) -> &ExactDecimal {
         &self.numerator
     }
 
     /// Performs denominator for exact ratio.
     /// 执行 exact ratio 的 denominator 操作。
+    #[must_use]
     pub fn denominator(&self) -> &ExactDecimal {
         &self.denominator
     }

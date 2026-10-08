@@ -19,6 +19,9 @@ pub struct PathIdentifier(String);
 impl PathIdentifier {
     /// Validates and stores one bounded path identifier.
     /// 校验并保存一个有长度上限的路径标识符。
+    ///
+    /// # Errors
+    /// Returns [`ReadRequestError`] when an input is malformed or violates a request bound.
     pub fn new(value: impl AsRef<str>) -> Result<Self, ReadRequestError> {
         let value = value.as_ref().trim();
         if value.is_empty()
@@ -50,6 +53,9 @@ pub struct BrokerIdentifier(String);
 impl BrokerIdentifier {
     /// Validates and stores a positive Schwab order or transaction identifier.
     /// 校验并保存一个正数 Schwab 订单或交易标识符。
+    ///
+    /// # Errors
+    /// Returns [`ReadRequestError`] when an input is malformed or violates a request bound.
     pub fn new(value: impl AsRef<str>) -> Result<Self, ReadRequestError> {
         let value = value.as_ref().trim();
         if value.is_empty() || !value.bytes().all(|byte| byte.is_ascii_digit()) {
@@ -85,6 +91,9 @@ pub struct QueryText(String);
 impl QueryText {
     /// Validates and stores query text without changing its spelling.
     /// 校验并保存查询文本，不改变其原始拼写。
+    ///
+    /// # Errors
+    /// Returns [`ReadRequestError`] when an input is malformed or violates a request bound.
     pub fn new(value: impl Into<String>) -> Result<Self, ReadRequestError> {
         let value = value.into();
         if value.len() > MAX_QUERY_TEXT_BYTES || value.bytes().any(|byte| byte.is_ascii_control()) {
@@ -112,6 +121,9 @@ pub struct DecimalQuery(String);
 impl DecimalQuery {
     /// Validates an exact finite decimal and retains its original spelling.
     /// 校验精确有限十进制数，并保留其原始拼写。
+    ///
+    /// # Errors
+    /// Returns [`ReadRequestError`] when an input is malformed or violates a request bound.
     pub fn new(value: impl Into<String>) -> Result<Self, ReadRequestError> {
         let value = value.into();
         if value.len() > MAX_QUERY_TEXT_BYTES || ExactDecimal::parse(&value).is_err() {
@@ -142,18 +154,25 @@ impl CsvValues {
     /// Required symbol/market lists reject this value when their route is built.
     /// 表示显式的空可选字段选择（`fields=`）。
     /// 构造路由时，必填交易代码或市场列表会拒绝此值。
+    #[must_use]
     pub fn empty() -> Self {
         Self(String::new())
     }
 
     /// Builds a list containing exactly one validated value.
     /// 构造仅包含一个已校验值的列表。
+    ///
+    /// # Errors
+    /// Returns [`ReadRequestError`] when an input is malformed or violates a request bound.
     pub fn one(value: impl Into<String>) -> Result<Self, ReadRequestError> {
         Self::from_values([value.into()])
     }
 
     /// Validates and joins a bounded list whose items cannot contain commas.
     /// 校验并拼接有上限的列表；单个项目不能包含逗号。
+    ///
+    /// # Errors
+    /// Returns [`ReadRequestError`] when an input is malformed or violates a request bound.
     pub fn from_values<I, S>(values: I) -> Result<Self, ReadRequestError>
     where
         I: IntoIterator<Item = S>,
@@ -189,6 +208,9 @@ impl CsvValues {
     /// commas inside an element rather than silently splitting it.
     /// 保留 Node SDK 的显式单字符串形式（包括逗号分隔值），同时限制长度并拒绝控制字符。
     /// 数组或列表调用方应使用 `from_values`；该方法会拒绝项目中的逗号，而不会静默拆分。
+    ///
+    /// # Errors
+    /// Returns [`ReadRequestError`] when an input is malformed or violates a request bound.
     pub fn from_csv(value: impl Into<String>) -> Result<Self, ReadRequestError> {
         let value = QueryText::new(value.into())?;
         if value.as_str().trim().is_empty() {
@@ -219,6 +241,7 @@ pub struct QueryExtensions(Vec<(QueryText, String)>);
 impl QueryExtensions {
     /// Creates an empty set of additive query parameters.
     /// 创建一个空的附加查询参数集合。
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -226,6 +249,9 @@ impl QueryExtensions {
     /// Adds an optional string parameter. `None` mirrors Node's omission of
     /// `undefined` and `null`; an empty string is retained as `key=`.
     /// 添加可选字符串参数。`None` 与 Node 忽略 `undefined` 和 `null` 的行为一致；空字符串保留为 `key=`。
+    ///
+    /// # Errors
+    /// Returns [`ReadRequestError`] when an input is malformed or violates a request bound.
     pub fn push_optional_text(
         &mut self,
         key: impl Into<String>,
@@ -242,6 +268,9 @@ impl QueryExtensions {
     /// original decimal spelling and do not pass through binary floating
     /// point. `None` is omitted.
     /// 添加可选的精确有限十进制参数。保留原始十进制文本，不经过二进制浮点转换；`None` 会被省略。
+    ///
+    /// # Errors
+    /// Returns [`ReadRequestError`] when an input is malformed or violates a request bound.
     pub fn push_optional_number(
         &mut self,
         key: impl Into<String>,
@@ -257,6 +286,9 @@ impl QueryExtensions {
     /// Adds an optional boolean parameter. `false` is retained as the string
     /// `false`; only `None` is omitted.
     /// 添加可选布尔参数。`false` 会保留为字符串 `false`；只有 `None` 会被省略。
+    ///
+    /// # Errors
+    /// Returns [`ReadRequestError`] when an input is malformed or violates a request bound.
     pub fn push_optional_bool(
         &mut self,
         key: impl Into<String>,

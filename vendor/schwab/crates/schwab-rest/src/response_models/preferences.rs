@@ -23,12 +23,14 @@ pub enum UserPreferencesResponse {
 impl UserPreferencesResponse {
     /// Returns whether the source response used the array form.
     /// 中文摘要：报告已校验响应采用数组形式还是单对象形式。
+    #[must_use]
     pub const fn is_array(&self) -> bool {
         matches!(self, Self::Many(_))
     }
 
     /// Returns the first preference, matching Node's convenience selection.
     /// 中文摘要：单对象时返回该偏好，数组时返回首项，与兼容便捷选择规则一致。
+    #[must_use]
     pub fn first(&self) -> Option<&UserPreference> {
         match self {
             Self::One(preference) => Some(preference.as_ref()),

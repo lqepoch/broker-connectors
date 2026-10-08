@@ -250,11 +250,14 @@ fn transaction_query(
     }
 }
 
+// Keep the exhaustive fixture-ID to request mapping together for review.
+#[allow(clippy::too_many_lines)]
 fn request_for_case(id: &str) -> ReadRequest {
     match id {
         "trader-account-number-hash-list"
         | "trader-account-numbers-body-wrapper"
-        | "trader-http-400-preserves-broker-error-status-and-body" => ReadRequest::AccountNumbers,
+        | "trader-http-400-preserves-broker-error-status-and-body"
+        | "trader-invalid-success-envelope-fails-schema-validation" => ReadRequest::AccountNumbers,
         "trader-accounts-positions-field" | "trader-accounts-body-wrapper-forwards-fields" => {
             ReadRequest::Accounts(AccountsQuery {
                 fields: Some(q("positions")),
@@ -263,7 +266,6 @@ fn request_for_case(id: &str) -> ReadRequest {
         "trader-204-empty-account-response-bypasses-schema" => {
             ReadRequest::Accounts(AccountsQuery::default())
         }
-        "trader-invalid-success-envelope-fails-schema-validation" => ReadRequest::AccountNumbers,
         "trader-account-hash-path-encoding" => ReadRequest::Account {
             account_hash: path(" synthetic/hash+ "),
             query: AccountsQuery {
@@ -308,10 +310,8 @@ fn request_for_case(id: &str) -> ReadRequest {
             account_hash: path(ACCOUNT_HASH),
             order_id: broker_id("42"),
         },
-        "trader-cross-account-orders-query" => {
-            ReadRequest::OrdersAcrossAccounts(order_query("start", "end", Some("FILLED"), None))
-        }
-        "trader-cross-account-orders-body-wrapper-forwards-query" => {
+        "trader-cross-account-orders-query"
+        | "trader-cross-account-orders-body-wrapper-forwards-query" => {
             ReadRequest::OrdersAcrossAccounts(order_query("start", "end", Some("FILLED"), None))
         }
         "trader-transactions-query" => ReadRequest::Transactions {
@@ -896,6 +896,7 @@ fn route_aware_response_parser_projects_market_hours_and_instrument_detail() {
 }
 
 #[test]
+#[allow(clippy::too_many_lines)]
 fn route_errors_and_diagnostics_fail_closed_without_revealing_identifiers_or_payloads() {
     assert_eq!(
         PathIdentifier::new(" \t ").unwrap_err(),
@@ -994,7 +995,7 @@ fn route_errors_and_diagnostics_fail_closed_without_revealing_identifiers_or_pay
         query: AccountsQuery::default(),
     };
     let (client, _, _, _) = fake_client(400);
-    let debug = format!("{:?}", request);
+    let debug = format!("{request:?}");
     assert!(!debug.contains(ACCOUNT_HASH));
     let error = block_on(client.read(request)).expect_err("fake response is successful");
     assert_eq!(error.code(), "REST_HTTP_STATUS");
@@ -1225,12 +1226,14 @@ fn fixture_expected_request(id: &str) -> (String, BTreeMap<String, String>) {
         .unwrap_or_else(|| panic!("missing fixture case {id}"));
     let expected_start = FIXTURE[case_start..]
         .find("\"expectedRequest\"")
-        .map(|index| case_start + index)
-        .unwrap_or_else(|| panic!("missing expectedRequest for {id}"));
-    let open = FIXTURE[expected_start..]
-        .find('{')
-        .map(|index| expected_start + index)
-        .unwrap_or_else(|| panic!("missing expectedRequest object for {id}"));
+        .map_or_else(
+            || panic!("missing expectedRequest for {id}"),
+            |index| case_start + index,
+        );
+    let open = FIXTURE[expected_start..].find('{').map_or_else(
+        || panic!("missing expectedRequest object for {id}"),
+        |index| expected_start + index,
+    );
     let close = matching_object_end(FIXTURE.as_bytes(), open).expect("closed fixture object");
     let object = &FIXTURE[open..=close];
     let path = string_field(object, "path").expect("fixture request path");
@@ -1429,6 +1432,7 @@ fn block_on<T>(future: impl Future<Output = T>) -> T {
 }
 
 #[tokio::test]
+#[allow(clippy::too_many_lines)]
 async fn typed_client_facade_dispatches_each_node_get_through_the_allowlisted_transport() {
     let (client, token_calls, transport_calls, observed) = fake_client_with_body(204, Vec::new());
 

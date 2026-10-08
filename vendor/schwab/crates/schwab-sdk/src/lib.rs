@@ -29,9 +29,9 @@ pub use schwab_rest::{
     NormalizedOptionQuoteReadResponse, OptionChainQuery, OptionExpirationQuery, OrdersQuery,
     PathIdentifier, Position, PriceHistoryQuery, QueryExtensions, QueryText, QuotesQuery,
     ReadAdmissionError, ReadAdmissionPort, ReadApiError, ReadPriority, ReadRequestError,
-    ReadResponseError, RestError, RestResponse, SchwabHttpsTransport, SecuritiesAccount,
-    StreamerInfo, TokenProviderError, TraderReadResponse, TransactionsQuery, TypedReadResponse,
-    UserPreferencesResponse, WireNumber,
+    ReadResponseError, RedirectPolicy, RestError, RestResponse, SchwabHttpsTransport,
+    SecuritiesAccount, StreamerInfo, TokenProviderError, TraderReadResponse, TransactionsQuery,
+    TypedReadResponse, UserPreferencesResponse, WireNumber,
 };
 
 use schwab_rest::SchwabRestClient;

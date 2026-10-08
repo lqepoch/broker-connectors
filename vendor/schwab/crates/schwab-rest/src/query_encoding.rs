@@ -88,8 +88,8 @@ pub(crate) fn push_pair(query: &mut Vec<(String, String)>, key: &str, value: &st
     query.push((key.to_owned(), value.to_owned()));
 }
 
-/// Mirrors WHATWG URLSearchParams application/x-www-form-urlencoded
-/// serialization used by the Node HttpClient for query names and values.
+/// Mirrors WHATWG `URLSearchParams` application/x-www-form-urlencoded
+/// serialization used by the Node `HttpClient` for query names and values.
 pub(crate) fn encode_query_component(bytes: &[u8]) -> String {
     const HEX: &[u8; 16] = b"0123456789ABCDEF";
     let mut encoded = String::with_capacity(bytes.len());

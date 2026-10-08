@@ -55,15 +55,20 @@ impl AccessTokenProvider for FakeTokenProvider {
     }
 }
 
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum RequestCheck {
+    MethodIsGet,
+    RouteIsFixed,
+    TokenMatches,
+    TimeoutIsBounded,
+    RedirectsDisabled,
+    AcceptsJson,
+    ResponseBodyLimitIsFixed,
+}
+
+#[derive(Debug, Eq, PartialEq)]
 struct RequestObservation {
-    method_is_get: bool,
-    route_is_fixed: bool,
-    token_matches: bool,
-    timeout_is_fifteen_seconds: bool,
-    redirects_disabled: bool,
-    accepts_json: bool,
-    response_body_limit_is_fixed: bool,
+    passed: Vec<RequestCheck>,
 }
 
 struct FakeTransport {
@@ -104,17 +109,41 @@ impl HttpTransport for FakeTransport {
         request: HttpRequest,
     ) -> BoxFuture<'_, Result<HttpResponse, HttpTransportError>> {
         self.calls.fetch_add(1, Ordering::SeqCst);
-        let observation = RequestObservation {
-            method_is_get: request.method() == HttpMethod::Get,
-            route_is_fixed: request.url() == ReadEndpoint::AccountNumbers.url()
-                || request.url() == ReadEndpoint::UserPreferences.url(),
-            token_matches: request.with_bearer_token(|value| value == SYNTHETIC_TOKEN),
-            timeout_is_fifteen_seconds: request.timeout() == std::time::Duration::from_secs(15),
-            redirects_disabled: request.redirect_policy() == RedirectPolicy::Disabled,
-            accepts_json: request.accept() == "application/json",
-            response_body_limit_is_fixed: request.max_response_body_bytes()
-                == MAX_RESPONSE_BODY_BYTES,
-        };
+        let passed = [
+            (
+                request.method() == HttpMethod::Get,
+                RequestCheck::MethodIsGet,
+            ),
+            (
+                request.url() == ReadEndpoint::AccountNumbers.url()
+                    || request.url() == ReadEndpoint::UserPreferences.url(),
+                RequestCheck::RouteIsFixed,
+            ),
+            (
+                request.with_bearer_token(|value| value == SYNTHETIC_TOKEN),
+                RequestCheck::TokenMatches,
+            ),
+            (
+                request.timeout() == std::time::Duration::from_secs(15),
+                RequestCheck::TimeoutIsBounded,
+            ),
+            (
+                request.redirect_policy() == RedirectPolicy::Disabled,
+                RequestCheck::RedirectsDisabled,
+            ),
+            (
+                request.accept() == "application/json",
+                RequestCheck::AcceptsJson,
+            ),
+            (
+                request.max_response_body_bytes() == MAX_RESPONSE_BODY_BYTES,
+                RequestCheck::ResponseBodyLimitIsFixed,
+            ),
+        ]
+        .into_iter()
+        .filter_map(|(condition, check)| condition.then_some(check))
+        .collect();
+        let observation = RequestObservation { passed };
         *self.observation.lock().expect("test observation lock") = Some(observation);
         let result = self.result.lock().expect("test result lock").take();
         Box::pin(async move {
@@ -201,14 +230,19 @@ fn account_numbers_uses_fixed_get_route_and_preserves_bounded_response_metadata(
 
     let result = block_on(client.account_numbers()).expect("successful synthetic GET");
     let observed = observation.lock().expect("test observation lock");
-    let observed = observed.expect("request observation");
-    assert!(observed.method_is_get);
-    assert!(observed.route_is_fixed);
-    assert!(observed.token_matches);
-    assert!(observed.timeout_is_fifteen_seconds);
-    assert!(observed.redirects_disabled);
-    assert!(observed.accepts_json);
-    assert!(observed.response_body_limit_is_fixed);
+    let observed = observed.as_ref().expect("request observation");
+    assert_eq!(
+        observed.passed,
+        vec![
+            RequestCheck::MethodIsGet,
+            RequestCheck::RouteIsFixed,
+            RequestCheck::TokenMatches,
+            RequestCheck::TimeoutIsBounded,
+            RequestCheck::RedirectsDisabled,
+            RequestCheck::AcceptsJson,
+            RequestCheck::ResponseBodyLimitIsFixed,
+        ]
+    );
     assert_eq!(token_calls.load(Ordering::SeqCst), 1);
     assert_eq!(transport_calls.load(Ordering::SeqCst), 1);
     assert_eq!(result.method(), HttpMethod::Get);
@@ -257,12 +291,13 @@ fn user_preferences_uses_its_other_fixed_read_route() {
         "https://api.schwabapi.com/trader/v1/userPreference"
     );
     assert_eq!(transport_calls.load(Ordering::SeqCst), 1);
+    let observed = observation.lock().expect("test observation lock");
     assert!(
-        observation
-            .lock()
-            .expect("test observation lock")
+        observed
+            .as_ref()
             .expect("request observation")
-            .route_is_fixed
+            .passed
+            .contains(&RequestCheck::RouteIsFixed)
     );
 }
 

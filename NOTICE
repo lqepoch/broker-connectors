@@ -42,3 +42,16 @@ locked registry checksum and exact dependency path are recorded in
 license only for this exact crate version. The dependency supplies Mozilla root
 certificate data and confers no Alpaca/broker authority, entitlement, or market
 data provenance.
+
+The Schwab read-only adapter includes only 66 selected project-owned files from
+`lqepoch/schwab_auto_bot` at commit
+`c907d18bc31790ede4cf36a4312a6813467506f0`, as enumerated by
+`vendor/schwab/SOURCE-MANIFEST.json`. The source repository has no repository-
+wide open-source license for these packages. The repository owner explicitly
+authorized publication of the listed paths in this target under MIT OR
+Apache-2.0; this authorization does not change the source repository license
+or cover unlisted paths. The extraction excludes `broker-schwab`, credentials,
+account configuration/state, real market data, and provider traces. Its five
+fixtures are synthetic. REST/Streamer provider access, OAuth, and real account
+operations were not run. Target-only Cargo metadata adaptations and source and
+target hashes are documented in the manifest and `vendor/schwab/UPSTREAM.md`.

@@ -352,6 +352,7 @@ impl ServiceSubscriptionManager {
     ///
     /// Equity and option services remain undesired until configured explicitly.
     /// 中文摘要：校验输入并构造该类型的值；具体格式、大小上限和脱敏边界见类型说明。
+    #[must_use]
     pub fn new() -> Self {
         Self {
             states: std::array::from_fn(|index| {
@@ -370,6 +371,11 @@ impl ServiceSubscriptionManager {
     /// commands in deterministic service order. Empty desired services require
     /// no command on a new socket.
     /// 中文摘要：推进连接代次、清除连接内 ACK 状态，并为保留的期望 key 生成有界重放计划。
+    ///
+    /// # Errors
+    /// Returns [`ServiceStateError::GenerationExhausted`] or
+    /// [`ServiceStateError::RequestIdExhausted`] when a monotonic identifier
+    /// cannot be advanced without wrapping.
     pub fn reconnect(&mut self) -> Result<ReplayPlan, ServiceStateError> {
         let generation_value = self
             .next_generation
@@ -395,7 +401,7 @@ impl ServiceSubscriptionManager {
 
         let mut commands: [Option<StreamerCommand>; SERVICE_COUNT] = std::array::from_fn(|_| None);
         let mut request_index = 0usize;
-        for service in SERVICE_MANIFESTS.map(|manifest| manifest.service()) {
+        for service in SERVICE_MANIFESTS.map(super::manifest::ServiceManifest::service) {
             let index = service.index();
             let state = &mut self.states[index];
             state.pending = None;
@@ -451,6 +457,11 @@ impl ServiceSubscriptionManager {
     /// the prior desired and acknowledged state is unchanged. Repeating the
     /// same canonical set is idempotent and does not advance its revision.
     /// 中文摘要：校验并替换单个服务的期望 key 集合；仅状态变化时增加修订号。
+    ///
+    /// # Errors
+    /// Returns a key-validation error when the input exceeds a hard bound or
+    /// contains an invalid key, and [`ServiceStateError::RevisionExhausted`]
+    /// when the desired-state revision cannot be advanced.
     pub fn set_desired<I, K>(
         &mut self,
         service: StreamerService,
@@ -493,6 +504,11 @@ impl ServiceSubscriptionManager {
     /// outstanding command; desired changes made while one is pending are
     /// planned after its matching ACK.
     /// 中文摘要：规划下一条有界订阅变更，用于同步期望状态与当前 ACK 状态。
+    ///
+    /// # Errors
+    /// Returns [`ServiceStateError::NotConnected`] when a non-empty desired
+    /// state needs a connection, or [`ServiceStateError::RequestIdExhausted`]
+    /// when the next request identifier cannot be reserved.
     pub fn next_command(
         &mut self,
         service: StreamerService,
@@ -559,6 +575,11 @@ impl ServiceSubscriptionManager {
     /// desired key set (or an empty set if the service is not desired) and is
     /// correlated through the same one-pending-command fence.
     /// 中文摘要：为所选服务规划只读 `VIEW` 命令，不改变期望订阅。
+    ///
+    /// # Errors
+    /// Returns [`ServiceStateError::ViewUnsupported`] for account activity,
+    /// [`ServiceStateError::NotConnected`] without an active generation, or
+    /// [`ServiceStateError::RequestIdExhausted`] when an identifier is spent.
     pub fn view_command(
         &mut self,
         service: StreamerService,
@@ -714,12 +735,14 @@ impl ServiceSubscriptionManager {
 
     /// Returns the current connection generation, if connected.
     /// 中文摘要：返回当前 socket 代次；断开时返回 `None`。
+    #[must_use]
     pub const fn connection_generation(&self) -> Option<ConnectionGeneration> {
         self.generation
     }
 
     /// Returns the current readiness of one service.
     /// 中文摘要：返回当前连接代次的服务就绪状态。
+    #[must_use]
     pub fn readiness(&self, service: StreamerService) -> ServiceReadiness {
         self.states[service.index()].readiness(self.generation.is_some())
     }
@@ -735,12 +758,14 @@ impl ServiceSubscriptionManager {
 
     /// Returns the immutable service field manifest currently desired.
     /// 中文摘要：该服务存在期望 key 时返回固定 manifest 字段。
+    #[must_use]
     pub fn desired_fields(&self, service: StreamerService) -> Option<&'static str> {
         self.states[service.index()].desired_fields
     }
 
     /// Returns whether a key belongs to the current desired set.
     /// 中文摘要：检查 key 是否属于该服务当前期望集合。
+    #[must_use]
     pub fn is_desired_key(&self, service: StreamerService, key: &str) -> bool {
         self.states[service.index()]
             .desired
@@ -759,18 +784,21 @@ impl ServiceSubscriptionManager {
 
     /// Returns the service field manifest confirmed by the last matching ACK.
     /// 中文摘要：返回当前已确认订阅所用的固定 manifest 字段。
+    #[must_use]
     pub fn acknowledged_fields(&self, service: StreamerService) -> Option<&'static str> {
         self.states[service.index()].acknowledged_fields
     }
 
     /// Returns the revision associated with the service's desired state.
     /// 中文摘要：返回该服务单调递增的期望状态修订号。
+    #[must_use]
     pub fn desired_revision(&self, service: StreamerService) -> u64 {
         self.states[service.index()].desired_revision
     }
 
     /// Returns the currently pending immutable command for a service.
     /// 中文摘要：借用该服务正在等待匹配 ACK 或超时处理的命令。
+    #[must_use]
     pub fn pending_command(&self, service: StreamerService) -> Option<&StreamerCommand> {
         self.states[service.index()].pending.as_ref()
     }

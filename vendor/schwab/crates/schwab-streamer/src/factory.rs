@@ -16,7 +16,7 @@ use crate::wire::{is_successful_streamer_command, parse_streamer_frame};
 
 /// Concrete factory that owns exactly one authenticated WebSocket at a time.
 ///
-/// The provider must return dynamic StreamerInfo and an opaque zeroizing
+/// The provider must return dynamic `StreamerInfo` and an opaque zeroizing
 /// `StreamerLoginSecret`; this adapter never reads environment files, calls
 /// OAuth, or obtains account metadata itself. The current #171 credential
 /// layer does not yet expose a safe access-token lease, so production provider
@@ -45,6 +45,9 @@ impl<P> SchwabStreamerSessionFactory<P> {
     /// Bounds the provider's successful TCP/WebSocket connection's LOGIN ACK
     /// wait. `StreamerRuntime` additionally bounds the full connect/auth flow.
     /// 中文摘要：设置等待匹配 LOGIN ACK 的最长时间；零值会被拒绝，超时或拒绝时不会返回 socket。
+    ///
+    /// # Errors
+    /// Returns [`SessionConfigError::InvalidDuration`] when the timeout is zero.
     pub fn with_login_ack_timeout(
         mut self,
         login_ack_timeout: Duration,
@@ -110,7 +113,7 @@ where
         .await
         {
             Ok(Ok(true)) => Ok(socket),
-            Ok(Ok(false)) | Ok(Err(_)) | Err(_) => Err(PortFailure::AuthenticationUnavailable),
+            Ok(Ok(false) | Err(_)) | Err(_) => Err(PortFailure::AuthenticationUnavailable),
         }
     }
 }
@@ -126,7 +129,7 @@ async fn wait_for_login_ack(
     let request_id = request_id.as_wire_value();
     loop {
         match socket.receive_event().await? {
-            Some(SocketEvent::Liveness) => continue,
+            Some(SocketEvent::Liveness) => {}
             Some(SocketEvent::Frame(bytes)) => {
                 let Ok(frame) = parse_streamer_frame(&bytes) else {
                     continue;

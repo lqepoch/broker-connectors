@@ -7,7 +7,7 @@
 //! This crate implements one async owner task, service-level
 //! desired/acknowledged state, bounded event delivery, a bounded JSON frame
 //! codec, and a TLS WebSocket adapter for the Node-characterized LOGIN and
-//! subscription envelopes. OAuth, REST StreamerInfo lookup, and the safe token
+//! subscription envelopes. OAuth, REST `StreamerInfo` lookup, and the safe token
 //! lease bridge remain outside this crate and are not yet wired for production.
 //!
 //! Coalesced market-data rows keep last-changed source and monotonic receive

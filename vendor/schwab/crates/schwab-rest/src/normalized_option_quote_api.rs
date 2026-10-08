@@ -22,18 +22,21 @@ pub struct NormalizedOptionQuoteReadResponse {
 impl NormalizedOptionQuoteReadResponse {
     /// Borrows the bounded REST response and its status/rate-limit metadata.
     /// 借用有界 REST 响应及其状态和限流元数据。
+    #[must_use]
     pub const fn response(&self) -> &RestResponse {
         &self.response
     }
 
     /// Borrows normalized quote rows in request order; no freshness or tradability decision is made.
     /// 按请求顺序借用归一化报价；不作 freshness 或 tradability 判断。
+    #[must_use]
     pub fn quotes(&self) -> &[NormalizedOptionQuote] {
         &self.quotes
     }
 
     /// Consumes the result and returns its raw REST response and normalized quote rows.
     /// 消费结果并拆出原始 REST 响应与归一化报价列表。
+    #[must_use]
     pub fn into_parts(self) -> (RestResponse, Vec<NormalizedOptionQuote>) {
         (self.response, self.quotes)
     }
@@ -59,10 +62,13 @@ where
     /// Fetches and structurally normalizes option quotes with one GET.
     ///
     /// `fields: None` keeps the Node SDK default of `quote,reference`; an
-    /// explicit empty CsvValues sends `fields=`. `observed_at_ms` is supplied
+    /// explicit empty `CsvValues` sends `fields=`. `observed_at_ms` is supplied
     /// by the caller so quote-age diagnostics remain deterministic. The
     /// returned projection does not establish freshness or tradeability.
     /// 中文摘要：读取规范化期权报价并同时保留原始响应元数据；不判定 freshness 或 tradability。
+    ///
+    /// # Errors
+    /// Returns [`ReadApiError`] when request validation, admission, transport, or response projection fails.
     pub async fn normalized_option_quotes<I, S>(
         &self,
         symbols: I,

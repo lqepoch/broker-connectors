@@ -90,6 +90,7 @@ impl ReadResponseKind {
     /// Route names are internal identifiers attached by typed request
     /// builders; no URL or caller-provided path is inspected here.
     /// 中文摘要：按 allowlist 路由名选择固定 schema；未知路由返回 `None`，不会检查调用方 URL。
+    #[must_use]
     pub fn for_endpoint(endpoint: &ReadEndpoint) -> Option<Self> {
         match endpoint.route_name() {
             "trader-account-numbers" => Some(Self::AccountNumbers),
@@ -179,6 +180,7 @@ pub enum ReadResponseError {
 impl ReadResponseError {
     /// Returns the stable parser error code without response values or serde text.
     /// 返回稳定的固定错误代码。
+    #[must_use]
     pub const fn code(self) -> &'static str {
         match self {
             Self::HttpStatus => "REST_READ_RESPONSE_HTTP_STATUS",
@@ -202,6 +204,7 @@ impl ReadResponseError {
 
     /// Performs field for read response error.
     /// 执行 read response error 的 field 操作。
+    #[must_use]
     pub const fn field(self) -> Option<&'static str> {
         match self {
             Self::SchemaViolation { field } => Some(field),
@@ -236,6 +239,9 @@ impl ParsedReadResponse {
     /// This prevents route callers from pairing an allow-listed request with a
     /// different response validator.
     /// 中文摘要：根据响应绑定的 allowlist 端点选择 schema，并校验成功响应的有界正文。
+    ///
+    /// # Errors
+    /// Returns [`ReadResponseError`] when the response kind, structure, required values, or numeric bounds do not satisfy this projection.
     pub fn from_endpoint_response(response: &RestResponse) -> Result<Self, ReadResponseError> {
         let kind = ReadResponseKind::for_endpoint(response.endpoint())
             .ok_or(ReadResponseError::UnsupportedEndpoint)?;
@@ -244,6 +250,9 @@ impl ParsedReadResponse {
 
     /// Performs from response for parsed read response.
     /// 执行 parsed read response 的 from response 操作。
+    ///
+    /// # Errors
+    /// Returns [`ReadResponseError`] when the response kind, structure, required values, or numeric bounds do not satisfy this projection.
     pub fn from_response(
         kind: ReadResponseKind,
         response: &RestResponse,
@@ -253,6 +262,9 @@ impl ParsedReadResponse {
 
     /// Performs parse for parsed read response.
     /// 执行 parsed read response 的 parse 操作。
+    ///
+    /// # Errors
+    /// Returns [`ReadResponseError`] when the response kind, structure, required values, or numeric bounds do not satisfy this projection.
     pub fn parse(
         kind: ReadResponseKind,
         status: u16,
@@ -294,12 +306,14 @@ impl ParsedReadResponse {
 
     /// Performs kind for parsed read response.
     /// 执行 parsed read response 的 kind 操作。
+    #[must_use]
     pub const fn kind(&self) -> ReadResponseKind {
         self.kind
     }
 
     /// Returns the HTTP status recorded with the parsed body.
     /// 返回 broker HTTP 状态码。
+    #[must_use]
     pub const fn status(&self) -> u16 {
         self.status
     }
@@ -307,6 +321,7 @@ impl ParsedReadResponse {
     /// An empty 200/204 response is preserved as `None` and skips DTO schema
     /// validation, matching the Node transport characterization.
     /// 中文摘要：借用已解码 JSON；空的 200/204 正文保持为 `None`，不执行 DTO 校验。
+    #[must_use]
     pub fn json(&self) -> Option<&Value> {
         self.json.as_ref()
     }
@@ -314,6 +329,7 @@ impl ParsedReadResponse {
     /// Returns the lossless typed Trader response for account, order, and
     /// transaction routes. A successful empty response has no model.
     /// 中文摘要：账户、订单或交易记录路由有非空有效正文时，返回对应类型化投影。
+    #[must_use]
     pub fn trader_model(&self) -> Option<&TraderReadResponse> {
         self.trader.as_ref()
     }
@@ -322,6 +338,7 @@ impl ParsedReadResponse {
     /// describes the validated response shape; it does not establish an
     /// authoritative or current broker snapshot.
     /// 中文摘要：返回已校验的单对象或数组偏好形态，不构成权威或当前 broker 快照。
+    #[must_use]
     pub fn user_preferences_model(&self) -> Option<&UserPreferencesResponse> {
         self.user_preferences.as_ref()
     }
@@ -329,6 +346,7 @@ impl ParsedReadResponse {
     /// Returns the typed Market Data response for market-hours or instrument
     /// routes. This is a projection of response syntax, not market authority.
     /// 中文摘要：返回类型化交易时段或标的投影，不建立行情 authority。
+    #[must_use]
     pub fn market_model(&self) -> Option<&MarketReadResponse> {
         self.market.as_ref()
     }
@@ -336,6 +354,9 @@ impl ParsedReadResponse {
     /// Returns the typed single-transaction object or first array row, matching
     /// Node's `getTransaction` convenience selection.
     /// 中文摘要：仅对交易记录端点返回单对象或数组首项；路由不符或结果为空时返回固定错误。
+    ///
+    /// # Errors
+    /// Returns [`ReadResponseError`] when the response kind, structure, required values, or numeric bounds do not satisfy this projection.
     pub fn transaction_model_convenience(&self) -> Result<&Transaction, ReadResponseError> {
         if self.kind != ReadResponseKind::Transaction {
             return Err(ReadResponseError::WrongResponseKind);
@@ -349,6 +370,9 @@ impl ParsedReadResponse {
     /// Node's `getTransaction` accepts either an object or array and selects
     /// the first array member. Empty arrays use a fixed not-found error.
     /// 中文摘要：仅对交易记录端点返回已校验的原始 JSON 对象或数组首项。
+    ///
+    /// # Errors
+    /// Returns [`ReadResponseError`] when the response kind, structure, required values, or numeric bounds do not satisfy this projection.
     pub fn transaction_convenience(&self) -> Result<&Value, ReadResponseError> {
         if self.kind != ReadResponseKind::Transaction {
             return Err(ReadResponseError::WrongResponseKind);
@@ -369,6 +393,9 @@ impl ParsedReadResponse {
     /// `streamerInfo` entry. The returned value is from the validated source
     /// JSON; prefer `streamer_info_model()` when typed fields are sufficient.
     /// 中文摘要：从只读用户偏好响应中读取 streamer 启动元数据。
+    ///
+    /// # Errors
+    /// Returns [`ReadResponseError`] when the response kind, structure, required values, or numeric bounds do not satisfy this projection.
     pub fn streamer_info(&self) -> Result<&Value, ReadResponseError> {
         if self.kind != ReadResponseKind::UserPreferences {
             return Err(ReadResponseError::WrongResponseKind);
@@ -394,6 +421,9 @@ impl ParsedReadResponse {
     /// Node's `getStreamerInfo` convenience selection. `streamer_info()` stays
     /// available for callers that need the original validated JSON value.
     /// 中文摘要：返回首个偏好中的首条类型化 StreamerInfo；URL 语法校验不授权网络目标。
+    ///
+    /// # Errors
+    /// Returns [`ReadResponseError`] when the response kind, structure, required values, or numeric bounds do not satisfy this projection.
     pub fn streamer_info_model(&self) -> Result<&StreamerInfo, ReadResponseError> {
         if self.kind != ReadResponseKind::UserPreferences {
             return Err(ReadResponseError::WrongResponseKind);
@@ -415,6 +445,6 @@ impl fmt::Debug for ParsedReadResponse {
             .field("status", &self.status)
             .field("body_bytes", &self.body_bytes)
             .field("json", &"[REDACTED]")
-            .finish()
+            .finish_non_exhaustive()
     }
 }

@@ -24,6 +24,9 @@ pub enum TransactionResponse {
 impl TransactionResponse {
     /// Mirrors Node's convenience helper by returning the object or first row.
     /// 中文摘要：单对象时返回该交易，数组时返回首项；空数组返回固定 not-found 错误。
+    ///
+    /// # Errors
+    /// Returns [`ReadResponseError`] when the response kind, structure, required values, or numeric bounds do not satisfy this projection.
     pub fn first(&self) -> Result<&Transaction, ReadResponseError> {
         match self {
             Self::One(transaction) => Ok(transaction.as_ref()),

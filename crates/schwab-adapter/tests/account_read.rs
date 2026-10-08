@@ -1,12 +1,17 @@
+//! Synthetic fake-transport tests for Schwab account and position reads.
+//!
+//! # 简体中文
+//!
+//! Schwab 账户与持仓读取的合成假传输测试。
+
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use broker_ports::{
-    AccountNamespace, AccountReadRequest, BrokerEnvironment, BrokerReadError,
-    BrokerReadPageRequest, BrokerReadPort, ExecutionBrokerId, PortFuture, ReadAdmissionEvidence,
-    ReadAdmissionNamespace, ReadAdmissionProvenance, ReadRequestId,
+    AccountReadRequest, BrokerReadError, BrokerReadPageRequest, BrokerReadPort, PortFuture,
+    ReadAdmissionEvidence, ReadAdmissionNamespace, ReadAdmissionProvenance, ReadRequestId,
 };
-use domain::{AccountScope, ExactDecimal};
+use domain::{AccountNamespace, AccountScope, BrokerEnvironment, ExactDecimal, ExecutionBrokerId};
 use schwab_adapter::{
     SchwabAccountBinding, SchwabReadAdapter, SchwabReadAdmissionOwner, SchwabReadOperation,
 };
@@ -17,6 +22,7 @@ use schwab_sdk::{
 };
 
 const ACCOUNT_RESPONSE: &str = include_str!("fixtures/account_response.json");
+type AdmissionCalls = Arc<Mutex<Vec<(String, SchwabReadOperation, ReadPriority, Duration)>>>;
 
 #[derive(Clone)]
 struct FakeEvidence {
@@ -58,7 +64,7 @@ impl Drop for FakePermit {
 
 #[derive(Clone)]
 struct FakeAdmissionOwner {
-    calls: Arc<Mutex<Vec<(String, SchwabReadOperation, ReadPriority, Duration)>>>,
+    calls: AdmissionCalls,
     observations: Arc<Mutex<usize>>,
     permit_drops: Arc<Mutex<usize>>,
     reject_requests: bool,

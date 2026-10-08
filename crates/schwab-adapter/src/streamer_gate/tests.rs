@@ -1,8 +1,8 @@
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, SystemTime};
 
-use broker_ports::{AccountNamespace, BrokerEnvironment, ExecutionBrokerId, PortFuture};
-use domain::AccountScope;
+use broker_ports::PortFuture;
+use domain::{AccountNamespace, AccountScope, BrokerEnvironment, ExecutionBrokerId};
 use zeroize::Zeroizing;
 
 use super::{
@@ -95,7 +95,7 @@ async fn source_sdk_credential_provider_requires_exact_wss_host_and_live_lease()
         .load_session_credentials()
         .await
         .expect("fake credential source and explicit endpoint gate accept the synthetic lease");
-    assert!(!format!("{:?}", gate).contains("synthetic"));
+    assert!(!format!("{gate:?}").contains("synthetic"));
     drop(credentials);
 }
 

@@ -52,18 +52,21 @@ pub struct ServiceManifest {
 impl ServiceManifest {
     /// Returns the service represented by this manifest.
     /// 中文摘要：返回该 manifest 描述的 Streamer 服务。
+    #[must_use]
     pub const fn service(self) -> StreamerService {
         self.service
     }
 
     /// Returns the exact service name used in Streamer command frames.
     /// 中文摘要：返回该 Streamer 服务或命令的 wire 名称。
+    #[must_use]
     pub const fn name(self) -> &'static str {
         self.name
     }
 
     /// Returns the fixed comma-separated field list for this service.
     /// 中文摘要：返回该服务固定的逗号分隔 wire 字段列表。
+    #[must_use]
     pub const fn fields(self) -> &'static str {
         self.fields
     }
@@ -72,12 +75,14 @@ impl ServiceManifest {
 impl StreamerService {
     /// Returns the service's fixed manifest.
     /// 中文摘要：返回该服务的编译期固定 manifest 项。
+    #[must_use]
     pub const fn manifest(self) -> ServiceManifest {
         SERVICE_MANIFESTS[self.index()]
     }
 
     /// Returns this service's deterministic index in [`SERVICE_MANIFESTS`].
     /// 中文摘要：返回访问该服务 manifest 项所用的稳定数组索引。
+    #[must_use]
     pub const fn index(self) -> usize {
         match self {
             Self::AcctActivity => 0,

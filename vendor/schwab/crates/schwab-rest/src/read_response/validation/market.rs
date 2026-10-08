@@ -4,7 +4,10 @@
 use serde_json::Value;
 
 use super::super::ReadResponseError;
-use super::common::*;
+use super::common::{
+    object, optional_boolean, optional_number, optional_string, required_boolean,
+    required_nonempty_string, required_number,
+};
 
 pub(super) fn validate_quotes(value: &Value) -> Result<(), ReadResponseError> {
     let quotes = object(value, "quotes")?;

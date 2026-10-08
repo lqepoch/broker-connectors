@@ -41,22 +41,21 @@ impl AuthenticatedSessionFactory for FakeSocketFactory {
         _generation: ConnectionGeneration,
         _login_request_id: schwab_streamer::RequestId,
     ) -> impl Future<Output = Result<Self::Socket, PortFailure>> + Send {
-        async move {
-            let inbound_rx = self.inbound_rx.take().ok_or(PortFailure::ConnectFailed)?;
-            Ok(FakeSocket {
+        let result = self
+            .inbound_rx
+            .take()
+            .ok_or(PortFailure::ConnectFailed)
+            .map(|inbound_rx| FakeSocket {
                 inbound_tx: self.inbound_tx.clone(),
                 inbound_rx,
                 commands: Arc::clone(&self.commands),
-            })
-        }
+            });
+        std::future::ready(result)
     }
 }
 
 impl StreamerSocket for FakeSocket {
-    fn send_subscription(
-        &mut self,
-        command: &StreamerCommand,
-    ) -> impl Future<Output = Result<(), PortFailure>> + Send {
+    async fn send_subscription(&mut self, command: &StreamerCommand) -> Result<(), PortFailure> {
         let ack = format!(
             "{{\"response\":[{{\"service\":\"{}\",\"requestid\":\"{}\",\"command\":\"{}\",\"timestamp\":1,\"content\":{{\"code\":0,\"msg\":\"OK\"}}}}]}}",
             command.service().manifest().name(),
@@ -83,31 +82,25 @@ impl StreamerSocket for FakeSocket {
                 fields: command.fields(),
             });
         let sender = self.inbound_tx.clone();
-        async move {
+        sender
+            .send(ack)
+            .await
+            .map_err(|_| PortFailure::SendFailed)?;
+        if let Some(data) = data {
             sender
-                .send(ack)
+                .send(data)
                 .await
                 .map_err(|_| PortFailure::SendFailed)?;
-            if let Some(data) = data {
-                sender
-                    .send(data)
-                    .await
-                    .map_err(|_| PortFailure::SendFailed)?;
-            }
-            Ok(())
         }
+        Ok(())
     }
 
-    fn receive_frame(
-        &mut self,
-    ) -> impl Future<Output = Result<Option<Vec<u8>>, PortFailure>> + Send {
-        async move { Ok(self.inbound_rx.recv().await) }
+    async fn receive_frame(&mut self) -> Result<Option<Vec<u8>>, PortFailure> {
+        Ok(self.inbound_rx.recv().await)
     }
 
-    fn receive_event(
-        &mut self,
-    ) -> impl Future<Output = Result<Option<SocketEvent>, PortFailure>> + Send {
-        async move { Ok(self.inbound_rx.recv().await.map(SocketEvent::Frame)) }
+    async fn receive_event(&mut self) -> Result<Option<SocketEvent>, PortFailure> {
+        Ok(self.inbound_rx.recv().await.map(SocketEvent::Frame))
     }
 }
 

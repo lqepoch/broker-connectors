@@ -168,11 +168,11 @@ impl MutationWireRequest {
     /// Node's mutation override fixes retries to zero regardless of global or
     /// call-site retry settings. This value describes policy only; it does not
     /// execute an HTTP attempt.
-    const fn max_physical_attempts(&self) -> u8 {
+    const fn max_physical_attempts() -> u8 {
         1
     }
 
-    const fn automatic_replay_allowed(&self) -> bool {
+    const fn automatic_replay_allowed() -> bool {
         false
     }
 
@@ -245,7 +245,7 @@ impl fmt::Debug for MutationWireRequest {
             .field("method", &self.method())
             .field("path", &"[REDACTED]")
             .field("body", &self.body)
-            .field("max_physical_attempts", &self.max_physical_attempts())
+            .field("max_physical_attempts", &Self::max_physical_attempts())
             .finish()
     }
 }
@@ -492,8 +492,8 @@ mod tests {
                 scenario["id"]
             );
         }
-        assert_eq!(request.max_physical_attempts(), 1);
-        assert!(!request.automatic_replay_allowed());
+        assert_eq!(MutationWireRequest::max_physical_attempts(), 1);
+        assert!(!MutationWireRequest::automatic_replay_allowed());
         assert!(!request.path().contains("previewOrder"));
     }
 
@@ -515,7 +515,8 @@ mod tests {
             .filter(|value| !value.is_null())
             .map(|value| serde_json::to_vec(value).expect("synthetic JSON response body"));
         MutationWireResponse::new(
-            transport["status"].as_u64().expect("HTTP response status") as u16,
+            u16::try_from(transport["status"].as_u64().expect("HTTP response status"))
+                .expect("HTTP response status fits u16"),
             headers,
             body,
         )
@@ -738,8 +739,8 @@ mod tests {
                 request.classify_response(&response_from_error_vector(scenario)),
                 MutationClassification::Unknown(UnknownOutcome { reason, status: Some(503), .. }) if reason == expected_reason
             ));
-            assert_eq!(request.max_physical_attempts(), 1);
-            assert!(!request.automatic_replay_allowed());
+            assert_eq!(MutationWireRequest::max_physical_attempts(), 1);
+            assert!(!MutationWireRequest::automatic_replay_allowed());
         }
 
         let errors = parse_fixture(ERROR_FIXTURE);
@@ -781,7 +782,7 @@ mod tests {
             );
             let result = place.classify_transport_failure(kind, Some(&response));
             assert!(matches!(result, MutationClassification::Unknown(_)));
-            assert!(!place.automatic_replay_allowed());
+            assert!(!MutationWireRequest::automatic_replay_allowed());
         }
         assert!(matches!(
             place.classify_transport_failure(TransportFailureKind::FetchRejected, None),
@@ -811,7 +812,10 @@ mod tests {
             "post-201-without-location-remains-unknown",
             "post-201-body-read-failure-is-sdk-unknown",
         ] {
-            assert!(case(&sdk, id)["expected"]["errorCode"] == "SCHWAB_UNKNOWN_OUTCOME");
+            assert_eq!(
+                case(&sdk, id)["expected"]["errorCode"],
+                "SCHWAB_UNKNOWN_OUTCOME"
+            );
         }
     }
 

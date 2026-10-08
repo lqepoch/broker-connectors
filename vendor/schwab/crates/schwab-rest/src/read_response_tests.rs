@@ -25,6 +25,7 @@ fn account_number_hash_response(row_count: usize) -> String {
 }
 
 #[test]
+#[allow(clippy::too_many_lines)]
 fn applicable_golden_read_responses_follow_node_schema_or_documented_rust_boundary() {
     let fixture: Value = serde_json::from_str(FIXTURE).expect("synthetic JSON fixture");
     let cases = fixture["cases"].as_array().expect("case list");
@@ -478,6 +479,8 @@ fn option_quote_lookup_differentially_matches_reference_for_direct_alias_and_dup
     ];
     let mut quotes = serde_json::Map::new();
     for (index, symbol) in requested.iter().enumerate() {
+        let decimal_offset =
+            f64::from(u32::try_from(index).expect("synthetic fixture index fits u32")) / 100.0;
         let row_symbol = if index == 2 {
             format!("{symbol}   ")
         } else {
@@ -495,8 +498,8 @@ fn option_quote_lookup_differentially_matches_reference_for_direct_alias_and_dup
                 "symbol": row_symbol,
                 "reference": { "underlying": symbol.get(..3).unwrap_or("QQQ"), "contractType": "PUT" },
                 "quote": {
-                    "bidPrice": 1.0 + index as f64 / 100.0,
-                    "askPrice": 1.1 + index as f64 / 100.0,
+                    "bidPrice": 1.0 + decimal_offset,
+                    "askPrice": 1.1 + decimal_offset,
                     "bidSize": index + 1,
                     "askSize": index + 2,
                     "quoteTime": 1_699_999_999_999_i64,
@@ -536,6 +539,7 @@ fn option_quote_lookup_differentially_matches_reference_for_direct_alias_and_dup
 
 #[test]
 #[ignore = "offline old/new option quote lookup microbenchmark"]
+#[allow(clippy::too_many_lines)]
 fn ignored_option_quote_lookup_microbenchmark() {
     use std::hint::black_box;
 
@@ -740,7 +744,7 @@ fn option_quote_projection_is_structural_not_a_freshness_or_nbbo_gate() {
             "quote": {
                 "bidPrice": 1.5,
                 "askPrice": 1.0,
-                "quoteTime": 1699999950000_i64
+                "quoteTime": 1_699_999_950_000_i64
             }
         }
     });
@@ -778,7 +782,7 @@ fn option_quote_projection_is_structural_not_a_freshness_or_nbbo_gate() {
             "quote": {
                 "bidPrice": 1.0,
                 "askPrice": 1.1,
-                "quoteTime": 1700000000100_i64
+                "quoteTime": 1_700_000_000_100_i64
             }
         }
     });
@@ -828,6 +832,7 @@ fn decimal_parser_handles_exponents_and_rejects_unbounded_or_non_finite_values()
 }
 
 #[test]
+#[allow(clippy::too_many_lines)]
 fn optimized_decimal_parser_matches_the_legacy_parser_at_syntax_and_range_boundaries() {
     fn legacy_parse(value: &str) -> Result<String, ReadResponseError> {
         const MAX_BYTES: usize = 64;
@@ -955,7 +960,9 @@ fn optimized_decimal_parser_matches_the_legacy_parser_at_syntax_and_range_bounda
 
     let alphabet = b"019.+-eE";
     for length in 0..=5 {
-        let combinations = alphabet.len().pow(length as u32);
+        let combinations = alphabet
+            .len()
+            .pow(u32::try_from(length).expect("synthetic string length fits u32"));
         for mut encoded in 0..combinations {
             let mut bytes = vec![b'0'; length];
             for byte in &mut bytes {
@@ -969,14 +976,14 @@ fn optimized_decimal_parser_matches_the_legacy_parser_at_syntax_and_range_bounda
     let mut seed = 0x5eed_1234_u64;
     for _ in 0..20_000 {
         seed = seed.wrapping_mul(6_364_136_223_846_793_005).wrapping_add(1);
-        let length = (seed as usize % 65) + 1;
+        let length = usize::try_from(seed % 65).expect("remainder fits usize") + 1;
         let mut value = String::with_capacity(length);
         for _ in 0..length {
             seed = seed.wrapping_mul(6_364_136_223_846_793_005).wrapping_add(1);
             let byte = match seed % 8 {
-                0..=5 => b'0' + ((seed >> 8) % 10) as u8,
+                0..=5 => b'0' + u8::try_from((seed >> 8) % 10).expect("remainder fits one digit"),
                 6 => b'.',
-                _ => b"eE+-"[(seed >> 8) as usize % 4],
+                _ => b"eE+-"[usize::try_from((seed >> 8) % 4).expect("remainder fits usize")],
             };
             value.push(char::from(byte));
         }
@@ -1150,6 +1157,7 @@ fn debug_redacts_unknown_fields_streamer_ids_and_quote_payloads() {
 }
 
 #[test]
+#[allow(clippy::too_many_lines)]
 fn response_model_goldens_preserve_exact_values_and_passthrough_fields() {
     let fixture: Value =
         serde_json::from_str(RESPONSE_MODELS_FIXTURE).expect("synthetic response model golden");
@@ -1738,7 +1746,8 @@ fn fixture_response(transport: &Value) -> FixtureResponse {
         .and_then(Value::as_array)
         .and_then(|responses| responses.last())
         .unwrap_or(transport);
-    let status = selected["status"].as_u64().expect("fixture status") as u16;
+    let status = u16::try_from(selected["status"].as_u64().expect("fixture status"))
+        .expect("fixture status fits u16");
     let body = if selected["emptyBody"] == true || selected.get("body").is_none() {
         Vec::new()
     } else {
@@ -1826,7 +1835,7 @@ fn compare_quote_projection(actual: &NormalizedOptionQuote, expected: &Value, ca
             ),
             "underlying" => assert_eq!(actual.underlying.as_deref(), value.as_str(), "{case_id}"),
             "contractType" => {
-                assert_eq!(actual.contract_type.as_deref(), value.as_str(), "{case_id}")
+                assert_eq!(actual.contract_type.as_deref(), value.as_str(), "{case_id}");
             }
             "expiration" => assert_eq!(actual.expiration.as_deref(), value.as_str(), "{case_id}"),
             "realtime" => assert_eq!(actual.realtime, value.as_bool(), "{case_id}"),
@@ -1951,10 +1960,10 @@ fn market_read_fixtures_have_route_selected_wire_dtos() {
             (ReadResponseKind::PriceHistory, MarketReadResponse::PriceHistory(history)) => {
                 assert_eq!(history.symbol.as_deref(), Some("QQQ"));
                 assert_eq!(history.empty, Some(true));
-                assert!(history.candles.is_empty());
+                assert_eq!(history.candles.len(), 0);
             }
             (ReadResponseKind::Movers, MarketReadResponse::Movers(movers)) => {
-                assert!(movers.screeners.is_empty());
+                assert_eq!(movers.screeners.len(), 0);
             }
             _ => panic!("route selected a mismatched market DTO for {id}"),
         }
@@ -2012,8 +2021,8 @@ fn market_wire_dtos_keep_number_lexemes_dynamic_keys_and_additive_values() {
 fn quote_result_signature(
     result: Result<Vec<NormalizedOptionQuote>, ReadResponseError>,
 ) -> Result<Vec<Value>, ReadResponseError> {
-    fn decimal(value: &Option<ExactDecimal>) -> Option<String> {
-        value.as_ref().map(ExactDecimal::as_string)
+    fn decimal(value: Option<&ExactDecimal>) -> Option<String> {
+        value.map(ExactDecimal::as_string)
     }
 
     result.map(|quotes| {
@@ -2031,33 +2040,33 @@ fn quote_result_signature(
                     "underlying": quote.underlying,
                     "contractType": quote.contract_type,
                     "expiration": quote.expiration,
-                    "strike": decimal(&quote.strike),
+                    "strike": decimal(quote.strike.as_ref()),
                     "realtime": quote.realtime,
                     "quoteType": quote.quote_type,
-                    "bid": decimal(&quote.bid),
-                    "ask": decimal(&quote.ask),
-                    "bidSize": decimal(&quote.bid_size),
-                    "askSize": decimal(&quote.ask_size),
-                    "mark": decimal(&quote.mark),
-                    "last": decimal(&quote.last),
-                    "mid": decimal(&quote.mid),
-                    "spread": decimal(&quote.spread),
+                    "bid": decimal(quote.bid.as_ref()),
+                    "ask": decimal(quote.ask.as_ref()),
+                    "bidSize": decimal(quote.bid_size.as_ref()),
+                    "askSize": decimal(quote.ask_size.as_ref()),
+                    "mark": decimal(quote.mark.as_ref()),
+                    "last": decimal(quote.last.as_ref()),
+                    "mid": decimal(quote.mid.as_ref()),
+                    "spread": decimal(quote.spread.as_ref()),
                     "spreadPercentOfMid": ratio,
-                    "quoteTime": decimal(&quote.quote_time),
-                    "tradeTime": decimal(&quote.trade_time),
-                    "quoteAgeMs": decimal(&quote.quote_age_ms),
-                    "delta": decimal(&quote.delta),
-                    "gamma": decimal(&quote.gamma),
-                    "theta": decimal(&quote.theta),
-                    "vega": decimal(&quote.vega),
-                    "rho": decimal(&quote.rho),
-                    "volatility": decimal(&quote.volatility),
-                    "openInterest": decimal(&quote.open_interest),
-                    "totalVolume": decimal(&quote.total_volume),
-                    "underlyingPrice": decimal(&quote.underlying_price),
-                    "theoreticalOptionValue": decimal(&quote.theoretical_option_value),
-                    "timeValue": decimal(&quote.time_value),
-                    "intrinsicValue": decimal(&quote.intrinsic_value)
+                    "quoteTime": decimal(quote.quote_time.as_ref()),
+                    "tradeTime": decimal(quote.trade_time.as_ref()),
+                    "quoteAgeMs": decimal(quote.quote_age_ms.as_ref()),
+                    "delta": decimal(quote.delta.as_ref()),
+                    "gamma": decimal(quote.gamma.as_ref()),
+                    "theta": decimal(quote.theta.as_ref()),
+                    "vega": decimal(quote.vega.as_ref()),
+                    "rho": decimal(quote.rho.as_ref()),
+                    "volatility": decimal(quote.volatility.as_ref()),
+                    "openInterest": decimal(quote.open_interest.as_ref()),
+                    "totalVolume": decimal(quote.total_volume.as_ref()),
+                    "underlyingPrice": decimal(quote.underlying_price.as_ref()),
+                    "theoreticalOptionValue": decimal(quote.theoretical_option_value.as_ref()),
+                    "timeValue": decimal(quote.time_value.as_ref()),
+                    "intrinsicValue": decimal(quote.intrinsic_value.as_ref())
                 })
             })
             .collect()

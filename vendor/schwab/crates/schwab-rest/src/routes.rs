@@ -201,6 +201,9 @@ impl ReadRequest {
     /// Builds an account-orders GET while preserving safe additive parameters
     /// accepted by Node's record-based `OrdersQuery` contract.
     /// 构造账户订单 GET 请求，并保留 Node 记录型 `OrdersQuery` 合约允许的安全附加参数。
+    ///
+    /// # Errors
+    /// Returns [`ReadRequestError`] when an input is malformed or violates a request bound.
     pub fn orders_with_extensions(
         account_hash: impl AsRef<str>,
         query: OrdersQuery,
@@ -215,6 +218,7 @@ impl ReadRequest {
 
     /// Builds a cross-account orders GET with safe additive parameters.
     /// 构造跨账户订单 GET 请求，并添加安全的附加查询参数。
+    #[must_use]
     pub fn orders_across_accounts_with_extensions(
         query: OrdersQuery,
         extensions: QueryExtensions,
@@ -225,6 +229,9 @@ impl ReadRequest {
     /// Builds an account-transactions GET with safe additive parameters
     /// accepted by Node's record-based `TransactionsParams` contract.
     /// 构造账户交易 GET 请求，并保留 Node 记录型 `TransactionsParams` 合约允许的安全附加参数。
+    ///
+    /// # Errors
+    /// Returns [`ReadRequestError`] when an input is malformed or violates a request bound.
     pub fn transactions_with_extensions(
         account_hash: impl AsRef<str>,
         query: TransactionsQuery,
@@ -246,6 +253,9 @@ impl ReadRequest {
     /// lower-level `Quotes` request available for callers of generic
     /// `getQuotes`.
     /// 此构造器保留该请求约定，同时继续提供底层 `Quotes` 请求供通用 `getQuotes` 调用方使用。
+    ///
+    /// # Errors
+    /// Returns [`ReadRequestError`] when an input is malformed or violates a request bound.
     pub fn option_quotes<I, S>(symbols: I) -> Result<Self, ReadRequestError>
     where
         I: IntoIterator<Item = S>,
@@ -257,6 +267,9 @@ impl ReadRequest {
     /// Builds an option-quote request with the Node SDK's normalized symbols
     /// and default fields. Passing `None` selects `quote,reference`.
     /// 按 Node SDK 规则规范化交易代码并构造期权报价请求。传入 `None` 时默认字段为 `quote,reference`。
+    ///
+    /// # Errors
+    /// Returns [`ReadRequestError`] when an input is malformed or violates a request bound.
     pub fn option_quotes_with_fields<I, S>(
         symbols: I,
         fields: Option<CsvValues>,
@@ -277,6 +290,9 @@ impl ReadRequest {
     /// Builds the single-option convenience request with the same padding,
     /// empty-symbol, and default-field behavior as Node's `getOptionQuote`.
     /// 构造单个期权便捷请求，并保持与 Node `getOptionQuote` 相同的空白修剪、空值处理和默认字段行为。
+    ///
+    /// # Errors
+    /// Returns [`ReadRequestError`] when an input is malformed or violates a request bound.
     pub fn option_quote(symbol: impl AsRef<str>) -> Result<Self, ReadRequestError> {
         Self::option_quotes([symbol])
     }
@@ -285,6 +301,9 @@ impl ReadRequest {
     /// `getVerticalOptionQuote`, preserving caller order and its option-quote
     /// request defaults.
     /// 构造 Node `getVerticalOptionQuote` 使用的双腿报价请求，保留调用方顺序和期权报价默认值。
+    ///
+    /// # Errors
+    /// Returns [`ReadRequestError`] when an input is malformed or violates a request bound.
     pub fn vertical_option_quote(
         long_symbol: impl AsRef<str>,
         short_symbol: impl AsRef<str>,
@@ -302,6 +321,8 @@ impl ReadRequest {
         })
     }
 
+    // Keep the exhaustive allowlisted route/query map together for auditability.
+    #[allow(clippy::too_many_lines)]
     pub(crate) fn endpoint(&self) -> Result<ReadEndpoint, ReadRequestError> {
         let mut query: Vec<(String, String)> = Vec::new();
         let (route_name, mut path) = match self {

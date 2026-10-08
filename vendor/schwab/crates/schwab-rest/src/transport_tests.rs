@@ -1,3 +1,4 @@
+use std::fmt::Write as _;
 use std::net::SocketAddr;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
@@ -268,18 +269,20 @@ async fn cross_origin_allowlisted_target_is_rejected_before_bearer_is_sent() {
         .await
         .expect_err("cross-origin target must be rejected before transport");
     assert_eq!(error, HttpTransportError::Configuration);
-    assert_safe_error(&error);
-    assert!(
+    assert_safe_error(error);
+    assert_eq!(
         origin_server
             .abort_without_waiting_for_request()
             .await
-            .is_empty()
+            .len(),
+        0
     );
-    assert!(
+    assert_eq!(
         foreign_server
             .abort_without_waiting_for_request()
             .await
-            .is_empty()
+            .len(),
+        0
     );
 }
 
@@ -291,10 +294,12 @@ fn response(status: u16, headers: &[(&str, &str)], body: &[u8]) -> Vec<u8> {
         response.push_str(value);
         response.push_str("\r\n");
     }
-    response.push_str(&format!(
+    write!(
+        response,
         "Content-Length: {}\r\nConnection: close\r\n\r\n",
         body.len()
-    ));
+    )
+    .expect("writing to a String succeeds");
     let mut wire = response.into_bytes();
     wire.extend_from_slice(body);
     wire
@@ -315,7 +320,7 @@ fn chunked_response(status: u16, headers: &[(&str, &str)], body: &[u8]) -> Vec<u
         response.push_str("\r\n");
     }
     response.push_str("Transfer-Encoding: chunked\r\nConnection: close\r\n\r\n");
-    response.push_str(&format!("{:x}\r\n", body.len()));
+    write!(response, "{:x}\r\n", body.len()).expect("writing to a String succeeds");
     let mut wire = response.into_bytes();
     wire.extend_from_slice(body);
     wire.extend_from_slice(b"\r\n0\r\n\r\n");
@@ -443,11 +448,12 @@ async fn typed_quote_query_reaches_only_configured_loopback_origin() {
             .to_ascii_lowercase()
             .contains("authorization: bearer synthetic-transport-token\r\n")
     );
-    assert!(
+    assert_eq!(
         foreign_server
             .abort_without_waiting_for_request()
             .await
-            .is_empty()
+            .len(),
+        0
     );
 }
 
@@ -481,7 +487,7 @@ async fn redirect_is_rejected_without_following_location() {
         .await
         .expect_err("redirect must not be followed or surfaced as a successful response");
     assert_eq!(error, HttpTransportError::Redirect);
-    assert_safe_error(&error);
+    assert_safe_error(error);
 
     let requests = server.finish().await;
     assert_eq!(requests.len(), 1, "redirect target was never requested");
@@ -507,7 +513,7 @@ async fn chunked_response_body_is_rejected_before_oversized_body_is_retained() {
         .await
         .expect_err("streamed body above the bound is rejected");
     assert_eq!(error, HttpTransportError::BodyLimit);
-    assert_safe_error(&error);
+    assert_safe_error(error);
     assert_eq!(server.finish().await.len(), 1);
 }
 
@@ -593,7 +599,7 @@ async fn aggregate_and_count_header_overlimits_are_rejected_with_fixed_errors() 
         .await
         .expect_err("aggregate response headers above the contract bound are rejected");
     assert_eq!(error, HttpTransportError::HeaderLimit);
-    assert_safe_error(&error);
+    assert_safe_error(error);
     assert_eq!(server.finish().await.len(), 1);
 
     let tls = make_tls_material();
@@ -614,7 +620,7 @@ async fn aggregate_and_count_header_overlimits_are_rejected_with_fixed_errors() 
         .await
         .expect_err("an individual response header above its bound is rejected");
     assert_eq!(error, HttpTransportError::HeaderLimit);
-    assert_safe_error(&error);
+    assert_safe_error(error);
     assert_eq!(server.finish().await.len(), 1);
 
     let tls = make_tls_material();
@@ -641,7 +647,7 @@ async fn aggregate_and_count_header_overlimits_are_rejected_with_fixed_errors() 
         .await
         .expect_err("response header count above the contract bound is rejected");
     assert_eq!(error, HttpTransportError::HeaderLimit);
-    assert_safe_error(&error);
+    assert_safe_error(error);
     assert_eq!(server.finish().await.len(), 1);
 }
 
@@ -665,7 +671,7 @@ async fn single_256_kib_header_is_rejected_by_post_parse_contract_check() {
         .await
         .expect_err("a parseable 256 KiB value must fail the REST header contract");
     assert_eq!(error, HttpTransportError::HeaderLimit);
-    assert_safe_error(&error);
+    assert_safe_error(error);
     assert_eq!(server.finish().await.len(), 1);
 }
 
@@ -696,7 +702,7 @@ async fn incomplete_http1_header_above_hyper_default_read_buffer_fails_closed() 
         error.request_dispatch_certainty(),
         crate::RequestDispatchCertainty::MayHaveBeenSent
     );
-    assert_safe_error(&error);
+    assert_safe_error(error);
     assert_eq!(server.finish().await.len(), 1);
 }
 
@@ -723,7 +729,7 @@ async fn total_request_timeout_and_diagnostics_are_fixed_and_redacted() {
         error.request_dispatch_certainty(),
         crate::RequestDispatchCertainty::MayHaveBeenSent
     );
-    assert_safe_error(&error);
+    assert_safe_error(error);
     let _ = server.finish().await;
 }
 
@@ -753,8 +759,8 @@ async fn untrusted_tls_certificate_fails_before_any_http_request() {
         error.request_dispatch_certainty(),
         crate::RequestDispatchCertainty::DefinitelyNotSent
     );
-    assert_safe_error(&error);
-    assert!(server.finish().await.is_empty());
+    assert_safe_error(error);
+    assert_eq!(server.finish().await.len(), 0);
 }
 
 #[tokio::test]
@@ -792,15 +798,14 @@ fn test_origin_override_accepts_only_explicit_https_loopback_urls() {
         "https://example.invalid:443",
         tls.trusted_certificate,
     );
-    let error = match result {
-        Ok(_) => panic!("test origin override accepted a non-loopback host"),
-        Err(error) => error,
+    let Err(error) = result else {
+        panic!("test origin override accepted a non-loopback host");
     };
     assert_eq!(error, HttpTransportError::Configuration);
-    assert_safe_error(&error);
+    assert_safe_error(error);
 }
 
-fn assert_safe_error(error: &HttpTransportError) {
+fn assert_safe_error(error: HttpTransportError) {
     let diagnostics = format!("{error:?} {error}");
     assert!(!diagnostics.contains(SYNTHETIC_TOKEN));
     assert!(!diagnostics.contains("synthetic-response-private-marker"));

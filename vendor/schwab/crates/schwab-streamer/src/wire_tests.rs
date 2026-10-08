@@ -64,7 +64,8 @@ fn normalizes_string_and_safe_numeric_wire_forms() {
     let frame = parse(
         r#"{"response":[
           {"service":"ADMIN","requestid":"0012","command":"LOGIN","timestamp":1,"content":{"code":"0","msg":"OK"}},
-          {"service":"LEVELONE_OPTIONS","requestid":26.0,"command":"SUBS","timestamp":2,"content":{"code":26.0,"msg":"OK"}}
+          {"service":"LEVELONE_OPTIONS","requestid":26.0,"command":"SUBS","timestamp":2,"content":{"code":26.0,"msg":"OK"}},
+          {"service":"ADMIN","requestid":9007199254740991,"command":"LOGIN","timestamp":3,"content":{"code":-9223372036854775808.0,"msg":"OK"}}
         ]}"#,
     )
     .expect("numeric and numeric-string forms are accepted");
@@ -73,6 +74,8 @@ fn normalizes_string_and_safe_numeric_wire_forms() {
     assert_eq!(responses[0].content.code, 0);
     assert_eq!(responses[1].request_id, "26");
     assert_eq!(responses[1].content.code, 26);
+    assert_eq!(responses[2].request_id, "9007199254740991");
+    assert_eq!(responses[2].content.code, i64::MIN);
 }
 
 #[test]
@@ -120,6 +123,11 @@ fn timestamp_conversion_matches_zod_number_coercion_for_json_values() {
 fn timestamp_visitor_preserves_json_coercion_and_rejects_non_finite_results() {
     let cases = [
         ("number", "1.25", Some(1.25)),
+        (
+            "large integer uses JavaScript number rounding",
+            "9007199254740993",
+            Some(9_007_199_254_740_992.0),
+        ),
         (
             "numeric string",
             "\"1800000000000\"",
