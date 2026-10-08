@@ -7,6 +7,7 @@ provider `conId` 是来源记录身份，不能替代 `OptionInstrumentKey`，�
 ## 能力边界
 
 - 仅实现精确 OCC 期权 contract-details catalog lookup。
+- 该 provider-specific API 当前不实现通用 `InstrumentCatalogPort`：共享 query 尚无完整 OCC/right/strike 与显式 exchange/currency 字段，因此本 crate 不枚举宽泛期权链，也不推断路由默认值。
 - SDK client 是 crate 私有字段，不会通过公共类型或方法返回。
 - 查找按单个 session 串行执行；SDK 自动重连关闭。
 - API endpoint 必须是 loopback `SocketAddr`，不允许由此 adapter 连接任意远端主机。
