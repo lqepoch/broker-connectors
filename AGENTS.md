@@ -1,0 +1,17 @@
+# Broker Connectors Contributor Rules
+
+This public workspace contains provider protocol adapters and provider-neutral read ports. Keep market reads, account reads, and execution authority separate. The library must not create a second OMS, account-state authority, quote store, persistence layer, or runtime scheduler.
+
+## Safety Boundaries
+
+- Tests use synthetic payloads and fake transport only. Never read local credentials, call OAuth, or contact a provider/account during development or validation.
+- Production endpoints are fixed, HTTPS/WSS allowlisted values. Do not accept arbitrary production base URLs or enable redirects on credential-bearing requests.
+- Credentials must be injected through an explicit provider boundary, redacted from `Debug`/errors/logs, and zeroized when owned by this crate.
+- Market source/feed, provider timestamps, local receive time, generation, sequence, and encoding evidence remain explicit. Unknown entitlement stays unknown; no automatic IEX/indicative fallback is allowed. Received MessagePack application frames may travel only in the bounded ordered record lane; outbound authentication frames and credential material are never captured.
+- Raw frame capture is limited to 1 MiB per frame, 16 MiB and 1,024 frame records process-wide. Each normalized event carries frame SHA-256, canonical generation, frame sequence, and 1-based ordinal/count. Unknown, malformed, provider-error, quote-coalesced, or otherwise incomplete input must fail closed and cannot be represented as a complete archive.
+- Execution write transport remains absent until a frozen unforgeable authorization contract and separate review authorize it. Parsing or building an order is not a send capability.
+- New public types and critical invariants use English first, followed by Simplified Chinese.
+
+## Validation
+
+Use the pinned toolchain and `CARGO_BUILD_JOBS=2`. Run the affected crate tests first, then workspace tests, formatting, Clippy with `-D warnings`, dependency/license checks, and secret scanning. Do not suppress numeric conversion or safety lints. The current item-scoped Clippy allowances are: `MarketNumber::to_f64` documents its intentionally lossy projection; the Alpaca request/control entrypoints, MessagePack preflight, and two session-state transitions keep their bounded state machine together; `receive_frame` keeps each protocol deadline explicit; the runner imports its parent's private session vocabulary; the fake socket implements the required async test trait without awaiting. Report native provider, OAuth, live-data, and Windows/macOS runtime checks as `NOT RUN` unless they were actually executed in an authorized environment.

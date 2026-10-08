@@ -1,0 +1,187 @@
+{
+  "cutover_status": "EXTRACTED_NO_CUTOVER",
+  "exclusions": [
+    "credentials and account state",
+    "private strategy parameters",
+    "production account or market data",
+    "order-send CLI and execution authority"
+  ],
+  "manifest_version": 1,
+  "new_project_code": [
+    {
+      "origin": "new project-owned code",
+      "sha256": "31f11405a826ecc4a9ae60463ee7d1f01dec1078f14315761d14f732afea2eca",
+      "target_path": "crates/alpaca-stream/src/market_port.rs"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "daa48bf3e478a0ce85378747a53d4eb5d80f68ad57301331f0b88b21f9ce63c4",
+      "target_path": "crates/broker-ports/Cargo.toml"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "4aa5dc0bc1dfa0ebb1e6a990c1aa0937492b5b9a232f6e9e2f70a7936f686d93",
+      "target_path": "crates/broker-ports/src/lib.rs"
+    }
+  ],
+  "source_commit": "c907d18bc31790ede4cf36a4312a6813467506f0",
+  "source_files": [
+    {
+      "adaptation": "Adapted as a workspace member; dependencies are resolved only by the public workspace lockfile.",
+      "adapted_target_sha256": "69d619d14ef9467da09fcbb561ceb39ca08862ef57d166ad401b00de4b2a9045",
+      "source_blob_sha256": "930b598643789f6be404b42fe202990e4208c2f4529864515a9e6006af53002f",
+      "source_path": "crates/alpaca-stream/Cargo.toml",
+      "target_path": "crates/alpaca-stream/Cargo.toml"
+    },
+    {
+      "adaptation": "Updated for public scope, shared v1 contracts, numeric provenance, ACK limits, and archive completeness boundaries.",
+      "adapted_target_sha256": "a375cce8bc662c8da3ba769290a5d6ca3bd8c7f0448c5943319e3350c9a12b02",
+      "source_blob_sha256": "5c6080b377e1e0a7ad9963a3fc6f095f88fdd16ebb0c55b92115a60d329c3e67",
+      "source_path": "crates/alpaca-stream/README.md",
+      "target_path": "crates/alpaca-stream/README.md"
+    },
+    {
+      "adaptation": "Adds explicit feed string access for the shared source DTO; the allowlisted endpoint/feed boundary is retained.",
+      "adapted_target_sha256": "b5794904cd5b6ed0e8cefc9793939e58265e2486cf7d79bf44860486bd283a2d",
+      "source_blob_sha256": "9b5b1cbffbfab577c3bc49ad76d9c77e76ed290fbe04b15ae6e10cef9bd15ec9",
+      "source_path": "crates/alpaca-stream/src/config.rs",
+      "target_path": "crates/alpaca-stream/src/config.rs"
+    },
+    {
+      "adaptation": "Adapted only as required by the public crate boundary and formatting; source provenance is retained at the immutable commit above.",
+      "adapted_target_sha256": "01ff0a41a91a145665c275d21d27541bc3ecb9b36c89864ce7bb2dcf710a97cc",
+      "source_blob_sha256": "727b890b283e32c9ca8d6a670b76d75253fb46d5e7e44835c5436f0281b7835b",
+      "source_path": "crates/alpaca-stream/src/credentials.rs",
+      "target_path": "crates/alpaca-stream/src/credentials.rs"
+    },
+    {
+      "adaptation": "Adapted only as required by the public crate boundary and formatting; source provenance is retained at the immutable commit above.",
+      "adapted_target_sha256": "f6e63121753d0b65e1e1c5f7d97ee079073387c2cb34352b12263a12f2b73fc4",
+      "source_blob_sha256": "5ef499371df78ebb852a15284e462bc95832f7f91555f3cf968082731d4da139",
+      "source_path": "crates/alpaca-stream/src/diagnostics.rs",
+      "target_path": "crates/alpaca-stream/src/diagnostics.rs"
+    },
+    {
+      "adaptation": "Adapted only as required by the public crate boundary and formatting; source provenance is retained at the immutable commit above.",
+      "adapted_target_sha256": "e76551eeb2817f6975f0b11afa59612cf33aea5b53eb56310c7027a8b868d425",
+      "source_blob_sha256": "4ae33bfee220c0df44b5f6c368dc94acc70a427afe80973d246d089c53f3e889",
+      "source_path": "crates/alpaca-stream/src/diagnostics_tests.rs",
+      "target_path": "crates/alpaca-stream/src/diagnostics_tests.rs"
+    },
+    {
+      "adaptation": "Adds a non-dropping unified quote/trade/control receiver used by the canonical ordered port.",
+      "adapted_target_sha256": "988823c88bba83fb72ed3fa770b717a059524f2835b63c47820f2671ee5b0bc5",
+      "source_blob_sha256": "46e0ec0a359921376277abd9629616034ebf0be3dfb810074e465f72d7ae5a18",
+      "source_path": "crates/alpaca-stream/src/lane.rs",
+      "target_path": "crates/alpaca-stream/src/lane.rs"
+    },
+    {
+      "adaptation": "Adds synthetic ordered quote/trade/control lane regression coverage.",
+      "adapted_target_sha256": "881c9dcdfdcb5345e5835ad68b5162cc513eb4bac2f99b6c298503bad328b959",
+      "source_blob_sha256": "786262bcd1fc12b2e1ba0e8edd533c53c899979130e350cababfe3fadc864f4d",
+      "source_path": "crates/alpaca-stream/src/lane_tests.rs",
+      "target_path": "crates/alpaca-stream/src/lane_tests.rs"
+    },
+    {
+      "adaptation": "Adapted only as required by the public crate boundary and formatting; source provenance is retained at the immutable commit above.",
+      "adapted_target_sha256": "c5e48e7d7c8f754db8f475060afc6df632d48e05cdf6e055af1ed281f0ab7607",
+      "source_blob_sha256": "4058512ad44c4331ca5f6cca9373338226e494ce358ee8871304d988d6b61b54",
+      "source_path": "crates/alpaca-stream/src/lib.rs",
+      "target_path": "crates/alpaca-stream/src/lib.rs"
+    },
+    {
+      "adaptation": "Adds UTC receipt timestamps, source numeric encoding, exact frame identity, and per-event ordinal/count correlation.",
+      "adapted_target_sha256": "19bb02d673227d2a564d3def4c1950c13ab56194e180f6691cbc18c40f20626b",
+      "source_blob_sha256": "1ed8e62896c54eb2e456bbb2d5e4677db0c41089c3225bb96867eeb76c51ab0d",
+      "source_path": "crates/alpaca-stream/src/model.rs",
+      "target_path": "crates/alpaca-stream/src/model.rs"
+    },
+    {
+      "adaptation": "Adapted only as required by the public crate boundary and formatting; source provenance is retained at the immutable commit above.",
+      "adapted_target_sha256": "dc1dfa8ef9dd3d7a16c14e9af8d16ec546240a4618cd189558f842627306fa74",
+      "source_blob_sha256": "c07d8289f79ce641b5efb47aaadf2d24b52ee2bee5ca3b02652acc535cd6091f",
+      "source_path": "crates/alpaca-stream/src/msgpack_timestamp.rs",
+      "target_path": "crates/alpaca-stream/src/msgpack_timestamp.rs"
+    },
+    {
+      "adaptation": "Adapted only as required by the public crate boundary and formatting; source provenance is retained at the immutable commit above.",
+      "adapted_target_sha256": "aaf73db3900fba298b5225eb302b39f9213d99cc8a145bc0dcc07733a65daaf2",
+      "source_blob_sha256": "b7d8b89bb3a32c42c7118d5bcab2ce1e242f95738d43dc504f0371a816c81ad3",
+      "source_path": "crates/alpaca-stream/src/msgpack_timestamp_tests.rs",
+      "target_path": "crates/alpaca-stream/src/msgpack_timestamp_tests.rs"
+    },
+    {
+      "adaptation": "Retains bounded provider MessagePack decode behavior; wire numeric categories and raw-frame hashes are represented without claiming binary floats are source-exact.",
+      "adapted_target_sha256": "e30e82a34836d2791691b58b5f098118cbf6822ad1f44fa19a95d57c404b167d",
+      "source_blob_sha256": "5c0852dcc105735823f7f6be374a11192918df4e945587e4367a61ab8769b520",
+      "source_path": "crates/alpaca-stream/src/protocol.rs",
+      "target_path": "crates/alpaca-stream/src/protocol.rs"
+    },
+    {
+      "adaptation": "Adds synthetic raw-frame SHA-256 assertions.",
+      "adapted_target_sha256": "52261ff0db723112c4930143321dd6157f0afe172419a18ded878c83af00ff1b",
+      "source_blob_sha256": "d29089dcc0129198b0e4c6eeb62eee223e6975e75ab33343d672829ad33b0535",
+      "source_path": "crates/alpaca-stream/src/protocol_tests.rs",
+      "target_path": "crates/alpaca-stream/src/protocol_tests.rs"
+    },
+    {
+      "adaptation": "Updates atomic generation allocation for the pinned Rust toolchain.",
+      "adapted_target_sha256": "fd9b57ee4121caa126a9253feac9da1304d06af3e242b765c5e1459dd968bc99",
+      "source_blob_sha256": "9f87e3a863969200d587b54df33fafd8370413e720a1f647200bbfa0d6269fad",
+      "source_path": "crates/alpaca-stream/src/session.rs",
+      "target_path": "crates/alpaca-stream/src/session.rs"
+    },
+    {
+      "adaptation": "Captures only bounded inbound market-data application frames; excludes outbound auth/subscription data and links normalized events to frame sequence/hash/ordinal/count.",
+      "adapted_target_sha256": "4d4c1412718c7036e20a3202720a452a2dae25f8eab21afa5dd264ffd1b379d2",
+      "source_blob_sha256": "8c47578aedd8199f6ee039ed2cf638e1bde385393cc74576bae8625b338bc7b2",
+      "source_path": "crates/alpaca-stream/src/session/runner.rs",
+      "target_path": "crates/alpaca-stream/src/session/runner.rs"
+    },
+    {
+      "adaptation": "Adds synthetic frame-budget and fixed-diagnostic coverage; no provider calls or credentials.",
+      "adapted_target_sha256": "775c9fb10f5be8339c21f4b3cafba5b512707e8e29a8653695e171472a24e6b4",
+      "source_blob_sha256": "bea0c57dbbeca239ff52dd1809c12bc4cca7cfac5ab1b69848889b50ead6122e",
+      "source_path": "crates/alpaca-stream/src/session_diagnostic_tests.rs",
+      "target_path": "crates/alpaca-stream/src/session_diagnostic_tests.rs"
+    },
+    {
+      "adaptation": "Adds synthetic exact-byte raw-frame, unknown-message, and quote/trade ACK fixtures with fake transport only.",
+      "adapted_target_sha256": "299e91169cdc96aca464d35e015fbdd027da9f00ff3661f608a53772930d59d3",
+      "source_blob_sha256": "0b46d06196828466fdb146b647d6f911b41dc67cdc3b87f6042898a07cda80f6",
+      "source_path": "crates/alpaca-stream/src/session_test_support.rs",
+      "target_path": "crates/alpaca-stream/src/session_test_support.rs"
+    },
+    {
+      "adaptation": "Adds synthetic raw-frame exact-byte/hash linkage and terminal unknown-frame coverage alongside independent quote/trade ACK rejection.",
+      "adapted_target_sha256": "f0f4543e9ddd48f567815f31142a49a0ea76bc51bafd74fdfb5add00f9241272",
+      "source_blob_sha256": "c5546d94bb951120deceb6c33088df116f149593de92b22cd8a7aaa661c8961b",
+      "source_path": "crates/alpaca-stream/src/session_tests.rs",
+      "target_path": "crates/alpaca-stream/src/session_tests.rs"
+    },
+    {
+      "adaptation": "Keeps reconnect jitter bounded while replacing unchecked signed integer casts with saturating unsigned arithmetic.",
+      "adapted_target_sha256": "0c87be5daa4a1aa2609671ac1acb8fc9e880d9093919743fa57c6377cdcde34e",
+      "source_blob_sha256": "50b392f945fa69b4cd94c4c58cb275a7c2518b92162c5ebba08403768df68a82",
+      "source_path": "crates/alpaca-stream/src/state.rs",
+      "target_path": "crates/alpaca-stream/src/state.rs"
+    },
+    {
+      "adaptation": "Adapted only as required by the public crate boundary and formatting; source provenance is retained at the immutable commit above.",
+      "adapted_target_sha256": "b7e40a779b0fac8ba27d1a957d6e24a10283dc1366ec9fa05a2b6f2f31311bc8",
+      "source_blob_sha256": "784be63df54d7dbace6b5f8c11ac5657a63eb665e94c4cb2fd218ff55cfbffda",
+      "source_path": "crates/alpaca-stream/src/transport.rs",
+      "target_path": "crates/alpaca-stream/src/transport.rs"
+    },
+    {
+      "adaptation": "Adds typed trade delivery to the unified stream receiver.",
+      "adapted_target_sha256": "4d75e2a30a92fccca49196adfba2b2d6377d6ea869b7263cbb6c1863c7658f88",
+      "source_blob_sha256": "c45f35c13b352970c34e3dc12df4dd5bfcc50fc1e7c07f5ec3032fbc1d36b3a8",
+      "source_path": "crates/alpaca-stream/src/update.rs",
+      "target_path": "crates/alpaca-stream/src/update.rs"
+    }
+  ],
+  "source_license_status": "The source repository is private and this commit has no repository-wide open-source license. Repository-owner authorization covers only the source paths enumerated here and permits this selected project-owned code to be published in this repository under MIT OR Apache-2.0.",
+  "source_repository": "lqepoch/schwab_auto_bot",
+  "target_license": "MIT OR Apache-2.0 for the selected project-owned code; third-party dependencies retain their own licenses."
+}

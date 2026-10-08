@@ -1,0 +1,17 @@
+Copyright and source notice
+
+The project-owned Rust modules listed in SOURCE-MANIFEST.json were extracted
+and adapted from the private LQ Epoch repository `lqepoch/schwab_auto_bot` at
+immutable commit c907d18bc31790ede4cf36a4312a6813467506f0 under the repository
+owner's explicit authorization for this public project. That authorization
+applies only to the listed paths and does not change the license or ownership
+of the remainder of the private repository.
+
+The new `broker-ports` crate and the `alpaca-stream` adapter/projection changes
+are licensed under MIT OR Apache-2.0 as shown in Cargo.toml and LICENSE-MIT /
+LICENSE-APACHE. No private account state, credentials, production account data,
+private strategy parameters, or order traces are included. Test market symbols
+and payloads are synthetic.
+
+Third-party dependencies retain their own license terms. See Cargo.lock and
+SBOM.spdx.json; this notice does not relicense any dependency.

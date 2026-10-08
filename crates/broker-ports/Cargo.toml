@@ -1,0 +1,16 @@
+[package]
+name = "broker-ports"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Provider-neutral, read-only market-data port contracts"
+
+[dependencies]
+market-contracts.workspace = true
+sha2.workspace = true
+tokio.workspace = true
+
+[lints]
+workspace = true

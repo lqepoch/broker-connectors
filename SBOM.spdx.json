@@ -1,0 +1,3023 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "creationInfo": {
+    "created": "2026-10-08T06:38:04Z",
+    "creators": [
+      "Tool: scripts/generate_spdx_sbom.py"
+    ]
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://spdx.org/spdxdocs/broker-connectors-3b85c901d5525fade3cace4fb53b5b62e525f9a449a4c247e6adecebe1a0ef53",
+  "name": "broker-connectors Cargo workspace",
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-1-alpaca-stream-0.1.0",
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://github.com/lqepoch/broker-connectors",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "alpaca-stream",
+      "versionInfo": "0.1.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-2-autocfg-1.5.1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/autocfg/1.5.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/autocfg@1.5.1",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0 OR MIT",
+      "name": "autocfg",
+      "versionInfo": "1.5.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-3-bitflags-2.13.2",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "3ded4057c258ba199e2d26386d3af3780957ecaee6c4ef4041c6b4b8b97c0b06"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/bitflags/2.13.2",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/bitflags@2.13.2",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "bitflags",
+      "versionInfo": "2.13.2"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-4-block-buffer-0.10.4",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "3078c7629b62d3f0439517fa394996acacc5cbc91c5a20d8c658e77abd503a71"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/block-buffer/0.10.4",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/block-buffer@0.10.4",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "block-buffer",
+      "versionInfo": "0.10.4"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-5-block-buffer-0.12.1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d2f6c7dbe95a6ed67ad9f18e57daf93a2f034c524b99fd2b76d18fdfeb6660aa"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/block-buffer/0.12.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/block-buffer@0.12.1",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "block-buffer",
+      "versionInfo": "0.12.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-6-broker-ports-0.1.0",
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://github.com/lqepoch/broker-connectors",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "broker-ports",
+      "versionInfo": "0.1.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-7-bytes-1.12.1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "fc652a48c352aef3ea3aed32080501cf3ef6ed5da78602a020c991775b0aff04"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/bytes/1.12.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/bytes@1.12.1",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "name": "bytes",
+      "versionInfo": "1.12.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-8-cc-1.6.0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f74872d07caf508b30a21f6836e7d7016a2eaf7d9ff4f48deaa58cd8a0407630"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/cc/1.6.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/cc@1.6.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "cc",
+      "versionInfo": "1.6.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-9-cfg-if-1.0.5",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4e7648175b45a9a48536d676f68d918270699102aa8dab5496df06904c914600"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/cfg-if/1.0.5",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/cfg-if@1.0.5",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "cfg-if",
+      "versionInfo": "1.0.5"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-10-chacha20-0.10.2",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "65c35e4b699c7e15ccbe7ee35c005e4fc0a278d22238a2857e6ce2dadeda1b06"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/chacha20/0.10.2",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/chacha20@0.10.2",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "chacha20",
+      "versionInfo": "0.10.2"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-11-chrono-0.4.45",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1aa79e62e7697b8e29b513a68abacf485adcd1fe8284a4316c5ae868e6633327"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/chrono/0.4.45",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/chrono@0.4.45",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "chrono",
+      "versionInfo": "0.4.45"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-12-const-oid-0.10.2",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a6ef517f0926dd24a1582492c791b6a4818a4d94e789a334894aa15b0d12f55c"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/const-oid/0.10.2",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/const-oid@0.10.2",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0 OR MIT",
+      "name": "const-oid",
+      "versionInfo": "0.10.2"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-13-core-foundation-0.10.1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b2a6cd9ae233e7f62ba4e9353e81a88df7fc8a5987b8d445b4d90c879bd156f6"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/core-foundation/0.10.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/core-foundation@0.10.1",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "core-foundation",
+      "versionInfo": "0.10.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-14-core-foundation-sys-0.8.7",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/core-foundation-sys/0.8.7",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/core-foundation-sys@0.8.7",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "core-foundation-sys",
+      "versionInfo": "0.8.7"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-15-cpufeatures-0.2.17",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "59ed5838eebb26a2bb2e58f6d5b5316989ae9d08bab10e0e6d103e656d1b0280"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/cpufeatures/0.2.17",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/cpufeatures@0.2.17",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "cpufeatures",
+      "versionInfo": "0.2.17"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-16-cpufeatures-0.3.1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5ca28b0ae3115b884660db4118d803791fd6756b6e88f39c0f3f7859060d7566"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/cpufeatures/0.3.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/cpufeatures@0.3.1",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "cpufeatures",
+      "versionInfo": "0.3.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-17-crypto-common-0.1.7",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "78c8292055d1c1df0cce5d180393dc8cce0abec0a7102adb6c7b1eef6016d60a"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/crypto-common/0.1.7",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/crypto-common@0.1.7",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "crypto-common",
+      "versionInfo": "0.1.7"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-18-crypto-common-0.2.2",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ce6e4c961d6cd6c9a86db418387425e8bdeaf05b3c8bc1411e6dca4c252f1453"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/crypto-common/0.2.2",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/crypto-common@0.2.2",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "crypto-common",
+      "versionInfo": "0.2.2"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-19-data-encoding-2.11.1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4583a4551df46e2792f82ceeac45e850d2e2d5debba0b91f102385cda5b11f06"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/data-encoding/2.11.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/data-encoding@2.11.1",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "name": "data-encoding",
+      "versionInfo": "2.11.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-20-digest-0.10.7",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9ed9a281f7bc9b7576e61468ba615a66a5c8cfdff42420a70aa82701a3b1e292"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/digest/0.10.7",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/digest@0.10.7",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "digest",
+      "versionInfo": "0.10.7"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-21-digest-0.11.3",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f1dd6dbb5841937940781866fa1281a1ff7bd3bf827091440879f9994983d5c2"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/digest/0.11.3",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/digest@0.11.3",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "digest",
+      "versionInfo": "0.11.3"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-22-domain-0.1.0",
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "domain",
+      "versionInfo": "0.1.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-23-exact-decimal-0.1.0",
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "exact-decimal",
+      "versionInfo": "0.1.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-24-find-msvc-tools-0.1.14",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "aedcfb3409746eddb02b9e19ebda1c3394f759a152e48ee875a0844d1b955484"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/find-msvc-tools/0.1.14",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/find-msvc-tools@0.1.14",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "find-msvc-tools",
+      "versionInfo": "0.1.14"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-25-futures-core-0.3.34",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "92d699e522242e69e3003b94ecc1f960f3a5e015aa7c5d7486e65ad01dd94f5e"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/futures-core/0.3.34",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/futures-core@0.3.34",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "futures-core",
+      "versionInfo": "0.3.34"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-26-futures-macro-0.3.34",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9fb9654ba8355388abeb8dcb4fc62f511300867002afc858860463bdd9fe0c44"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/futures-macro/0.3.34",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/futures-macro@0.3.34",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "futures-macro",
+      "versionInfo": "0.3.34"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-27-futures-sink-0.3.34",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1944426bf7d03f1d14f708785e4b33efd750b36d48a157b836b3efc15ede8e1d"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/futures-sink/0.3.34",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/futures-sink@0.3.34",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "futures-sink",
+      "versionInfo": "0.3.34"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-28-futures-task-0.3.34",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "cd417de3d1d015fc3bfd2b1ea46dfc7bab72ef86f1cc7cc9c78e728b34a6d1fd"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/futures-task/0.3.34",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/futures-task@0.3.34",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "futures-task",
+      "versionInfo": "0.3.34"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-29-futures-util-0.3.34",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0d50a92467f8ba5dd6e3ee5d4bd04d73ab2e4e1c44474a0674821dfce14b79bc"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/futures-util/0.3.34",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/futures-util@0.3.34",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "futures-util",
+      "versionInfo": "0.3.34"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-30-generic-array-0.14.7",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "85649ca51fd72272d7821adaf274ad91c288277713d9c18820d8499a7ff69e9a"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/generic-array/0.14.7",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/generic-array@0.14.7",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "name": "generic-array",
+      "versionInfo": "0.14.7"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-31-getrandom-0.2.17",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ff2abc00be7fca6ebc474524697ae276ad847ad0a6b3faa4bcb027e9a4614ad0"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/getrandom/0.2.17",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/getrandom@0.2.17",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "getrandom",
+      "versionInfo": "0.2.17"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-32-getrandom-0.4.3",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "300e883d756b2e4ec94e02791f39b04b522276138852cfc41d9fb7e904106099"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/getrandom/0.4.3",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/getrandom@0.4.3",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "getrandom",
+      "versionInfo": "0.4.3"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-33-http-1.5.0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "918d3568bebf352712bc2ef3d46a8bcf1a75b373be6539de198e9105cbbf9ce0"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/http/1.5.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/http@1.5.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "http",
+      "versionInfo": "1.5.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-34-httparse-1.10.1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6dbf3de79e51f3d586ab4cb9d5c3e2c14aa28ed23d180cf89b4df0454a69cc87"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/httparse/1.10.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/httparse@1.10.1",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "httparse",
+      "versionInfo": "1.10.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-35-hybrid-array-0.4.15",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "27f864f10dfb56725ce5ce5472bc52252c8f93a4ab86327122cebf62c5f59a17"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/hybrid-array/0.4.15",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/hybrid-array@0.4.15",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "hybrid-array",
+      "versionInfo": "0.4.15"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-36-itoa-1.0.18",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/itoa/1.0.18",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/itoa@1.0.18",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "itoa",
+      "versionInfo": "1.0.18"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-37-libc-0.2.190",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ce5d3ddc6d3fa000eb1536d85e147bfe31aacaba692ed6a876f95cb7c855be78"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/libc/0.2.190",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/libc@0.2.190",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "libc",
+      "versionInfo": "0.2.190"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-38-log-0.4.34",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f9f8bd3e56ce4dfc153cf470fffbfa98c7620958b312ca5c3a4b8d5181fd13c6"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/log/0.4.34",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/log@0.4.34",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "log",
+      "versionInfo": "0.4.34"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-39-market-contracts-0.1.0",
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "market-contracts",
+      "versionInfo": "0.1.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-40-memchr-2.8.3",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/memchr/2.8.3",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/memchr@2.8.3",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Unlicense OR MIT",
+      "name": "memchr",
+      "versionInfo": "2.8.3"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-41-mio-1.2.4",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1788edb87fdc09c7e26304471e2f5be8cdefb1b6930d6e3985fc02ff53bf86ee"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/mio/1.2.4",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/mio@1.2.4",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "name": "mio",
+      "versionInfo": "1.2.4"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-42-num-traits-0.2.19",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "071dfc062690e90b734c0b2273ce72ad0ffa95f0c74596bc250dcfd960262841"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/num-traits/0.2.19",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/num-traits@0.2.19",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "num-traits",
+      "versionInfo": "0.2.19"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-43-once-cell-1.21.4",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/once_cell/1.21.4",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/once_cell@1.21.4",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "once_cell",
+      "versionInfo": "1.21.4"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-44-openssl-probe-0.2.1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "7c87def4c32ab89d880effc9e097653c8da5d6ef28e6b539d313baaacfbafcbe"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/openssl-probe/0.2.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/openssl-probe@0.2.1",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "openssl-probe",
+      "versionInfo": "0.2.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-45-pin-project-lite-0.2.17",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/pin-project-lite/0.2.17",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/pin-project-lite@0.2.17",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0 OR MIT",
+      "name": "pin-project-lite",
+      "versionInfo": "0.2.17"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-46-proc-macro2-1.0.107",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "985e7ec9bb745e6ce6535b544d84d6cd6f7ad8bd711c398938ae983b91a766d9"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/proc-macro2/1.0.107",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/proc-macro2@1.0.107",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "proc-macro2",
+      "versionInfo": "1.0.107"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-47-quote-1.0.47",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1fbf4db142a473a8d80c26bbf18454ed458bf8d26c8219c331daecfdbd079001"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/quote/1.0.47",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/quote@1.0.47",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "quote",
+      "versionInfo": "1.0.47"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-48-r-efi-6.0.0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f8dcc9c7d52a811697d2151c701e0d08956f92b0e24136cf4cf27b57a6a0d9bf"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/r-efi/6.0.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/r-efi@6.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0 OR LGPL-2.1-or-later",
+      "name": "r-efi",
+      "versionInfo": "6.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-49-rand-0.10.3",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "65c9fb96cbc91e3478eaae79a69fcd3f1ae4ad052e471fe6732fff548984b4af"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/rand/0.10.3",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/rand@0.10.3",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "rand",
+      "versionInfo": "0.10.3"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-50-rand-core-0.10.1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "63b8176103e19a2643978565ca18b50549f6101881c443590420e4dc998a3c69"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/rand_core/0.10.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/rand_core@0.10.1",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "rand_core",
+      "versionInfo": "0.10.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-51-ring-0.17.14",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a4689e6c2294d81e88dc6261c768b63bc4fcdb852be6d1352498b114f61383b7"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/ring/0.17.14",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/ring@0.17.14",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0 AND ISC",
+      "name": "ring",
+      "versionInfo": "0.17.14"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-52-rmp-0.8.15",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4ba8be72d372b2c9b35542551678538b562e7cf86c3315773cae48dfbfe7790c"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/rmp/0.8.15",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/rmp@0.8.15",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "name": "rmp",
+      "versionInfo": "0.8.15"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-53-rmpv-1.3.1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "7a4e1d4b9b938a26d2996af33229f0ca0956c652c1375067f0b45291c1df8417"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/rmpv/1.3.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/rmpv@1.3.1",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "name": "rmpv",
+      "versionInfo": "1.3.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-54-rustls-0.23.45",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0d41d731c7d2f962d1ccc364cec258de3c0e93b38c2fb3ba97ac74513048d634"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/rustls/0.23.45",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/rustls@0.23.45",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0 OR ISC OR MIT",
+      "name": "rustls",
+      "versionInfo": "0.23.45"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-55-rustls-native-certs-0.8.4",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "dab5152771c58876a2146916e53e35057e1a4dfa2b9df0f0305b07f611fdea4d"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/rustls-native-certs/0.8.4",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/rustls-native-certs@0.8.4",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0 OR ISC OR MIT",
+      "name": "rustls-native-certs",
+      "versionInfo": "0.8.4"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-56-rustls-pki-types-1.15.1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2f4925028c7eb5d1fcdaf196971378ed9d2c1c4efc7dc5d011256f76c99c0a96"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/rustls-pki-types/1.15.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/rustls-pki-types@1.15.1",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "rustls-pki-types",
+      "versionInfo": "1.15.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-57-rustls-webpki-0.103.15",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f3c3cf1d8b1e7d4927e2d154c3fcb02979afb9939629c62cd9048d4f07b60ac2"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/rustls-webpki/0.103.15",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/rustls-webpki@0.103.15",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "ISC",
+      "name": "rustls-webpki",
+      "versionInfo": "0.103.15"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-58-schannel-0.1.29",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "91c1b7e4904c873ef0710c1f407dde2e6287de2bebc1bbbf7d430bb7cbffd939"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/schannel/0.1.29",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/schannel@0.1.29",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "name": "schannel",
+      "versionInfo": "0.1.29"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-59-security-framework-3.7.0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b7f4bc775c73d9a02cde8bf7b2ec4c9d12743edf609006c7facc23998404cd1d"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/security-framework/3.7.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/security-framework@3.7.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "security-framework",
+      "versionInfo": "3.7.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-60-security-framework-sys-2.17.0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6ce2691df843ecc5d231c0b14ece2acc3efb62c0a398c7e1d875f3983ce020e3"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/security-framework-sys/2.17.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/security-framework-sys@2.17.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "security-framework-sys",
+      "versionInfo": "2.17.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-61-serde-1.0.229",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4148590afebada386688f18773da617792bf2ef03ffc1e4cbd2b1d45b023e0ba"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/serde/1.0.229",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/serde@1.0.229",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "serde",
+      "versionInfo": "1.0.229"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-62-serde-core-1.0.229",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "67dca2c9c51e58a4791a4b1ed58308b39c64224d349a935ab5039aa360942a48"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/serde_core/1.0.229",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/serde_core@1.0.229",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "serde_core",
+      "versionInfo": "1.0.229"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-63-serde-derive-1.0.229",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e7a5d71263a5a7d47b41f6b3f06ba276f10cc18b0931f1799f710578e2309348"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/serde_derive/1.0.229",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/serde_derive@1.0.229",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "serde_derive",
+      "versionInfo": "1.0.229"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-64-serde-json-1.0.151",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c841b55ecdae098c80dcae9cf767f6f8a0c2cdb3416bbef72181df4d0fe73f14"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/serde_json/1.0.151",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/serde_json@1.0.151",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "serde_json",
+      "versionInfo": "1.0.151"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-65-sha1-0.11.0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "aacc4cc499359472b4abe1bf11d0b12e688af9a805fa5e3016f9a386dc2d0214"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/sha1/0.11.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/sha1@0.11.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "sha1",
+      "versionInfo": "0.11.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-66-sha2-0.10.9",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a7507d819769d01a365ab707794a4084392c824f54a7a6a7862f8c3d0892b283"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/sha2/0.10.9",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/sha2@0.10.9",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "sha2",
+      "versionInfo": "0.10.9"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-67-shlex-2.0.1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f8fadd59c855ef2080decdef8ff161eb6661b86933c9d82e5ba29dc602a55aba"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/shlex/2.0.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/shlex@2.0.1",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "shlex",
+      "versionInfo": "2.0.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-68-slab-0.4.12",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0c790de23124f9ab44544d7ac05d60440adc586479ce501c1d6d7da3cd8c9cf5"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/slab/0.4.12",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/slab@0.4.12",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "name": "slab",
+      "versionInfo": "0.4.12"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-69-socket2-0.6.5",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c3d1e2c7f27f8d4cb10542a02c49005dbd6e93095799d6f3be745fae9f8fedd4"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/socket2/0.6.5",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/socket2@0.6.5",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "socket2",
+      "versionInfo": "0.6.5"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-70-subtle-2.6.1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "13c2bddecc57b384dee18652358fb23172facb8a2c51ccc10d74c157bdea3292"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/subtle/2.6.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/subtle@2.6.1",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "BSD-3-Clause",
+      "name": "subtle",
+      "versionInfo": "2.6.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-71-syn-3.0.6",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8593e8e72159ed2257d083c7a454a85cbf854f37a0966d8d483aff8c8a3ebcee"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/syn/3.0.6",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/syn@3.0.6",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "syn",
+      "versionInfo": "3.0.6"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-72-thiserror-2.0.21",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "09e52cb86a36cede5cb101bf8908837b3e4c6e5e59fe7fd85c23fb56200d189e"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/thiserror/2.0.21",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/thiserror@2.0.21",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "thiserror",
+      "versionInfo": "2.0.21"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-73-thiserror-impl-2.0.21",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "fe5197923287db20a58125f0bc85c062f7f2c892de97b18c356f9efb14b28524"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/thiserror-impl/2.0.21",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/thiserror-impl@2.0.21",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "thiserror-impl",
+      "versionInfo": "2.0.21"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-74-tokio-1.53.1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "202caea871b69668250d242070849eb495be178ed697a3e98aebce5bc81a0bed"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/tokio/1.53.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/tokio@1.53.1",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "name": "tokio",
+      "versionInfo": "1.53.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-75-tokio-macros-2.7.2",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "78773a2a397f451582ce068015985c33193cf6dea8b74d2a639fe457b2f07b0e"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/tokio-macros/2.7.2",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/tokio-macros@2.7.2",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "name": "tokio-macros",
+      "versionInfo": "2.7.2"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-76-tokio-rustls-0.26.6",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c9cc2678c2cdd569ef8215e2afd7954ada2ae20b4fdd2c5fe6139a3b02d105db"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/tokio-rustls/0.26.6",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/tokio-rustls@0.26.6",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "tokio-rustls",
+      "versionInfo": "0.26.6"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-77-tokio-tungstenite-0.30.0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "17a073bfed563fa236697a068031408a93cd9522e08abf9933ead3e73411bd71"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/tokio-tungstenite/0.30.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/tokio-tungstenite@0.30.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "name": "tokio-tungstenite",
+      "versionInfo": "0.30.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-78-tungstenite-0.30.0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e48ac77174b19c110a50ab2128b24215ac9cb40e0e12e093fb602d175c569d22"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/tungstenite/0.30.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/tungstenite@0.30.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "tungstenite",
+      "versionInfo": "0.30.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-79-typenum-1.20.1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b6f5e870be6c3b371b77fe0ee0bafb859fa4964b4404c27de1d380043c4dda20"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/typenum/1.20.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/typenum@1.20.1",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "typenum",
+      "versionInfo": "1.20.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-80-unicode-ident-1.0.26",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d245f478577f809a851594d02313b640fb437e0bb33866753cff937863096954"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/unicode-ident/1.0.26",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/unicode-ident@1.0.26",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "(MIT OR Apache-2.0) AND Unicode-3.0",
+      "name": "unicode-ident",
+      "versionInfo": "1.0.26"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-81-untrusted-0.9.0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/untrusted/0.9.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/untrusted@0.9.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "ISC",
+      "name": "untrusted",
+      "versionInfo": "0.9.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-82-version-check-0.9.5",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/version_check/0.9.5",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/version_check@0.9.5",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT/Apache-2.0",
+      "name": "version_check",
+      "versionInfo": "0.9.5"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-83-wasi-0.11.1-wasi-snapshot-preview1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ccf3ec651a847eb01de73ccad15eb7d99f80485de043efb2f370cd654f4ea44b"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/wasi/0.11.1+wasi-snapshot-preview1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/wasi@0.11.1+wasi-snapshot-preview1",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT",
+      "name": "wasi",
+      "versionInfo": "0.11.1+wasi-snapshot-preview1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-84-windows-link-0.2.1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f0805222e57f7521d6a62e36fa9163bc891acd422f971defe97d64e70d0a4fe5"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/windows-link/0.2.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/windows-link@0.2.1",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "windows-link",
+      "versionInfo": "0.2.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-85-windows-sys-0.52.0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "282be5f36a8ce781fad8c8ae18fa3f9beff57ec1b52cb3de0789201425d9a33d"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/windows-sys/0.52.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/windows-sys@0.52.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "windows-sys",
+      "versionInfo": "0.52.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-86-windows-sys-0.61.2",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ae137229bcbd6cdf0f7b80a31df61766145077ddf49416a728b02cb3921ff3fc"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/windows-sys/0.61.2",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/windows-sys@0.61.2",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "windows-sys",
+      "versionInfo": "0.61.2"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-87-windows-targets-0.52.6",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9b724f72796e036ab90c1021d4780d4d3d648aca59e491e6b98e725b84e99973"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/windows-targets/0.52.6",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/windows-targets@0.52.6",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "windows-targets",
+      "versionInfo": "0.52.6"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-88-windows-aarch64-gnullvm-0.52.6",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "32a4622180e7a0ec044bb555404c800bc9fd9ec262ec147edd5989ccd0c02cd3"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/windows_aarch64_gnullvm/0.52.6",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/windows_aarch64_gnullvm@0.52.6",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "windows_aarch64_gnullvm",
+      "versionInfo": "0.52.6"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-89-windows-aarch64-msvc-0.52.6",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "09ec2a7bb152e2252b53fa7803150007879548bc709c039df7627cabbd05d469"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/windows_aarch64_msvc/0.52.6",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/windows_aarch64_msvc@0.52.6",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "windows_aarch64_msvc",
+      "versionInfo": "0.52.6"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-90-windows-i686-gnu-0.52.6",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8e9b5ad5ab802e97eb8e295ac6720e509ee4c243f69d781394014ebfe8bbfa0b"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/windows_i686_gnu/0.52.6",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/windows_i686_gnu@0.52.6",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "windows_i686_gnu",
+      "versionInfo": "0.52.6"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-91-windows-i686-gnullvm-0.52.6",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0eee52d38c090b3caa76c563b86c3a4bd71ef1a819287c19d586d7334ae8ed66"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/windows_i686_gnullvm/0.52.6",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/windows_i686_gnullvm@0.52.6",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "windows_i686_gnullvm",
+      "versionInfo": "0.52.6"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-92-windows-i686-msvc-0.52.6",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "240948bc05c5e7c6dabba28bf89d89ffce3e303022809e73deaefe4f6ec56c66"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/windows_i686_msvc/0.52.6",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/windows_i686_msvc@0.52.6",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "windows_i686_msvc",
+      "versionInfo": "0.52.6"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-93-windows-x86-64-gnu-0.52.6",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "147a5c80aabfbf0c7d901cb5895d1de30ef2907eb21fbbab29ca94c5b08b1a78"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/windows_x86_64_gnu/0.52.6",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/windows_x86_64_gnu@0.52.6",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "windows_x86_64_gnu",
+      "versionInfo": "0.52.6"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-94-windows-x86-64-gnullvm-0.52.6",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "24d5b23dc417412679681396f2b49f3de8c1473deb516bd34410872eff51ed0d"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/windows_x86_64_gnullvm/0.52.6",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/windows_x86_64_gnullvm@0.52.6",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "windows_x86_64_gnullvm",
+      "versionInfo": "0.52.6"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-95-windows-x86-64-msvc-0.52.6",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/windows_x86_64_msvc/0.52.6",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/windows_x86_64_msvc@0.52.6",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR Apache-2.0",
+      "name": "windows_x86_64_msvc",
+      "versionInfo": "0.52.6"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-96-zeroize-1.9.0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e13c156562582aa81c60cb29407084cdb54c4164760106ab78e6c5b0858cf64e"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/zeroize/1.9.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/zeroize@1.9.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0 OR MIT",
+      "name": "zeroize",
+      "versionInfo": "1.9.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-97-zmij-1.0.23",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "29666d0abbfad1e3dc4dcf6144730dd3a3ab225bbbdac83319345b1b44ccfc1b"
+        }
+      ],
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "https://crates.io/crates/zmij/1.0.23",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:cargo/zmij@1.0.23",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "name": "zmij",
+      "versionInfo": "1.0.23"
+    }
+  ],
+  "relationships": [
+    {
+      "relatedSpdxElement": "SPDXRef-Package-1-alpaca-stream-0.1.0",
+      "relationshipType": "DESCRIBES",
+      "spdxElementId": "SPDXRef-DOCUMENT"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-6-broker-ports-0.1.0",
+      "relationshipType": "DESCRIBES",
+      "spdxElementId": "SPDXRef-DOCUMENT"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-11-chrono-0.4.45",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-1-alpaca-stream-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-29-futures-util-0.3.34",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-1-alpaca-stream-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-39-market-contracts-0.1.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-1-alpaca-stream-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-53-rmpv-1.3.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-1-alpaca-stream-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-6-broker-ports-0.1.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-1-alpaca-stream-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-66-sha2-0.10.9",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-1-alpaca-stream-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-74-tokio-1.53.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-1-alpaca-stream-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-77-tokio-tungstenite-0.30.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-1-alpaca-stream-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-96-zeroize-1.9.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-1-alpaca-stream-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-16-cpufeatures-0.3.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-10-chacha20-0.10.2"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-50-rand-core-0.10.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-10-chacha20-0.10.2"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-9-cfg-if-1.0.5",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-10-chacha20-0.10.2"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-42-num-traits-0.2.19",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-11-chrono-0.4.45"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-61-serde-1.0.229",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-11-chrono-0.4.45"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-14-core-foundation-sys-0.8.7",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-13-core-foundation-0.10.1"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-13-core-foundation-0.10.1"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-15-cpufeatures-0.2.17"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-16-cpufeatures-0.3.1"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-30-generic-array-0.14.7",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-17-crypto-common-0.1.7"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-79-typenum-1.20.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-17-crypto-common-0.1.7"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-35-hybrid-array-0.4.15",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-18-crypto-common-0.2.2"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-17-crypto-common-0.1.7",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-20-digest-0.10.7"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-4-block-buffer-0.10.4",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-20-digest-0.10.7"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-12-const-oid-0.10.2",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-21-digest-0.11.3"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-18-crypto-common-0.2.2",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-21-digest-0.11.3"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-5-block-buffer-0.12.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-21-digest-0.11.3"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-23-exact-decimal-0.1.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-22-domain-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-46-proc-macro2-1.0.107",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-26-futures-macro-0.3.34"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-47-quote-1.0.47",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-26-futures-macro-0.3.34"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-71-syn-3.0.6",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-26-futures-macro-0.3.34"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-25-futures-core-0.3.34",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-29-futures-util-0.3.34"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-26-futures-macro-0.3.34",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-29-futures-util-0.3.34"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-27-futures-sink-0.3.34",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-29-futures-util-0.3.34"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-28-futures-task-0.3.34",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-29-futures-util-0.3.34"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-45-pin-project-lite-0.2.17",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-29-futures-util-0.3.34"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-68-slab-0.4.12",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-29-futures-util-0.3.34"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-79-typenum-1.20.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-30-generic-array-0.14.7"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-82-version-check-0.9.5",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-30-generic-array-0.14.7"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-31-getrandom-0.2.17"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-83-wasi-0.11.1-wasi-snapshot-preview1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-31-getrandom-0.2.17"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-9-cfg-if-1.0.5",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-31-getrandom-0.2.17"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-32-getrandom-0.4.3"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-48-r-efi-6.0.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-32-getrandom-0.4.3"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-50-rand-core-0.10.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-32-getrandom-0.4.3"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-9-cfg-if-1.0.5",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-32-getrandom-0.4.3"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-36-itoa-1.0.18",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-33-http-1.5.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-7-bytes-1.12.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-33-http-1.5.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-79-typenum-1.20.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-35-hybrid-array-0.4.15"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-11-chrono-0.4.45",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-39-market-contracts-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-22-domain-0.1.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-39-market-contracts-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-23-exact-decimal-0.1.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-39-market-contracts-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-61-serde-1.0.229",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-39-market-contracts-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-64-serde-json-1.0.151",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-39-market-contracts-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-66-sha2-0.10.9",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-39-market-contracts-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-72-thiserror-2.0.21",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-39-market-contracts-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-30-generic-array-0.14.7",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-4-block-buffer-0.10.4"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-41-mio-1.2.4"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-83-wasi-0.11.1-wasi-snapshot-preview1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-41-mio-1.2.4"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-86-windows-sys-0.61.2",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-41-mio-1.2.4"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-2-autocfg-1.5.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-42-num-traits-0.2.19"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-80-unicode-ident-1.0.26",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-46-proc-macro2-1.0.107"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-46-proc-macro2-1.0.107",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-47-quote-1.0.47"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-10-chacha20-0.10.2",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-49-rand-0.10.3"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-32-getrandom-0.4.3",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-49-rand-0.10.3"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-50-rand-core-0.10.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-49-rand-0.10.3"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-35-hybrid-array-0.4.15",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-5-block-buffer-0.12.1"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-31-getrandom-0.2.17",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-51-ring-0.17.14"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-51-ring-0.17.14"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-8-cc-1.6.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-51-ring-0.17.14"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-81-untrusted-0.9.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-51-ring-0.17.14"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-85-windows-sys-0.52.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-51-ring-0.17.14"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-9-cfg-if-1.0.5",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-51-ring-0.17.14"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-42-num-traits-0.2.19",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-52-rmp-0.8.15"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-52-rmp-0.8.15",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-53-rmpv-1.3.1"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-43-once-cell-1.21.4",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-54-rustls-0.23.45"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-56-rustls-pki-types-1.15.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-54-rustls-0.23.45"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-57-rustls-webpki-0.103.15",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-54-rustls-0.23.45"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-70-subtle-2.6.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-54-rustls-0.23.45"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-96-zeroize-1.9.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-54-rustls-0.23.45"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-44-openssl-probe-0.2.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-55-rustls-native-certs-0.8.4"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-56-rustls-pki-types-1.15.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-55-rustls-native-certs-0.8.4"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-58-schannel-0.1.29",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-55-rustls-native-certs-0.8.4"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-59-security-framework-3.7.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-55-rustls-native-certs-0.8.4"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-96-zeroize-1.9.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-56-rustls-pki-types-1.15.1"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-51-ring-0.17.14",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-57-rustls-webpki-0.103.15"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-56-rustls-pki-types-1.15.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-57-rustls-webpki-0.103.15"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-81-untrusted-0.9.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-57-rustls-webpki-0.103.15"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-86-windows-sys-0.61.2",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-58-schannel-0.1.29"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-13-core-foundation-0.10.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-59-security-framework-3.7.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-14-core-foundation-sys-0.8.7",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-59-security-framework-3.7.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-3-bitflags-2.13.2",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-59-security-framework-3.7.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-59-security-framework-3.7.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-60-security-framework-sys-2.17.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-59-security-framework-3.7.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-39-market-contracts-0.1.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-6-broker-ports-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-66-sha2-0.10.9",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-6-broker-ports-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-74-tokio-1.53.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-6-broker-ports-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-14-core-foundation-sys-0.8.7",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-60-security-framework-sys-2.17.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-60-security-framework-sys-2.17.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-62-serde-core-1.0.229",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-61-serde-1.0.229"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-63-serde-derive-1.0.229",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-61-serde-1.0.229"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-63-serde-derive-1.0.229",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-62-serde-core-1.0.229"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-46-proc-macro2-1.0.107",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-63-serde-derive-1.0.229"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-47-quote-1.0.47",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-63-serde-derive-1.0.229"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-71-syn-3.0.6",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-63-serde-derive-1.0.229"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-36-itoa-1.0.18",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-64-serde-json-1.0.151"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-40-memchr-2.8.3",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-64-serde-json-1.0.151"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-61-serde-1.0.229",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-64-serde-json-1.0.151"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-62-serde-core-1.0.229",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-64-serde-json-1.0.151"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-97-zmij-1.0.23",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-64-serde-json-1.0.151"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-16-cpufeatures-0.3.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-65-sha1-0.11.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-21-digest-0.11.3",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-65-sha1-0.11.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-9-cfg-if-1.0.5",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-65-sha1-0.11.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-15-cpufeatures-0.2.17",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-66-sha2-0.10.9"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-20-digest-0.10.7",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-66-sha2-0.10.9"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-9-cfg-if-1.0.5",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-66-sha2-0.10.9"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-69-socket2-0.6.5"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-86-windows-sys-0.61.2",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-69-socket2-0.6.5"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-46-proc-macro2-1.0.107",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-71-syn-3.0.6"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-47-quote-1.0.47",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-71-syn-3.0.6"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-80-unicode-ident-1.0.26",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-71-syn-3.0.6"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-73-thiserror-impl-2.0.21",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-72-thiserror-2.0.21"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-46-proc-macro2-1.0.107",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-73-thiserror-impl-2.0.21"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-47-quote-1.0.47",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-73-thiserror-impl-2.0.21"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-71-syn-3.0.6",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-73-thiserror-impl-2.0.21"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-37-libc-0.2.190",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-74-tokio-1.53.1"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-41-mio-1.2.4",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-74-tokio-1.53.1"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-45-pin-project-lite-0.2.17",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-74-tokio-1.53.1"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-69-socket2-0.6.5",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-74-tokio-1.53.1"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-7-bytes-1.12.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-74-tokio-1.53.1"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-75-tokio-macros-2.7.2",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-74-tokio-1.53.1"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-86-windows-sys-0.61.2",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-74-tokio-1.53.1"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-46-proc-macro2-1.0.107",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-75-tokio-macros-2.7.2"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-47-quote-1.0.47",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-75-tokio-macros-2.7.2"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-71-syn-3.0.6",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-75-tokio-macros-2.7.2"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-54-rustls-0.23.45",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-76-tokio-rustls-0.26.6"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-74-tokio-1.53.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-76-tokio-rustls-0.26.6"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-29-futures-util-0.3.34",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-77-tokio-tungstenite-0.30.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-38-log-0.4.34",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-77-tokio-tungstenite-0.30.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-54-rustls-0.23.45",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-77-tokio-tungstenite-0.30.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-55-rustls-native-certs-0.8.4",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-77-tokio-tungstenite-0.30.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-56-rustls-pki-types-1.15.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-77-tokio-tungstenite-0.30.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-74-tokio-1.53.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-77-tokio-tungstenite-0.30.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-76-tokio-rustls-0.26.6",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-77-tokio-tungstenite-0.30.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-78-tungstenite-0.30.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-77-tokio-tungstenite-0.30.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-19-data-encoding-2.11.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-33-http-1.5.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-34-httparse-1.10.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-38-log-0.4.34",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-49-rand-0.10.3",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-54-rustls-0.23.45",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-56-rustls-pki-types-1.15.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-65-sha1-0.11.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-7-bytes-1.12.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-72-thiserror-2.0.21",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-78-tungstenite-0.30.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-24-find-msvc-tools-0.1.14",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-8-cc-1.6.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-67-shlex-2.0.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-8-cc-1.6.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-87-windows-targets-0.52.6",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-85-windows-sys-0.52.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-84-windows-link-0.2.1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-86-windows-sys-0.61.2"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-88-windows-aarch64-gnullvm-0.52.6",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-87-windows-targets-0.52.6"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-89-windows-aarch64-msvc-0.52.6",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-87-windows-targets-0.52.6"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-90-windows-i686-gnu-0.52.6",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-87-windows-targets-0.52.6"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-91-windows-i686-gnullvm-0.52.6",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-87-windows-targets-0.52.6"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-92-windows-i686-msvc-0.52.6",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-87-windows-targets-0.52.6"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-93-windows-x86-64-gnu-0.52.6",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-87-windows-targets-0.52.6"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-94-windows-x86-64-gnullvm-0.52.6",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-87-windows-targets-0.52.6"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-95-windows-x86-64-msvc-0.52.6",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-87-windows-targets-0.52.6"
+    }
+  ],
+  "spdxVersion": "SPDX-2.3"
+}

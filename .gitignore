@@ -1,0 +1,17 @@
+/target/
+**/target/
+.env
+.env.*
+!.env.example
+.state/
+node_modules/
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+coverage/
+dist/
+build/
+.DS_Store
