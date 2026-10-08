@@ -451,10 +451,13 @@ def check_ibkr_vendor_diagnostics() -> None:
         raise ValueError("IBKR production diagnostics must use the reviewed payload-free summaries")
     if (
         "assert_eq!(&actual, expected" in assertions
+        or "actual.encoded_len()" in assertions
+        or "expected.encoded_len()" in assertions
         or "{other:?}" in assertions
         or "{offending_value:?}" in assertions
         or "{notice.message:?}" in assertions
         or "expected Parse error for {s:?}, got {err:?}" in assertions
+        or 'panic!("request body mismatch")' not in assertions
     ):
         raise ValueError("IBKR shared test assertion diagnostics must not print payload-bearing values")
     if "MessageRecorder::recording_to(directory.path())" not in recorder_tests or "production_recorder_ignores_legacy_environment_variable" not in recorder_tests:

@@ -1,7 +1,7 @@
 {
   "SPDXID": "SPDXRef-DOCUMENT",
   "creationInfo": {
-    "created": "2026-10-08T13:10:11Z",
+    "created": "2026-10-08T13:24:59Z",
     "creators": [
       "Tool: scripts/generate_spdx_sbom.py"
     ]
@@ -1675,7 +1675,7 @@
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "MIT",
       "name": "ibapi",
-      "sourceInfo": "Vendored from wboayue/rust-ibapi@3e73f2f1cfac151c10e403a3e7d779272134445f; package source path: repository root. Local adaptations and source-file hashes are documented in vendor/ibapi/UPSTREAM.md and SOURCE-MANIFEST.json. Pinned source archive SHA-256: 91b49f2c57e423258d20b1f427682d622b78de011eacbb75fcb4296ceacb3532. Local source-change record: vendor/ibapi/LOCAL-CHANGES.json; SHA-256 a6cf4ed0c9ac34dc62edef22bbf5093ddebcc83358c5ff77f16318ddb2520260. Vendored formatter configuration is copied from upstream path rustfmt.toml to vendor/ibapi/rustfmt.toml with SHA-256 ebdb640eee8312fc86d59249c5b43fb150f62375358f0216c2fa1bb7ef9514d2 and Git blob 0a4312322c11cec08f41dd1ffc976fb3e4b1c395; it scopes formatting to the vendored source.",
+      "sourceInfo": "Vendored from wboayue/rust-ibapi@3e73f2f1cfac151c10e403a3e7d779272134445f; package source path: repository root. Local adaptations and source-file hashes are documented in vendor/ibapi/UPSTREAM.md and SOURCE-MANIFEST.json. Pinned source archive SHA-256: 91b49f2c57e423258d20b1f427682d622b78de011eacbb75fcb4296ceacb3532. Local source-change record: vendor/ibapi/LOCAL-CHANGES.json; SHA-256 f91fd8464510646d4641c8ff63ff0fbb0a2992586976beaa989108372479bc35. Vendored formatter configuration is copied from upstream path rustfmt.toml to vendor/ibapi/rustfmt.toml with SHA-256 ebdb640eee8312fc86d59249c5b43fb150f62375358f0216c2fa1bb7ef9514d2 and Git blob 0a4312322c11cec08f41dd1ffc976fb3e4b1c395; it scopes formatting to the vendored source.",
       "versionInfo": "5.0.0"
     },
     {
