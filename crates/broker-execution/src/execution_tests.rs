@@ -1,7 +1,8 @@
 use super::{
     ExecutionAcceptanceError, ExecutionCancelRequest, ExecutionCommand, ExecutionOutcome,
     ExecutionOutcomeCategory, ExecutionOutcomeReason, ExecutionReplaceRequest,
-    ExecutionRequestError, ExecutionSubmitRequest, validate_intent,
+    ExecutionRequestError, ExecutionSubmitRequest, ProviderOrderAcknowledgement,
+    ProviderOrderReplacementLink, validate_intent,
 };
 use domain::{
     AccountNamespace, AccountScope, BrokerEnvironment, BrokerNativeOrderReference,
@@ -9,8 +10,8 @@ use domain::{
     ExecutionBrokerId, ExecutionRoute, IntentId, LegRatio, LogicalOrderId, NetOrderPrice,
     OptionComboIntent, OptionContract, OptionExerciseStyle, OptionInstrumentKey, OptionOrderLeg,
     OptionRight, OptionSettlementType, OptionSymbol, OrderSide, PositionEffect, Price,
-    ProviderOrderEvidence, ProviderOrderIdentity, ProviderRecordId, Quantity, Revision,
-    RoutedOrderIdentity, StrategyInstanceId, Strike, TradingClass, Underlying,
+    ProviderOrderEvidence, ProviderOrderIdentity, ProviderRecordId, ProviderUnavailableReason,
+    Quantity, Revision, RoutedOrderIdentity, StrategyInstanceId, Strike, TradingClass, Underlying,
 };
 
 fn route(environment: BrokerEnvironment) -> ExecutionRoute {
@@ -98,14 +99,21 @@ fn provider_identity(account: AccountNamespace, raw_id: &str) -> ProviderOrderId
 }
 
 fn current_order(intent: &OptionComboIntent, provider_id: &str) -> RoutedOrderIdentity {
+    current_order_with_identity(
+        intent,
+        provider_identity(intent.route().account_namespace().clone(), provider_id),
+    )
+}
+
+fn current_order_with_identity(
+    intent: &OptionComboIntent,
+    provider_order: ProviderOrderIdentity,
+) -> RoutedOrderIdentity {
     RoutedOrderIdentity::new(
         intent.intent_id().clone(),
         intent.logical_order_id().clone(),
         intent.route().clone(),
-        ProviderOrderEvidence::Known(provider_identity(
-            intent.route().account_namespace().clone(),
-            provider_id,
-        )),
+        ProviderOrderEvidence::Known(provider_order),
     )
     .expect("valid synthetic routed order identity")
 }
@@ -184,8 +192,7 @@ fn execution_rejects_duplicate_qualified_legs_and_revision_overflow() {
     );
 }
 
-#[test]
-fn replace_binds_same_logical_route_and_acceptance_must_match_next_revision() {
+fn replace_command() -> (ExecutionCommand, ProviderOrderIdentity) {
     let original = intent(
         "synthetic-intent-original",
         "synthetic-logical-replace",
@@ -200,25 +207,88 @@ fn replace_binds_same_logical_route_and_acceptance_must_match_next_revision() {
         "600",
         "610",
     );
-    let current = current_order(&original, "synthetic-provider-order-1");
+    let identity = provider_identity(
+        original.route().account_namespace().clone(),
+        "synthetic-provider-order-1",
+    );
+    let current = current_order_with_identity(&original, identity.clone());
     let request = ExecutionReplaceRequest::new(current, Revision::new(4), replacement)
         .expect("same synthetic route and logical order can be replaced");
-    let command = ExecutionCommand::Replace(Box::new(request));
+    (ExecutionCommand::Replace(Box::new(request)), identity)
+}
+
+#[test]
+fn replace_request_requires_known_identity_and_fixed_route_lineage() {
+    let original = intent(
+        "synthetic-intent-validate-replace",
+        "synthetic-logical-validate-replace",
+        route(BrokerEnvironment::Paper),
+        "600",
+        "605",
+    );
+    let current = current_order(&original, "synthetic-provider-order-validate");
+    let changed_logical = intent(
+        "synthetic-intent-validate-replace-new",
+        "synthetic-logical-other",
+        route(BrokerEnvironment::Paper),
+        "600",
+        "610",
+    );
+    assert_eq!(
+        ExecutionReplaceRequest::new(current.clone(), Revision::new(0), changed_logical).err(),
+        Some(ExecutionRequestError::ReplacementLineageMismatch),
+    );
+
+    let changed_route = intent(
+        "synthetic-intent-validate-replace-route",
+        "synthetic-logical-validate-replace",
+        ExecutionRoute::new(
+            StrategyInstanceId::new("synthetic-other-strategy").unwrap(),
+            current.route().account_namespace().clone(),
+        ),
+        "600",
+        "610",
+    );
+    assert_eq!(
+        ExecutionReplaceRequest::new(current, Revision::new(0), changed_route).err(),
+        Some(ExecutionRequestError::ReplacementLineageMismatch),
+    );
+
+    let unknown = RoutedOrderIdentity::new(
+        original.intent_id().clone(),
+        original.logical_order_id().clone(),
+        original.route().clone(),
+        ProviderOrderEvidence::Unavailable(ProviderUnavailableReason::NotReported),
+    )
+    .unwrap();
+    let replacement = intent(
+        "synthetic-intent-validate-replace-unknown",
+        "synthetic-logical-validate-replace",
+        route(BrokerEnvironment::Paper),
+        "600",
+        "610",
+    );
+    assert_eq!(
+        ExecutionReplaceRequest::new(unknown, Revision::new(0), replacement).err(),
+        Some(ExecutionRequestError::ProviderIdentityUnknown),
+    );
+}
+
+#[test]
+fn replace_same_identity_binds_logical_route_and_next_revision() {
+    let (command, identity) = replace_command();
     let current_intent = match &command {
         ExecutionCommand::Replace(request) => request.replacement().intent_id().clone(),
         ExecutionCommand::Submit(_) | ExecutionCommand::Cancel(_) => unreachable!(),
     };
-    let identity = provider_identity(
-        match &command {
-            ExecutionCommand::Replace(request) => {
-                request.current().route().account_namespace().clone()
-            }
-            _ => unreachable!(),
-        },
-        "synthetic-provider-order-1",
-    );
-    let accepted = ExecutionOutcome::accepted_for(&command, identity.clone(), Revision::new(5))
-        .expect("replacement ACK binds the new intent and revision");
+    let accepted = ExecutionOutcome::accepted_for(
+        &command,
+        ProviderOrderAcknowledgement::Replace(Box::new(
+            ProviderOrderReplacementLink::same_identity(identity.clone()),
+        )),
+        Revision::new(5),
+    )
+    .expect("same-ID replacement ACK binds the new intent and revision");
     assert_eq!(accepted.category(), ExecutionOutcomeCategory::Accepted);
     assert_eq!(accepted.accepted_revision(), Some(Revision::new(5)));
     assert_eq!(
@@ -226,6 +296,22 @@ fn replace_binds_same_logical_route_and_acceptance_must_match_next_revision() {
         &current_intent
     );
 
+    let wrong_revision = ExecutionOutcome::accepted_for(
+        &command,
+        ProviderOrderAcknowledgement::Replace(Box::new(
+            ProviderOrderReplacementLink::same_identity(identity),
+        )),
+        Revision::new(7),
+    );
+    assert_eq!(
+        wrong_revision.err(),
+        Some(ExecutionAcceptanceError::RevisionMismatch),
+    );
+}
+
+#[test]
+fn replace_new_identity_requires_exact_parent_and_same_namespace() {
+    let (command, identity) = replace_command();
     let changed_identity = provider_identity(
         match &command {
             ExecutionCommand::Replace(request) => {
@@ -235,12 +321,80 @@ fn replace_binds_same_logical_route_and_acceptance_must_match_next_revision() {
         },
         "synthetic-provider-order-other",
     );
+    let valid_new_identity = ExecutionOutcome::accepted_for(
+        &command,
+        ProviderOrderAcknowledgement::Replace(Box::new(
+            ProviderOrderReplacementLink::from_reported_replaces(
+                identity.clone(),
+                changed_identity.clone(),
+                Some(identity.clone()),
+            )
+            .expect("provider-reported parent exactly links the replacement"),
+        )),
+        Revision::new(5),
+    )
+    .expect("a new provider ID is accepted when its exact predecessor is linked");
     assert_eq!(
-        ExecutionOutcome::accepted_for(&command, changed_identity, Revision::new(5)).err(),
-        Some(ExecutionAcceptanceError::ReplaceIdentityMismatch),
+        valid_new_identity
+            .accepted_order()
+            .and_then(|order| match order.provider_order() {
+                ProviderOrderEvidence::Known(identity) => Some(identity),
+                _ => None,
+            }),
+        Some(&changed_identity),
     );
 
-    let wrong_revision = ExecutionOutcome::accepted_for(&command, identity, Revision::new(7));
+    assert_eq!(
+        ProviderOrderReplacementLink::from_reported_replaces(
+            identity.clone(),
+            changed_identity.clone(),
+            None,
+        )
+        .err(),
+        Some(ExecutionAcceptanceError::ReplaceLinkMissing),
+    );
+    let wrong_parent = provider_identity(
+        match &command {
+            ExecutionCommand::Replace(request) => {
+                request.current().route().account_namespace().clone()
+            }
+            _ => unreachable!(),
+        },
+        "synthetic-provider-order-wrong-parent",
+    );
+    assert_eq!(
+        ProviderOrderReplacementLink::from_reported_replaces(
+            identity.clone(),
+            changed_identity.clone(),
+            Some(wrong_parent),
+        )
+        .err(),
+        Some(ExecutionAcceptanceError::ReplacePredecessorMismatch),
+    );
+    let other_account = AccountNamespace::new(
+        ExecutionBrokerId::Alpaca,
+        BrokerEnvironment::Paper,
+        AccountScope::new("synthetic-other-exec-account").expect("valid synthetic account"),
+    );
+    let cross_account_identity =
+        provider_identity(other_account, "synthetic-provider-cross-account");
+    assert_eq!(
+        ProviderOrderReplacementLink::from_reported_replaces(
+            identity.clone(),
+            cross_account_identity,
+            Some(identity.clone()),
+        )
+        .err(),
+        Some(ExecutionAcceptanceError::NamespaceMismatch),
+    );
+
+    let wrong_revision = ExecutionOutcome::accepted_for(
+        &command,
+        ProviderOrderAcknowledgement::Replace(Box::new(
+            ProviderOrderReplacementLink::same_identity(identity),
+        )),
+        Revision::new(7),
+    );
     assert_eq!(
         wrong_revision.err(),
         Some(ExecutionAcceptanceError::RevisionMismatch),
@@ -265,7 +419,12 @@ fn cancel_acceptance_cannot_change_provider_identity_and_unknown_stays_unknown()
         "synthetic-provider-order-other",
     );
     assert_eq!(
-        ExecutionOutcome::accepted_for(&command, changed_identity, Revision::new(3)).err(),
+        ExecutionOutcome::accepted_for(
+            &command,
+            ProviderOrderAcknowledgement::Cancel(Box::new(changed_identity)),
+            Revision::new(3),
+        )
+        .err(),
         Some(ExecutionAcceptanceError::CancelIdentityMismatch),
     );
     let unknown = ExecutionOutcome::unknown(ExecutionOutcomeReason::DeadlineElapsed);

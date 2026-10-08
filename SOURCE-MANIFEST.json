@@ -30,27 +30,27 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "57d5367a7b0bc49f380e4c5f58df6d644f6be3ba42e709b27a8b463cba005fec",
+      "sha256": "133f7a758328cd7c7cec6e67280bbf012b0b02365a250fb63d9b7e6a54694cb3",
       "target_path": "crates/broker-execution/README.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "ff76dbc3936bca060845fd75fce54057017fa7e7935b446559d66e1a4b45dafa",
+      "sha256": "4ae1668b54e965287f2197b653c9676eda25a2418e8f5f8be5ccc29cf97d727d",
       "target_path": "crates/broker-execution/src/lib.rs"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "b01dbb260a34e7a9650d90600726356ff59598e3d5b0dbfbd4c12c659bf4a27e",
+      "sha256": "207761b8bd3c98af4d6256e5f487ffab30bb2e4a31f1995a9e69ecc1f045760d",
       "target_path": "crates/broker-execution/src/execution_tests.rs"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "8eb97494af508bfc538f877e580d9b4d90c5cbd3b646aea51629ec1b214ae903",
+      "sha256": "dce7f609fbe49d379011dcb92c17b3554a63d34a58b8d5bf6945acd027e7cbcb",
       "target_path": "crates/broker-execution/src/fake.rs"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "2e7ca2a8b311d597aa45940212fa3ae00ff5ce2fcba7183a660e1f7a7316fa5d",
+      "sha256": "566e78a7cb2678820e5459e1d4fc899ddd29924890239488cb031366bd109b4c",
       "target_path": "crates/broker-execution/src/fake/tests.rs"
     },
     {
@@ -65,7 +65,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "a3653f43ca33d6687fe33b8ca3c76de133abda78614f457952cdccdc2eb81d5c",
+      "sha256": "5baee9f0a13986f0b1223bc27facccebed2721168536888872800af1f4eccb71",
       "target_path": "README.md"
     },
     {

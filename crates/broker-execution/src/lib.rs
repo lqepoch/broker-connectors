@@ -22,9 +22,16 @@ use domain::{
     BrokerEnvironment, ExecutionRoute, IntentId, LogicalOrderId, OptionComboIntent,
     ProviderOrderEvidence, ProviderOrderIdentity, Revision, RoutedOrderIdentity,
 };
+#[cfg(feature = "offline-fake")]
+use domain::{
+    BrokerNativeOrderReference, DeliverableAsset, ExecutionBrokerId, OptionExerciseStyle,
+    OptionSettlementType, ProviderValue,
+};
 use std::collections::HashSet;
 use std::fmt;
 use std::future::Future;
+#[cfg(feature = "offline-fake")]
+use std::mem::size_of_val;
 use std::pin::Pin;
 
 /// Boxed `Send` future used by the object-safe execution port.
@@ -38,6 +45,13 @@ pub const MAX_EXECUTION_LEGS: usize = 16;
 /// Maximum queued or recorded commands in the explicitly enabled offline fake.
 /// 显式启用的离线 fake 最多排队或记录的命令数。
 pub const MAX_OFFLINE_FAKE_COMMANDS: usize = 128;
+
+/// Maximum accounted input and command-journal data retained by one offline fake.
+/// 单个离线 fake 可保留的输入和命令日志计量数据上限。
+pub const MAX_OFFLINE_FAKE_RETAINED_BYTES: usize = 1024 * 1024;
+
+#[cfg(feature = "offline-fake")]
+const MAX_CORE_IDENTIFIER_BYTES: usize = 256;
 
 /// Validated submit request carrying one immutable core option-combo intent.
 /// 携带一个不可变 core 期权组合意图的已校验提交请求。
@@ -179,15 +193,21 @@ pub enum ExecutionRequestError {
 /// 成功回执验证失败。
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ExecutionAcceptanceError {
+    /// The acknowledgement kind does not match the submitted command kind.
+    /// 回执类型与提交的命令类型不匹配。
+    AcknowledgementKindMismatch,
     /// Returned provider identity belongs to another account namespace.
     /// 返回的供应商身份属于另一个账户命名空间。
     NamespaceMismatch,
     /// Returned provider identity changed during a cancel acknowledgement.
     /// 撤单确认期间返回的供应商身份发生变化。
     CancelIdentityMismatch,
-    /// Returned provider identity differs from the known order being replaced.
-    /// 改单回执中的供应商身份与已知当前订单不同。
-    ReplaceIdentityMismatch,
+    /// A changed replacement identity omitted explicit predecessor linkage.
+    /// 更换后的订单身份缺少明确的前序订单关联。
+    ReplaceLinkMissing,
+    /// The replacement link names a different predecessor than the known current identity.
+    /// 替换关联指向的前序身份与已知当前身份不同。
+    ReplacePredecessorMismatch,
     /// Returned local revision is not the checked successor of the request revision.
     /// 返回的本地修订不是请求修订的安全后继值。
     RevisionMismatch,
@@ -197,6 +217,63 @@ pub enum ExecutionAcceptanceError {
     /// The route or response unexpectedly names the Live environment.
     /// 路由或响应意外指向 Live 环境。
     LiveDisabled,
+}
+
+/// Provider identity evidence bound to an accepted command kind.
+/// 与成功命令类型绑定的供应商身份证据。
+#[cfg(any(test, feature = "offline-fake"))]
+enum ProviderOrderAcknowledgement {
+    /// Provider assigned an identity to a submitted order.
+    /// Provider 为新提交订单分配了身份。
+    #[allow(dead_code)]
+    Submit(Box<ProviderOrderIdentity>),
+    /// Provider acknowledged cancellation without changing the known order identity.
+    /// Provider 确认撤单，并保持已知订单身份不变。
+    Cancel(Box<ProviderOrderIdentity>),
+    /// Provider acknowledged a replacement with an explicit old-to-new identity link.
+    /// Provider 确认改单，并提供明确的旧身份到新身份关联。
+    Replace(Box<ProviderOrderReplacementLink>),
+}
+
+/// Explicit provider identity transition for one replace acknowledgement.
+/// 单个改单回执中的明确供应商身份转换。
+#[cfg(any(test, feature = "offline-fake"))]
+struct ProviderOrderReplacementLink {
+    predecessor: ProviderOrderIdentity,
+    replacement: ProviderOrderIdentity,
+}
+
+#[cfg(any(test, feature = "offline-fake"))]
+impl ProviderOrderReplacementLink {
+    /// Record a replace acknowledgement that retains the current provider identity.
+    /// 记录保留当前供应商身份的改单回执。
+    fn same_identity(identity: ProviderOrderIdentity) -> Self {
+        Self {
+            predecessor: identity.clone(),
+            replacement: identity,
+        }
+    }
+
+    /// Validate a provider-reported `replaces` parent for a new identity.
+    /// 校验新身份对应的 provider `replaces` 前序字段。
+    fn from_reported_replaces(
+        predecessor: ProviderOrderIdentity,
+        replacement: ProviderOrderIdentity,
+        reported_predecessor: Option<ProviderOrderIdentity>,
+    ) -> Result<Self, ExecutionAcceptanceError> {
+        let reported_predecessor =
+            reported_predecessor.ok_or(ExecutionAcceptanceError::ReplaceLinkMissing)?;
+        if reported_predecessor != predecessor {
+            return Err(ExecutionAcceptanceError::ReplacePredecessorMismatch);
+        }
+        if predecessor.account_namespace() != replacement.account_namespace() {
+            return Err(ExecutionAcceptanceError::NamespaceMismatch);
+        }
+        Ok(Self {
+            predecessor,
+            replacement,
+        })
+    }
 }
 
 /// Provider-neutral submit, replace, and cancel command boundary.
@@ -269,9 +346,10 @@ impl ExecutionReplaceRequest {
     /// Create a replacement on the same Paper route and logical-order lineage.
     /// 在相同 Paper 路由和逻辑订单链上创建替换请求。
     ///
-    /// The replacement may use a new intent ID. The accepted response must bind to that
-    /// replacement ID and the existing logical order, route, account namespace, and next revision.
-    /// 替换请求可以使用新的 intent ID。成功回执必须绑定新的 intent ID，以及原逻辑订单、路由、账户命名空间和下一修订。
+    /// The replacement may use a new intent ID. The accepted response must bind to the new intent
+    /// and existing logical order, route, account namespace, and next revision. If the provider
+    /// assigns a new native order ID, its reported predecessor must exactly match the known order.
+    /// 替换请求可以使用新的 intent ID。成功回执必须绑定新意图和原逻辑订单、路由、账户命名空间及下一修订。若 provider 分配新的原生订单 ID，报告的前序身份必须与已知当前订单完全一致。
     ///
     /// # Errors
     ///
@@ -417,20 +495,18 @@ impl ExecutionOutcome {
     ///
     /// # Errors
     ///
-    /// Returns a fixed protocol validation error when the provider namespace, cancel identity,
-    /// next revision, or command lineage does not match.
+    /// Returns a fixed protocol validation error when acknowledgement kind, provider namespace,
+    /// cancel identity, replacement linkage, next revision, or command lineage does not match.
+    #[cfg(any(test, feature = "offline-fake"))]
     #[allow(dead_code)]
     pub(crate) fn accepted_for(
         command: &ExecutionCommand,
-        provider_order: ProviderOrderIdentity,
+        acknowledgement: ProviderOrderAcknowledgement,
         revision: Revision,
     ) -> Result<Self, ExecutionAcceptanceError> {
         let (intent_id, logical_order_id, route, expected_revision) = command.expected_binding();
         if route.account_namespace().environment() == BrokerEnvironment::Live {
             return Err(ExecutionAcceptanceError::LiveDisabled);
-        }
-        if provider_order.account_namespace() != route.account_namespace() {
-            return Err(ExecutionAcceptanceError::NamespaceMismatch);
         }
         let expected_next = expected_revision
             .checked_next()
@@ -438,15 +514,33 @@ impl ExecutionOutcome {
         if revision != expected_next {
             return Err(ExecutionAcceptanceError::RevisionMismatch);
         }
-        if let ExecutionCommand::Cancel(request) = command
-            && known_identity(request.current()).is_some_and(|identity| identity != &provider_order)
-        {
-            return Err(ExecutionAcceptanceError::CancelIdentityMismatch);
-        }
-        if let ExecutionCommand::Replace(request) = command
-            && known_identity(request.current()).is_some_and(|identity| identity != &provider_order)
-        {
-            return Err(ExecutionAcceptanceError::ReplaceIdentityMismatch);
+        let provider_order = match (command, acknowledgement) {
+            (ExecutionCommand::Submit(_), ProviderOrderAcknowledgement::Submit(identity)) => {
+                *identity
+            }
+            (ExecutionCommand::Cancel(request), ProviderOrderAcknowledgement::Cancel(identity)) => {
+                if known_identity(request.current()) != Some(identity.as_ref()) {
+                    return Err(ExecutionAcceptanceError::CancelIdentityMismatch);
+                }
+                *identity
+            }
+            (ExecutionCommand::Replace(request), ProviderOrderAcknowledgement::Replace(link)) => {
+                let predecessor = known_identity(request.current())
+                    .ok_or(ExecutionAcceptanceError::ReplacePredecessorMismatch)?;
+                if &link.predecessor != predecessor {
+                    return Err(ExecutionAcceptanceError::ReplacePredecessorMismatch);
+                }
+                if link.predecessor.account_namespace() != route.account_namespace()
+                    || link.replacement.account_namespace() != route.account_namespace()
+                {
+                    return Err(ExecutionAcceptanceError::NamespaceMismatch);
+                }
+                link.replacement
+            }
+            _ => return Err(ExecutionAcceptanceError::AcknowledgementKindMismatch),
+        };
+        if provider_order.account_namespace() != route.account_namespace() {
+            return Err(ExecutionAcceptanceError::NamespaceMismatch);
         }
         let order = RoutedOrderIdentity::new(
             intent_id.clone(),
@@ -633,6 +727,202 @@ fn known_identity(order: &RoutedOrderIdentity) -> Option<&ProviderOrderIdentity>
         | ProviderOrderEvidence::Unavailable(_)
         | ProviderOrderEvidence::Unknown(_) => None,
     }
+}
+
+#[cfg(feature = "offline-fake")]
+fn accounted_command_bytes(command: &ExecutionCommand) -> usize {
+    let mut bytes = size_of_val(command);
+    match command {
+        ExecutionCommand::Submit(request) => {
+            bytes = add_bytes(bytes, size_of_val(request.as_ref()));
+            add_bytes(bytes, accounted_intent_bytes(request.intent()))
+        }
+        ExecutionCommand::Replace(request) => {
+            bytes = add_bytes(bytes, size_of_val(request.as_ref()));
+            bytes = add_bytes(bytes, accounted_routed_order_bytes(request.current()));
+            add_bytes(bytes, accounted_intent_bytes(request.replacement()))
+        }
+        ExecutionCommand::Cancel(request) => {
+            bytes = add_bytes(bytes, size_of_val(request.as_ref()));
+            add_bytes(bytes, accounted_routed_order_bytes(request.current()))
+        }
+    }
+}
+
+#[cfg(feature = "offline-fake")]
+fn accounted_intent_bytes(intent: &OptionComboIntent) -> usize {
+    let mut bytes = size_of_val(intent);
+    bytes = add_bytes(bytes, intent.intent_id().as_str().len());
+    bytes = add_bytes(bytes, intent.logical_order_id().as_str().len());
+    bytes = add_bytes(bytes, accounted_route_bytes(intent.route()));
+    for leg in intent.legs() {
+        bytes = add_bytes(bytes, size_of_val(leg));
+        bytes = add_bytes(bytes, accounted_instrument_bytes(leg.instrument()));
+    }
+    bytes
+}
+
+#[cfg(feature = "offline-fake")]
+fn accounted_route_bytes(route: &ExecutionRoute) -> usize {
+    let mut bytes = size_of_val(route);
+    bytes = add_bytes(bytes, route.strategy_instance_id().as_str().len());
+    bytes = add_bytes(bytes, size_of_val(route.account_namespace()));
+    bytes = add_bytes(
+        bytes,
+        route.account_namespace().account_scope().as_str().len(),
+    );
+    add_bytes(
+        bytes,
+        accounted_execution_broker_bytes(route.account_namespace().broker()),
+    )
+}
+
+#[cfg(feature = "offline-fake")]
+fn accounted_execution_broker_bytes(broker: &ExecutionBrokerId) -> usize {
+    match broker {
+        ExecutionBrokerId::Other(code) => code.as_str().len(),
+        ExecutionBrokerId::Alpaca
+        | ExecutionBrokerId::Schwab
+        | ExecutionBrokerId::InteractiveBrokers => 0,
+    }
+}
+
+#[cfg(feature = "offline-fake")]
+fn accounted_instrument_bytes(instrument: &domain::InstrumentKey) -> usize {
+    let option = instrument.as_option();
+    let contract = option.contract();
+    let mut bytes = size_of_val(instrument);
+    bytes = add_bytes(bytes, size_of_val(option));
+    bytes = add_bytes(bytes, size_of_val(contract));
+    bytes = add_bytes(bytes, size_of_val(contract.symbol()));
+    bytes = add_bytes(bytes, size_of_val(contract.deliverable()));
+    bytes = add_bytes(bytes, contract.symbol().underlying().as_str().len());
+    bytes = add_bytes(bytes, contract.currency().as_str().len());
+    bytes = add_bytes(bytes, option.trading_class().as_str().len());
+    for component in contract.deliverable().components() {
+        bytes = add_bytes(bytes, size_of_val(component));
+        bytes = add_bytes(
+            bytes,
+            match component.asset() {
+                DeliverableAsset::Equity(underlying) => underlying.as_str().len(),
+                DeliverableAsset::Cash(currency) => currency.as_str().len(),
+            },
+        );
+    }
+    bytes = add_bytes(
+        bytes,
+        match option.exercise_style() {
+            OptionExerciseStyle::Other(code) => code.as_str().len(),
+            OptionExerciseStyle::American
+            | OptionExerciseStyle::European
+            | OptionExerciseStyle::Bermudan => 0,
+        },
+    );
+    add_bytes(
+        bytes,
+        match option.settlement_type() {
+            OptionSettlementType::Other(code) => code.as_str().len(),
+            OptionSettlementType::Physical | OptionSettlementType::Cash => 0,
+        },
+    )
+}
+
+#[cfg(feature = "offline-fake")]
+fn accounted_routed_order_bytes(order: &RoutedOrderIdentity) -> usize {
+    let mut bytes = size_of_val(order);
+    bytes = add_bytes(bytes, order.intent_id().as_str().len());
+    bytes = add_bytes(bytes, order.logical_order_id().as_str().len());
+    bytes = add_bytes(bytes, accounted_route_bytes(order.route()));
+    match order.provider_order() {
+        ProviderOrderEvidence::Known(identity) => {
+            add_bytes(bytes, accounted_provider_identity_bytes(identity))
+        }
+        ProviderOrderEvidence::Unknown(reference) => add_bytes(
+            bytes,
+            accounted_metadata_reference_bytes(reference.metadata()),
+        ),
+        ProviderOrderEvidence::NotAssigned | ProviderOrderEvidence::Unavailable(_) => bytes,
+    }
+}
+
+#[cfg(feature = "offline-fake")]
+fn accounted_provider_identity_bytes(identity: &ProviderOrderIdentity) -> usize {
+    let mut bytes = size_of_val(identity);
+    bytes = add_bytes(bytes, size_of_val(identity.account_namespace()));
+    bytes = add_bytes(
+        bytes,
+        identity.account_namespace().account_scope().as_str().len(),
+    );
+    bytes = add_bytes(
+        bytes,
+        accounted_execution_broker_bytes(identity.account_namespace().broker()),
+    );
+    add_bytes(
+        bytes,
+        accounted_native_order_reference_bytes(identity.native()),
+    )
+}
+
+#[cfg(feature = "offline-fake")]
+fn accounted_native_order_reference_bytes(reference: &BrokerNativeOrderReference) -> usize {
+    match reference {
+        BrokerNativeOrderReference::Schwab(value) => size_of_val(value)
+            .saturating_add(value.account_hash().as_str().len())
+            .saturating_add(value.order_id().as_str().len()),
+        BrokerNativeOrderReference::InteractiveBrokers(value) => {
+            // Core 0a2eaff bounds this identifier at 256 bytes but does not expose its text.
+            let bytes = size_of_val(value).saturating_add(MAX_CORE_IDENTIFIER_BYTES);
+            let bytes = match value.permanent_id() {
+                ProviderValue::Unknown(reference) => {
+                    add_bytes(bytes, accounted_metadata_reference_bytes(reference))
+                }
+                ProviderValue::Known(_) | ProviderValue::Unavailable(_) => bytes,
+            };
+            match value.order_ref() {
+                ProviderValue::Known(order_ref) => add_bytes(bytes, order_ref.as_str().len()),
+                ProviderValue::Unknown(reference) => {
+                    add_bytes(bytes, accounted_metadata_reference_bytes(reference))
+                }
+                ProviderValue::Unavailable(_) => bytes,
+            }
+        }
+        BrokerNativeOrderReference::Alpaca(value) => {
+            size_of_val(value).saturating_add(value.as_str().len())
+        }
+        BrokerNativeOrderReference::Other(value) => {
+            let bytes = size_of_val(value);
+            let bytes = add_bytes(bytes, value.order_id().as_str().len());
+            add_bytes(bytes, accounted_execution_broker_bytes(value.broker()))
+        }
+    }
+}
+
+#[cfg(feature = "offline-fake")]
+fn accounted_metadata_reference_bytes(reference: &domain::ProviderMetadataRef) -> usize {
+    let mut bytes = size_of_val(reference);
+    bytes = add_bytes(bytes, reference.record_id().as_str().len());
+    let source_bytes = match reference.source() {
+        domain::MetadataSource::Execution(ExecutionBrokerId::Other(code)) => code.as_str().len(),
+        domain::MetadataSource::MarketData(domain::MarketDataProviderId::Other(code)) => {
+            code.as_str().len()
+        }
+        domain::MetadataSource::Execution(
+            ExecutionBrokerId::Alpaca
+            | ExecutionBrokerId::Schwab
+            | ExecutionBrokerId::InteractiveBrokers,
+        )
+        | domain::MetadataSource::MarketData(
+            domain::MarketDataProviderId::Alpaca
+            | domain::MarketDataProviderId::Schwab
+            | domain::MarketDataProviderId::InteractiveBrokers,
+        ) => 0,
+    };
+    add_bytes(bytes, source_bytes)
+}
+
+#[cfg(feature = "offline-fake")]
+fn add_bytes(total: usize, additional: usize) -> usize {
+    total.saturating_add(additional)
 }
 
 #[cfg(test)]

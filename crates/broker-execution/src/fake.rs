@@ -14,18 +14,31 @@
 use crate::{
     ExecutionCancelRequest, ExecutionCommand, ExecutionOutcome, ExecutionOutcomeReason,
     ExecutionPort, ExecutionReplaceRequest, ExecutionSubmitRequest, MAX_OFFLINE_FAKE_COMMANDS,
+    MAX_OFFLINE_FAKE_RETAINED_BYTES, ProviderOrderAcknowledgement, ProviderOrderReplacementLink,
+    accounted_command_bytes, accounted_provider_identity_bytes,
 };
-use domain::ProviderOrderIdentity;
+use domain::{ProviderOrderEvidence, ProviderOrderIdentity};
 use std::collections::VecDeque;
 use std::fmt;
+use std::mem::size_of_val;
 use std::sync::{Arc, Mutex, MutexGuard};
 
 /// Scripted deterministic outcome used by the offline execution fake.
 /// 离线执行 fake 使用的确定性模拟结果。
 pub enum FakeExecutionOutcomePlan {
-    /// Acknowledge the command with this synthetic provider identity.
-    /// 使用此合成 provider 身份确认命令。
+    /// Acknowledge a submit or cancel command with this synthetic provider identity.
+    /// 使用此合成 provider 身份确认提交或撤单命令。
     Accepted(Box<ProviderOrderIdentity>),
+    /// Acknowledge a replace with an identity and optional provider-reported predecessor.
+    /// 使用订单身份和可选的 provider 前序字段确认改单。
+    ReplaceAcknowledged {
+        /// New or retained synthetic provider identity returned by the replace response.
+        /// 改单响应返回的新身份或保留身份。
+        provider_order: Box<ProviderOrderIdentity>,
+        /// Exact predecessor identity reported by the provider when it assigned a new ID.
+        /// Provider 分配新 ID 时报告的精确前序身份。
+        replaces: Option<Box<ProviderOrderIdentity>>,
+    },
     /// Prove the command was not sent.
     /// 确认命令没有发送。
     DefinitelyNotSent(ExecutionOutcomeReason),
@@ -35,6 +48,28 @@ pub enum FakeExecutionOutcomePlan {
     /// Return an uncertain outcome that requires reconciliation.
     /// 返回需要对账的未知结果。
     Unknown(ExecutionOutcomeReason),
+}
+
+impl FakeExecutionOutcomePlan {
+    fn accounted_bytes(&self) -> usize {
+        let mut bytes = size_of_val(self);
+        match self {
+            Self::Accepted(identity) => {
+                bytes = bytes.saturating_add(accounted_provider_identity_bytes(identity));
+            }
+            Self::ReplaceAcknowledged {
+                provider_order,
+                replaces,
+            } => {
+                bytes = bytes.saturating_add(accounted_provider_identity_bytes(provider_order));
+                if let Some(predecessor) = replaces {
+                    bytes = bytes.saturating_add(accounted_provider_identity_bytes(predecessor));
+                }
+            }
+            Self::DefinitelyNotSent(_) | Self::Rejected(_) | Self::Unknown(_) => {}
+        }
+        bytes
+    }
 }
 
 /// Fake construction or bounded scripting failure.
@@ -47,6 +82,9 @@ pub enum FakeExecutionPortError {
     /// The outcome script reached its configured capacity.
     /// 结果脚本达到配置容量。
     ScriptCapacityExceeded,
+    /// The aggregate accounted data budget for queued outcomes and recorded commands was reached.
+    /// 已达到排队结果与命令记录的聚合数据计量上限。
+    RetainedByteCapacityExceeded,
 }
 
 /// Synthetic execution port with separately bounded input script and command journal.
@@ -58,6 +96,8 @@ pub struct FakeExecutionPort {
 
 struct FakeState {
     capacity: usize,
+    retained_bytes: usize,
+    command_bytes: usize,
     outcomes: VecDeque<FakeExecutionOutcomePlan>,
     commands: VecDeque<ExecutionCommand>,
 }
@@ -82,6 +122,11 @@ impl FakeExecutionPort {
         Ok(Self {
             inner: Arc::new(Mutex::new(FakeState {
                 capacity,
+                retained_bytes: capacity.saturating_mul(
+                    std::mem::size_of::<ExecutionCommand>()
+                        + std::mem::size_of::<FakeExecutionOutcomePlan>(),
+                ),
+                command_bytes: 0,
                 outcomes: VecDeque::with_capacity(capacity),
                 commands: VecDeque::with_capacity(capacity),
             })),
@@ -99,6 +144,11 @@ impl FakeExecutionPort {
         if state.outcomes.len() >= state.capacity {
             return Err(FakeExecutionPortError::ScriptCapacityExceeded);
         }
+        let outcome_bytes = outcome.accounted_bytes();
+        if state.retained_bytes.saturating_add(outcome_bytes) > MAX_OFFLINE_FAKE_RETAINED_BYTES {
+            return Err(FakeExecutionPortError::RetainedByteCapacityExceeded);
+        }
+        state.retained_bytes = state.retained_bytes.saturating_add(outcome_bytes);
         state.outcomes.push_back(outcome);
         Ok(())
     }
@@ -107,7 +157,10 @@ impl FakeExecutionPort {
     /// 排空记录的合成命令；记录数量不会超过配置上限。
     #[must_use]
     pub fn take_recorded_commands(&self) -> Vec<ExecutionCommand> {
-        lock_state(&self.inner).commands.drain(..).collect()
+        let mut state = lock_state(&self.inner);
+        state.retained_bytes = state.retained_bytes.saturating_sub(state.command_bytes);
+        state.command_bytes = 0;
+        state.commands.drain(..).collect()
     }
 
     /// Return the number of scripted outcomes currently queued.
@@ -127,13 +180,25 @@ impl FakeExecutionPort {
     fn run(&self, command: &ExecutionCommand) -> ExecutionOutcome {
         let outcome = {
             let mut state = lock_state(&self.inner);
-            if state.commands.len() >= state.capacity {
+            let command_bytes = accounted_command_bytes(command);
+            if state.commands.len() >= state.capacity
+                || state.retained_bytes.saturating_add(command_bytes)
+                    > MAX_OFFLINE_FAKE_RETAINED_BYTES
+            {
                 return ExecutionOutcome::definitely_not_sent(
                     ExecutionOutcomeReason::CapacityExceeded,
                 );
             }
+            state.retained_bytes = state.retained_bytes.saturating_add(command_bytes);
+            state.command_bytes = state.command_bytes.saturating_add(command_bytes);
             state.commands.push_back(command.clone());
-            state.outcomes.pop_front()
+            let outcome = state.outcomes.pop_front();
+            if let Some(outcome) = &outcome {
+                state.retained_bytes = state
+                    .retained_bytes
+                    .saturating_sub(outcome.accounted_bytes());
+            }
+            outcome
         };
 
         match outcome {
@@ -141,7 +206,53 @@ impl FakeExecutionPort {
                 let Some(revision) = command.expected_revision().checked_next() else {
                     return ExecutionOutcome::unknown(ExecutionOutcomeReason::ProtocolViolation);
                 };
-                match ExecutionOutcome::accepted_for(command, *provider_order, revision) {
+                let acknowledgement = match command {
+                    ExecutionCommand::Submit(_) => {
+                        ProviderOrderAcknowledgement::Submit(provider_order)
+                    }
+                    ExecutionCommand::Cancel(_) => {
+                        ProviderOrderAcknowledgement::Cancel(provider_order)
+                    }
+                    ExecutionCommand::Replace(_) => {
+                        return ExecutionOutcome::unknown(
+                            ExecutionOutcomeReason::ProtocolViolation,
+                        );
+                    }
+                };
+                match ExecutionOutcome::accepted_for(command, acknowledgement, revision) {
+                    Ok(outcome) => outcome,
+                    Err(_) => ExecutionOutcome::unknown(ExecutionOutcomeReason::ProtocolViolation),
+                }
+            }
+            Some(FakeExecutionOutcomePlan::ReplaceAcknowledged {
+                provider_order,
+                replaces,
+            }) => {
+                let Some(revision) = command.expected_revision().checked_next() else {
+                    return ExecutionOutcome::unknown(ExecutionOutcomeReason::ProtocolViolation);
+                };
+                let ExecutionCommand::Replace(request) = command else {
+                    return ExecutionOutcome::unknown(ExecutionOutcomeReason::ProtocolViolation);
+                };
+                let Some(predecessor) = known_identity(request.current()).cloned() else {
+                    return ExecutionOutcome::unknown(ExecutionOutcomeReason::ProtocolViolation);
+                };
+                let link = if *provider_order == predecessor && replaces.is_none() {
+                    Ok(ProviderOrderReplacementLink::same_identity(*provider_order))
+                } else {
+                    ProviderOrderReplacementLink::from_reported_replaces(
+                        predecessor,
+                        *provider_order,
+                        replaces.map(|identity| *identity),
+                    )
+                };
+                match link.and_then(|link| {
+                    ExecutionOutcome::accepted_for(
+                        command,
+                        ProviderOrderAcknowledgement::Replace(Box::new(link)),
+                        revision,
+                    )
+                }) {
                     Ok(outcome) => outcome,
                     Err(_) => ExecutionOutcome::unknown(ExecutionOutcomeReason::ProtocolViolation),
                 }
@@ -183,6 +294,7 @@ impl fmt::Debug for FakeExecutionOutcomePlan {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         let category = match self {
             Self::Accepted(_) => "Accepted",
+            Self::ReplaceAcknowledged { .. } => "ReplaceAcknowledged",
             Self::DefinitelyNotSent(_) => "DefinitelyNotSent",
             Self::Rejected(_) => "Rejected",
             Self::Unknown(_) => "Unknown",
@@ -220,6 +332,15 @@ fn lock_state(inner: &Mutex<FakeState>) -> MutexGuard<'_, FakeState> {
     inner
         .lock()
         .unwrap_or_else(std::sync::PoisonError::into_inner)
+}
+
+fn known_identity(order: &domain::RoutedOrderIdentity) -> Option<&ProviderOrderIdentity> {
+    match order.provider_order() {
+        ProviderOrderEvidence::Known(identity) => Some(identity),
+        ProviderOrderEvidence::NotAssigned
+        | ProviderOrderEvidence::Unavailable(_)
+        | ProviderOrderEvidence::Unknown(_) => None,
+    }
 }
 
 #[cfg(test)]
