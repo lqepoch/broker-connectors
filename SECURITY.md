@@ -13,3 +13,21 @@ or trading workflow is ready for production.
 Security fixes should include a bounded regression test and describe the
 affected versions and any required consumer action. Credential-bearing network
 requests must use fixed provider origins and reject cross-origin redirects.
+
+## Secret scan exception
+
+Gitleaks 8.30.1's `generic-api-key` rule produced one reviewed false positive
+in commit `995ee0817f144491f9ce9028495da9dcd9ca7a2f`,
+`vendor/schwab/crates/schwab-rest/README.md:6`. The ordinary documentation
+sentence only limits the review scope and says broader SDK, admission-policy,
+and execution coverage has not migrated. The exact original sentence is
+preserved with an HTML character reference in `SOURCE-MANIFEST.json` so the
+scanner does not reinterpret that documentation as a key. It contains no
+credential, token, account identifier, or access material. The initial
+`origin/main..HEAD` scan exited 1 with that single finding.
+
+The exact Gitleaks fingerprint is listed in `.gitleaksignore` and
+`SOURCE-MANIFEST.json`. The exception is limited to this commit, file, rule, and
+line; do not replace it with a rule-wide or path-wide exclusion. After adding
+the exact fingerprint, the branch-range and current pre-commit diff scans both
+exited 0. Repeat both scans on the final frozen head before publication.

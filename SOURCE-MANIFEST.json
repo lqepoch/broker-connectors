@@ -15,6 +15,11 @@
     },
     {
       "origin": "new project-owned code",
+      "sha256": "5db6d4d3c5dbf893830c45033241e8068eb81dd11136c7ee1e33f14a883da68b",
+      "target_path": ".gitleaksignore"
+    },
+    {
+      "origin": "new project-owned code",
       "sha256": "4e2ab8c1bdbd0c7e70565b9445736ff0373c6c720f7c77e16935c0a37d09d41e",
       "target_path": "AGENTS.md"
     },
@@ -52,6 +57,11 @@
       "origin": "new project-owned code",
       "sha256": "f5cc667033a475735d9b3b448288aab182dc42170368f618622491d97b1eb879",
       "target_path": "SBOM.spdx.json"
+    },
+    {
+      "origin": "new project-owned code",
+      "sha256": "d957c45513fc6fb16bd7065c4d66cb69261297433ec4e7471a9fd3ce3b7b6a90",
+      "target_path": "SECURITY.md"
     },
     {
       "origin": "new project-owned code",
@@ -350,6 +360,21 @@
       "target_license_path": "licenses/webpki-root-certs-1.0.9/LICENSE",
       "target_license_sha256": "e271993808fec50ab29350b39539cdec611a9103f827e0aa26d61da70e2d33f8",
       "version": "1.0.9"
+    }
+  ],
+  "reviewed_secret_scan_exceptions": [
+    {
+      "commit": "995ee0817f144491f9ce9028495da9dcd9ca7a2f",
+      "file": "vendor/schwab/crates/schwab-rest/README.md",
+      "fingerprint": "995ee0817f144491f9ce9028495da9dcd9ca7a2f:vendor/schwab/crates/schwab-rest/README.md:generic-api-key:6",
+      "line": 6,
+      "original_scan": "gitleaks git --log-opts='origin/main..HEAD' exited 1 with one finding before the exact-fingerprint exception.",
+      "original_sentence_html_entity_escaped": "It does not claim that the full public SDK, O&#65;uth, retry/admission policy, or execution path has migrated.",
+      "reason": "The match is ordinary documentation describing incomplete migration scope; reviewed redacted report contains no credential, token, account identifier, or access material.",
+      "rule": "generic-api-key",
+      "scanner": "Gitleaks 8.30.1",
+      "scope": "Only the exact historical commit, file, rule, and line fingerprint is excepted; no rule-wide or path-wide allowance.",
+      "validation": "The exact-ignore branch-range and current pre-commit diff scans both exited 0; the initial unexcepted branch-range exit 1 is recorded above."
     }
   ],
   "shared_contract_dependencies": [
