@@ -11,8 +11,9 @@ use market_contracts::{DecimalString, MarketEventV1, UtcTimestamp};
 use zeroize::Zeroizing;
 
 use crate::{
-    AlpacaOptionsObservation, AlpacaOptionsRequest, AlpacaRestError, OptionsPageCursor,
-    OptionsSnapshotWindow, OptionsSnapshotWindowRequest, RequestedOptionsFeed,
+    AlpacaOptionsObservation, AlpacaOptionsRequest, AlpacaRestError, AlpacaStockBarsPage,
+    AlpacaStockBarsRequest, OptionsPageCursor, OptionsSnapshotWindow, OptionsSnapshotWindowRequest,
+    RequestedOptionsFeed,
 };
 
 /// Per-request HTTP deadline.
@@ -224,6 +225,37 @@ impl AlpacaRestReadClient {
                 .map_err(map_sdk_error)?;
             let received_at = now_utc()?;
             map_latest_trades(request, response.trades, &received_at)
+        };
+        tokio::time::timeout(self.limits.operation_timeout(), operation)
+            .await
+            .map_err(|_| AlpacaRestError::Timeout)?
+    }
+
+    /// Read exactly one page of SIP-intent historical stock bars through the pinned SDK.
+    ///
+    /// This deliberately calls the SDK's single-page `stocks().bars` method. It does not use
+    /// `bars_all`, loop over pages, publish an archive, or assert that the requested SIP feed was
+    /// returned or entitled. A `next_page_token` is surfaced as a query-bound opaque cursor.
+    ///
+    /// # Errors
+    ///
+    /// Returns a fixed [`AlpacaRestError`] category when Alpaca rejects the request (including a
+    /// feed-entitlement rejection), the HTTP transport fails or exceeds its body cap, the page
+    /// exceeds its deadline, or provider data violates the bounded bar contract. Rate limiting
+    /// remains [`AlpacaRestError::RateLimited`]; there is no feed fallback.
+    pub async fn historical_stock_bars_page(
+        &self,
+        request: &AlpacaStockBarsRequest,
+    ) -> Result<AlpacaStockBarsPage, AlpacaRestError> {
+        let operation = async {
+            let response = self
+                .sdk
+                .stocks()
+                .bars(request.to_sdk_request())
+                .await
+                .map_err(map_sdk_error)?;
+            let response_observed_at = now_utc()?;
+            AlpacaStockBarsPage::from_provider(request, response, response_observed_at)
         };
         tokio::time::timeout(self.limits.operation_timeout(), operation)
             .await
@@ -486,15 +518,22 @@ fn map_sdk_error(error: alpaca_data::Error) -> AlpacaRestError {
             AlpacaRestError::InvalidConfiguration
         }
         DataError::InvalidRequest(_) => AlpacaRestError::InvalidRequest,
-        DataError::Http(HttpError::RateLimited(_)) => AlpacaRestError::RateLimited,
+        DataError::Http(HttpError::RateLimited(meta) | HttpError::HttpStatus(meta)) => {
+            map_http_status(meta.status())
+        }
         DataError::Http(HttpError::ResponseBodyTooLarge(_)) => AlpacaRestError::ResponseTooLarge,
         DataError::Http(HttpError::InvalidResponseEncoding(_) | HttpError::Deserialize { .. }) => {
             AlpacaRestError::ProtocolViolation
         }
-        DataError::Http(HttpError::HttpStatus(meta)) if (400..500).contains(&meta.status()) => {
-            AlpacaRestError::ProviderRejected
-        }
         DataError::Http(_) => AlpacaRestError::Transport,
+    }
+}
+
+fn map_http_status(status: u16) -> AlpacaRestError {
+    match status {
+        429 => AlpacaRestError::RateLimited,
+        400..=499 => AlpacaRestError::ProviderRejected,
+        _ => AlpacaRestError::Transport,
     }
 }
 
@@ -508,7 +547,7 @@ mod tests {
 
     use super::{
         AlpacaRestCredentials, AlpacaRestLimits, MAX_OPERATION_TIMEOUT, MAX_REQUEST_TIMEOUT,
-        MAX_RETRY_BUDGET, map_quote, map_trade,
+        MAX_RETRY_BUDGET, map_http_status, map_quote, map_trade,
     };
     use crate::{AlpacaRestError, RequestedOptionsFeed};
 
@@ -583,6 +622,14 @@ mod tests {
             )
             .is_err()
         );
+    }
+
+    #[test]
+    fn provider_feed_rejections_and_rate_limits_remain_distinct() {
+        assert_eq!(map_http_status(403), AlpacaRestError::ProviderRejected);
+        assert_eq!(map_http_status(401), AlpacaRestError::ProviderRejected);
+        assert_eq!(map_http_status(429), AlpacaRestError::RateLimited);
+        assert_eq!(map_http_status(500), AlpacaRestError::Transport);
     }
 
     #[test]

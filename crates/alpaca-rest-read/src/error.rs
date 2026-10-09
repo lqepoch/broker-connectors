@@ -5,7 +5,7 @@ use std::fmt;
 pub enum AlpacaRestError {
     /// Invalid local credentials or client limits.
     InvalidConfiguration,
-    /// Invalid symbol, page size, cursor, or duplicate request value.
+    /// Invalid symbol, time range, page size, cursor, or duplicate request value.
     InvalidRequest,
     /// The upstream returned an HTTP rate-limit response.
     RateLimited,
