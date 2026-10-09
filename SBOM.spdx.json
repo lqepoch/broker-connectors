@@ -7,7 +7,7 @@
     ]
   },
   "dataLicense": "CC0-1.0",
-  "documentNamespace": "https://spdx.org/spdxdocs/broker-connectors-b24fe6d02fb74b7bdb09f02a3a7b9b431a8c072c63131a056462f1f1e80fe8ab",
+  "documentNamespace": "https://spdx.org/spdxdocs/broker-connectors-4907643a8f3389fb831fd8908cf801a53e34b8a1731266e62679258e2766fa08",
   "name": "broker-connectors Cargo workspace",
   "packages": [
     {
@@ -1057,7 +1057,7 @@
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "MIT OR Apache-2.0",
       "name": "domain",
-      "sourceInfo": "Cargo locked immutable Git source: git+https://github.com/lqepoch/trading-core.git?rev=23a87d5b5a549e4489c1a2844c4132c43148fe6b#23a87d5b5a549e4489c1a2844c4132c43148fe6b.",
+      "sourceInfo": "Cargo locked immutable Git source: git+https://github.com/lqepoch/trading-core.git?rev=22315511e084050c2ec037fa36c5d07a0bc6606e#22315511e084050c2ec037fa36c5d07a0bc6606e.",
       "versionInfo": "0.1.0"
     },
     {
@@ -1160,7 +1160,7 @@
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "MIT OR Apache-2.0",
       "name": "exact-decimal",
-      "sourceInfo": "Cargo locked immutable Git source: git+https://github.com/lqepoch/trading-core.git?rev=23a87d5b5a549e4489c1a2844c4132c43148fe6b#23a87d5b5a549e4489c1a2844c4132c43148fe6b.",
+      "sourceInfo": "Cargo locked immutable Git source: git+https://github.com/lqepoch/trading-core.git?rev=22315511e084050c2ec037fa36c5d07a0bc6606e#22315511e084050c2ec037fa36c5d07a0bc6606e.",
       "versionInfo": "0.1.0"
     },
     {
@@ -2411,7 +2411,7 @@
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "MIT OR Apache-2.0",
       "name": "market-contracts",
-      "sourceInfo": "Cargo locked immutable Git source: git+https://github.com/lqepoch/trading-core.git?rev=23a87d5b5a549e4489c1a2844c4132c43148fe6b#23a87d5b5a549e4489c1a2844c4132c43148fe6b.",
+      "sourceInfo": "Cargo locked immutable Git source: git+https://github.com/lqepoch/trading-core.git?rev=22315511e084050c2ec037fa36c5d07a0bc6606e#22315511e084050c2ec037fa36c5d07a0bc6606e.",
       "versionInfo": "0.1.0"
     },
     {
