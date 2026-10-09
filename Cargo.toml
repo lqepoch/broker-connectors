@@ -23,9 +23,9 @@ repository = "https://github.com/lqepoch/broker-connectors"
 [workspace.dependencies]
 broker-ports = { path = "crates/broker-ports", version = "=0.1.0" }
 chrono = { version = "=0.4.45", default-features = false, features = ["std"] }
-domain = { git = "https://github.com/lqepoch/trading-core.git", rev = "23a87d5b5a549e4489c1a2844c4132c43148fe6b", version = "=0.1.0" }
+domain = { git = "https://github.com/lqepoch/trading-core.git", rev = "22315511e084050c2ec037fa36c5d07a0bc6606e", version = "=0.1.0" }
 futures-util = "=0.3.34"
-market-contracts = { git = "https://github.com/lqepoch/trading-core.git", rev = "23a87d5b5a549e4489c1a2844c4132c43148fe6b", version = "=0.1.0" }
+market-contracts = { git = "https://github.com/lqepoch/trading-core.git", rev = "22315511e084050c2ec037fa36c5d07a0bc6606e", version = "=0.1.0" }
 serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = { version = "=1.0.151", features = ["arbitrary_precision"] }
 alpaca-data = { path = "vendor/alpaca-rust/crates/alpaca-data", version = "=0.33.3" }
