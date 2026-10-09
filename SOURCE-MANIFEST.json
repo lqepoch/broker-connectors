@@ -20,7 +20,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "c88e6f00b84e4bf961208684e32c1e1b5963e1e6148d88901a0e720fc62e2a1e",
+      "sha256": "986b26a0a8e1cb0ea71316e4c34e413cf0fb01d5d44b0a69f34b84b4ec6014a4",
       "target_path": "AGENTS.md"
     },
     {
@@ -70,7 +70,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "4951afb5cb3896ec0e089c934c174dceffae675ce400441a670d4e3e21000a1c",
+      "sha256": "6f6b6be76209a4d60de2204d83da12970f14e5984e237833d1446608b11cdee3",
       "target_path": "crates/alpaca-rest-read/README.md"
     },
     {
@@ -85,7 +85,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "538ef75683fef295b704d593e88e57c1bafd189d0e6cfd0ec35e5ac6530bc19b",
+      "sha256": "8f72eda88ad9c69d6bbeb96b171419ab4a7cc555a948717c9dcaf87243938b75",
       "target_path": "crates/alpaca-rest-read/src/lib.rs"
     },
     {
@@ -100,12 +100,12 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "5f63b75e38eb92864e0a3d1c5a6112ddfec938fd2df46b20cbebe8b86345ef2c",
+      "sha256": "fb6349265c300fda85cd5559b04997ff8074ae882281bf7ce96f1e7651cd2e69",
       "target_path": "crates/alpaca-rest-read/src/stock_bars.rs"
     },
     {
       "origin": "Synthetic tests for the fixed one-page SIP facade, query-bound cursors, provider response validation, and explicit unknown provenance; no provider calls.",
-      "sha256": "6102266ccd4a57ad5b183e8c0ded21e92508624f5c4527b69fb57b5a74678d1c",
+      "sha256": "5d63f62a3d43993ed91c32840d58e506807ab89e2c7cf97f2f7bde8a678b4553",
       "target_path": "crates/alpaca-rest-read/src/stock_bars_tests.rs"
     },
     {
