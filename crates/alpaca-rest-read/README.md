@@ -61,6 +61,10 @@ and publication owner. Trusted watermarks are also unsupported:
 the reviewed REST responses provide no continuity evidence for one. The
 capability report returns these unsupported states explicitly.
 
+The decimal-preservation test uses a synthetic normalized `BarsResponse`
+fixture from the pinned SDK model. It does not claim coverage of the
+single-symbol endpoint's raw HTTP response shape.
+
 The upstream is [`wmzhai/alpaca-rust` v0.33.3 at commit
 `d91be382e3e9d25c52c24e626e78702532d24ba2`](https://github.com/wmzhai/alpaca-rust/tree/d91be382e3e9d25c52c24e626e78702532d24ba2).
 Alpaca classifies it as a community-made SDK, not an Alpaca-maintained or

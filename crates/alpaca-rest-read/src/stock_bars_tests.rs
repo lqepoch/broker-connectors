@@ -146,7 +146,7 @@ fn provider_bars_preserve_exact_values_and_unknown_effective_source() {
 }
 
 #[test]
-fn official_single_symbol_json_shape_keeps_decimal_values_exact() {
+fn normalized_sdk_response_fixture_keeps_decimal_values_exact() {
     let response: BarsResponse = serde_json::from_str(
         r#"{
             "bars": {
@@ -165,9 +165,9 @@ fn official_single_symbol_json_shape_keeps_decimal_values_exact() {
             "currency": "USD"
         }"#,
     )
-    .expect("synthetic provider-shaped response parses through the pinned SDK model");
+    .expect("synthetic normalized SDK response fixture parses through the pinned model");
     let page = AlpacaStockBarsPage::from_provider(&request(), response, received_at())
-        .expect("synthetic provider-shaped bars validate");
+        .expect("synthetic normalized SDK bars validate");
     assert_eq!(page.bars()[0].open().as_str(), "10.00000000000000000001");
     assert_eq!(page.bars()[0].close().as_str(), "10.50000000000000000001");
     assert_eq!(
