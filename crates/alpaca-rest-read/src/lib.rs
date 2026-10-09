@@ -2,20 +2,22 @@
 #![deny(missing_docs)]
 #![warn(rustdoc::broken_intra_doc_links)]
 
-//! Bounded, read-only Alpaca options REST access over the pinned community Rust SDK.
+//! Bounded, read-only Alpaca options and single-page stock-bars REST access over the pinned SDK.
 //!
-//! This crate returns the shared `market-contracts` quote/trade payloads with typed source
-//! observations. A requested feed is not entitlement evidence; REST reads do not provide a
-//! trusted sequence, stream watermark, or completion receipt.
+//! Option reads return shared `market-contracts` quote/trade payloads. Stock-bars reads return a
+//! separate bounded adapter observation and never collect or publish a history. A requested feed
+//! is not entitlement evidence; REST reads do not provide a trusted sequence, stream watermark,
+//! or completion receipt.
 //!
-//! 本 crate 基于固定版本的社区 Rust SDK 提供有界、只读 Alpaca 期权 REST 接口，并返回共享
-//! `market-contracts` quote/trade 类型及来源观察。请求 feed 不构成 entitlement 证据；REST
-//! 读取不提供可信序号、水位或完整性回执。
+//! 本 crate 基于固定版本的社区 Rust SDK 提供有界、只读 Alpaca 期权及单页股票 bars REST 接口。
+//! 期权读取返回共享 `market-contracts` quote/trade 类型；股票 bars 返回独立的有界适配器观察值，
+//! 不负责历史采集或发布。请求 feed 不构成 entitlement 证据；REST 读取不提供可信序号、水位或完整性回执。
 
 mod client;
 mod error;
 mod model;
 mod request;
+mod stock_bars;
 
 pub use client::{
     AlpacaRestCredentials, AlpacaRestLimits, AlpacaRestReadClient, DEFAULT_OPERATION_TIMEOUT,
@@ -27,6 +29,10 @@ pub use request::{
     AlpacaOptionsRequest, MAX_OPTIONS_SYMBOLS_PER_REQUEST, MAX_PAGE_CURSOR_BYTES,
     MAX_SNAPSHOT_PAGE_SIZE, MAX_SNAPSHOT_PAGES_PER_WINDOW, OptionsPageCursor,
     OptionsSnapshotWindowRequest, RequestedOptionsFeed,
+};
+pub use stock_bars::{
+    AlpacaStockBarObservation, AlpacaStockBarsPage, AlpacaStockBarsRequest,
+    MAX_STOCK_BARS_PAGE_SIZE, RequestedStockBarsFeed, StockBarsCursor, StockBarsTimeframe,
 };
 
 /// REST operation names used by the explicit capability report.
@@ -42,6 +48,9 @@ pub enum AlpacaRestOperation {
     FeedQualifiedOptionBars,
     /// Feed-qualified historical option trades.
     FeedQualifiedOptionTrades,
+    /// One page of historical stock bars with a fixed SIP request selector.
+    /// 表示单页 SIP 请求能力；不证明有效行情来源、权限或历史完整性。
+    HistoricalStockSipBarsPage,
     /// Trusted provider stream watermark or continuation evidence.
     TrustedWatermark,
 }
@@ -70,7 +79,8 @@ pub const fn capability_status(operation: AlpacaRestOperation) -> AlpacaCapabili
     match operation {
         AlpacaRestOperation::LatestOptionQuotes
         | AlpacaRestOperation::LatestOptionTrades
-        | AlpacaRestOperation::OptionSnapshotWindow => AlpacaCapabilityStatus::Supported,
+        | AlpacaRestOperation::OptionSnapshotWindow
+        | AlpacaRestOperation::HistoricalStockSipBarsPage => AlpacaCapabilityStatus::Supported,
         AlpacaRestOperation::FeedQualifiedOptionBars
         | AlpacaRestOperation::FeedQualifiedOptionTrades => {
             AlpacaCapabilityStatus::Unsupported(AlpacaUnsupportedReason::NoFeedSelector)
@@ -100,6 +110,14 @@ mod tests {
         assert_eq!(
             capability_status(AlpacaRestOperation::TrustedWatermark),
             AlpacaCapabilityStatus::Unsupported(AlpacaUnsupportedReason::NoTrustedWatermark)
+        );
+    }
+
+    #[test]
+    fn one_page_sip_stock_bars_are_reported_supported() {
+        assert_eq!(
+            capability_status(AlpacaRestOperation::HistoricalStockSipBarsPage),
+            AlpacaCapabilityStatus::Supported
         );
     }
 }
