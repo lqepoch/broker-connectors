@@ -454,7 +454,6 @@ impl fmt::Debug for AlpacaStockBarsPage {
 fn valid_stock_symbol(symbol: &str) -> bool {
     !symbol.is_empty()
         && symbol.len() <= 32
-        && symbol == symbol.to_ascii_uppercase()
         && alpaca_data::stocks::display_stock_symbol(symbol) == symbol
         && symbol
             .bytes()

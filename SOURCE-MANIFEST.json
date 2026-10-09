@@ -100,7 +100,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "80d65d4b68af640787a51a00fe9bf5b6f1aee530dfe2d0ea7149a9fe7fb076cf",
+      "sha256": "5f63b75e38eb92864e0a3d1c5a6112ddfec938fd2df46b20cbebe8b86345ef2c",
       "target_path": "crates/alpaca-rest-read/src/stock_bars.rs"
     },
     {
