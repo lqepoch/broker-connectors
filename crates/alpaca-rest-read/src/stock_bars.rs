@@ -10,12 +10,15 @@ use market_contracts::{
 use crate::{AlpacaRestError, MAX_PAGE_CURSOR_BYTES};
 
 /// Maximum number of stock bars requested from one provider page.
+/// 单页最多请求此数量；该上限不代表所有历史数据已被读取。
 pub const MAX_STOCK_BARS_PAGE_SIZE: u16 = 1_000;
 
 /// Fixed feed intent for the stock-history facade.
+/// 该枚举记录请求意图，不构成返回来源或账户权限证据。
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum RequestedStockBarsFeed {
     /// Request the SIP feed. This is request intent, not source or entitlement evidence.
+    /// 请求 SIP 不证明响应来自 SIP，也不证明账户具有相应权限。
     Sip,
 }
 
@@ -30,6 +33,7 @@ impl RequestedStockBarsFeed {
 }
 
 /// Supported Alpaca stock-bar intervals.
+/// 本枚举列出该适配器接受的股票 K 线周期。
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum StockBarsTimeframe {
     /// One-minute bars.
@@ -78,6 +82,7 @@ struct StockBarsQueryIdentity {
 }
 
 /// Validated single-symbol request for one page of SIP-intent historical stock bars.
+/// 此请求固定单一股票与 SIP 请求参数，但不声明响应来源、权限或历史完整性。
 #[derive(Clone, Eq, PartialEq)]
 pub struct AlpacaStockBarsRequest {
     identity: StockBarsQueryIdentity,
@@ -90,6 +95,7 @@ impl AlpacaStockBarsRequest {
     /// The request always fixes feed to `sip`, adjustment to `raw`, sort to `asc`, currency to
     /// `USD`, and `asof` to `-`. A SIP request does not prove that Alpaca returned SIP data or
     /// that the account is entitled to it.
+    /// 请求参数固定为 SIP；响应来源和账户权限仍须独立验证。
     ///
     /// # Errors
     ///
@@ -131,6 +137,7 @@ impl AlpacaStockBarsRequest {
     ///
     /// A cursor cannot be reused with a different symbol, timeframe, time range, page size, or
     /// any fixed SIP query parameter.
+    /// 游标绑定完整查询身份，不能跨股票、周期、时间范围、页大小或固定参数复用。
     ///
     /// # Errors
     ///
@@ -150,6 +157,7 @@ impl AlpacaStockBarsRequest {
     }
 
     /// Return the fixed SIP request intent.
+    /// 返回请求意图，不是响应来源或权限证据。
     #[must_use]
     pub const fn requested_feed(&self) -> RequestedStockBarsFeed {
         self.identity.feed
@@ -194,6 +202,7 @@ impl fmt::Debug for AlpacaStockBarsRequest {
 }
 
 /// Opaque, redacted continuation for the next single page of the same SIP bars query.
+/// 游标仅用于继续同一查询；其存在或缺失均不证明历史数据完整。
 #[derive(Clone, Eq, PartialEq)]
 pub struct StockBarsCursor {
     identity: StockBarsQueryIdentity,
@@ -230,6 +239,7 @@ impl fmt::Debug for StockBarsCursor {
 }
 
 /// One exact-decimal historical bar with separate request intent and unknown source evidence.
+/// 价格保留精确十进制；有效来源和权限保持未知，不能据此判定数据已获授权。
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AlpacaStockBarObservation {
     symbol: String,
@@ -301,12 +311,14 @@ impl AlpacaStockBarObservation {
     }
 
     /// Return source evidence, whose effective feed and entitlement remain unknown.
+    /// 实际 feed 与 entitlement 均为 unknown；请求 SIP 不会提升来源可信度。
     #[must_use]
     pub const fn source(&self) -> &MarketDataSourceV1 {
         &self.source
     }
 
     /// Return the fixed SIP request intent, not proof of the returned source.
+    /// 返回请求意图，不表示响应 feed 或权限已经确认。
     #[must_use]
     pub const fn requested_feed(&self) -> RequestedStockBarsFeed {
         self.requested_feed
@@ -314,6 +326,7 @@ impl AlpacaStockBarObservation {
 }
 
 /// The result from exactly one historical stock-bars page.
+/// 结果只覆盖单页；无 continuation token 不等于上游证明历史查询完整。
 #[derive(Clone, Eq, PartialEq)]
 pub struct AlpacaStockBarsPage {
     bars: Vec<AlpacaStockBarObservation>,
@@ -422,18 +435,21 @@ impl AlpacaStockBarsPage {
     ///
     /// This local observation time is not the source timestamp or historical point-in-time
     /// availability.
+    /// 这是本机观察时间，不是行情源时间或历史可得时间。
     #[must_use]
     pub const fn response_observed_at(&self) -> &UtcTimestamp {
         &self.response_observed_at
     }
 
     /// Return whether Alpaca supplied a continuation token for another page.
+    /// 仅表示是否收到下一页游标；无游标不证明所有历史数据均已返回。
     #[must_use]
     pub const fn has_next_page(&self) -> bool {
         self.next_cursor.is_some()
     }
 
     /// Take the opaque continuation token, if present.
+    /// 取出用于继续同一查询的不透明游标，不代表数据完整性证据。
     #[must_use]
     pub fn take_next_cursor(&mut self) -> Option<StockBarsCursor> {
         self.next_cursor.take()

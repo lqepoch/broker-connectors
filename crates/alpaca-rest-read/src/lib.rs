@@ -49,6 +49,7 @@ pub enum AlpacaRestOperation {
     /// Feed-qualified historical option trades.
     FeedQualifiedOptionTrades,
     /// One page of historical stock bars with a fixed SIP request selector.
+    /// 表示单页 SIP 请求能力；不证明有效行情来源、权限或历史完整性。
     HistoricalStockSipBarsPage,
     /// Trusted provider stream watermark or continuation evidence.
     TrustedWatermark,
