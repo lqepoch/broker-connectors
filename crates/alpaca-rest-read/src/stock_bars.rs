@@ -155,7 +155,7 @@ impl AlpacaStockBarsRequest {
         self.identity.feed
     }
 
-    fn to_sdk_request(&self) -> BarsRequest {
+    pub(crate) fn to_sdk_request(&self) -> BarsRequest {
         BarsRequest {
             symbols: vec![self.identity.symbol.clone()],
             timeframe: self.identity.timeframe.to_sdk(),
