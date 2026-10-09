@@ -30,17 +30,17 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "4907643a8f3389fb831fd8908cf801a53e34b8a1731266e62679258e2766fa08",
+      "sha256": "d367736c9df3e2b3be4589c149eb7e793ff16c7324ecf86c40292475b386d828",
       "target_path": "Cargo.lock"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "25634e0bf50485536a97dc276bfab39161c1b9b280d8433aa0cc65232b7d942d",
+      "sha256": "cf5554df89b4e1bded0e37728e4172477b887d0f65c93b3025a48ad31bcf7273",
       "target_path": "Cargo.toml"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "10d43165147788c050237ddccafe38515814d95b17ff0e9aac30ba3f31329d77",
+      "sha256": "3bc1c074667ac1560a54450ed21c7b8ba261abfec5b22a38ff63ece5484dda69",
       "target_path": "DEPENDENCY-RESOLUTION.md"
     },
     {
@@ -55,7 +55,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "8744527b3aa4b197d09dbc9d19e7446d3b9441660c5cb0eccb095cde32644e6a",
+      "sha256": "4000e1c047f26758871aa32f684ae90d44b2bde3599abc949d4eaf59f8d26c16",
       "target_path": "SBOM.spdx.json"
     },
     {

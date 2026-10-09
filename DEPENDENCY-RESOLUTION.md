@@ -1,5 +1,18 @@
 # Dependency resolver evidence
 
+## Security-relevant runtime patch pins
+
+The public workspace pins Tokio `1.53.2` and zeroize `1.9.1` exactly. Keep the
+lockfile aligned with these workspace pins rather than lowering them to satisfy
+a downstream resolver: Tokio `1.53.2` includes fixes to bounded-channel,
+semaphore, broadcast wakeup, and runtime behavior; zeroize `1.9.1` fixes a
+potential uninitialized-memory read in the `optimization_barrier` fallback and
+makes `Zeroizing` debug output opaque. These upstream fixes are recorded in the
+[Tokio 1.53.2 release notes](https://github.com/tokio-rs/tokio/releases/tag/tokio-1.53.2),
+[zeroize PR #1551](https://github.com/RustCrypto/utils/pull/1551), and
+[zeroize PR #1497](https://github.com/RustCrypto/utils/pull/1497). This rationale
+does not depend on whether an advisory database has assigned a RUSTSEC ID.
+
 The engine integration isolated the pinned public dependency graph in
 `/tmp/lq-resolver-probe` and ran this command:
 

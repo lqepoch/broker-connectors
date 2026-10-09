@@ -1,13 +1,13 @@
 {
   "SPDXID": "SPDXRef-DOCUMENT",
   "creationInfo": {
-    "created": "2026-10-08T15:04:13Z",
+    "created": "2026-10-09T03:42:03Z",
     "creators": [
       "Tool: scripts/generate_spdx_sbom.py"
     ]
   },
   "dataLicense": "CC0-1.0",
-  "documentNamespace": "https://spdx.org/spdxdocs/broker-connectors-4907643a8f3389fb831fd8908cf801a53e34b8a1731266e62679258e2766fa08",
+  "documentNamespace": "https://spdx.org/spdxdocs/broker-connectors-d367736c9df3e2b3be4589c149eb7e793ff16c7324ecf86c40292475b386d828",
   "name": "broker-connectors Cargo workspace",
   "packages": [
     {
@@ -4804,19 +4804,19 @@
       "versionInfo": "1.13.3"
     },
     {
-      "SPDXID": "SPDXRef-Package-218-tokio-1.53.1",
+      "SPDXID": "SPDXRef-Package-218-tokio-1.53.2",
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "202caea871b69668250d242070849eb495be178ed697a3e98aebce5bc81a0bed"
+          "checksumValue": "e95f91fcc7a621e8b030f6aa23c71fe9838ae2fb4d8118b75602a328f5144044"
         }
       ],
       "copyrightText": "NOASSERTION",
-      "downloadLocation": "https://crates.io/crates/tokio/1.53.1",
+      "downloadLocation": "https://crates.io/crates/tokio/1.53.2",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
-          "referenceLocator": "pkg:cargo/tokio@1.53.1",
+          "referenceLocator": "pkg:cargo/tokio@1.53.2",
           "referenceType": "purl"
         }
       ],
@@ -4824,7 +4824,7 @@
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "MIT",
       "name": "tokio",
-      "versionInfo": "1.53.1"
+      "versionInfo": "1.53.2"
     },
     {
       "SPDXID": "SPDXRef-Package-219-tokio-macros-2.7.2",
@@ -6301,19 +6301,19 @@
       "versionInfo": "0.1.8"
     },
     {
-      "SPDXID": "SPDXRef-Package-283-zeroize-1.9.0",
+      "SPDXID": "SPDXRef-Package-283-zeroize-1.9.1",
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "e13c156562582aa81c60cb29407084cdb54c4164760106ab78e6c5b0858cf64e"
+          "checksumValue": "e13084392c5e4bc371903e2935a5eaeed24905a7511356b883835e18a78f6879"
         }
       ],
       "copyrightText": "NOASSERTION",
-      "downloadLocation": "https://crates.io/crates/zeroize/1.9.0",
+      "downloadLocation": "https://crates.io/crates/zeroize/1.9.1",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
-          "referenceLocator": "pkg:cargo/zeroize@1.9.0",
+          "referenceLocator": "pkg:cargo/zeroize@1.9.1",
           "referenceType": "purl"
         }
       ],
@@ -6321,7 +6321,7 @@
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "Apache-2.0 OR MIT",
       "name": "zeroize",
-      "versionInfo": "1.9.0"
+      "versionInfo": "1.9.1"
     },
     {
       "SPDXID": "SPDXRef-Package-284-zerotrie-0.2.5",
@@ -6893,7 +6893,7 @@
       "spdxElementId": "SPDXRef-Package-140-quinn-0.11.12"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-140-quinn-0.11.12"
     },
@@ -7233,7 +7233,7 @@
       "spdxElementId": "SPDXRef-Package-159-reqwest-0.13.5"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-159-reqwest-0.13.5"
     },
@@ -7328,7 +7328,7 @@
       "spdxElementId": "SPDXRef-Package-16-aws-lc-rs-1.18.1"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.0",
+      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.1",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-16-aws-lc-rs-1.18.1"
     },
@@ -7458,7 +7458,7 @@
       "spdxElementId": "SPDXRef-Package-167-rustls-0.23.45"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.0",
+      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.1",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-167-rustls-0.23.45"
     },
@@ -7488,7 +7488,7 @@
       "spdxElementId": "SPDXRef-Package-169-rustls-pki-types-1.15.1"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.0",
+      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.1",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-169-rustls-pki-types-1.15.1"
     },
@@ -7628,7 +7628,7 @@
       "spdxElementId": "SPDXRef-Package-177-schwab-adapter-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-177-schwab-adapter-0.1.0"
     },
@@ -7643,7 +7643,7 @@
       "spdxElementId": "SPDXRef-Package-177-schwab-adapter-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.0",
+      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.1",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-177-schwab-adapter-0.1.0"
     },
@@ -7673,7 +7673,7 @@
       "spdxElementId": "SPDXRef-Package-178-schwab-rest-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-178-schwab-rest-0.1.0"
     },
@@ -7683,7 +7683,7 @@
       "spdxElementId": "SPDXRef-Package-178-schwab-rest-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.0",
+      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.1",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-178-schwab-rest-0.1.0"
     },
@@ -7693,7 +7693,7 @@
       "spdxElementId": "SPDXRef-Package-179-schwab-sdk-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-179-schwab-sdk-0.1.0"
     },
@@ -7713,7 +7713,7 @@
       "spdxElementId": "SPDXRef-Package-180-schwab-streamer-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-180-schwab-streamer-0.1.0"
     },
@@ -7728,7 +7728,7 @@
       "spdxElementId": "SPDXRef-Package-180-schwab-streamer-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.0",
+      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.1",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-180-schwab-streamer-0.1.0"
     },
@@ -7963,7 +7963,7 @@
       "spdxElementId": "SPDXRef-Package-2-alpaca-core-0.33.3"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.0",
+      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.1",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-2-alpaca-core-0.33.3"
     },
@@ -8195,42 +8195,42 @@
     {
       "relatedSpdxElement": "SPDXRef-Package-107-libc-0.2.190",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-218-tokio-1.53.1"
+      "spdxElementId": "SPDXRef-Package-218-tokio-1.53.2"
     },
     {
       "relatedSpdxElement": "SPDXRef-Package-114-mio-1.2.4",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-218-tokio-1.53.1"
+      "spdxElementId": "SPDXRef-Package-218-tokio-1.53.2"
     },
     {
       "relatedSpdxElement": "SPDXRef-Package-131-pin-project-lite-0.2.17",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-218-tokio-1.53.1"
+      "spdxElementId": "SPDXRef-Package-218-tokio-1.53.2"
     },
     {
       "relatedSpdxElement": "SPDXRef-Package-194-signal-hook-registry-1.4.8",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-218-tokio-1.53.1"
+      "spdxElementId": "SPDXRef-Package-218-tokio-1.53.2"
     },
     {
       "relatedSpdxElement": "SPDXRef-Package-200-socket2-0.6.5",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-218-tokio-1.53.1"
+      "spdxElementId": "SPDXRef-Package-218-tokio-1.53.2"
     },
     {
       "relatedSpdxElement": "SPDXRef-Package-219-tokio-macros-2.7.2",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-218-tokio-1.53.1"
+      "spdxElementId": "SPDXRef-Package-218-tokio-1.53.2"
     },
     {
       "relatedSpdxElement": "SPDXRef-Package-261-windows-sys-0.61.2",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-218-tokio-1.53.1"
+      "spdxElementId": "SPDXRef-Package-218-tokio-1.53.2"
     },
     {
       "relatedSpdxElement": "SPDXRef-Package-29-bytes-1.12.1",
       "relationshipType": "DEPENDS_ON",
-      "spdxElementId": "SPDXRef-Package-218-tokio-1.53.1"
+      "spdxElementId": "SPDXRef-Package-218-tokio-1.53.2"
     },
     {
       "relatedSpdxElement": "SPDXRef-Package-137-proc-macro2-1.0.107",
@@ -8258,7 +8258,7 @@
       "spdxElementId": "SPDXRef-Package-220-tokio-rustls-0.26.5"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-220-tokio-rustls-0.26.5"
     },
@@ -8268,7 +8268,7 @@
       "spdxElementId": "SPDXRef-Package-221-tokio-stream-0.1.19"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-221-tokio-stream-0.1.19"
     },
@@ -8303,7 +8303,7 @@
       "spdxElementId": "SPDXRef-Package-222-tokio-tungstenite-0.30.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-222-tokio-tungstenite-0.30.0"
     },
@@ -8333,7 +8333,7 @@
       "spdxElementId": "SPDXRef-Package-223-tokio-util-0.7.19"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-223-tokio-util-0.7.19"
     },
@@ -8393,7 +8393,7 @@
       "spdxElementId": "SPDXRef-Package-227-tower-0.5.3"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-227-tower-0.5.3"
     },
@@ -8648,7 +8648,7 @@
       "spdxElementId": "SPDXRef-Package-246-wasm-bindgen-futures-0.4.79"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-246-wasm-bindgen-futures-0.4.79"
     },
@@ -8808,7 +8808,7 @@
       "spdxElementId": "SPDXRef-Package-26-broker-ports-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-26-broker-ports-0.1.0"
     },
@@ -9088,12 +9088,12 @@
       "spdxElementId": "SPDXRef-Package-3-alpaca-data-0.33.3"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-3-alpaca-data-0.33.3"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.0",
+      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.1",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-3-alpaca-data-0.33.3"
     },
@@ -9213,12 +9213,12 @@
       "spdxElementId": "SPDXRef-Package-4-alpaca-rest-http-0.33.3"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-4-alpaca-rest-http-0.33.3"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.0",
+      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.1",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-4-alpaca-rest-http-0.33.3"
     },
@@ -9333,12 +9333,12 @@
       "spdxElementId": "SPDXRef-Package-5-alpaca-rest-read-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-5-alpaca-rest-read-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.0",
+      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.1",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-5-alpaca-rest-read-0.1.0"
     },
@@ -9393,7 +9393,7 @@
       "spdxElementId": "SPDXRef-Package-6-alpaca-stream-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-6-alpaca-stream-0.1.0"
     },
@@ -9408,7 +9408,7 @@
       "spdxElementId": "SPDXRef-Package-6-alpaca-stream-0.1.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.0",
+      "relatedSpdxElement": "SPDXRef-Package-283-zeroize-1.9.1",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-6-alpaca-stream-0.1.0"
     },
@@ -9643,7 +9643,7 @@
       "spdxElementId": "SPDXRef-Package-73-h2-0.4.20"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-73-h2-0.4.20"
     },
@@ -9753,7 +9753,7 @@
       "spdxElementId": "SPDXRef-Package-80-hyper-1.12.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-80-hyper-1.12.0"
     },
@@ -9808,7 +9808,7 @@
       "spdxElementId": "SPDXRef-Package-81-hyper-rustls-0.27.10"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-81-hyper-rustls-0.27.10"
     },
@@ -9863,7 +9863,7 @@
       "spdxElementId": "SPDXRef-Package-82-hyper-util-0.1.21"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-82-hyper-util-0.1.21"
     },
@@ -9998,7 +9998,7 @@
       "spdxElementId": "SPDXRef-Package-85-ibapi-5.0.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-85-ibapi-5.0.0"
     },
@@ -10018,7 +10018,7 @@
       "spdxElementId": "SPDXRef-Package-85-ibapi-5.0.0"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.1",
+      "relatedSpdxElement": "SPDXRef-Package-218-tokio-1.53.2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-86-ibkr-read-0.1.0"
     },
