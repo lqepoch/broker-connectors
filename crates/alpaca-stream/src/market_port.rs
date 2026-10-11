@@ -25,8 +25,8 @@ use crate::config::MAX_OPTION_SYMBOL_BYTES;
 use crate::protocol::MAX_FRAME_MESSAGES;
 use crate::{
     AlpacaCredentials, AlpacaOptionsStream, ControlEvent, CredentialFailure, CredentialProvider,
-    MarketNumber, OptionContractSymbol, OptionFeed, QuoteUpdate, SessionGeneration, SessionPhase,
-    SessionStatusCause, StreamConfig, StreamEnvironment, StreamUpdate, TradeUpdate,
+    DataFreshness, MarketNumber, OptionContractSymbol, OptionFeed, QuoteUpdate, SessionGeneration,
+    SessionPhase, SessionStatusCause, StreamConfig, StreamEnvironment, StreamUpdate, TradeUpdate,
 };
 
 const RECORD_LANE_CAPACITY: usize = 2_176;
@@ -365,6 +365,9 @@ impl EventProjector {
         feed: OptionFeed,
     ) -> Result<(MarketEventEnvelopeV1, Option<RawFrameReference>), BrokerPortError> {
         self.generation(update.ingest.generation)?;
+        if update.freshness != DataFreshness::Fresh {
+            return Err(BrokerPortError::ProtocolViolation);
+        }
         let trade = update.trade;
         let numeric_encoding = encoding(trade.price);
         let event = MarketEventV1::OptionTrade {
@@ -804,7 +807,8 @@ fn provider_reason_code(kind: crate::ProviderErrorKind) -> &'static str {
 mod tests {
     use super::*;
     use crate::{
-        DataFreshness, InboundRawMarketFrame, OptionContractSymbol, OptionQuote, ProviderTimestamp,
+        DataFreshness, InboundRawMarketFrame, OptionContractSymbol, OptionQuote, OptionTrade,
+        ProviderTimestamp,
     };
     use broker_ports::{RawFrameDisposition, RawFramePayload};
 
@@ -921,6 +925,56 @@ mod tests {
             OptionFeed::Opra,
         );
         assert!(matches!(error, Err(BrokerPortError::ProtocolViolation)));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn stale_and_future_trades_fail_the_normalized_market_port_closed() {
+        for freshness in [DataFreshness::Stale, DataFreshness::FutureDated] {
+            let generation = SessionGeneration::new(7);
+            let mut projector = EventProjector::default();
+            let result = projector.trade(
+                TradeUpdate {
+                    trade: OptionTrade {
+                        symbol: OptionContractSymbol::new("QQQ261218C00500000")
+                            .expect("synthetic provider symbol is valid"),
+                        timestamp: ProviderTimestamp::parse("2026-10-08T14:30:00.123456789Z")
+                            .expect("synthetic source timestamp is valid"),
+                        price: MarketNumber::Float32(1.25),
+                        size: 2,
+                        exchange: "X".to_owned(),
+                        conditions: Vec::new(),
+                        raw_frame_sha256: "b2".repeat(32),
+                    },
+                    feed: OptionFeed::Opra,
+                    ingest: crate::IngestStamp {
+                        generation,
+                        sequence: 1,
+                        raw_frame_sequence: 0,
+                        raw_frame_event_ordinal: 0,
+                        raw_frame_event_count: 0,
+                        received_at: tokio::time::Instant::now(),
+                        received_at_utc: chrono::DateTime::<Utc>::from_timestamp(
+                            1_792_459_200,
+                            123_456_789,
+                        )
+                        .expect("fixed synthetic receive time is valid"),
+                    },
+                    freshness,
+                },
+                OptionFeed::Opra,
+            );
+            assert_eq!(result, Err(BrokerPortError::ProtocolViolation));
+
+            let failure = projector
+                .failure(OptionFeed::Opra)
+                .expect("non-fresh trade failure is represented safely");
+            assert_eq!(
+                failure.control,
+                MarketControlEventV1::ConnectionStatus {
+                    state: ConnectionState::Failed,
+                }
+            );
+        }
     }
 
     #[test]

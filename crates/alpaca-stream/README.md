@@ -170,6 +170,10 @@ WebSocket，使用 binary MessagePack frame，通过 `CredentialProvider` 注入
 - Stale and future-dated trades remain in the non-coalescing trade lane with
   their freshness label, but neither can move the session to `Ready`. No
   per-contract readiness state is exported by this adapter.
+- The normalized broker MarketDataPort has no freshness field in its shared
+  event contract, so it rejects stale and future-dated trades before
+  normalization and terminates that session with a Failed connection control.
+  Those updates never become valid shared market events.
 - Every lost socket invalidates pending quote and trade data plus quote timestamp
   watermarks before a retry. Each retry obtains a new local generation,
   reauthenticates, sends the complete desired subscriptions, and waits for a new
@@ -222,6 +226,9 @@ WebSocket，使用 binary MessagePack frame，通过 `CredentialProvider` 注入
   `QuoteDiscarded` 控制事件报告。
 - 过期或未来时间的成交仍保留在不合并的 trade lane 并附带新鲜度标签，但都不能使会话进入
   `Ready`。本适配器不提供逐合约 readiness 状态。
+- 共享行情事件合同没有 freshness 字段，因此通用 broker MarketDataPort 会在规范化前拒绝
+  过期或未来时间的成交，并以 Failed connection control 结束该会话；这些成交不会作为有效
+  的共享行情事件交付。
 - 每次 socket 丢失时，都会先清除报价和成交待处理数据及报价时间水位再重试。每次重试都会
   取得新本地代次、重新认证、发送完整期望订阅，并等待新的精确回执和新鲜数据。
 - 报价/成交的 `t` 同时接受原有有界 RFC 3339 字符串和标准 MessagePack Timestamp 扩展

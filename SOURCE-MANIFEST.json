@@ -55,7 +55,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "4000e1c047f26758871aa32f684ae90d44b2bde3599abc949d4eaf59f8d26c16",
+      "sha256": "252ede6c6516dafea2f5fee1a58430454d0c12806438598bcf81ea652aaa75d4",
       "target_path": "SBOM.spdx.json"
     },
     {
@@ -110,7 +110,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "eb9f72e475b4cb5c44c6fceb67f8422fc665e211b3e753f8cb94a615141ca9ec",
+      "sha256": "cb9abd39073b869b02333e7afc1dde081f3cacab79d644a7ca22099fdd3c9d26",
       "target_path": "crates/alpaca-stream/src/market_port.rs"
     },
     {
@@ -436,8 +436,8 @@
       "target_path": "crates/alpaca-stream/Cargo.toml"
     },
     {
-      "adaptation": "Updated for public scope, shared v1 contracts, numeric provenance, ACK limits, and archive completeness boundaries.",
-      "adapted_target_sha256": "36938091c0fd031bbb84fdb7cd70f8016c73d88eafc568d51d118be252721206",
+      "adaptation": "Updated for public scope, shared v1 contracts, numeric provenance, ACK limits, archive completeness boundaries, and freshness rejection at the normalized shared-event boundary.",
+      "adapted_target_sha256": "96200c038a0644733366b3dbcf2f5638df0e2a00ec6f6139fc65631e584f8e1c",
       "source_blob_sha256": "5c6080b377e1e0a7ad9963a3fc6f095f88fdd16ebb0c55b92115a60d329c3e67",
       "source_path": "crates/alpaca-stream/README.md",
       "target_path": "crates/alpaca-stream/README.md"
