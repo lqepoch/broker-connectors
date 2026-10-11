@@ -31,3 +31,29 @@ them or add module/workspace-wide suppressions.
 ## Validation
 
 Use the pinned toolchain and `CARGO_BUILD_JOBS=2`. Run the affected crate tests first, then workspace tests, formatting, Clippy with `-D warnings`, dependency/license checks, and secret scanning. Do not suppress numeric conversion or safety lints. The current item-scoped Clippy allowances are: `MarketNumber::to_f64` documents its intentionally lossy projection; the Alpaca request/control entrypoints, MessagePack preflight, and two session-state transitions keep their bounded state machine together; `receive_frame` keeps each protocol deadline explicit; the runner imports its parent's private session vocabulary; the fake socket implements the required async test trait without awaiting. Report native provider, OAuth, live-data, and Windows/macOS runtime checks as `NOT RUN` unless they were actually executed in an authorized environment.
+
+## Owner self-review and self-merge
+
+The user has explicitly authorized the repository owner to review and merge their
+own PRs for user-authorized work in this repository. This authorization persists;
+do not request it again per task or PR. The author may perform the final diff
+review without waiting for a non-author. Record it as `SELF_REVIEW`, bound to the
+final head SHA, with scope, findings and validation; never call it independent.
+
+GitHub does not accept an author's own `APPROVED` review. Record self-review in a
+PR comment and use existing Owner/Admin/Team approval exceptions when formal
+approval is the only remaining gate. Do not fabricate approval, remove blocking
+reviews, change organization rulesets, or grant additional credential privileges.
+
+Before merging, refresh remote `main`, freeze the exact head, check the full diff,
+conflicts and blocking reviews/threads, and pass the repository's applicable local
+validation and current required checks. Honor this repository's CodeQL policy;
+never import another repository's CI requirements or report an unrun check as PASS.
+Existing failures and release blockers remain recorded. Self-review authorization
+does not waive failed or unknown mandatory checks or financial safety gates.
+
+Merge with an expected head SHA, verify the returned merge and remote `main`, and
+clean only the task's clean, merged branch after checking private-state filenames.
+Use the existing checkout when the task prohibits extra worktrees or clones.
+Merging a scoped fix is separate from release acceptance, deployment, provider
+entitlement and Paper/Live authorization; it grants none of those capabilities.
