@@ -1,0 +1,502 @@
+{
+  "schema_version": 1,
+  "receipt_type": "broker-connectors-local-validation",
+  "change_id": "CHG-2026-001",
+  "trust": "unsigned local test evidence; committed receipt is immutable Git history, not a cryptographic signature",
+  "repository": "lqepoch/broker-connectors",
+  "source_commit_sha": "e7582cbecee9a0df4f179e897bc72c1de1b10938",
+  "source_git_tree_sha": "3b00b900a4ebdec7c8506e7533c7cd425424486b",
+  "dependency_locks": {
+    "Cargo.lock": "d367736c9df3e2b3be4589c149eb7e793ff16c7324ecf86c40292475b386d828"
+  },
+  "additional_source_hashes": {
+    "crates/alpaca-stream/src/market_port.rs": "cb9abd39073b869b02333e7afc1dde081f3cacab79d644a7ca22099fdd3c9d26",
+    "crates/alpaca-stream/README.md": "96200c038a0644733366b3dbcf2f5638df0e2a00ec6f6139fc65631e584f8e1c",
+    "SOURCE-MANIFEST.json": "7055e39843e4a161137e42b79405c989550d8f2b12fdf2db794da25f35ea8a30",
+    "SBOM.spdx.json": "252ede6c6516dafea2f5fee1a58430454d0c12806438598bcf81ea652aaa75d4"
+  },
+  "environment": {
+    "os": "macOS-26.6-arm64-arm-64bit-Mach-O",
+    "architecture": "arm64",
+    "python": "3.14.6",
+    "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)\nbinary: rustc\ncommit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4\ncommit-date: 2026-09-28\nhost: aarch64-apple-darwin\nrelease: 1.99.0\nLLVM version: 23.1.1",
+    "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+    "resource_limits": {
+      "cpu_seconds": "(9223372036854775807, 9223372036854775807)",
+      "address_space_bytes": "(9223372036854775807, 9223372036854775807)",
+      "open_files": "(1048575, 9223372036854775807)",
+      "cargo_build_jobs": 2
+    },
+    "cargo_test_network": "offline",
+    "provider_network_access": "not used",
+    "market_credentials": "not read"
+  },
+  "inputs": {
+    "type": "deterministic synthetic unit/integration fixtures only; no provider payloads",
+    "time_range": "freshness regression: event 2026-10-08T14:30:00.123456789Z; fixed receive time 2026-10-20T01:20:00.000000+00:00; remaining suites use repository synthetic fixtures",
+    "input_sha256": {
+      "freshness regression source": "cb9abd39073b869b02333e7afc1dde081f3cacab79d644a7ca22099fdd3c9d26",
+      "Cargo.lock": "d367736c9df3e2b3be4589c149eb7e793ff16c7324ecf86c40292475b386d828"
+    }
+  },
+  "started_at_utc": "2026-10-11T13:21:37.640193+00:00",
+  "ended_at_utc": "2026-10-11T13:21:43.941493+00:00",
+  "tests": [
+    {
+      "id": "format",
+      "command": [
+        "cargo",
+        "+1.99.0",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "started_at_utc": "2026-10-11T13:21:37.640342+00:00",
+      "ended_at_utc": "2026-10-11T13:21:38.736829+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "stdout_summary": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_summary": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stderr_bytes": 0
+    },
+    {
+      "id": "alpaca_stream_tests",
+      "command": [
+        "cargo",
+        "+1.99.0",
+        "test",
+        "-p",
+        "alpaca-stream",
+        "--locked",
+        "--offline"
+      ],
+      "started_at_utc": "2026-10-11T13:21:38.737000+00:00",
+      "ended_at_utc": "2026-10-11T13:21:39.300338+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "stdout_summary": "kinds ... ok\ntest protocol::tests::unknown_message_drops_its_body ... ok\ntest protocol::tests::preflight_bounds_array_map_string_and_nesting_cost ... ok\ntest protocol::tests::quote_and_trade_timestamp_widths_preserve_nanoseconds_and_freshness ... ok\ntest session::tests::cancellation_interrupts_pending_connect_before_deadline_without_accepting_a_socket ... ok\ntest session::tests::authentication_handshake_timeout_is_observable_and_retry_bounded ... ok\ntest session::tests::acknowledgement_timeout_reconnects_only_within_the_local_retry_bound ... ok\ntest session::tests::ambiguous_finalization_write_withholds_normalized_events ... ok\ntest session::tests::a_partial_subscription_ack_is_terminal_and_never_marks_ready ... ok\ntest session::tests::cancellation_interrupts_pending_credential_load_before_deadline_and_closes_socket ... ok\ntest session::tests::cancellation_during_predecode_ack_stops_without_decoding_or_retrying ... ok\ntest session::tests::closing_a_required_consumer_stops_before_connecting ... ok\ntest session::tests::cancelled_pending_reader_closes_its_owned_socket ... ok\ntest session::tests::concurrently_allocated_sessions_receive_distinct_retry_seeds ... ok\ntest session::tests::connection_limit_error_is_classified_without_hard_coded_plan_quotas ... ok\ntest session::tests::diagnostic_tests::fresh_timestamp_extension_quote_reaches_ready_without_losing_nanoseconds ... ok\ntest session::tests::diagnostic_tests::malformed_binary_and_text_frames_fail_closed_after_the_exact_ack ... ok\ntest session::tests::diagnostic_tests::non_subscribed_quote_fails_closed_after_the_exact_ack ... ok\ntest session::tests::diagnostic_tests::malformed_timestamp_extension_fails_closed_after_the_exact_ack ... ok\ntest session::tests::full_sink_queue_poison_stops_before_decode_and_does_not_retry ... ok\ntest session::tests::failed_postdecode_finalization_withholds_raw_and_normalized_events ... ok\ntest session::tests::diagnostic_tests::non_subscribed_trade_fails_closed_after_the_exact_ack ... ok\ntest session::tests::diagnostic_tests::unexpected_active_success_or_subscription_is_not_treated_as_market_data ... ok\ntest session::tests::failed_predecode_ack_does_not_decode_retry_or_publish_the_frame ... ok\ntest session::tests::http_authentication_rejection_is_terminal_and_does_not_load_credentials ... ok\ntest session::tests::full_trade_lane_terminates_instead_of_silently_dropping_trades ... ok\ntest session::tests::quote_only_and_trade_only_acknowledgements_never_project_as_complete ... ok\ntest session::tests::stale_and_future_dated_market_data_never_make_the_session_ready ... ok\ntest session::tests::reconnect_invalidates_old_generation_and_requires_fresh_data_again ... ok\ntest session::tests::raw_market_frame_bytes_link_to_each_normalized_event ... ok\ntest session::tests::text_frame_with_raw_sink_fails_closed_before_later_binary_frame ... ok\ntest state::tests::checked_phase_machine_rejects_skipping_acknowledgements ... ok\ntest state::tests::exponential_backoff_and_jitter_never_exceed_configured_bounds ... ok\ntest state::tests::independently_injected_session_seeds_produce_replayable_jitter ... ok\ntest transport::tests::http_401_is_classified_as_terminal_authentication_rejection ... ok\ntest transport::tests::tungstenite_reassembles_fragmented_binary_frames_into_one_application_message ... ok\ntest session::tests::unknown_market_frame_is_preserved_and_terminal ... ok\ntest session::tests::sink_acknowledgements_bracket_decode_and_control_frames_are_finalized ... ok\ntest market_port::tests::raw_frame_event_count_and_pending_reference_state_are_hard_bounded ... ok\ntest session::tests::diagnostic_tests::maximal_stale_quote_frame_fits_frame_plus_phase_control_budget ... ok\ntest protocol::tests::bounded_pseudofuzz_inputs_never_panic_or_return_unbounded_messages ... ok\n\ntest result: ok. 88 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+      "stdout_sha256": "4628616c0b3aaede84f584f82ff0e282356f5cac99872be0be8cf59cabb42b6a",
+      "stderr_summary": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.17s\n     Running unittests src/lib.rs (target/debug/deps/alpaca_stream-fd1d1670e7a08964)\n   Doc-tests alpaca_stream\n",
+      "stderr_sha256": "6b9f826daf07055ae882f3317af63ab9db1bf5c36bb7576209f290f04a2caa20",
+      "stdout_bytes": 8369,
+      "stderr_bytes": 185
+    },
+    {
+      "id": "offline_fake_execution_tests",
+      "command": [
+        "cargo",
+        "+1.99.0",
+        "test",
+        "-p",
+        "broker-execution",
+        "--features",
+        "offline-fake",
+        "--locked",
+        "--offline"
+      ],
+      "started_at_utc": "2026-10-11T13:21:39.300478+00:00",
+      "ended_at_utc": "2026-10-11T13:21:39.404690+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "stdout_summary": "\nrunning 12 tests\ntest fake::tests::fake_debug_never_discloses_scripted_provider_identity ... ok\ntest fake::tests::offline_fake_preserves_unknown_and_surfaces_both_capacity_limits ... ok\ntest tests::cancel_acceptance_cannot_change_provider_identity_and_unknown_stays_unknown ... ok\ntest tests::execution_submit_accepts_exact_core_intent_and_rejects_live_route ... ok\ntest fake::tests::offline_fake_runs_a_synthetic_submit_replace_cancel_lifecycle ... ok\ntest tests::execution_rejects_duplicate_qualified_legs_and_revision_overflow ... ok\ntest fake::tests::offline_fake_accepts_same_identity_replace_explicitly ... ok\ntest fake::tests::offline_fake_fails_closed_for_invalid_new_replace_identity_links ... ok\ntest tests::replace_request_requires_known_identity_and_fixed_route_lineage ... ok\ntest tests::replace_new_identity_requires_exact_parent_and_same_namespace ... ok\ntest tests::replace_same_identity_binds_logical_route_and_next_revision ... ok\ntest fake::tests::offline_fake_enforces_aggregate_retained_data_budget_without_dropping_script ... ok\n\ntest result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+      "stdout_sha256": "7b140877d4ac4ea2de21b23e0d09fe2af04a0b1ec410f7a5d734becdf395fbe1",
+      "stderr_summary": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s\n     Running unittests src/lib.rs (target/debug/deps/broker_execution-ab09d11bcf6a2dd9)\n   Doc-tests broker_execution\n",
+      "stderr_sha256": "b241a4cd6dfbf8cc8b619b09ce9bf9fd7d11c4edcb10317251a1de00b39d546e",
+      "stdout_bytes": 1262,
+      "stderr_bytes": 191
+    },
+    {
+      "id": "workspace_tests",
+      "command": [
+        "cargo",
+        "+1.99.0",
+        "test",
+        "--workspace",
+        "--locked",
+        "--offline"
+      ],
+      "started_at_utc": "2026-10-11T13:21:39.404809+00:00",
+      "ended_at_utc": "2026-10-11T13:21:43.328203+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "stdout_summary": "nect ... ok\ntest tests::clearing_desired_keys_while_subs_is_pending_syncs_after_its_ack ... ok\ntest session::market_data::market_data_buffer_tests::cached_size_matches_serde_after_generated_sparse_updates ... ok\ntest tests::empty_service_is_not_subscribed_and_nonempty_desire_requires_connection ... ok\ntest session_tests::subscription_send_error_drops_socket_and_replays_all_desired_services ... ok\ntest tests::ignored_market_row_key_validation_benchmark ... ignored, repeatable local-only benchmark for per-row Streamer key validation\ntest tests::failed_ack_degrades_only_its_service_and_keeps_desired_keys_retryable ... ok\ntest tests::desired_changes_during_pending_command_are_synced_after_its_ack ... ok\ntest tests::pure_key_additions_and_removals_use_deltas_and_mixed_change_uses_subs ... ok\ntest tests::reconnect_replays_only_current_desired_keys_with_fresh_subs_fences ... ok\ntest tests::removing_all_acknowledged_keys_plans_unsubscribe_and_acknowledges_empty_state ... ok\ntest tests::market_row_key_normalization_matches_single_key_set_validation ... ok\ntest tests::service_manifests_are_fixed_and_match_current_contract_evidence ... ok\ntest tests::stale_generation_and_mismatched_ack_fields_cannot_change_readiness ... ok\ntest tests::subscription_state_debug_redacts_desired_acknowledged_and_pending_keys ... ok\ntest tests::timed_out_add_invalidates_ack_base_and_late_ack_cannot_restore_it ... ok\ntest tests::timed_out_unsubscribe_with_empty_desire_stays_degraded_until_reconnect ... ok\ntest tests::key_input_limits_reject_atomically_and_deduplicate_canonically ... ok\ntest wire_tests::command_result_codes_match_current_node_command_mapping ... ok\ntest wire_tests::debug_output_redacts_response_data_notification_and_unknown_values ... ok\ntest wire_tests::frame_size_and_decode_errors_do_not_expose_source_payload ... ok\ntest wire_tests::normalizes_string_and_safe_numeric_wire_forms ... ok\ntest wire_tests::parses_response_data_notify_and_preserves_unknown_fields ... ok\ntest wire_tests::rejects_missing_fields_null_optionals_and_wrong_field_types ... ok\ntest wire_tests::timestamp_conversion_matches_zod_number_coercion_for_json_values ... ok\ntest wire_tests::timestamp_visitor_preserves_json_coercion_and_rejects_non_finite_results ... ok\ntest wire_tests::array_item_limits_apply_to_frame_and_data_content_arrays ... ok\ntest tests::serialized_key_byte_limit_is_enforced_before_state_mutation ... ok\ntest adapter_tests::one_socket_factory_login_and_runtime_keep_service_failure_local ... ok\ntest session_tests::partial_subscription_write_timeout_drops_socket_and_replays_all_desired_services ... ok\ntest session_tests::connect_timeout_cancels_handshake_and_closes_all_owned_resources ... ok\ntest session_tests::delivered_market_rows_keep_order_fences_across_reconnect_generations ... ok\ntest session_tests::add_timeout_reconnects_with_full_subs_and_ignores_late_ack ... ok\n\ntest result: ok. 65 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.22s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+      "stdout_sha256": "d169cde6c9eabd25d32fb886a7e7a128bc9689a23d10bee89921ac0a8f5179ad",
+      "stderr_summary": "warning: use of deprecated method `std::sync::atomic::Atomic::<i32>::fetch_update`: renamed to `try_update` for consistency\n  --> vendor/ibapi/src/client/id_generator.rs:44:14\n   |\n44 |             .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |id| (id <= max).then(|| id + 1))\n   |              ^^^^^^^^^^^^\n   |\n   = note: `#[warn(deprecated)]` on by default\nhelp: replace the use of the deprecated method\n   |\n44 -             .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |id| (id <= max).then(|| id + 1))\n44 +             .try_update(Ordering::Relaxed, Ordering::Relaxed, |id| (id <= max).then(|| id + 1))\n   |\n\nwarning: `ibapi` (lib) generated 1 warning (run `cargo fix --lib -p ibapi` to apply 1 suggestion)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.20s\n     Running unittests src/lib.rs (target/debug/deps/alpaca_rest_read-1bde4c4f2c09eb93)\n     Running unittests src/lib.rs (target/debug/deps/alpaca_stream-856a9bd16ab8640d)\n     Running unittests src/lib.rs (target/debug/deps/broker_execution-b0d1ceaa991d6505)\n     Running unittests src/lib.rs (target/debug/deps/broker_ports-d87dbae68954399e)\n     Running unittests src/lib.rs (target/debug/deps/ibkr_read-df51f9430935f23a)\n     Running tests/catalog_fake_wire.rs (target/debug/deps/catalog_fake_wire-8a0eda89499f07f6)\n     Running unittests src/lib.rs (target/debug/deps/schwab_adapter-206496d6ceb9fc36)\n     Running tests/account_read.rs (target/debug/deps/account_read-a89f8d5002f45692)\n     Running tests/streamer_protocol.rs (target/debug/deps/streamer_protocol-452d839908791a68)\n     Running unittests src/lib.rs (target/debug/deps/schwab_rest-6e5de8b1442b4456)\n     Running unittests src/lib.rs (target/debug/deps/schwab_sdk-90b0796a68d3cfce)\n     Running tests/read_only_facade.rs (target/debug/deps/read_only_facade-2f5413db4afb27a0)\n     Running unittests src/lib.rs (target/debug/deps/schwab_streamer-49e2346da0fc6548)\n   Doc-tests alpaca_rest_read\n   Doc-tests alpaca_stream\n   Doc-tests broker_execution\n   Doc-tests broker_ports\n   Doc-tests ibkr_read\n   Doc-tests schwab_adapter\n   Doc-tests schwab_rest\n   Doc-tests schwab_sdk\n   Doc-tests schwab_streamer\n",
+      "stderr_sha256": "902fe2e22cc7a51c25ab79a9a62b8e6c110e6894c66e5cd4202059f581b07a43",
+      "stdout_bytes": 32031,
+      "stderr_bytes": 2174
+    },
+    {
+      "id": "workspace_clippy",
+      "command": [
+        "cargo",
+        "+1.99.0",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "started_at_utc": "2026-10-11T13:21:43.328359+00:00",
+      "ended_at_utc": "2026-10-11T13:21:43.621945+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "stdout_summary": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_summary": "warning: use of deprecated method `std::sync::atomic::Atomic::<i32>::fetch_update`: renamed to `try_update` for consistency\n  --> vendor/ibapi/src/client/id_generator.rs:44:14\n   |\n44 |             .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |id| (id <= max).then(|| id + 1))\n   |              ^^^^^^^^^^^^\n   |\n   = note: `#[warn(deprecated)]` on by default\nhelp: replace the use of the deprecated method\n   |\n44 -             .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |id| (id <= max).then(|| id + 1))\n44 +             .try_update(Ordering::Relaxed, Ordering::Relaxed, |id| (id <= max).then(|| id + 1))\n   |\n\nwarning: `ibapi` (lib) generated 1 warning (run `cargo clippy --fix --lib -p ibapi -- -D warnings` to apply 1 suggestion)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.20s\n",
+      "stderr_sha256": "bafa7976d2955d448df10896debc3d568c3de5b06fb0bacae52ace5670c42723",
+      "stdout_bytes": 0,
+      "stderr_bytes": 823
+    },
+    {
+      "id": "dependency_firewall",
+      "command": [
+        "python3",
+        "scripts/check_broker_execution_dependency_firewall.py"
+      ],
+      "started_at_utc": "2026-10-11T13:21:43.622095+00:00",
+      "ended_at_utc": "2026-10-11T13:21:43.732629+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "stdout_summary": "broker-execution dependency firewall passed: broker-execution, domain, exact-decimal\n",
+      "stdout_sha256": "d39a5e7d695819030c1c2be97ba4971a4b3fe75332ead92dd0eb2a5a67d0feee",
+      "stderr_summary": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 85,
+      "stderr_bytes": 0
+    },
+    {
+      "id": "vendor_provenance",
+      "command": [
+        "python3",
+        "scripts/check_vendor_provenance.py"
+      ],
+      "started_at_utc": "2026-10-11T13:21:43.732799+00:00",
+      "ended_at_utc": "2026-10-11T13:21:43.925622+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "stdout_summary": "vendor and selected-source provenance passed: wboayue/rust-ibapi@3e73f2f1cfac151c10e403a3e7d779272134445f (303 source files, 1 packages), wmzhai/alpaca-rust@d91be382e3e9d25c52c24e626e78702532d24ba2 (72 source files, 3 packages); IBKR diagnostic privacy and Schwab selected files checked\n",
+      "stdout_sha256": "4c1cb832625ded691cfcc377d7cc86ecd11b0a1dc01faf7cb24deb0e598e7486",
+      "stderr_summary": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 287,
+      "stderr_bytes": 0
+    }
+  ],
+  "test_tier": "local synthetic tests and static checks",
+  "release_eligible": false,
+  "rollback": "revert source commit e7582cbecee9a0df4f179e897bc72c1de1b10938; no runtime state or external systems changed",
+  "reviewer": "SELF_REVIEW pending final PR-head diff review",
+  "self_review": {
+    "classification": "SELF_REVIEW",
+    "reviewer": "Codex primary agent",
+    "reviewed_at_utc": "2026-10-11T13:23:12+00:00",
+    "reviewed_commit_sha": "e7582cbecee9a0df4f179e897bc72c1de1b10938",
+    "scope": [
+      "freshness handling at EventProjector.trade",
+      "synthetic rejection regression",
+      "README behavior statement",
+      "SOURCE-MANIFEST and SPDX refresh"
+    ],
+    "findings": "No remaining issue found in this scoped diff. Fresh events retain the existing path. Stale and future-dated trade updates fail before event normalization; the session failure control is ConnectionStatus::Failed. Provider entitlement, provider subscription ACK and P6 remain unverified.",
+    "blocking_findings": []
+  },
+  "defect": {
+    "severity": "P0_DATA_INTEGRITY_RELEASE_BLOCKER",
+    "evidence": "Before this change EventProjector.trade generation-fenced the update but ignored TradeUpdate.freshness, then built a normal OptionTrade event. The low-level lane retained Stale/FutureDated labels, while the shared event schema has no freshness field.",
+    "root_cause": "The adapter boundary discarded freshness when projecting into a shared contract that cannot represent it.",
+    "fix": "Reject every freshness value other than Fresh with ProtocolViolation before constructing the normalized event. Existing error handling publishes Failed connection control and terminates the session.",
+    "code_locations": [
+      "crates/alpaca-stream/src/market_port.rs:362-379",
+      "crates/alpaca-stream/src/market_port.rs:930-978"
+    ],
+    "documentation_location": "crates/alpaca-stream/README.md:170-176; crates/alpaca-stream/README.md:227-231",
+    "rollback_condition": "Keep this rejection unless a reviewed versioned shared contract carries explicit freshness and consumers prove stale/future handling end to end. Revert only if a regression demonstrates Fresh updates are rejected; otherwise rollback must retain fail-closed behavior."
+  },
+  "acceptance": {
+    "scoped_status": "PASS_SYNTHETIC_LOCAL",
+    "external_market_data_status": "BLOCKED_EXTERNAL",
+    "provider_entitlement": "UNKNOWN",
+    "provider_subscription_ack": "NOT_PROVEN_BY_SYNTHETIC_TESTS",
+    "p6_status": "NOT_ACCEPTED",
+    "limits": "No real SIP/OPRA subscription, entitlement probe, remote storage, broker connection or trading operation was used."
+  },
+  "prior_attempts_preserved": [
+    {
+      "source_commit_sha": "6ded34072eab1d1baf5ec1e1c10712c19e93a54f",
+      "source_git_tree_sha": "945e7156dab9228cb5844448cf340aa8fd0072d7",
+      "status": "FAIL_GATE",
+      "failed_lane": "vendor_provenance",
+      "failure_summary": "project file hash mismatch: SBOM.spdx.json; the generated SBOM hash had not yet been refreshed in SOURCE-MANIFEST.json.",
+      "test_commands": [
+        {
+          "id": "format",
+          "command": [
+            "cargo",
+            "+1.99.0",
+            "fmt",
+            "--all",
+            "--",
+            "--check"
+          ],
+          "started_at_utc": "2026-10-11T13:19:34+00:00",
+          "ended_at_utc": "2026-10-11T13:19:35+00:00",
+          "exit_code": 0,
+          "status": "PASS",
+          "stdout_summary": "",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_summary": "",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 0,
+          "stderr_bytes": 0
+        },
+        {
+          "id": "alpaca_stream_tests",
+          "command": [
+            "cargo",
+            "+1.99.0",
+            "test",
+            "-p",
+            "alpaca-stream",
+            "--locked",
+            "--offline"
+          ],
+          "started_at_utc": "2026-10-11T13:19:35+00:00",
+          "ended_at_utc": "2026-10-11T13:19:37+00:00",
+          "exit_code": 0,
+          "status": "PASS",
+          "stdout_summary": "kinds ... ok\ntest protocol::tests::unknown_message_drops_its_body ... ok\ntest protocol::tests::preflight_bounds_array_map_string_and_nesting_cost ... ok\ntest protocol::tests::quote_and_trade_timestamp_widths_preserve_nanoseconds_and_freshness ... ok\ntest session::tests::cancellation_interrupts_pending_connect_before_deadline_without_accepting_a_socket ... ok\ntest session::tests::a_partial_subscription_ack_is_terminal_and_never_marks_ready ... ok\ntest session::tests::cancellation_interrupts_pending_credential_load_before_deadline_and_closes_socket ... ok\ntest session::tests::cancellation_during_predecode_ack_stops_without_decoding_or_retrying ... ok\ntest session::tests::ambiguous_finalization_write_withholds_normalized_events ... ok\ntest session::tests::closing_a_required_consumer_stops_before_connecting ... ok\ntest session::tests::acknowledgement_timeout_reconnects_only_within_the_local_retry_bound ... ok\ntest session::tests::authentication_handshake_timeout_is_observable_and_retry_bounded ... ok\ntest session::tests::cancelled_pending_reader_closes_its_owned_socket ... ok\ntest session::tests::concurrently_allocated_sessions_receive_distinct_retry_seeds ... ok\ntest session::tests::connection_limit_error_is_classified_without_hard_coded_plan_quotas ... ok\ntest session::tests::diagnostic_tests::malformed_binary_and_text_frames_fail_closed_after_the_exact_ack ... ok\ntest session::tests::diagnostic_tests::fresh_timestamp_extension_quote_reaches_ready_without_losing_nanoseconds ... ok\ntest session::tests::diagnostic_tests::malformed_timestamp_extension_fails_closed_after_the_exact_ack ... ok\ntest session::tests::diagnostic_tests::non_subscribed_trade_fails_closed_after_the_exact_ack ... ok\ntest session::tests::diagnostic_tests::non_subscribed_quote_fails_closed_after_the_exact_ack ... ok\ntest session::tests::failed_predecode_ack_does_not_decode_retry_or_publish_the_frame ... ok\ntest session::tests::failed_postdecode_finalization_withholds_raw_and_normalized_events ... ok\ntest session::tests::full_sink_queue_poison_stops_before_decode_and_does_not_retry ... ok\ntest session::tests::http_authentication_rejection_is_terminal_and_does_not_load_credentials ... ok\ntest session::tests::full_trade_lane_terminates_instead_of_silently_dropping_trades ... ok\ntest session::tests::diagnostic_tests::unexpected_active_success_or_subscription_is_not_treated_as_market_data ... ok\ntest session::tests::quote_only_and_trade_only_acknowledgements_never_project_as_complete ... ok\ntest session::tests::raw_market_frame_bytes_link_to_each_normalized_event ... ok\ntest session::tests::reconnect_invalidates_old_generation_and_requires_fresh_data_again ... ok\ntest session::tests::sink_acknowledgements_bracket_decode_and_control_frames_are_finalized ... ok\ntest state::tests::checked_phase_machine_rejects_skipping_acknowledgements ... ok\ntest session::tests::stale_and_future_dated_market_data_never_make_the_session_ready ... ok\ntest state::tests::exponential_backoff_and_jitter_never_exceed_configured_bounds ... ok\ntest state::tests::independently_injected_session_seeds_produce_replayable_jitter ... ok\ntest transport::tests::http_401_is_classified_as_terminal_authentication_rejection ... ok\ntest session::tests::text_frame_with_raw_sink_fails_closed_before_later_binary_frame ... ok\ntest transport::tests::tungstenite_reassembles_fragmented_binary_frames_into_one_application_message ... ok\ntest session::tests::unknown_market_frame_is_preserved_and_terminal ... ok\ntest market_port::tests::raw_frame_event_count_and_pending_reference_state_are_hard_bounded ... ok\ntest session::tests::diagnostic_tests::maximal_stale_quote_frame_fits_frame_plus_phase_control_budget ... ok\ntest protocol::tests::bounded_pseudofuzz_inputs_never_panic_or_return_unbounded_messages ... ok\n\ntest result: ok. 88 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+          "stdout_sha256": "a8a080784c67468714680b8a69fd3a2a90938a49d0e79c9dea53d4810eed55ef",
+          "stderr_summary": "   Compiling alpaca-stream v0.1.0 (/Volumes/ExtSSD/GitHUB/broker-connectors/crates/alpaca-stream)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.21s\n     Running unittests src/lib.rs (target/debug/deps/alpaca_stream-fd1d1670e7a08964)\n   Doc-tests alpaca_stream\n",
+          "stderr_sha256": "040570edb4885d6dc8e0b6cfcea47374238fb9df11d3eb49b0c3cd29d8815b55",
+          "stdout_bytes": 8369,
+          "stderr_bytes": 283
+        },
+        {
+          "id": "offline_fake_execution_tests",
+          "command": [
+            "cargo",
+            "+1.99.0",
+            "test",
+            "-p",
+            "broker-execution",
+            "--features",
+            "offline-fake",
+            "--locked",
+            "--offline"
+          ],
+          "started_at_utc": "2026-10-11T13:19:37+00:00",
+          "ended_at_utc": "2026-10-11T13:19:42+00:00",
+          "exit_code": 0,
+          "status": "PASS",
+          "stdout_summary": "\nrunning 12 tests\ntest tests::cancel_acceptance_cannot_change_provider_identity_and_unknown_stays_unknown ... ok\ntest tests::execution_rejects_duplicate_qualified_legs_and_revision_overflow ... ok\ntest fake::tests::fake_debug_never_discloses_scripted_provider_identity ... ok\ntest fake::tests::offline_fake_runs_a_synthetic_submit_replace_cancel_lifecycle ... ok\ntest fake::tests::offline_fake_preserves_unknown_and_surfaces_both_capacity_limits ... ok\ntest fake::tests::offline_fake_accepts_same_identity_replace_explicitly ... ok\ntest tests::execution_submit_accepts_exact_core_intent_and_rejects_live_route ... ok\ntest tests::replace_new_identity_requires_exact_parent_and_same_namespace ... ok\ntest fake::tests::offline_fake_fails_closed_for_invalid_new_replace_identity_links ... ok\ntest tests::replace_request_requires_known_identity_and_fixed_route_lineage ... ok\ntest tests::replace_same_identity_binds_logical_route_and_next_revision ... ok\ntest fake::tests::offline_fake_enforces_aggregate_retained_data_budget_without_dropping_script ... ok\n\ntest result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+          "stdout_sha256": "f4e68b69d2362676374f6a0d66f89788ea8e942ee0050f16761a3398ed281596",
+          "stderr_summary": "   Compiling broker-execution v0.1.0 (/Volumes/ExtSSD/GitHUB/broker-connectors/crates/broker-execution)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.34s\n     Running unittests src/lib.rs (target/debug/deps/broker_execution-ab09d11bcf6a2dd9)\n   Doc-tests broker_execution\n",
+          "stderr_sha256": "4e01e2e0c3b039c6fadf8a95b5352fe4246332c4b1518e03df861c94cfcda7aa",
+          "stdout_bytes": 1262,
+          "stderr_bytes": 295
+        },
+        {
+          "id": "workspace_tests",
+          "command": [
+            "cargo",
+            "+1.99.0",
+            "test",
+            "--workspace",
+            "--locked",
+            "--offline"
+          ],
+          "started_at_utc": "2026-10-11T13:19:42+00:00",
+          "ended_at_utc": "2026-10-11T13:19:48+00:00",
+          "exit_code": 0,
+          "status": "PASS",
+          "stdout_summary": "st tests::clearing_desired_keys_while_subs_is_pending_syncs_after_its_ack ... ok\ntest tests::desired_changes_during_pending_command_are_synced_after_its_ack ... ok\ntest tests::empty_service_is_not_subscribed_and_nonempty_desire_requires_connection ... ok\ntest tests::failed_ack_degrades_only_its_service_and_keeps_desired_keys_retryable ... ok\ntest tests::ignored_market_row_key_validation_benchmark ... ignored, repeatable local-only benchmark for per-row Streamer key validation\ntest session::market_data::market_data_buffer_tests::ordering_fences_survive_delivery_and_reset_rejects_old_generation_tail ... ok\ntest session_tests::subscription_send_error_drops_socket_and_replays_all_desired_services ... ok\ntest tests::pure_key_additions_and_removals_use_deltas_and_mixed_change_uses_subs ... ok\ntest tests::reconnect_replays_only_current_desired_keys_with_fresh_subs_fences ... ok\ntest tests::removing_all_acknowledged_keys_plans_unsubscribe_and_acknowledges_empty_state ... ok\ntest tests::market_row_key_normalization_matches_single_key_set_validation ... ok\ntest tests::service_manifests_are_fixed_and_match_current_contract_evidence ... ok\ntest tests::stale_generation_and_mismatched_ack_fields_cannot_change_readiness ... ok\ntest tests::subscription_state_debug_redacts_desired_acknowledged_and_pending_keys ... ok\ntest tests::timed_out_add_invalidates_ack_base_and_late_ack_cannot_restore_it ... ok\ntest tests::timed_out_unsubscribe_with_empty_desire_stays_degraded_until_reconnect ... ok\ntest tests::key_input_limits_reject_atomically_and_deduplicate_canonically ... ok\ntest wire_tests::command_result_codes_match_current_node_command_mapping ... ok\ntest wire_tests::debug_output_redacts_response_data_notification_and_unknown_values ... ok\ntest wire_tests::frame_size_and_decode_errors_do_not_expose_source_payload ... ok\ntest wire_tests::normalizes_string_and_safe_numeric_wire_forms ... ok\ntest wire_tests::parses_response_data_notify_and_preserves_unknown_fields ... ok\ntest wire_tests::rejects_missing_fields_null_optionals_and_wrong_field_types ... ok\ntest wire_tests::timestamp_conversion_matches_zod_number_coercion_for_json_values ... ok\ntest wire_tests::timestamp_visitor_preserves_json_coercion_and_rejects_non_finite_results ... ok\ntest wire_tests::array_item_limits_apply_to_frame_and_data_content_arrays ... ok\ntest tests::serialized_key_byte_limit_is_enforced_before_state_mutation ... ok\ntest adapter_tests::one_socket_factory_login_and_runtime_keep_service_failure_local ... ok\ntest session_tests::partial_subscription_write_timeout_drops_socket_and_replays_all_desired_services ... ok\ntest session_tests::connect_timeout_cancels_handshake_and_closes_all_owned_resources ... ok\ntest session_tests::delivered_market_rows_keep_order_fences_across_reconnect_generations ... ok\ntest session_tests::add_timeout_reconnects_with_full_subs_and_ignores_late_ack ... ok\n\ntest result: ok. 65 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.22s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+          "stdout_sha256": "4d5a47aec30c85450d0207f6d84b6192d4e23cb6558b08c2a6caf415f59ff0e3",
+          "stderr_summary": "warning: use of deprecated method `std::sync::atomic::Atomic::<i32>::fetch_update`: renamed to `try_update` for consistency\n  --> vendor/ibapi/src/client/id_generator.rs:44:14\n   |\n44 |             .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |id| (id <= max).then(|| id + 1))\n   |              ^^^^^^^^^^^^\n   |\n   = note: `#[warn(deprecated)]` on by default\nhelp: replace the use of the deprecated method\n   |\n44 -             .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |id| (id <= max).then(|| id + 1))\n44 +             .try_update(Ordering::Relaxed, Ordering::Relaxed, |id| (id <= max).then(|| id + 1))\n   |\n\nwarning: `ibapi` (lib) generated 1 warning (run `cargo fix --lib -p ibapi` to apply 1 suggestion)\n   Compiling alpaca-stream v0.1.0 (/Volumes/ExtSSD/GitHUB/broker-connectors/crates/alpaca-stream)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.78s\n     Running unittests src/lib.rs (target/debug/deps/alpaca_rest_read-1bde4c4f2c09eb93)\n     Running unittests src/lib.rs (target/debug/deps/alpaca_stream-856a9bd16ab8640d)\n     Running unittests src/lib.rs (target/debug/deps/broker_execution-b0d1ceaa991d6505)\n     Running unittests src/lib.rs (target/debug/deps/broker_ports-d87dbae68954399e)\n     Running unittests src/lib.rs (target/debug/deps/ibkr_read-df51f9430935f23a)\n     Running tests/catalog_fake_wire.rs (target/debug/deps/catalog_fake_wire-8a0eda89499f07f6)\n     Running unittests src/lib.rs (target/debug/deps/schwab_adapter-206496d6ceb9fc36)\n     Running tests/account_read.rs (target/debug/deps/account_read-a89f8d5002f45692)\n     Running tests/streamer_protocol.rs (target/debug/deps/streamer_protocol-452d839908791a68)\n     Running unittests src/lib.rs (target/debug/deps/schwab_rest-6e5de8b1442b4456)\n     Running unittests src/lib.rs (target/debug/deps/schwab_sdk-90b0796a68d3cfce)\n     Running tests/read_only_facade.rs (target/debug/deps/read_only_facade-2f5413db4afb27a0)\n     Running unittests src/lib.rs (target/debug/deps/schwab_streamer-49e2346da0fc6548)\n   Doc-tests alpaca_rest_read\n   Doc-tests alpaca_stream\n   Doc-tests broker_execution\n   Doc-tests broker_ports\n   Doc-tests ibkr_read\n   Doc-tests schwab_adapter\n   Doc-tests schwab_rest\n   Doc-tests schwab_sdk\n   Doc-tests schwab_streamer\n",
+          "stderr_sha256": "80ca1cad502e26327a5ce797e94a2e57b2cee3c3a4c7313ca581a0364a2232e8",
+          "stdout_bytes": 32031,
+          "stderr_bytes": 2272
+        },
+        {
+          "id": "workspace_clippy",
+          "command": [
+            "cargo",
+            "+1.99.0",
+            "clippy",
+            "--workspace",
+            "--all-targets",
+            "--locked",
+            "--offline",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "started_at_utc": "2026-10-11T13:19:48+00:00",
+          "ended_at_utc": "2026-10-11T13:19:50+00:00",
+          "exit_code": 0,
+          "status": "PASS",
+          "stdout_summary": "",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_summary": "warning: use of deprecated method `std::sync::atomic::Atomic::<i32>::fetch_update`: renamed to `try_update` for consistency\n  --> vendor/ibapi/src/client/id_generator.rs:44:14\n   |\n44 |             .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |id| (id <= max).then(|| id + 1))\n   |              ^^^^^^^^^^^^\n   |\n   = note: `#[warn(deprecated)]` on by default\nhelp: replace the use of the deprecated method\n   |\n44 -             .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |id| (id <= max).then(|| id + 1))\n44 +             .try_update(Ordering::Relaxed, Ordering::Relaxed, |id| (id <= max).then(|| id + 1))\n   |\n\nwarning: `ibapi` (lib) generated 1 warning (run `cargo clippy --fix --lib -p ibapi -- -D warnings` to apply 1 suggestion)\n    Checking alpaca-stream v0.1.0 (/Volumes/ExtSSD/GitHUB/broker-connectors/crates/alpaca-stream)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.10s\n",
+          "stderr_sha256": "fd791efce4446333f576df1c1bed77cf7739a34cb6c617fc9bafa207209011be",
+          "stdout_bytes": 0,
+          "stderr_bytes": 921
+        },
+        {
+          "id": "dependency_firewall",
+          "command": [
+            "python3",
+            "scripts/check_broker_execution_dependency_firewall.py"
+          ],
+          "started_at_utc": "2026-10-11T13:19:50+00:00",
+          "ended_at_utc": "2026-10-11T13:19:50+00:00",
+          "exit_code": 0,
+          "status": "PASS",
+          "stdout_summary": "broker-execution dependency firewall passed: broker-execution, domain, exact-decimal\n",
+          "stdout_sha256": "d39a5e7d695819030c1c2be97ba4971a4b3fe75332ead92dd0eb2a5a67d0feee",
+          "stderr_summary": "",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 85,
+          "stderr_bytes": 0
+        },
+        {
+          "id": "vendor_provenance",
+          "command": [
+            "python3",
+            "scripts/check_vendor_provenance.py"
+          ],
+          "started_at_utc": "2026-10-11T13:19:50+00:00",
+          "ended_at_utc": "2026-10-11T13:19:50+00:00",
+          "exit_code": 1,
+          "status": "FAIL",
+          "stdout_summary": "",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_summary": "vendor provenance check failed: project file hash mismatch: SBOM.spdx.json\n",
+          "stderr_sha256": "5b0d7fa80455c10b7324297f3f1793220993531c5daa56e414242b8037351c1f",
+          "stdout_bytes": 0,
+          "stderr_bytes": 75
+        }
+      ],
+      "preserved_report_sha256": "2674583fd71fff77511ee50da763df63ef5fb5cd9f4d8632d9bfc3949f2cf202"
+    },
+    {
+      "receipt_type": "receipt-generation-diagnostic",
+      "change_id": "CHG-2026-001",
+      "repository": "lqepoch/broker-connectors",
+      "source_commit_sha": "e7582cbecee9a0df4f179e897bc72c1de1b10938",
+      "source_git_tree_sha": "3b00b900a4ebdec7c8506e7533c7cd425424486b",
+      "test_commands_all_passed": true,
+      "receipt_status": "NOT_GENERATED",
+      "failure": "Harness could not resolve cargo +1.99.0 while collecting tool metadata because metadata subprocess omitted the isolated PATH; no test command failed.",
+      "preserved_test_logs": [
+        {
+          "id": "format",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "test_status": "PASS"
+        },
+        {
+          "id": "alpaca_stream_tests",
+          "stdout_sha256": "d5edc7557117ad160702190e80601da4c89a31d5e98813391a9d7b05a6ddb928",
+          "stderr_sha256": "543b86460827c20aca37fb80a08498ee217e291f6c5f60f052659b80c789186f",
+          "test_status": "PASS"
+        },
+        {
+          "id": "offline_fake_execution_tests",
+          "stdout_sha256": "295c848ef352536cb10bc767796c56c742c58acf28bc9311d8003843e008d486",
+          "stderr_sha256": "e2f2f56442e609ee033034d85d337c3f905648135b53ed628c3fe96f08811f9b",
+          "test_status": "PASS"
+        },
+        {
+          "id": "workspace_tests",
+          "stdout_sha256": "69958c1f97bbd3eb8b9e876edca684c011658954635755ac5ab974f91df4df51",
+          "stderr_sha256": "8aad69354185500eba1216cf49ab17de15026b582e3de0afc52152a5d1a65459",
+          "test_status": "PASS"
+        },
+        {
+          "id": "workspace_clippy",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "fef8bdf473ee1d3eaa6a5dccdfb161a9b91a3d49c76931748d980ccca3464cd0",
+          "test_status": "PASS"
+        },
+        {
+          "id": "dependency_firewall",
+          "stdout_sha256": "d39a5e7d695819030c1c2be97ba4971a4b3fe75332ead92dd0eb2a5a67d0feee",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "test_status": "PASS"
+        },
+        {
+          "id": "vendor_provenance",
+          "stdout_sha256": "4c1cb832625ded691cfcc377d7cc86ecd11b0a1dc01faf7cb24deb0e598e7486",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "test_status": "PASS"
+        }
+      ]
+    },
+    {
+      "receipt_type": "receipt-generation-diagnostic",
+      "change_id": "CHG-2026-001",
+      "repository": "lqepoch/broker-connectors",
+      "source_commit_sha": "e7582cbecee9a0df4f179e897bc72c1de1b10938",
+      "source_git_tree_sha": "3b00b900a4ebdec7c8506e7533c7cd425424486b",
+      "test_commands_all_passed": true,
+      "receipt_status": "NOT_GENERATED",
+      "failure": "Harness rejected Python datetime.isoformat(timespec=nanoseconds) after all tests completed; no test command failed.",
+      "preserved_test_logs": [
+        {
+          "id": "format",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "test_status": "PASS"
+        },
+        {
+          "id": "alpaca_stream_tests",
+          "stdout_sha256": "8fe1a24aeb07b3808468f17445b40429c6f4bb69a5e56786c6e6e17cfffe99d8",
+          "stderr_sha256": "568cdf20a60fd2ab7fcbcaf04cf7d27db87491d6fa90809167bdbb0f908c61d2",
+          "test_status": "PASS"
+        },
+        {
+          "id": "offline_fake_execution_tests",
+          "stdout_sha256": "ccfd7fcecd6791551b669d27c2a3a71421f9b38731d6a20d0453caf455e9d9d6",
+          "stderr_sha256": "b241a4cd6dfbf8cc8b619b09ce9bf9fd7d11c4edcb10317251a1de00b39d546e",
+          "test_status": "PASS"
+        },
+        {
+          "id": "workspace_tests",
+          "stdout_sha256": "879b7d728df68bb18749a6baf50f13521661e0893327a80c37f123ad53cf0e36",
+          "stderr_sha256": "902fe2e22cc7a51c25ab79a9a62b8e6c110e6894c66e5cd4202059f581b07a43",
+          "test_status": "PASS"
+        },
+        {
+          "id": "workspace_clippy",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "3789a9c0b35843908f7b862ffecf7dceafe209e81deade471dd360ffcbb1f951",
+          "test_status": "PASS"
+        },
+        {
+          "id": "dependency_firewall",
+          "stdout_sha256": "d39a5e7d695819030c1c2be97ba4971a4b3fe75332ead92dd0eb2a5a67d0feee",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "test_status": "PASS"
+        },
+        {
+          "id": "vendor_provenance",
+          "stdout_sha256": "4c1cb832625ded691cfcc377d7cc86ecd11b0a1dc01faf7cb24deb0e598e7486",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "test_status": "PASS"
+        }
+      ]
+    }
+  ],
+  "receipt_storage": {
+    "immutable_record": "This JSON will be committed on the CHG branch; SHA-256 sidecar is committed with it. It is unsigned and not tamper-proof outside Git history.",
+    "source_commit_is_tested_code_commit": true
+  }
+}
