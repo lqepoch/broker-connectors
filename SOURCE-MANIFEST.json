@@ -55,7 +55,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "81852deb6929a6d62aba1088c7fd3a2b2631da0c18ead91a32ee2e5038e23eff",
+      "sha256": "b52369b5a9cc26b845c31bf97b10e6b9eb72554e5dc3501dbbc37ec704b38ea3",
       "target_path": "SBOM.spdx.json"
     },
     {
