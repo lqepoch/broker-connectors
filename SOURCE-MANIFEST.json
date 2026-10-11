@@ -30,12 +30,12 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "f1db106da0caf3304359b7c06539a5688961d9d5d80bbf503b57d2fe4aab6ba8",
+      "sha256": "ba3bf9742a26392884088215ed94ed09db32cbc5df039556b65ba46666c0de2d",
       "target_path": "Cargo.lock"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "0823088c4a28e69f67b719df374141cf17df2e26499c49e80364e5139cc67279",
+      "sha256": "2b9876d8441e68e5709ede1169537310ebf564c412329b7ccb39870a6c72dc87",
       "target_path": "Cargo.toml"
     },
     {
@@ -50,12 +50,12 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "f3e33378237b95464ac998ffd3915d5eb79ffc900f7d2e84521e310fb7d28f12",
+      "sha256": "d9484efd78a8d54eb241e087729dc591fdc946ab0020afa97419eed8daa013ab",
       "target_path": "README.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "61ed4abdf01f58c4029d26b0748862c757704d965d1d2af44fb5ee154ba99aa7",
+      "sha256": "81852deb6929a6d62aba1088c7fd3a2b2631da0c18ead91a32ee2e5038e23eff",
       "target_path": "SBOM.spdx.json"
     },
     {
@@ -399,8 +399,8 @@
   ],
   "shared_contract_dependencies": [
     {
-      "commit": "7bf9cf78f06ef1bb5a49a933bd5893a2df76b8a2",
-      "git_tree": "5eb597140eb84370ac4e5ea4c75741bca6b38ffa",
+      "commit": "105e42896eaa62afe7377a24478f0dd5632b1155",
+      "git_tree": "fbcdc8a186d92286bdb0ca1c10fce5dc8e4effb2",
       "license": "MIT OR Apache-2.0",
       "lockfile": "Cargo.lock includes this package and its transitive core packages at the same commit.",
       "package": "market-contracts",
@@ -408,8 +408,8 @@
       "repository": "lqepoch/trading-core"
     },
     {
-      "commit": "7bf9cf78f06ef1bb5a49a933bd5893a2df76b8a2",
-      "git_tree": "5eb597140eb84370ac4e5ea4c75741bca6b38ffa",
+      "commit": "105e42896eaa62afe7377a24478f0dd5632b1155",
+      "git_tree": "fbcdc8a186d92286bdb0ca1c10fce5dc8e4effb2",
       "license": "MIT OR Apache-2.0",
       "lockfile": "Cargo.lock resolves exact-decimal as the only normal transitive dependency of domain for broker-execution.",
       "package": "exact-decimal",
@@ -417,8 +417,8 @@
       "repository": "lqepoch/trading-core"
     },
     {
-      "commit": "7bf9cf78f06ef1bb5a49a933bd5893a2df76b8a2",
-      "git_tree": "5eb597140eb84370ac4e5ea4c75741bca6b38ffa",
+      "commit": "105e42896eaa62afe7377a24478f0dd5632b1155",
+      "git_tree": "fbcdc8a186d92286bdb0ca1c10fce5dc8e4effb2",
       "license": "MIT OR Apache-2.0",
       "lockfile": "Cargo.lock resolves domain and market-contracts from the same immutable trading-core revision.",
       "package": "domain",
