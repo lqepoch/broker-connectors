@@ -1,0 +1,387 @@
+{
+  "schema_version": 1,
+  "receipt_type": "broker-connectors-local-validation",
+  "change_id": "CHG-2026-001",
+  "trust": "unsigned local evidence; committed receipt and checksum preserve Git history, not a cryptographic signature",
+  "repository": "lqepoch/broker-connectors",
+  "source_commit_sha": "5b2e1326e505efd2e716d4764274fb87e3b75b92",
+  "source_git_tree_sha": "1f9e9ae045ab8d6171c3e46b4de3cdf5db26d77e",
+  "dependency_locks": {
+    "Cargo.lock": "d77b69d72b469944722a9ec74966da80ca38533a9945718a66038163fb7c3be4"
+  },
+  "additional_source_hashes": {
+    "Cargo.toml": "2019c70745868fe969f23bd0f984112de9e5f182a7334972188a7b11851bc60f",
+    "README.md": "729ada8af77e660eeeb372a6cfb6b54eb4c668b0a5fb374182712bffb5b820e1",
+    "SBOM.spdx.json": "ed881eee6516cf3e5ba24ce8d9e4e7c431b29fb93f0f26464f5c43e18c447055",
+    "SOURCE-MANIFEST.json": "a564f8c084ece87b68cb0730d3b79816e601bbc56df9c179399c22f6cfcb367b"
+  },
+  "dependencies": [
+    {
+      "repository": "lqepoch/trading-core",
+      "commit": "95ef156e6c0693072fdaddbd27da4214089331ae",
+      "git_tree": "3a6835e0de64376d82b7b6cd77e3baa2b4cdbecc",
+      "packages": [
+        "domain",
+        "exact-decimal",
+        "market-contracts"
+      ]
+    },
+    {
+      "repository": "lqepoch/broker-connectors",
+      "commit": "5b2e1326e505efd2e716d4764274fb87e3b75b92",
+      "git_tree": "1f9e9ae045ab8d6171c3e46b4de3cdf5db26d77e",
+      "packages": [
+        "broker-execution"
+      ]
+    }
+  ],
+  "environment": {
+    "os": "macOS-26.6-arm64-arm-64bit-Mach-O",
+    "architecture": "arm64",
+    "python": "Python 3.14.6",
+    "rustc": "rustc 1.99.0 (b940084d7 2026-09-28), host aarch64-apple-darwin, LLVM 23.1.1",
+    "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+    "cargo_deny": "cargo-deny 0.20.2",
+    "gitleaks": "github.com/zricethezav/gitleaks/v8 v8.30.1",
+    "resource_limits": {
+      "cpu_seconds": "unlimited",
+      "address_space_bytes": "unlimited",
+      "open_files_soft": 1048575,
+      "cargo_build_jobs": 2
+    },
+    "cargo_test_network": "offline for focused tests; workspace checks use locked graph",
+    "provider_network_access": "not used",
+    "market_credentials": "not read"
+  },
+  "inputs": {
+    "type": "deterministic synthetic fixtures and local fake/loopback paths only; no real market datasets or provider payloads",
+    "time_range": "not applicable; no historical market-data range was consumed",
+    "input_sha256": {
+      "Cargo.lock": "d77b69d72b469944722a9ec74966da80ca38533a9945718a66038163fb7c3be4",
+      "source_commit_tree": "1f9e9ae045ab8d6171c3e46b4de3cdf5db26d77e",
+      "market_data": "not applicable"
+    }
+  },
+  "started_at_utc": "2026-10-11T13:48:54.336963+00:00",
+  "ended_at_utc": "2026-10-11T13:49:02.780409+00:00",
+  "tests": [
+    {
+      "id": "format",
+      "command": [
+        "cargo",
+        "+1.99.0",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "started_at_utc": "2026-10-11T13:48:54.337158+00:00",
+      "ended_at_utc": "2026-10-11T13:48:55.465939+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "stdout_summary": "cargo fmt check passed; no output.",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_summary": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stderr_bytes": 0
+    },
+    {
+      "id": "broker_execution_tests",
+      "command": [
+        "cargo",
+        "+1.99.0",
+        "test",
+        "-p",
+        "broker-execution",
+        "--locked",
+        "--offline"
+      ],
+      "started_at_utc": "2026-10-11T13:48:55.466817+00:00",
+      "ended_at_utc": "2026-10-11T13:48:55.932921+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "stdout_summary": "6 passed, 0 failed, 0 ignored; 0 passed, 0 failed, 0 ignored",
+      "stdout_sha256": "f484656601d8c343ee6f2b7f5dd216917562619f043f56c8239d81c5960f85a7",
+      "stderr_summary": "Cargo/tool diagnostics captured in the hashed stderr stream.",
+      "stderr_sha256": "50730a382668bb56cf084142814110a77caea5f1d7214e67413e9831210977f2",
+      "stdout_bytes": 733,
+      "stderr_bytes": 191,
+      "test_counts": {
+        "passed": 6,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "id": "offline_fake_execution_tests",
+      "command": [
+        "cargo",
+        "+1.99.0",
+        "test",
+        "-p",
+        "broker-execution",
+        "--features",
+        "offline-fake",
+        "--locked",
+        "--offline"
+      ],
+      "started_at_utc": "2026-10-11T13:48:55.933309+00:00",
+      "ended_at_utc": "2026-10-11T13:48:56.040492+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "stdout_summary": "12 passed, 0 failed, 0 ignored; 0 passed, 0 failed, 0 ignored",
+      "stdout_sha256": "d4a97cefab95329017e48bb4c6486e66b55f1e8550abfcd1eb2a153dae5f9d2e",
+      "stderr_summary": "Cargo/tool diagnostics captured in the hashed stderr stream.",
+      "stderr_sha256": "18a2a24f2cf65067d5a29770482073930f666412ae1444fc13e1fbc90ee11cd0",
+      "stdout_bytes": 1262,
+      "stderr_bytes": 191,
+      "test_counts": {
+        "passed": 12,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "id": "dependency_firewall",
+      "command": [
+        "python3",
+        "scripts/check_broker_execution_dependency_firewall.py"
+      ],
+      "started_at_utc": "2026-10-11T13:48:56.040929+00:00",
+      "ended_at_utc": "2026-10-11T13:48:56.120405+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "stdout_summary": "broker-execution dependency firewall passed: broker-execution, domain, exact-decimal.",
+      "stdout_sha256": "d39a5e7d695819030c1c2be97ba4971a4b3fe75332ead92dd0eb2a5a67d0feee",
+      "stderr_summary": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 85,
+      "stderr_bytes": 0
+    },
+    {
+      "id": "workspace_tests",
+      "command": [
+        "cargo",
+        "+1.99.0",
+        "test",
+        "--workspace",
+        "--all-features",
+        "--locked"
+      ],
+      "started_at_utc": "2026-10-11T13:48:56.120754+00:00",
+      "ended_at_utc": "2026-10-11T13:49:00.312717+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "stdout_summary": "19 passed, 0 failed, 0 ignored; 93 passed, 0 failed, 0 ignored; 12 passed, 0 failed, 0 ignored; 30 passed, 0 failed, 0 ignored; 5 passed, 0 failed, 0 ignored; 12 passed, 0 failed, 0 ignored; 5 passed, 0 failed, 0 ignored; 6 passed, 0 failed, 0 ignored; 2 passed, 0 failed, 0 ignored; 75 passed, 0 failed, 1 ignored; 0 passed, 0 failed, 0 ignored; 4 passed, 0 failed, 0 ignored; 65 passed, 0 failed, 3 ignored; 0 passed, 0 failed, 0 ignored; 0 passed, 0 failed, 0 ignored; 0 passed, 0 failed, 0 ignored; 0 passed, 0 failed, 0 ignored; 0 passed, 0 failed, 0 ignored; 0 passed, 0 failed, 0 ignored; 0 passed, 0 failed, 0 ignored; 0 passed, 0 failed, 0 ignored; 0 passed, 0 failed, 0 ignored",
+      "stdout_sha256": "2f592cc79e43add111d8735ba9fac7af3351a9be1ce140a706da5efaf4af01a8",
+      "stderr_summary": "Cargo/tool diagnostics captured in the hashed stderr stream.",
+      "stderr_sha256": "003415e0b71a636854c27421abbffe36463a95c65683e06708664f2e7efa6253",
+      "stdout_bytes": 33113,
+      "stderr_bytes": 2174,
+      "test_counts": {
+        "passed": 328,
+        "failed": 0,
+        "ignored": 4
+      }
+    },
+    {
+      "id": "workspace_clippy",
+      "command": [
+        "cargo",
+        "+1.99.0",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "started_at_utc": "2026-10-11T13:49:00.313188+00:00",
+      "ended_at_utc": "2026-10-11T13:49:00.592471+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "stdout_summary": "Strict all-targets/all-features workspace Clippy exited 0; existing vendored ibapi Atomic::fetch_update deprecation warning remains.",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_summary": "One existing deprecation warning in vendored ibapi Atomic::fetch_update; command exited 0.",
+      "stderr_sha256": "f201b4b3440d417d4edfee5e64a05a2e7d43e54c4f23a96b1552e4ba278e7b2d",
+      "stdout_bytes": 0,
+      "stderr_bytes": 823
+    },
+    {
+      "id": "cargo_deny",
+      "command": [
+        "cargo",
+        "+1.99.0",
+        "deny",
+        "--all-features",
+        "--locked",
+        "check",
+        "all"
+      ],
+      "started_at_utc": "2026-10-11T13:49:00.592832+00:00",
+      "ended_at_utc": "2026-10-11T13:49:02.365150+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "stdout_summary": "cargo-deny 0.20.2: advisories ok, bans ok, licenses ok, sources ok.",
+      "stdout_sha256": "f1a0fca39d4280363937aabd77783990ea6480bd9ca257816de3b68fc8efa845",
+      "stderr_summary": "Cargo/tool diagnostics captured in the hashed stderr stream.",
+      "stderr_sha256": "8801e4994906ff54262ba42c436a8e0793bcd9d4a80f964aacafc016d8cd206c",
+      "stdout_bytes": 48,
+      "stderr_bytes": 29198
+    },
+    {
+      "id": "source_manifest_update",
+      "command": [
+        "python3",
+        "scripts/update_source_manifest_hashes.py"
+      ],
+      "started_at_utc": "2026-10-11T13:49:02.365583+00:00",
+      "ended_at_utc": "2026-10-11T13:49:02.487379+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "stdout_summary": "Updated adapted target hashes in SOURCE-MANIFEST.json; candidate files remained identical.",
+      "stdout_sha256": "029b905fea012482b4e2ecaeda48e45cb6345c51305a25f53768a7559c100721",
+      "stderr_summary": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 54,
+      "stderr_bytes": 0
+    },
+    {
+      "id": "vendor_provenance",
+      "command": [
+        "python3",
+        "scripts/check_vendor_provenance.py"
+      ],
+      "started_at_utc": "2026-10-11T13:49:02.487745+00:00",
+      "ended_at_utc": "2026-10-11T13:49:02.667170+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "stdout_summary": "Vendor and selected-source provenance passed.",
+      "stdout_sha256": "4c1cb832625ded691cfcc377d7cc86ecd11b0a1dc01faf7cb24deb0e598e7486",
+      "stderr_summary": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 287,
+      "stderr_bytes": 0
+    },
+    {
+      "id": "cargo_metadata",
+      "command": [
+        "cargo",
+        "+1.99.0",
+        "metadata",
+        "--locked",
+        "--offline",
+        "--format-version",
+        "1"
+      ],
+      "started_at_utc": "2026-10-11T13:49:02.667494+00:00",
+      "ended_at_utc": "2026-10-11T13:49:02.769802+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "stdout_summary": "Locked offline metadata resolved 287 packages, including Core domain, exact-decimal, and market-contracts at the converged git revision.",
+      "stdout_sha256": "fc464297e58acfc693379c08d1dfd42ae5c2f6a27b24a1dae98f8b96d6137e98",
+      "stderr_summary": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 1362095,
+      "stderr_bytes": 0
+    }
+  ],
+  "security_scans": [
+    {
+      "id": "gitleaks_change_range",
+      "command": [
+        "gitleaks",
+        "git",
+        "--log-opts=origin/main..HEAD",
+        "--redact=100",
+        "--no-banner",
+        "--report-format",
+        "json"
+      ],
+      "started_at_utc": "2026-10-11T13:47:42.259105+00:00",
+      "ended_at_utc": "2026-10-11T13:47:42.372654+00:00",
+      "exit_code": 0,
+      "status": "PASS",
+      "finding_count": 0,
+      "report_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "output_log_sha256": "827187a835e4b4d19fb8c2b562fe8af6ddf5086886551f01ba9bc3848700c2cc"
+    },
+    {
+      "id": "gitleaks_worktree_diagnostic",
+      "status": "DIAGNOSTIC_NOT_SOURCE_GATE",
+      "finding_count": 2,
+      "rules": {
+        "private-key": 2
+      },
+      "scope": "compiled target/debug/deps/libpem-*.rmeta artifacts only; no tracked source path. Full scan report used 100% redaction and was retained outside repository.",
+      "report_sha256": "433ced9068dceb2ccb7da2bd892dd63fb0b2f2622a57c4780aba189b31e4defb",
+      "output_log_sha256": "8f826f19a0f3e1696566757e6d26b69254a9589d6a3df8497a4335e883f482be"
+    }
+  ],
+  "support_checks": [
+    {
+      "id": "sbom_generation",
+      "command": [
+        "python3",
+        "scripts/generate_spdx_sbom.py"
+      ],
+      "status": "PASS",
+      "summary": "Generated SPDX SBOM for 287 Cargo packages; SBOM hash is included in additional_source_hashes."
+    },
+    {
+      "id": "source_manifest_hashes",
+      "status": "PASS",
+      "summary": "Updated target file hashes; rerun against the committed candidate was idempotent."
+    },
+    {
+      "id": "vendor_provenance",
+      "status": "PASS",
+      "stdout_sha256": "4c1cb832625ded691cfcc377d7cc86ecd11b0a1dc01faf7cb24deb0e598e7486",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "diagnostics": [
+    {
+      "id": "rustfmt_component_missing_first_attempt",
+      "status": "NOT_RUN_TOOLING_FAILURE",
+      "summary": "The first fmt invocation could not start because rustfmt was absent from the installed 1.99.0 toolchain; rustfmt/clippy components were installed, then the frozen-candidate format check passed.",
+      "preserved_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "gitleaks_generated_artifact_matches",
+      "status": "NOT_A_SOURCE_FINDING",
+      "summary": "A broad directory scan reported two private-key matches only in generated Rust .rmeta files under target/debug/deps; the committed change-range scan returned zero findings. Secret values were not emitted or committed."
+    },
+    {
+      "id": "metadata_summary_harness",
+      "status": "HARNESS_ERROR_AFTER_SUCCESSFUL_COMMAND",
+      "summary": "A local summary script raised while formatting optional package source values after cargo metadata returned exit 0; metadata aggregation was corrected and rerun, with 287 packages and three Core source packages."
+    }
+  ],
+  "test_level": "local deterministic workspace validation; synthetic only",
+  "release_eligible": false,
+  "release_blockers": [
+    "No real provider entitlement or subscribe-ACK evidence",
+    "No remote object-store SHA readback evidence",
+    "Fill ACK effect durability and full P6 gates remain blocked elsewhere in CHG-2026-001"
+  ],
+  "rollback": {
+    "point_commit": "fa3dc3d126f105d673272d6e079ed6c2c4c529e3",
+    "point_tree": "357e73379c2139c1f52c69f6d3953dcc7db49d93",
+    "procedure": "Revert the scoped Core pin/lock/SBOM/source-manifest commit; this change does not modify account or order state."
+  },
+  "review": {
+    "type": "SELF_REVIEW",
+    "reviewer": "author self-review",
+    "independent_review": false,
+    "scope": "Cargo.toml, Cargo.lock, README, SPDX SBOM and SOURCE-MANIFEST; exact locked dependency graph and rollback diff.",
+    "result": "No blocking issue found in this dependency-only patch."
+  },
+  "receipt_storage": {
+    "immutable_record": "Committed JSON receipt with SHA-256 sidecar; unsigned and not tamper-proof outside Git history.",
+    "source_commit_is_tested_candidate": true
+  }
+}
