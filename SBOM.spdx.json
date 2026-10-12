@@ -1,13 +1,13 @@
 {
   "SPDXID": "SPDXRef-DOCUMENT",
   "creationInfo": {
-    "created": "2026-10-11T23:36:40Z",
+    "created": "2026-10-12T17:36:01Z",
     "creators": [
       "Tool: scripts/generate_spdx_sbom.py"
     ]
   },
   "dataLicense": "CC0-1.0",
-  "documentNamespace": "https://spdx.org/spdxdocs/broker-connectors-ba3bf9742a26392884088215ed94ed09db32cbc5df039556b65ba46666c0de2d",
+  "documentNamespace": "https://spdx.org/spdxdocs/broker-connectors-30a81f487444cbd42d15cbf1e9488dcf9d4aa88888596914967a59464df04457",
   "name": "broker-connectors Cargo workspace",
   "packages": [
     {
@@ -1057,7 +1057,7 @@
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "MIT OR Apache-2.0",
       "name": "domain",
-      "sourceInfo": "Cargo locked immutable Git source: git+https://github.com/lqepoch/trading-core.git?rev=105e42896eaa62afe7377a24478f0dd5632b1155#105e42896eaa62afe7377a24478f0dd5632b1155.",
+      "sourceInfo": "Cargo locked immutable Git source: git+https://github.com/lqepoch/trading-core.git?rev=b2679e757576f8da7850cd4b5ea2958bc9a2354c#b2679e757576f8da7850cd4b5ea2958bc9a2354c.",
       "versionInfo": "0.1.0"
     },
     {
@@ -1160,7 +1160,7 @@
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "MIT OR Apache-2.0",
       "name": "exact-decimal",
-      "sourceInfo": "Cargo locked immutable Git source: git+https://github.com/lqepoch/trading-core.git?rev=105e42896eaa62afe7377a24478f0dd5632b1155#105e42896eaa62afe7377a24478f0dd5632b1155.",
+      "sourceInfo": "Cargo locked immutable Git source: git+https://github.com/lqepoch/trading-core.git?rev=b2679e757576f8da7850cd4b5ea2958bc9a2354c#b2679e757576f8da7850cd4b5ea2958bc9a2354c.",
       "versionInfo": "0.1.0"
     },
     {
@@ -2411,7 +2411,7 @@
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "MIT OR Apache-2.0",
       "name": "market-contracts",
-      "sourceInfo": "Cargo locked immutable Git source: git+https://github.com/lqepoch/trading-core.git?rev=105e42896eaa62afe7377a24478f0dd5632b1155#105e42896eaa62afe7377a24478f0dd5632b1155.",
+      "sourceInfo": "Cargo locked immutable Git source: git+https://github.com/lqepoch/trading-core.git?rev=b2679e757576f8da7850cd4b5ea2958bc9a2354c#b2679e757576f8da7850cd4b5ea2958bc9a2354c.",
       "versionInfo": "0.1.0"
     },
     {
