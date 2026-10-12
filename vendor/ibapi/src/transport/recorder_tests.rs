@@ -39,7 +39,10 @@ fn explicit_test_recorder_uses_temporary_directory() {
 
     assert!(recorder.enabled);
     assert!(recorder.recording_dir.starts_with(path.as_ref()));
-    assert_eq!(fs::canonicalize(&recorder.recording_dir).unwrap(), temp_dir.path());
+    assert_eq!(
+        fs::canonicalize(&recorder.recording_dir).unwrap(),
+        fs::canonicalize(temp_dir.path()).unwrap()
+    );
 }
 
 #[test]

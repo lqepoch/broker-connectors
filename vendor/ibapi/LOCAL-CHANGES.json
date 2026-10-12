@@ -290,8 +290,8 @@
       "target_sha256": "5aabbcb7d3b5283fcd36a199f69d0043484c2c0b320789163be962094daf03b8"
     },
     {
-      "description": "Summarize responses and notices using type, ID, code, category, and lengths without payloads.",
-      "operation": "add payload-free response and notice diagnostic summaries",
+      "description": "Use payload-free response and notice summaries for errors and logs; omit provider message text and advanced reject payloads.",
+      "operation": "use payload-free response and notice diagnostics in errors and logs",
       "source_line_numbers": [
         855,
         890,
@@ -301,12 +301,25 @@
         1377,
         1387,
         1423,
-        1619
+        1619,
+        1871,
+        1872
       ],
       "source_path": "src/messages.rs",
       "source_sha256": "fbb705b6f97bfd2031de72e1d87afb8146afe844e9ae3c47f7d1fe31b918e307",
       "target_path": "vendor/ibapi/src/messages.rs",
-      "target_sha256": "137bab4caadc54513fbe098d4dc5afa844688163f695d5f5cda21a5b062093e6"
+      "target_sha256": "b307ef1c1c169b5ca681248ae4c12f3ef4ce8dfa0c5706a6d6c7d3719b971e39"
+    },
+    {
+      "description": "Test the exact payload-free diagnostic record builder used by Notice::log; provider text, request identifier, and advanced reject payload sentinels are absent.",
+      "operation": "test Notice log entry excludes provider payloads",
+      "source_line_numbers": [
+        1487
+      ],
+      "source_path": "src/messages/tests.rs",
+      "source_sha256": "b3cbb5b3f24da4de21ac4417e52dd3a25ea8d25f5ff3b971c2e2990870e410dc",
+      "target_path": "vendor/ibapi/src/messages/tests.rs",
+      "target_sha256": "f6668a8a6cad6e154b30b91b55d4b285b83704e3c27fd12e9ea9bebdc8d3d003"
     },
     {
       "description": "Remove trailing horizontal whitespace on the listed upstream lines.",
@@ -570,7 +583,7 @@
       "target_sha256": "1e34148ec0460fb183ffc23d1712add12bff0d04bc236814874996aa8fb5ebbc"
     },
     {
-      "description": "Use explicit temporary paths for synthetic fixtures and verify legacy env activation is ignored.",
+      "description": "Use explicit synthetic temp paths, ignore legacy environment activation, and compare canonical paths for macOS temp symlinks.",
       "operation": "use explicit temporary directories for synthetic recorder tests",
       "source_line_numbers": [
         8,
@@ -688,7 +701,7 @@
       "source_path": "src/transport/recorder_tests.rs",
       "source_sha256": "4e721ca6c6231adaf5cc3c7819f6565d83680df1852a93646fabd1a188358787",
       "target_path": "vendor/ibapi/src/transport/recorder_tests.rs",
-      "target_sha256": "2ae7a022acaea9896e5b33c460890c73d6b0573ad158e6ccc84de0bd640010fd"
+      "target_sha256": "7bd041fba8e288079c21b6770ad56e061d01ac25bc71f7868639ab3212b4b120"
     },
     {
       "description": "Use safe routed-item summaries and fixed error classes in sync transport logs.",

@@ -1867,9 +1867,14 @@ impl Notice {
         }
     }
 
+    fn log_entry(&self) -> (log::Level, String) {
+        (self.log_level(), self.diagnostic_summary())
+    }
+
     /// Log this notice at [`Notice::log_level`].
     pub(crate) fn log(&self) {
-        log::log!(self.log_level(), "{self}");
+        let (level, summary) = self.log_entry();
+        log::log!(level, "{}", summary);
     }
 }
 

@@ -67,15 +67,20 @@ CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p alpaca-stream --features offline-test-s
 CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy -p alpaca-rest-read --all-targets --locked --offline -- -D warnings
 CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p ibkr-read --locked
 CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy -p ibkr-read --all-targets --locked -- -D warnings
+CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR=target/ibapi-vendor cargo +1.99.0 test --manifest-path vendor/ibapi/Cargo.toml --lib --locked --offline
 CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p schwab-rest -p schwab-sdk -p schwab-streamer -p schwab-adapter --locked --offline
 CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy -p schwab-rest -p schwab-sdk -p schwab-streamer -p schwab-adapter --all-targets --locked --offline -- -D warnings
 CARGO_BUILD_JOBS=2 cargo +1.99.0 test --workspace --all-features --locked
 CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy --workspace --all-targets --all-features --locked -- -D warnings
-python3 scripts/generate_spdx_sbom.py
+SOURCE_DATE_EPOCH=1791763200 python3 scripts/generate_spdx_sbom.py
 python3 scripts/update_source_manifest_hashes.py
 python3 scripts/check_vendor_provenance.py
+python3 -m unittest discover -s tests -p 'test_*.py'
 CARGO_BUILD_JOBS=2 cargo +1.99.0 test --manifest-path vendor/alpaca-rust/Cargo.toml -p alpaca-core -p alpaca-rest-http -p alpaca-data --lib --offline
 CARGO_BUILD_JOBS=2 cargo +1.99.0 test --manifest-path vendor/alpaca-rust/Cargo.toml -p alpaca-rest-http --test client_retry --offline
 ```
+
+For a byte-reproducible SBOM timestamp, set a fixed non-negative Unix epoch.
+Without `SOURCE_DATE_EPOCH`, the generator records the current UTC time.
 
 The workspace toolchain is pinned to Rust 1.99.0 because the selected Alpaca SDK requires that compiler; shared workspace crates such as `broker-execution` and `ibkr-read` retain MSRV 1.98.1. Consumers of `alpaca-rest-read` need Rust 1.99.0. These checks use synthetic inputs, fake transports, or localhost-only test servers. Real Alpaca SIP/OPRA service behavior and entitlement, real IBKR TWS/Gateway access, real Schwab REST/Streamer and OAuth, account operations, order operations, provider network operation, durable frame storage, and native Windows/macOS runtime remain `NOT RUN` in this repository task. The loopback IBKR and Schwab test endpoints verify local protocol paths only; they do not validate real-provider readiness or remote gateway deployments.

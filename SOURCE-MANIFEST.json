@@ -50,12 +50,12 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "d9484efd78a8d54eb241e087729dc591fdc946ab0020afa97419eed8daa013ab",
+      "sha256": "85a0f3308963199cb3ab81e4d6de643648f4b0654d627ef660dcfc8c2dfa941e",
       "target_path": "README.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "b52369b5a9cc26b845c31bf97b10e6b9eb72554e5dc3501dbbc37ec704b38ea3",
+      "sha256": "6a3bedb803b0169e2a306e809f333202a18c868487dfbecdbc0f1d73a1d44ba6",
       "target_path": "SBOM.spdx.json"
     },
     {
@@ -304,18 +304,23 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "4da2dc810be34caee246e1bdf3e19ea89b2a9e9ff263ea2bd58ed01c47010349",
+      "sha256": "0cb941e50cf23a80be4798d3d60f591ff9852d4c2b282aaa2cfd7b77bbe82a0f",
       "target_path": "scripts/check_vendor_provenance.py"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "fcb62453ebeb2b9caf3e2238a1c1b5179dc21ab279e5c0248a143dd47343ffb7",
+      "sha256": "6627eb8eb0d99d290e316140d68e1e5687d31fd772486723b6fe412183e0bfa9",
       "target_path": "scripts/generate_spdx_sbom.py"
     },
     {
       "origin": "new project-owned code",
       "sha256": "af9bc46566d1a5b1b2397bb16c04ca645137b6bfca9a812830c252376995119f",
       "target_path": "scripts/update_source_manifest_hashes.py"
+    },
+    {
+      "origin": "New project-owned unit tests for strict reproducible SBOM epoch parsing; does not access credentials or providers.",
+      "sha256": "c9cd904733448b31c03d85abe524d46ef4c0f483821112fae7e777a377be8358",
+      "target_path": "tests/test_generate_spdx_sbom.py"
     },
     {
       "origin": "new project-owned code",
@@ -344,17 +349,22 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "d3b50980cc29dd0e5e5524c0824b3b801e7be25cb21251575fa35037fd04b7de",
+      "sha256": "f9ea3f185037f02bdc79d2e9028678e6aac3fe5e9c4412e6bafc92db9caa3b03",
       "target_path": "vendor/ibapi/Cargo.toml"
     },
     {
+      "origin": "Standalone dependency lock for deterministic offline tests of the isolated vendored ibapi library.",
+      "sha256": "2e29223af925916e4760102505e6b6abeeceab7aa8b6998a25ee6386ef7b9a9e",
+      "target_path": "vendor/ibapi/Cargo.lock"
+    },
+    {
       "origin": "new project-owned code",
-      "sha256": "f91fd8464510646d4641c8ff63ff0fbb0a2992586976beaa989108372479bc35",
+      "sha256": "ef3d42f4ebf9a54e594308c2e7ab3e5972bedace76862bb3c3a2d4e3685557b3",
       "target_path": "vendor/ibapi/LOCAL-CHANGES.json"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "1fe4fc2877acd9a3de98722de4530f7407c4e95867120285c2a0250540b61776",
+      "sha256": "b1935af287d72583712ca8075a7951c58988793ee433219d23295c54f539335f",
       "target_path": "vendor/ibapi/UPSTREAM.md"
     },
     {
@@ -1316,7 +1326,7 @@
         }
       ],
       "local_change_record_path": "vendor/ibapi/LOCAL-CHANGES.json",
-      "local_change_record_sha256": "f91fd8464510646d4641c8ff63ff0fbb0a2992586976beaa989108372479bc35",
+      "local_change_record_sha256": "ef3d42f4ebf9a54e594308c2e7ab3e5972bedace76862bb3c3a2d4e3685557b3",
       "maintenance_status": "Unofficial community Rust TWS API client; the upstream project does not claim IBKR maintenance or support.",
       "manifest_target": "vendor/ibapi/Cargo.toml",
       "package_edition": "2021",
@@ -2428,8 +2438,8 @@
           "target_path": "vendor/ibapi/src/market_data/tests.rs"
         },
         {
-          "adaptation": "Adds response and notice summaries that omit decoded fields and raw bytes.",
-          "adapted_target_sha256": "137bab4caadc54513fbe098d4dc5afa844688163f695d5f5cda21a5b062093e6",
+          "adaptation": "Adds payload-free response and notice summaries and uses the notice summary for logging.",
+          "adapted_target_sha256": "b307ef1c1c169b5ca681248ae4c12f3ef4ce8dfa0c5706a6d6c7d3719b971e39",
           "source_file_sha256": "fbb705b6f97bfd2031de72e1d87afb8146afe844e9ae3c47f7d1fe31b918e307",
           "source_path": "src/messages.rs",
           "target_path": "vendor/ibapi/src/messages.rs"
@@ -2442,8 +2452,8 @@
           "target_path": "vendor/ibapi/src/messages/shared_channel_configuration.rs"
         },
         {
-          "adaptation": "Copied from the immutable upstream source snapshot without content changes.",
-          "adapted_target_sha256": "b3cbb5b3f24da4de21ac4417e52dd3a25ea8d25f5ff3b971c2e2990870e410dc",
+          "adaptation": "Adds a synthetic log-capture regression test proving provider notice payloads are omitted.",
+          "adapted_target_sha256": "f6668a8a6cad6e154b30b91b55d4b285b83704e3c27fd12e9ea9bebdc8d3d003",
           "source_file_sha256": "b3cbb5b3f24da4de21ac4417e52dd3a25ea8d25f5ff3b971c2e2990870e410dc",
           "source_path": "src/messages/tests.rs",
           "target_path": "vendor/ibapi/src/messages/tests.rs"
@@ -3268,8 +3278,8 @@
           "target_path": "vendor/ibapi/src/transport/recorder.rs"
         },
         {
-          "adaptation": "Tests recording only synthetic data in explicit temp paths; verifies legacy environment activation is ignored.",
-          "adapted_target_sha256": "2ae7a022acaea9896e5b33c460890c73d6b0573ad158e6ccc84de0bd640010fd",
+          "adaptation": "Tests synthetic recording in explicit temp paths, verifies legacy environment activation is ignored, and compares canonical paths.",
+          "adapted_target_sha256": "7bd041fba8e288079c21b6770ad56e061d01ac25bc71f7868639ab3212b4b120",
           "source_file_sha256": "4e721ca6c6231adaf5cc3c7819f6565d83680df1852a93646fabd1a188358787",
           "source_path": "src/transport/recorder_tests.rs",
           "target_path": "vendor/ibapi/src/transport/recorder_tests.rs"
