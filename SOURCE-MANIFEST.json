@@ -30,12 +30,12 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "ba3bf9742a26392884088215ed94ed09db32cbc5df039556b65ba46666c0de2d",
+      "sha256": "30a81f487444cbd42d15cbf1e9488dcf9d4aa88888596914967a59464df04457",
       "target_path": "Cargo.lock"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "2b9876d8441e68e5709ede1169537310ebf564c412329b7ccb39870a6c72dc87",
+      "sha256": "2cbac7240ece8f8d1237abe816e5c5f1b98c066abac96254ff5ba7361ccd9998",
       "target_path": "Cargo.toml"
     },
     {
@@ -50,12 +50,12 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "d9484efd78a8d54eb241e087729dc591fdc946ab0020afa97419eed8daa013ab",
+      "sha256": "53f8d06876d113e2fac209eab01a5b4fba6ea64bb216fdddacafa95a7a48958b",
       "target_path": "README.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "b52369b5a9cc26b845c31bf97b10e6b9eb72554e5dc3501dbbc37ec704b38ea3",
+      "sha256": "340d15e6818f33f295b043ddb1bb5f9d5e168aec9e0b5285eee2ad9c4907f067",
       "target_path": "SBOM.spdx.json"
     },
     {
@@ -110,7 +110,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "cb9abd39073b869b02333e7afc1dde081f3cacab79d644a7ca22099fdd3c9d26",
+      "sha256": "320594776964bcfb666cf87336918eb4eb4f9b9d6bcbca2c056362596152e3fa",
       "target_path": "crates/alpaca-stream/src/market_port.rs"
     },
     {
@@ -399,8 +399,8 @@
   ],
   "shared_contract_dependencies": [
     {
-      "commit": "105e42896eaa62afe7377a24478f0dd5632b1155",
-      "git_tree": "fbcdc8a186d92286bdb0ca1c10fce5dc8e4effb2",
+      "commit": "b2679e757576f8da7850cd4b5ea2958bc9a2354c",
+      "git_tree": "7a05c8272b716cb5c6f928ef4beeeb2206a13abc",
       "license": "MIT OR Apache-2.0",
       "lockfile": "Cargo.lock includes this package and its transitive core packages at the same commit.",
       "package": "market-contracts",
@@ -408,8 +408,8 @@
       "repository": "lqepoch/trading-core"
     },
     {
-      "commit": "105e42896eaa62afe7377a24478f0dd5632b1155",
-      "git_tree": "fbcdc8a186d92286bdb0ca1c10fce5dc8e4effb2",
+      "commit": "b2679e757576f8da7850cd4b5ea2958bc9a2354c",
+      "git_tree": "7a05c8272b716cb5c6f928ef4beeeb2206a13abc",
       "license": "MIT OR Apache-2.0",
       "lockfile": "Cargo.lock resolves exact-decimal as the only normal transitive dependency of domain for broker-execution.",
       "package": "exact-decimal",
@@ -417,8 +417,8 @@
       "repository": "lqepoch/trading-core"
     },
     {
-      "commit": "105e42896eaa62afe7377a24478f0dd5632b1155",
-      "git_tree": "fbcdc8a186d92286bdb0ca1c10fce5dc8e4effb2",
+      "commit": "b2679e757576f8da7850cd4b5ea2958bc9a2354c",
+      "git_tree": "7a05c8272b716cb5c6f928ef4beeeb2206a13abc",
       "license": "MIT OR Apache-2.0",
       "lockfile": "Cargo.lock resolves domain and market-contracts from the same immutable trading-core revision.",
       "package": "domain",
@@ -437,7 +437,7 @@
     },
     {
       "adaptation": "Updated for public scope, shared v1 contracts, numeric provenance, ACK limits, archive completeness boundaries, and freshness rejection at the normalized shared-event boundary.",
-      "adapted_target_sha256": "96200c038a0644733366b3dbcf2f5638df0e2a00ec6f6139fc65631e584f8e1c",
+      "adapted_target_sha256": "2293233a2e59e2a366894e4770eec7d0788b8c2b827bd659559933c01e411ef0",
       "source_blob_sha256": "5c6080b377e1e0a7ad9963a3fc6f095f88fdd16ebb0c55b92115a60d329c3e67",
       "source_path": "crates/alpaca-stream/README.md",
       "target_path": "crates/alpaca-stream/README.md"
@@ -472,7 +472,7 @@
     },
     {
       "adaptation": "Adds a non-dropping unified quote/trade/control receiver used by the canonical ordered port.",
-      "adapted_target_sha256": "988823c88bba83fb72ed3fa770b717a059524f2835b63c47820f2671ee5b0bc5",
+      "adapted_target_sha256": "f1f2f8bd159714c984d1d529dbc4c62919ba929697fc607ca51063393a79c842",
       "source_blob_sha256": "46e0ec0a359921376277abd9629616034ebf0be3dfb810074e465f72d7ae5a18",
       "source_path": "crates/alpaca-stream/src/lane.rs",
       "target_path": "crates/alpaca-stream/src/lane.rs"
@@ -514,7 +514,7 @@
     },
     {
       "adaptation": "Retains bounded provider MessagePack decode behavior; wire numeric categories and raw-frame hashes are represented without claiming binary floats are source-exact.",
-      "adapted_target_sha256": "e30e82a34836d2791691b58b5f098118cbf6822ad1f44fa19a95d57c404b167d",
+      "adapted_target_sha256": "e3ebaceed871fadbea1d415fc173d39e6cf3124c2a4ce621b573a45513ce6aef",
       "source_blob_sha256": "5c0852dcc105735823f7f6be374a11192918df4e945587e4367a61ab8769b520",
       "source_path": "crates/alpaca-stream/src/protocol.rs",
       "target_path": "crates/alpaca-stream/src/protocol.rs"
@@ -535,7 +535,7 @@
     },
     {
       "adaptation": "Captures only bounded inbound market-data application frames; excludes outbound auth/subscription data, awaits predecode and postdecode sink acknowledgements, preserves source-local capture identity through canonical projection, and carries the socket frame's receive UTC into linked normalized events.",
-      "adapted_target_sha256": "9b06f28b3de74ea936e5c87b0191213c40e20d6e64ce8467a2154ec751e9cf78",
+      "adapted_target_sha256": "12b312eac7ab82a29dd20526f54ba4493e9bc787cf60de67d371fed014adc48c",
       "source_blob_sha256": "8c47578aedd8199f6ee039ed2cf638e1bde385393cc74576bae8625b338bc7b2",
       "source_path": "crates/alpaca-stream/src/session/runner.rs",
       "target_path": "crates/alpaca-stream/src/session/runner.rs"
@@ -556,7 +556,7 @@
     },
     {
       "adaptation": "Adds synthetic raw-frame exact-byte/hash and receive-UTC linkage checks, plus terminal unknown-frame coverage alongside independent quote/trade ACK rejection.",
-      "adapted_target_sha256": "1c90407696edf17e95504408becc4292ce7e2848a9660cd239f4dcb0a03c4d1f",
+      "adapted_target_sha256": "7ac6170ae09be822b016aeb577275988f0fdb32abbba3269117d5674ac226d7b",
       "source_blob_sha256": "c5546d94bb951120deceb6c33088df116f149593de92b22cd8a7aaa661c8961b",
       "source_path": "crates/alpaca-stream/src/session_tests.rs",
       "target_path": "crates/alpaca-stream/src/session_tests.rs"
