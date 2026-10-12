@@ -23,10 +23,11 @@ existing upstream MIT license applies to this configuration file as part of the
 pinned repository snapshot.
 
 `Cargo.toml.upstream` preserves the exact upstream manifest. The active local
-`Cargo.toml` is a dependency-only manifest: it removes upstream workspace
-members, development dependencies, examples, and docs.rs packaging metadata so
-this repository builds only the vendored library. The pinned upstream `src/`
-tree is retained with five whitespace normalizations and narrowly scoped
+`Cargo.toml` removes upstream workspace members, examples, and docs.rs packaging
+metadata so this repository builds only the vendored library. It retains only
+the four test-only dependencies required to run the vendored library's own
+unit tests. `Cargo.lock` pins that isolated test graph; it is separate from the
+consumer workspace lock. The pinned upstream `src/` tree is retained with five whitespace normalizations and narrowly scoped
 privacy changes, all bound to pinned source hashes and adapted target hashes in
 `LOCAL-CHANGES.json` and `SOURCE-MANIFEST.json`.
 
@@ -46,6 +47,11 @@ keep their production capture paths disabled. Neither `IBAPI_RECORDING_DIR`
 nor `IBAPI_RAW_CAPTURE_DIR` enables persistence. Tests may opt into capture
 only through test-only constructors with explicit temporary directories and
 synthetic fixtures. No real provider/account traffic is captured.
+
+`Notice::log()` emits the payload-free code/category summary and does not log
+provider message text, request identifiers, or advanced-order-reject payloads.
+The public `Display` implementation still includes provider message text for
+callers; callers must redact it before forwarding it to logs.
 
 The source archive digest above covers the unmodified upstream
 archive, not this locally adapted working copy. The manifest records hashes

@@ -1532,6 +1532,25 @@ fn test_log_level_follows_category() {
 }
 
 #[test]
+fn test_notice_log_entry_omits_provider_payloads() {
+    let notice = Notice {
+        request_id: Some(987_654_321),
+        code: 201,
+        message: "PROVIDER_PRIVATE_NOTICE_SENTINEL".to_string(),
+        error_time: None,
+        advanced_order_reject_json: "ADVANCED_REJECT_PRIVATE_SENTINEL".to_string(),
+    };
+
+    let (level, emitted_message) = notice.log_entry();
+
+    assert_eq!(level, log::Level::Error);
+    assert_eq!(emitted_message, notice.diagnostic_summary());
+    assert!(!emitted_message.contains("PROVIDER_PRIVATE_NOTICE_SENTINEL"));
+    assert!(!emitted_message.contains("ADVANCED_REJECT_PRIVATE_SENTINEL"));
+    assert!(!emitted_message.contains("987654321"));
+}
+
+#[test]
 fn test_unknown_message_type_notice_names_the_id_or_its_absence() {
     let notice = unknown_message_type_notice(&ResponseMessage::from("9999\0"));
     assert_eq!(notice.code, UNKNOWN_MESSAGE_TYPE_CODE);

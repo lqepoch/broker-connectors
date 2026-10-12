@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
@@ -17,6 +18,23 @@ from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "SBOM.spdx.json"
+
+
+def creation_timestamp() -> str:
+    """Return SPDX UTC creation time, honoring a fixed reproducible-build epoch."""
+    source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH")
+    if source_date_epoch is None:
+        created = datetime.now(UTC)
+    else:
+        if not source_date_epoch.isascii() or not source_date_epoch.isdecimal():
+            raise ValueError("SOURCE_DATE_EPOCH must be a non-negative integer")
+        try:
+            created = datetime.fromtimestamp(int(source_date_epoch), UTC)
+        except (OverflowError, OSError, ValueError) as error:
+            raise ValueError("SOURCE_DATE_EPOCH is outside the supported UTC timestamp range") from error
+    return created.replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
 def run_metadata() -> dict:
     toolchain = tomllib.loads(
         (ROOT / "rust-toolchain.toml").read_text(encoding="utf-8")
@@ -243,7 +261,7 @@ def main() -> None:
         "documentNamespace": document_namespace,
         "creationInfo": {
             "creators": ["Tool: scripts/generate_spdx_sbom.py"],
-            "created": datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+            "created": creation_timestamp(),
         },
         "packages": package_items,
         "relationships": [

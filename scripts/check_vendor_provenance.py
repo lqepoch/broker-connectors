@@ -31,7 +31,8 @@ IBKR_LOCAL_OPERATIONS = {
     "src/market_data/historical/async.rs": "redact historical tick cancellation diagnostics",
     "src/market_data/historical/common/tick.rs": "redact unexpected historical response diagnostics",
     "src/market_data/historical/sync.rs": "redact historical tick cancellation diagnostics",
-    "src/messages.rs": "add payload-free response and notice diagnostic summaries",
+    "src/messages.rs": "use payload-free response and notice diagnostics in errors and logs",
+    "src/messages/tests.rs": "test Notice log entry excludes provider payloads",
     "src/subscriptions/async.rs": "redact async subscription notice and error diagnostics",
     "src/subscriptions/common.rs": "add payload-free routed item diagnostics",
     "src/subscriptions/mod.rs": "redact cancellation error diagnostics",
@@ -269,7 +270,22 @@ def check_vendor(upstream: dict, project_paths: set[str]) -> None:
             or metadata.get("rust-version") != upstream["package_msrv"]
         ):
             raise ValueError(f"single-package metadata changed for {repository}")
-        if root_manifest.get("dev-dependencies") or root_manifest.get("example"):
+        if repository == "wboayue/rust-ibapi":
+            # The vendored package has no examples or production packaging
+            # targets. Keep only the pinned test harness needed to run its
+            # native unit suite directly; these dependencies are never part
+            # of the downstream runtime dependency graph.
+            allowed_test_dependencies = {
+                "env_logger": "0.11.5",
+                "serial_test": "4.0.1",
+                "temp-env": {"version": "0.3.6", "features": ["async_closure"]},
+                "tempfile": "3.13",
+            }
+            if root_manifest.get("dev-dependencies") != allowed_test_dependencies:
+                raise ValueError(f"unexpected vendored test dependencies: {repository}")
+            if root_manifest.get("example"):
+                raise ValueError(f"vendored SDK example targets must be removed: {repository}")
+        elif root_manifest.get("dev-dependencies") or root_manifest.get("example"):
             raise ValueError(f"vendored SDK packaging/dev targets must be removed: {repository}")
 
     # Every file beneath a vendor root must be either immutable upstream source
