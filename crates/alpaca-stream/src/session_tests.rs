@@ -187,6 +187,38 @@ async fn quote_only_and_trade_only_acknowledgements_never_project_as_complete() 
 }
 
 #[tokio::test(start_paused = true)]
+async fn subscription_ack_event_binds_the_exact_wire_frame_sha256() {
+    let frames = acknowledged_frames(true);
+    let digest = Sha256::digest(&frames[2]);
+    let mut expected_sha256 = String::with_capacity(digest.len() * 2);
+    for byte in digest {
+        write!(&mut expected_sha256, "{byte:02x}").expect("write to string");
+    }
+    let (connector, _) = connector([socket_script(frames, true)]);
+    let (mut running, _) = start(config(4, 1, Duration::from_secs(1)), connector);
+
+    loop {
+        let event = tokio::time::timeout(Duration::from_secs(1), running.receivers.controls.recv())
+            .await
+            .expect("subscription acknowledgement arrives before the deadline")
+            .expect("control lane remains open");
+        if let ControlEvent::SubscriptionAcknowledged {
+            raw_frame_sha256, ..
+        } = event
+        {
+            assert_eq!(raw_frame_sha256, expected_sha256);
+            break;
+        }
+    }
+
+    running.shutdown.send_replace(true);
+    assert_eq!(
+        running.task.await.expect("session task joins"),
+        Ok(SessionExit::Cancelled)
+    );
+}
+
+#[tokio::test(start_paused = true)]
 async fn acknowledgement_timeout_reconnects_only_within_the_local_retry_bound() {
     let mut first = acknowledged_frames(true);
     first.truncate(2);

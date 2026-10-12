@@ -523,7 +523,7 @@ impl EventProjector {
         event: ControlEvent,
         feed: OptionFeed,
     ) -> Result<Option<ControlEventEnvelopeV1>, BrokerPortError> {
-        let (generation, control) = match event {
+        let (generation, control, raw_frame_sha256) = match event {
             ControlEvent::RawMarketFrame(_) => return Err(BrokerPortError::ProtocolViolation),
             ControlEvent::PhaseChanged {
                 generation,
@@ -547,11 +547,13 @@ impl EventProjector {
                 (
                     generation_id,
                     MarketControlEventV1::ConnectionStatus { state },
+                    None,
                 )
             }
             ControlEvent::SubscriptionAcknowledged {
                 generation,
                 acknowledgement,
+                raw_frame_sha256,
             } => {
                 let generation_id = self.generation(generation)?;
                 let acknowledged = acknowledgement
@@ -575,6 +577,7 @@ impl EventProjector {
                         acknowledged,
                         rejected: Vec::<RejectedInstrumentV1>::new(),
                     },
+                    Some(raw_frame_sha256),
                 )
             }
             ControlEvent::ProviderError { generation, error } => {
@@ -587,6 +590,7 @@ impl EventProjector {
                             request_id: format!("alpaca-session-{generation_id}"),
                             reason_code: reason_code.to_owned(),
                         },
+                        None,
                     )
                 } else {
                     (
@@ -594,6 +598,7 @@ impl EventProjector {
                         MarketControlEventV1::ConnectionStatus {
                             state: ConnectionState::Failed,
                         },
+                        None,
                     )
                 }
             }
@@ -612,7 +617,7 @@ impl EventProjector {
             source: source(feed, NumericEncodingV1::IntegerToken)?,
             generation,
             sequence,
-            raw_frame_sha256: None,
+            raw_frame_sha256,
             source_timestamp: None,
             received_timestamp: timestamp_now(),
         };
@@ -1083,6 +1088,7 @@ mod tests {
                     ControlEvent::SubscriptionAcknowledged {
                         generation,
                         acknowledgement: acknowledgement(),
+                        raw_frame_sha256: "ab".repeat(32),
                     },
                     OptionFeed::Opra,
                 )
@@ -1410,6 +1416,7 @@ mod tests {
                         .into_iter()
                         .collect(),
                     },
+                    raw_frame_sha256: "cd".repeat(32),
                 },
                 OptionFeed::Opra,
             )
@@ -1431,6 +1438,10 @@ mod tests {
             panic!("expected typed subscription acknowledgement");
         };
         assert_eq!(acknowledged.len(), 2);
+        assert_eq!(
+            acknowledgement.metadata.raw_frame_sha256.as_deref(),
+            Some("cd".repeat(32).as_str())
+        );
         assert_eq!(rejected, Vec::new());
         assert!(request_id.starts_with("alpaca-session-"));
         assert!(subscription_id.starts_with("local-subscription-"));

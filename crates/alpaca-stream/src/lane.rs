@@ -106,6 +106,9 @@ pub enum ControlEvent {
         /// Current provider quote/trade subscription sets.
         /// Provider 当前报价/成交订阅集合。
         acknowledgement: SubscriptionAcknowledgement,
+        /// SHA-256 of the exact inbound application frame carrying this acknowledgement.
+        /// 携带此订阅回执的入站应用帧的精确 SHA-256。
+        raw_frame_sha256: String,
     },
     /// Sanitized provider error; raw provider text is never retained.
     /// 已脱敏的 provider 错误；不保留 provider 原始文本。
@@ -477,10 +480,12 @@ pub(crate) fn publish_subscription(
     publishers: &LanePublishers,
     generation: SessionGeneration,
     acknowledgement: SubscriptionAcknowledgement,
+    raw_frame_sha256: String,
 ) -> Result<(), LaneFailure> {
     publishers.control(ControlEvent::SubscriptionAcknowledged {
         generation,
         acknowledgement,
+        raw_frame_sha256,
     })
 }
 
