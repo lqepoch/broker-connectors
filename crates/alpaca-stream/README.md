@@ -61,7 +61,11 @@ that limit; 33 pairs fail before a socket is opened. Before projection, the
 provider's full quote and trade acknowledgement sets are independently compared
 with the exact request. The shared v1 `acknowledged` list is emitted only after
 both sets match, so a quote-only or trade-only response cannot confirm a request
-for both channels. The provider wire message has no request or subscription ID;
+for both channels. The projected control event also carries the SHA-256 of the
+exact inbound application frame that contained the acknowledgement, so consumers
+can correlate the local ACK record with its raw frame when a configured sink
+retains it. Without a sink, the digest does not persist the frame. The provider
+wire message has no request or subscription ID;
 the adapter's `alpaca-session-*` and `local-subscription-*` values are local
 correlators scoped to the validated local generation, not provider-issued IDs.
 Wire bytes and decoder outputs never appear in `Debug` or diagnostics. Raw-frame

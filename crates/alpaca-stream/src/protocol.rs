@@ -197,7 +197,7 @@ pub(crate) fn decode_frame_with_diagnostics(
     Ok(decoded)
 }
 
-fn sha256_hex(input: &[u8]) -> String {
+pub(crate) fn sha256_hex(input: &[u8]) -> String {
     const HEX: &[u8; 16] = b"0123456789abcdef";
     let digest = Sha256::digest(input);
     let mut encoded = String::with_capacity(digest.len() * 2);

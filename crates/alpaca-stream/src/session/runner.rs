@@ -39,6 +39,7 @@ struct PendingRawCapture {
 struct DecodedProviderFrame {
     messages: Vec<ProviderMessage>,
     raw_frame: Option<RawFrameCorrelation>,
+    frame_sha256: String,
 }
 
 struct FramedMarketMessage {
@@ -417,6 +418,7 @@ where
             let DecodedProviderFrame {
                 messages,
                 raw_frame,
+                frame_sha256,
             } = frame;
             for message in messages {
                 match message {
@@ -452,8 +454,13 @@ where
                                 false,
                             ));
                         }
-                        publish_subscription(&self.publishers, generation, acknowledgement)
-                            .map_err(|failure| AttemptEnd::Failed(lane_failure(failure)))?;
+                        publish_subscription(
+                            &self.publishers,
+                            generation,
+                            acknowledgement,
+                            frame_sha256.clone(),
+                        )
+                        .map_err(|failure| AttemptEnd::Failed(lane_failure(failure)))?;
                         acknowledgement_seen = true;
                     }
                     quote @ (ProviderMessage::Quote(_) | ProviderMessage::Trade(_))
@@ -585,6 +592,7 @@ where
                     },
                     |pending| pending.capture.payload().as_bytes(),
                 );
+                let frame_sha256 = crate::protocol::sha256_hex(decode_bytes);
                 match decode_frame_with_diagnostics(decode_bytes) {
                     Ok(messages) => {
                         let acknowledgement_matches = messages
@@ -626,6 +634,7 @@ where
                         Ok(DecodedProviderFrame {
                             messages,
                             raw_frame,
+                            frame_sha256,
                         })
                     }
                     Err(error) => {
