@@ -2,6 +2,8 @@
 
 This public workspace contains provider protocol adapters, provider-neutral read ports, and a separate provider-neutral execution software contract. Keep market reads, account reads, and execution authority separate. The library must not create a second OMS, account-state authority, quote store, persistence layer, or runtime scheduler.
 
+The nine-repository map is a [governance candidate in Draft PR #20](https://github.com/lqepoch/platform-ops/blob/codex/chg-2026-001-workspace-layout/docs/NINE-REPOSITORY-ARCHITECTURE.md), not yet the `main` authority. Until it is merged, use this repository's source, manifests, locks, and local documentation as current behavior evidence.
+
 ## Safety Boundaries
 
 - Tests use synthetic payloads and fake transport only. Never read local credentials, call OAuth, or contact a provider/account during development or validation.
