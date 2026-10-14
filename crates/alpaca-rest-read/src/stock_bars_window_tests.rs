@@ -6,7 +6,7 @@ use market_contracts::UtcTimestamp;
 use super::{StockBarsPageProgress, StockBarsWindowBuilder};
 use crate::{
     AlpacaRestError, AlpacaStockBarsPage, AlpacaStockBarsRequest, AlpacaStockBarsWindowRequest,
-    MAX_STOCK_BARS_PAGES_PER_WINDOW, RequestedStockBarsFeed, StockBarsTimeframe,
+    MAX_STOCK_BARS_PAGES_PER_WINDOW, RequestedStockBarsFeed, StockBarsSort, StockBarsTimeframe,
 };
 
 const SYMBOL: &str = "QQQ";
@@ -24,9 +24,26 @@ fn request() -> AlpacaStockBarsRequest {
     .expect("valid synthetic query")
 }
 
+fn descending_request() -> AlpacaStockBarsRequest {
+    AlpacaStockBarsRequest::new_with_feed_and_sort(
+        RequestedStockBarsFeed::Sip,
+        StockBarsSort::Desc,
+        SYMBOL,
+        StockBarsTimeframe::Minute1,
+        UtcTimestamp::parse(START).expect("valid synthetic start"),
+        UtcTimestamp::parse(END).expect("valid synthetic end"),
+        100,
+    )
+    .expect("valid descending synthetic query")
+}
+
 fn response(timestamp: &str, token: Option<&str>) -> BarsResponse {
+    response_bars(vec![bar(timestamp)], token)
+}
+
+fn response_bars(bars: Vec<Bar>, token: Option<&str>) -> BarsResponse {
     BarsResponse {
-        bars: HashMap::from([(SYMBOL.to_owned(), vec![bar(timestamp)])]),
+        bars: HashMap::from([(SYMBOL.to_owned(), bars)]),
         next_page_token: token.map(str::to_owned),
         currency: Some(Currency::usd()),
     }
@@ -216,5 +233,44 @@ fn query_feed_remains_explicit_across_paginated_continuation() {
             .next()
             .map(crate::AlpacaStockBarObservation::requested_feed),
         Some(RequestedStockBarsFeed::Boats)
+    );
+}
+
+#[test]
+fn descending_window_continues_from_recent_bars_to_older_bars() {
+    let initial = descending_request();
+    let first_page = AlpacaStockBarsPage::from_provider(
+        &initial,
+        response_bars(
+            vec![bar("2026-10-08T13:32:00Z"), bar("2026-10-08T13:31:00Z")],
+            Some("synthetic-desc-token-a"),
+        ),
+        UtcTimestamp::parse("2026-10-09T00:00:00Z").expect("valid synthetic receive time"),
+    )
+    .expect("descending first page validates");
+    let mut builder = StockBarsWindowBuilder::new(4, None);
+    let cursor = match builder.push(first_page).expect("first page advances") {
+        StockBarsPageProgress::Continue(cursor) => *cursor,
+        StockBarsPageProgress::Stop => panic!("first descending page has a continuation"),
+    };
+    let continued = initial
+        .with_cursor(cursor)
+        .expect("descending cursor retains query order");
+    let last_page = AlpacaStockBarsPage::from_provider(
+        &continued,
+        response_bars(vec![bar(START)], None),
+        UtcTimestamp::parse("2026-10-09T00:00:00Z").expect("valid synthetic receive time"),
+    )
+    .expect("descending continuation validates older page");
+    assert_eq!(builder.push(last_page), Ok(StockBarsPageProgress::Stop));
+
+    let window = builder.finish();
+    assert_eq!(window.pages_read(), 2);
+    assert_eq!(
+        window
+            .bars()
+            .map(|bar| bar.timestamp().as_str())
+            .collect::<Vec<_>>(),
+        ["2026-10-08T13:32:00Z", "2026-10-08T13:31:00Z", START]
     );
 }

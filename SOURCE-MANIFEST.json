@@ -20,7 +20,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "b7a25c3ccef8b2566afaf59bd7c19b76f3e44d5097fe599ba4008c58f4e8349e",
+      "sha256": "3c00aebbafe2661b01a5354fd1a9c19a7fcbab28d38c5cf7551bd8b107eaf57f",
       "target_path": "AGENTS.md"
     },
     {
@@ -30,7 +30,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "30a81f487444cbd42d15cbf1e9488dcf9d4aa88888596914967a59464df04457",
+      "sha256": "3b322ea8b4ad60b9b23d01036dc8bdd363a3702550d977d5259a2a8a8dfb81e0",
       "target_path": "Cargo.lock"
     },
     {
@@ -50,12 +50,12 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "53f8d06876d113e2fac209eab01a5b4fba6ea64bb216fdddacafa95a7a48958b",
+      "sha256": "c6960c9c80adfe183ad4fce699e3deea29dd702435996f6d179cdd614c70b6d1",
       "target_path": "README.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "340d15e6818f33f295b043ddb1bb5f9d5e168aec9e0b5285eee2ad9c4907f067",
+      "sha256": "69c94f647c41639072ddeefa0d0da3f3396b4dcd97b295dfa0f14fb29d388a67",
       "target_path": "SBOM.spdx.json"
     },
     {
@@ -65,27 +65,27 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "75cd54fecb222b590a0e9fef180967d776cc835f9f6606996c5472b46720bcb8",
+      "sha256": "ee989cf05ef6253d570716846015aca4c18eead622d7c5fc45a8b65445c952fe",
       "target_path": "crates/alpaca-rest-read/Cargo.toml"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "6f6b6be76209a4d60de2204d83da12970f14e5984e237833d1446608b11cdee3",
+      "sha256": "093e5a2b044da75ee8d194ce571f3d5f891acec846f289111e10074a06f965fa",
       "target_path": "crates/alpaca-rest-read/README.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "77397b16c5b99bb4fbbcfe6013378161b59d43afe5a101de186dace741cdf010",
+      "sha256": "59e6c6796041224008d42d486155683f7b2cfdaf42c1e653904ba8131820dbfc",
       "target_path": "crates/alpaca-rest-read/src/client.rs"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "d883720e14bcfef920ef74baf34eca06faf9e8ed75a2cbfdd2154fc3d3e9d9af",
+      "sha256": "82ebe25856ff6a257ed306d8df71a39dca8c7a90418a1517c2f98c192654bd4d",
       "target_path": "crates/alpaca-rest-read/src/error.rs"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "8f72eda88ad9c69d6bbeb96b171419ab4a7cc555a948717c9dcaf87243938b75",
+      "sha256": "e87d97ac1d3c8f72af8ff2dcbfddd0f888e3305b921f1003470fb273cfba998d",
       "target_path": "crates/alpaca-rest-read/src/lib.rs"
     },
     {
@@ -100,13 +100,23 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "fb6349265c300fda85cd5559b04997ff8074ae882281bf7ce96f1e7651cd2e69",
+      "sha256": "49c7c2c176504046e4e3a7e3aca02ef95e3b97d97954559c5217a4c0fd0f8299",
       "target_path": "crates/alpaca-rest-read/src/stock_bars.rs"
     },
     {
-      "origin": "Synthetic tests for the fixed one-page SIP facade, query-bound cursors, provider response validation, and explicit unknown provenance; no provider calls.",
-      "sha256": "5d63f62a3d43993ed91c32840d58e506807ab89e2c7cf97f2f7bde8a678b4553",
+      "origin": "Synthetic tests for the bounded SIP/BOATS historical bars facade, ascending and descending order, query-bound cursors, provider response validation, and explicit unknown provenance; no provider calls.",
+      "sha256": "2981f9f95068f8e63e0d8fb17e24048b40edab9274ccec856a232ecbe6a92c1a",
       "target_path": "crates/alpaca-rest-read/src/stock_bars_tests.rs"
+    },
+    {
+      "origin": "New project-owned bounded historical stock-bars page-window implementation with finite pagination and continuation-cycle checks.",
+      "sha256": "92f89cfb9dc90656b904752b83aeb4820bc0c1be65717e543ea6033827655bec",
+      "target_path": "crates/alpaca-rest-read/src/stock_bars_window.rs"
+    },
+    {
+      "origin": "Synthetic tests for finite stock-bars windows, serialized continuation, pagination-cycle rejection, and descending recent-to-older traversal; no provider calls.",
+      "sha256": "0db7ed83649ff7252b06d319a1e66bc660f0e387bcb7bd86a39cbae3e5fc71c2",
+      "target_path": "crates/alpaca-rest-read/src/stock_bars_window_tests.rs"
     },
     {
       "origin": "new project-owned code",

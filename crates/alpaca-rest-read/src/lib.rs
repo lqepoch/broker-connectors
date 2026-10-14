@@ -34,7 +34,8 @@ pub use request::{
 };
 pub use stock_bars::{
     AlpacaStockBarObservation, AlpacaStockBarsPage, AlpacaStockBarsRequest,
-    MAX_STOCK_BARS_PAGE_SIZE, RequestedStockBarsFeed, StockBarsCursor, StockBarsTimeframe,
+    MAX_STOCK_BARS_PAGE_SIZE, RequestedStockBarsFeed, StockBarsCursor, StockBarsSort,
+    StockBarsTimeframe,
 };
 pub use stock_bars_window::{
     AlpacaStockBarsWindow, AlpacaStockBarsWindowRequest, MAX_STOCK_BARS_PAGES_PER_WINDOW,

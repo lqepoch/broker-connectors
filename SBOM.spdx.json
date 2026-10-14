@@ -1,13 +1,13 @@
 {
   "SPDXID": "SPDXRef-DOCUMENT",
   "creationInfo": {
-    "created": "2026-10-12T17:36:01Z",
+    "created": "2026-10-14T02:43:46Z",
     "creators": [
       "Tool: scripts/generate_spdx_sbom.py"
     ]
   },
   "dataLicense": "CC0-1.0",
-  "documentNamespace": "https://spdx.org/spdxdocs/broker-connectors-30a81f487444cbd42d15cbf1e9488dcf9d4aa88888596914967a59464df04457",
+  "documentNamespace": "https://spdx.org/spdxdocs/broker-connectors-3b322ea8b4ad60b9b23d01036dc8bdd363a3702550d977d5259a2a8a8dfb81e0",
   "name": "broker-connectors Cargo workspace",
   "packages": [
     {
@@ -9324,6 +9324,11 @@
     },
     {
       "relatedSpdxElement": "SPDXRef-Package-111-market-contracts-0.1.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-5-alpaca-rest-read-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-184-serde-1.0.229",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-5-alpaca-rest-read-0.1.0"
     },

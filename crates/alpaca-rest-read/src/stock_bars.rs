@@ -62,6 +62,36 @@ pub enum StockBarsTimeframe {
     Day1,
 }
 
+/// Provider ordering for historical stock bars.
+/// 历史股票 bars 的 provider 排序方向。旧构造器默认按时间升序。
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum StockBarsSort {
+    /// Oldest bar first; this remains the default for existing constructors.
+    #[default]
+    Asc,
+    /// Newest bar first; useful for bounded latest-history backfills.
+    Desc,
+}
+
+impl StockBarsSort {
+    /// Return the exact provider query value.
+    #[must_use]
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::Asc => "asc",
+            Self::Desc => "desc",
+        }
+    }
+
+    fn to_sdk(self) -> Sort {
+        match self {
+            Self::Asc => Sort::Asc,
+            Self::Desc => Sort::Desc,
+        }
+    }
+}
+
 impl StockBarsTimeframe {
     /// Return the exact Alpaca timeframe value.
     #[must_use]
@@ -89,8 +119,8 @@ struct StockBarsQueryIdentity {
     end: UtcTimestamp,
     limit: u16,
     feed: RequestedStockBarsFeed,
+    sort: StockBarsSort,
     adjustment: &'static str,
-    sort: &'static str,
     currency: &'static str,
     asof: &'static str,
 }
@@ -151,6 +181,37 @@ impl AlpacaStockBarsRequest {
         end: UtcTimestamp,
         limit: u16,
     ) -> Result<Self, AlpacaRestError> {
+        Self::new_with_feed_and_sort(
+            feed,
+            StockBarsSort::Asc,
+            symbol,
+            timeframe,
+            start,
+            end,
+            limit,
+        )
+    }
+
+    /// Validate a historical stock-bars query with explicit feed and provider sort order.
+    ///
+    /// Existing constructors keep their ascending default. Descending order is useful when a
+    /// bounded reader must start at the latest bars; the returned rows retain provider order.
+    /// Descending and ascending cursors are distinct query identities and cannot be interchanged.
+    /// 显式选择 feed 和顺序；现有构造器仍默认升序。降序结果保持 provider 顺序，游标绑定顺序。
+    ///
+    /// # Errors
+    ///
+    /// Returns [`AlpacaRestError::InvalidRequest`] for a non-canonical symbol, invalid UTC range,
+    /// or page size outside 1 through 1,000.
+    pub fn new_with_feed_and_sort(
+        feed: RequestedStockBarsFeed,
+        sort: StockBarsSort,
+        symbol: impl Into<String>,
+        timeframe: StockBarsTimeframe,
+        start: UtcTimestamp,
+        end: UtcTimestamp,
+        limit: u16,
+    ) -> Result<Self, AlpacaRestError> {
         let symbol = symbol.into();
         if !valid_stock_symbol(&symbol)
             || start > end
@@ -167,8 +228,8 @@ impl AlpacaStockBarsRequest {
                 end,
                 limit,
                 feed,
+                sort,
                 adjustment: "raw",
-                sort: "asc",
                 currency: "USD",
                 asof: "-",
             },
@@ -179,7 +240,7 @@ impl AlpacaStockBarsRequest {
     /// Continue exactly the query that produced `cursor`.
     ///
     /// A cursor cannot be reused with a different symbol, timeframe, time range, page size, or
-    /// any fixed query parameter, including the selected feed.
+    /// any fixed query parameter, including the selected feed or sort direction.
     /// 游标绑定完整查询身份，不能跨股票、周期、时间范围、页大小或固定参数复用。
     ///
     /// # Errors
@@ -230,6 +291,12 @@ impl AlpacaStockBarsRequest {
         self.identity.feed
     }
 
+    /// Return the requested provider ordering.
+    #[must_use]
+    pub const fn sort(&self) -> StockBarsSort {
+        self.identity.sort
+    }
+
     pub(crate) fn to_sdk_request(&self) -> BarsRequest {
         BarsRequest {
             symbols: vec![self.identity.symbol.clone()],
@@ -239,7 +306,7 @@ impl AlpacaStockBarsRequest {
             limit: Some(u32::from(self.identity.limit)),
             adjustment: Some(Adjustment::from(self.identity.adjustment)),
             feed: Some(self.identity.feed.to_sdk()),
-            sort: Some(Sort::Asc),
+            sort: Some(self.identity.sort.to_sdk()),
             asof: Some(self.identity.asof.to_owned()),
             currency: Some(Currency::from(self.identity.currency)),
             page_token: self.cursor.as_ref().map(|cursor| cursor.token.clone()),
@@ -267,6 +334,7 @@ impl fmt::Debug for AlpacaStockBarsRequest {
             .field("end", &self.identity.end)
             .field("limit", &self.identity.limit)
             .field("requested_feed", &self.identity.feed)
+            .field("sort", &self.identity.sort)
             .field("has_cursor", &self.cursor.is_some())
             .finish()
     }
@@ -311,7 +379,6 @@ impl StockBarsCursor {
             && self.identity.start <= self.identity.end
             && (1..=MAX_STOCK_BARS_PAGE_SIZE).contains(&self.identity.limit)
             && self.identity.adjustment == "raw"
-            && self.identity.sort == "asc"
             && self.identity.currency == "USD"
             && self.identity.asof == "-"
             && !self.token.is_empty()
@@ -333,6 +400,7 @@ struct StockBarsCursorWire {
     end: UtcTimestamp,
     page_size: u16,
     feed: RequestedStockBarsFeed,
+    sort: StockBarsSort,
     page_token: String,
     last_bar_timestamp: Option<UtcTimestamp>,
 }
@@ -350,6 +418,7 @@ impl Serialize for StockBarsCursor {
             end: self.identity.end.clone(),
             page_size: self.identity.limit,
             feed: self.identity.feed,
+            sort: self.identity.sort,
             page_token: self.token.clone(),
             last_bar_timestamp: self.last_bar_timestamp.clone(),
         }
@@ -371,8 +440,8 @@ impl<'de> Deserialize<'de> for StockBarsCursor {
                 end: wire.end,
                 limit: wire.page_size,
                 feed: wire.feed,
+                sort: wire.sort,
                 adjustment: "raw",
-                sort: "asc",
                 currency: "USD",
                 asof: "-",
             },
@@ -479,7 +548,7 @@ impl AlpacaStockBarObservation {
     }
 }
 
-/// The result from exactly one historical stock-bars page.
+/// The result from exactly one historical stock-bars page, retaining the requested provider order.
 /// 结果只覆盖单页；无 continuation token 不等于上游证明历史查询完整。
 #[derive(Clone, Eq, PartialEq)]
 pub struct AlpacaStockBarsPage {
@@ -519,7 +588,10 @@ impl AlpacaStockBarsPage {
                 || timestamp > request.identity.end
                 || previous_timestamp
                     .as_ref()
-                    .is_some_and(|previous| timestamp <= *previous)
+                    .is_some_and(|previous| match request.identity.sort {
+                        StockBarsSort::Asc => timestamp <= *previous,
+                        StockBarsSort::Desc => timestamp >= *previous,
+                    })
             {
                 return Err(AlpacaRestError::ProtocolViolation);
             }
@@ -579,7 +651,7 @@ impl AlpacaStockBarsPage {
         })
     }
 
-    /// Borrow bars returned from this provider page.
+    /// Borrow bars returned from this provider page in the requested sort order.
     #[must_use]
     pub fn bars(&self) -> &[AlpacaStockBarObservation] {
         &self.bars

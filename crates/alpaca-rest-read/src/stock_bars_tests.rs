@@ -5,7 +5,7 @@ use market_contracts::{DecimalString, EntitlementState, UtcTimestamp};
 
 use super::{
     AlpacaStockBarsPage, AlpacaStockBarsRequest, MAX_STOCK_BARS_PAGE_SIZE, RequestedStockBarsFeed,
-    StockBarsCursor, StockBarsTimeframe,
+    StockBarsCursor, StockBarsSort, StockBarsTimeframe,
 };
 use crate::AlpacaRestError;
 
@@ -131,6 +131,65 @@ fn boats_request_is_explicit_and_query_getters_are_available() {
     assert_eq!(request.start().as_str(), START);
     assert_eq!(request.end().as_str(), END);
     assert_eq!(request.page_size(), 100);
+    assert_eq!(request.sort(), StockBarsSort::Asc);
+}
+
+#[test]
+fn descending_request_sends_desc_and_validates_latest_first_pages() {
+    let descending = AlpacaStockBarsRequest::new_with_feed_and_sort(
+        RequestedStockBarsFeed::Sip,
+        StockBarsSort::Desc,
+        SYMBOL,
+        StockBarsTimeframe::Minute1,
+        UtcTimestamp::parse(START).expect("valid start"),
+        UtcTimestamp::parse(END).expect("valid end"),
+        100,
+    )
+    .expect("valid descending query");
+    let sdk = descending.to_sdk_request();
+    assert_eq!(sdk.sort.expect("sort is explicit").to_string(), "desc");
+    assert_eq!(descending.sort(), StockBarsSort::Desc);
+    assert_eq!(descending.sort().as_str(), "desc");
+
+    let mut page = AlpacaStockBarsPage::from_provider(
+        &descending,
+        response(
+            vec![
+                bar("2026-10-08T13:32:00Z"),
+                bar("2026-10-08T13:31:00Z"),
+                bar(START),
+            ],
+            Some("synthetic-desc-token"),
+        ),
+        received_at(),
+    )
+    .expect("descending provider order validates");
+    assert_eq!(
+        page.bars()
+            .iter()
+            .map(|bar| bar.timestamp().as_str())
+            .collect::<Vec<_>>(),
+        ["2026-10-08T13:32:00Z", "2026-10-08T13:31:00Z", START]
+    );
+    let cursor = page.take_next_cursor().expect("provider has a next page");
+    let encoded = serde_json::to_string(&cursor).expect("cursor serializes");
+    assert!(encoded.contains("\"sort\":\"desc\""));
+    let decoded: StockBarsCursor =
+        serde_json::from_str(&encoded).expect("descending cursor deserializes");
+    assert!(descending.clone().with_cursor(decoded.clone()).is_ok());
+    assert_eq!(
+        request().with_cursor(decoded),
+        Err(AlpacaRestError::InvalidRequest)
+    );
+
+    assert_eq!(
+        AlpacaStockBarsPage::from_provider(
+            &descending,
+            response(vec![bar(START), bar("2026-10-08T13:31:00Z")], None),
+            received_at(),
+        ),
+        Err(AlpacaRestError::ProtocolViolation)
+    );
 }
 
 #[test]
@@ -250,6 +309,15 @@ fn continuation_rejects_every_mutable_query_identity_field() {
             StockBarsTimeframe::Minute1,
             UtcTimestamp::parse(START).expect("valid start"),
             UtcTimestamp::parse(END).expect("valid end"),
+            100,
+        ),
+        AlpacaStockBarsRequest::new_with_feed_and_sort(
+            RequestedStockBarsFeed::Sip,
+            StockBarsSort::Desc,
+            SYMBOL,
+            StockBarsTimeframe::Minute1,
+            start.clone(),
+            end.clone(),
             100,
         ),
         AlpacaStockBarsRequest::new(

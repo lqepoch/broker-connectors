@@ -12,9 +12,14 @@ Options requests require an explicit `opra` or `indicative` choice and at most
 100 validated OCC symbol candidates. Snapshot pages are limited to 1,000
 points, four pages per operation, and 512 bytes per continuation cursor. The
 stock-bars facade defaults feed intent to `sip` and also accepts explicit
-`boats`; it fixes adjustment to `raw`, sort to `asc`, currency to `USD`, and
-`asof` to `-`. A request accepts one uppercase symbol, one of five supported
+`boats`; adjustment is fixed to `raw`, sort defaults to `asc`, currency is fixed
+to `USD`, and `asof` to `-`. A request accepts one uppercase symbol, one of five supported
 timeframes, a UTC inclusive start/end range, and 1 through 1,000 bars per page.
+Use `new_with_feed_and_sort` to request `asc` or `desc`; the existing
+constructors continue to default to `asc`. Pages and windows retain provider
+order, and the cursor binds the selected sort direction. A descending query
+therefore starts from recent bars and continues toward older bars; consumers
+that display chronological rows should reorder the bounded result by timestamp.
 The single-page method returns one provider page. The window method reads at
 most four pages and returns a continuation cursor when that cap is reached.
 The versioned cursor can be serialized for caller round-tripping, is query-bound
