@@ -10,10 +10,11 @@ use chrono::{SecondsFormat, Utc};
 use market_contracts::{DecimalString, MarketEventV1, UtcTimestamp};
 use zeroize::Zeroizing;
 
+use crate::stock_bars_window::{StockBarsPageProgress, StockBarsWindowBuilder};
 use crate::{
     AlpacaOptionsObservation, AlpacaOptionsRequest, AlpacaRestError, AlpacaStockBarsPage,
-    AlpacaStockBarsRequest, OptionsPageCursor, OptionsSnapshotWindow, OptionsSnapshotWindowRequest,
-    RequestedOptionsFeed,
+    AlpacaStockBarsRequest, AlpacaStockBarsWindow, AlpacaStockBarsWindowRequest, OptionsPageCursor,
+    OptionsSnapshotWindow, OptionsSnapshotWindowRequest, RequestedOptionsFeed,
 };
 
 /// Per-request HTTP deadline.
@@ -231,7 +232,7 @@ impl AlpacaRestReadClient {
             .map_err(|_| AlpacaRestError::Timeout)?
     }
 
-    /// Read exactly one page of SIP-intent historical stock bars through the pinned SDK.
+    /// Read exactly one page of explicit-feed historical stock bars through the pinned SDK.
     ///
     /// This deliberately calls the SDK's single-page `stocks().bars` method. It does not use
     /// `bars_all`, loop over pages, publish an archive, or assert that the requested SIP feed was
@@ -247,19 +248,62 @@ impl AlpacaRestReadClient {
         &self,
         request: &AlpacaStockBarsRequest,
     ) -> Result<AlpacaStockBarsPage, AlpacaRestError> {
+        tokio::time::timeout(
+            self.limits.operation_timeout(),
+            self.fetch_stock_bars_page(request),
+        )
+        .await
+        .map_err(|_| AlpacaRestError::Timeout)?
+    }
+
+    /// Read a finite stock-bars window of one through four explicit-feed provider pages.
+    ///
+    /// Every page uses the existing request timeout and bounded 429 retry. The full window also
+    /// has one operation deadline. If Alpaca returns another page after the requested page limit,
+    /// the result contains the pages read so far and an opaque continuation cursor. A transport,
+    /// provider, timeout, or protocol error fails the whole operation; previously read pages are
+    /// not returned as a successful partial window.
+    ///
+    /// # Errors
+    ///
+    /// Returns a fixed [`AlpacaRestError`] category when a provider page is rejected, rate-limited
+    /// after its bounded retry, transport fails, the operation deadline expires, or a page or
+    /// continuation violates the bounded query contract.
+    pub async fn historical_stock_bars_window(
+        &self,
+        request: AlpacaStockBarsWindowRequest,
+    ) -> Result<AlpacaStockBarsWindow, AlpacaRestError> {
+        let (mut page_request, page_limit) = request.into_parts();
         let operation = async {
-            let response = self
-                .sdk
-                .stocks()
-                .bars(request.to_sdk_request())
-                .await
-                .map_err(map_sdk_error)?;
-            let response_observed_at = now_utc()?;
-            AlpacaStockBarsPage::from_provider(request, response, response_observed_at)
+            let mut window = StockBarsWindowBuilder::new(page_limit, page_request.cursor());
+            loop {
+                let page = self.fetch_stock_bars_page(&page_request).await?;
+                match window.push(page)? {
+                    StockBarsPageProgress::Continue(cursor) => {
+                        page_request = page_request.with_cursor(*cursor)?;
+                    }
+                    StockBarsPageProgress::Stop => break,
+                }
+            }
+            Ok(window.finish())
         };
         tokio::time::timeout(self.limits.operation_timeout(), operation)
             .await
             .map_err(|_| AlpacaRestError::Timeout)?
+    }
+
+    async fn fetch_stock_bars_page(
+        &self,
+        request: &AlpacaStockBarsRequest,
+    ) -> Result<AlpacaStockBarsPage, AlpacaRestError> {
+        let response = self
+            .sdk
+            .stocks()
+            .bars(request.to_sdk_request())
+            .await
+            .map_err(map_sdk_error)?;
+        let response_observed_at = now_utc()?;
+        AlpacaStockBarsPage::from_provider(request, response, response_observed_at)
     }
 
     /// Read at most the requested number of explicit-feed option snapshot pages.
@@ -531,6 +575,8 @@ fn map_sdk_error(error: alpaca_data::Error) -> AlpacaRestError {
 
 fn map_http_status(status: u16) -> AlpacaRestError {
     match status {
+        401 => AlpacaRestError::AuthenticationRejected,
+        403 => AlpacaRestError::AccessDenied,
         429 => AlpacaRestError::RateLimited,
         400..=499 => AlpacaRestError::ProviderRejected,
         _ => AlpacaRestError::Transport,
@@ -625,9 +671,13 @@ mod tests {
     }
 
     #[test]
-    fn provider_feed_rejections_and_rate_limits_remain_distinct() {
-        assert_eq!(map_http_status(403), AlpacaRestError::ProviderRejected);
-        assert_eq!(map_http_status(401), AlpacaRestError::ProviderRejected);
+    fn authentication_access_and_rate_limit_failures_remain_distinct() {
+        assert_eq!(
+            map_http_status(401),
+            AlpacaRestError::AuthenticationRejected
+        );
+        assert_eq!(map_http_status(403), AlpacaRestError::AccessDenied);
+        assert_eq!(map_http_status(422), AlpacaRestError::ProviderRejected);
         assert_eq!(map_http_status(429), AlpacaRestError::RateLimited);
         assert_eq!(map_http_status(500), AlpacaRestError::Transport);
     }

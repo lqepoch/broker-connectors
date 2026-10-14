@@ -14,33 +14,38 @@
       "target_path": ".gitattributes"
     },
     {
+      "origin": "Public read-only Rust workspace validation with pinned action revisions; no secrets, provider access, Docker, or artifacts.",
+      "sha256": "2157dca52129e65282414a01a920fb1f0210a4dc305cd1bc7757fcdcce3201f5",
+      "target_path": ".github/workflows/public-validation.yml"
+    },
+    {
       "origin": "new project-owned code",
       "sha256": "5db6d4d3c5dbf893830c45033241e8068eb81dd11136c7ee1e33f14a883da68b",
       "target_path": ".gitleaksignore"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "b7a25c3ccef8b2566afaf59bd7c19b76f3e44d5097fe599ba4008c58f4e8349e",
+      "sha256": "6e63caf4e0cbd47433c24a8cc0ad1f763d2ac5fc597ed496ee44c12d1b2efa1e",
       "target_path": "AGENTS.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "281e49250558d96889a8f7b463719d346f2f92cae61566fd3387e6226a01331e",
+      "sha256": "e4b936fa1dae1f593f8e12bcaf3498de2efedc2a3450cd8b11c0ed1d5c496370",
       "target_path": "CONTRIBUTING.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "30a81f487444cbd42d15cbf1e9488dcf9d4aa88888596914967a59464df04457",
+      "sha256": "fb125e8982dadc37c42fd158757deb20a5b939e2db1cf6eb5151f15c0089894f",
       "target_path": "Cargo.lock"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "2cbac7240ece8f8d1237abe816e5c5f1b98c066abac96254ff5ba7361ccd9998",
+      "sha256": "58771fd05cf43a24e45965779b88b2c9cf365e7376b1cb02b2b4e0d02e816d67",
       "target_path": "Cargo.toml"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "3bc1c074667ac1560a54450ed21c7b8ba261abfec5b22a38ff63ece5484dda69",
+      "sha256": "3c856a3a69a93756145e51aeeb9f24f63a3f61ab9d0d2947dd74d9f7f358c923",
       "target_path": "DEPENDENCY-RESOLUTION.md"
     },
     {
@@ -50,12 +55,12 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "53f8d06876d113e2fac209eab01a5b4fba6ea64bb216fdddacafa95a7a48958b",
+      "sha256": "a99b9e823d8490109843554c8958fda30a6a25fd1ddc7feb4bde3de707731416",
       "target_path": "README.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "340d15e6818f33f295b043ddb1bb5f9d5e168aec9e0b5285eee2ad9c4907f067",
+      "sha256": "86b60f63d69ee09e2285856c90287ae6026f01ffdbca95cbbc6bab67fe355e20",
       "target_path": "SBOM.spdx.json"
     },
     {
@@ -65,27 +70,27 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "75cd54fecb222b590a0e9fef180967d776cc835f9f6606996c5472b46720bcb8",
+      "sha256": "ee989cf05ef6253d570716846015aca4c18eead622d7c5fc45a8b65445c952fe",
       "target_path": "crates/alpaca-rest-read/Cargo.toml"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "6f6b6be76209a4d60de2204d83da12970f14e5984e237833d1446608b11cdee3",
+      "sha256": "093e5a2b044da75ee8d194ce571f3d5f891acec846f289111e10074a06f965fa",
       "target_path": "crates/alpaca-rest-read/README.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "77397b16c5b99bb4fbbcfe6013378161b59d43afe5a101de186dace741cdf010",
+      "sha256": "59e6c6796041224008d42d486155683f7b2cfdaf42c1e653904ba8131820dbfc",
       "target_path": "crates/alpaca-rest-read/src/client.rs"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "d883720e14bcfef920ef74baf34eca06faf9e8ed75a2cbfdd2154fc3d3e9d9af",
+      "sha256": "82ebe25856ff6a257ed306d8df71a39dca8c7a90418a1517c2f98c192654bd4d",
       "target_path": "crates/alpaca-rest-read/src/error.rs"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "8f72eda88ad9c69d6bbeb96b171419ab4a7cc555a948717c9dcaf87243938b75",
+      "sha256": "e87d97ac1d3c8f72af8ff2dcbfddd0f888e3305b921f1003470fb273cfba998d",
       "target_path": "crates/alpaca-rest-read/src/lib.rs"
     },
     {
@@ -100,13 +105,23 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "fb6349265c300fda85cd5559b04997ff8074ae882281bf7ce96f1e7651cd2e69",
+      "sha256": "49c7c2c176504046e4e3a7e3aca02ef95e3b97d97954559c5217a4c0fd0f8299",
       "target_path": "crates/alpaca-rest-read/src/stock_bars.rs"
     },
     {
-      "origin": "Synthetic tests for the fixed one-page SIP facade, query-bound cursors, provider response validation, and explicit unknown provenance; no provider calls.",
-      "sha256": "5d63f62a3d43993ed91c32840d58e506807ab89e2c7cf97f2f7bde8a678b4553",
+      "origin": "Synthetic tests for the bounded SIP/BOATS historical bars facade, ascending and descending order, query-bound cursors, provider response validation, and explicit unknown provenance; no provider calls.",
+      "sha256": "2981f9f95068f8e63e0d8fb17e24048b40edab9274ccec856a232ecbe6a92c1a",
       "target_path": "crates/alpaca-rest-read/src/stock_bars_tests.rs"
+    },
+    {
+      "origin": "New project-owned bounded historical stock-bars page-window implementation with finite pagination and continuation-cycle checks.",
+      "sha256": "92f89cfb9dc90656b904752b83aeb4820bc0c1be65717e543ea6033827655bec",
+      "target_path": "crates/alpaca-rest-read/src/stock_bars_window.rs"
+    },
+    {
+      "origin": "Synthetic tests for finite stock-bars windows, serialized continuation, pagination-cycle rejection, and descending recent-to-older traversal; no provider calls.",
+      "sha256": "0db7ed83649ff7252b06d319a1e66bc660f0e387bcb7bd86a39cbae3e5fc71c2",
+      "target_path": "crates/alpaca-rest-read/src/stock_bars_window_tests.rs"
     },
     {
       "origin": "new project-owned code",
@@ -289,7 +304,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "bba9064989e65ef91744bb1cd6b551546eac82fd7125eee0abd6e596b78c0be1",
+      "sha256": "7ef608788c3f000b92eda22687fdc51aa8ff9532daa920f80e8b178e07583895",
       "target_path": "docs/schwab-adapter.md"
     },
     {
@@ -399,8 +414,8 @@
   ],
   "shared_contract_dependencies": [
     {
-      "commit": "b2679e757576f8da7850cd4b5ea2958bc9a2354c",
-      "git_tree": "7a05c8272b716cb5c6f928ef4beeeb2206a13abc",
+      "commit": "f793be47ab90ebff9f530c8b08f41db5e774e4e5",
+      "git_tree": "061c28d14b5dc91800798a404778704c456bb1bf",
       "license": "MIT OR Apache-2.0",
       "lockfile": "Cargo.lock includes this package and its transitive core packages at the same commit.",
       "package": "market-contracts",
@@ -408,8 +423,8 @@
       "repository": "lqepoch/trading-core"
     },
     {
-      "commit": "b2679e757576f8da7850cd4b5ea2958bc9a2354c",
-      "git_tree": "7a05c8272b716cb5c6f928ef4beeeb2206a13abc",
+      "commit": "f793be47ab90ebff9f530c8b08f41db5e774e4e5",
+      "git_tree": "061c28d14b5dc91800798a404778704c456bb1bf",
       "license": "MIT OR Apache-2.0",
       "lockfile": "Cargo.lock resolves exact-decimal as the only normal transitive dependency of domain for broker-execution.",
       "package": "exact-decimal",
@@ -417,8 +432,8 @@
       "repository": "lqepoch/trading-core"
     },
     {
-      "commit": "b2679e757576f8da7850cd4b5ea2958bc9a2354c",
-      "git_tree": "7a05c8272b716cb5c6f928ef4beeeb2206a13abc",
+      "commit": "f793be47ab90ebff9f530c8b08f41db5e774e4e5",
+      "git_tree": "061c28d14b5dc91800798a404778704c456bb1bf",
       "license": "MIT OR Apache-2.0",
       "lockfile": "Cargo.lock resolves domain and market-contracts from the same immutable trading-core revision.",
       "package": "domain",

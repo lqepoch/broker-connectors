@@ -20,8 +20,8 @@ CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p ibkr-read --locked
 CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy -p ibkr-read --all-targets --locked -- -D warnings
 CARGO_BUILD_JOBS=2 cargo +1.99.0 test -p schwab-rest -p schwab-sdk -p schwab-streamer -p schwab-adapter --locked --offline
 CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy -p schwab-rest -p schwab-sdk -p schwab-streamer -p schwab-adapter --all-targets --locked --offline -- -D warnings
-CARGO_BUILD_JOBS=2 cargo +1.99.0 test --workspace --locked
-CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy --workspace --all-targets --locked -- -D warnings
+CARGO_BUILD_JOBS=2 cargo +1.99.0 test --workspace --all-features --locked
+CARGO_BUILD_JOBS=2 cargo +1.99.0 clippy --workspace --all-targets --all-features --locked -- -D warnings
 python3 scripts/generate_spdx_sbom.py
 python3 scripts/update_source_manifest_hashes.py
 python3 scripts/check_vendor_provenance.py
@@ -31,6 +31,12 @@ Update `SOURCE-MANIFEST.json` when an extracted source file or its adapted form
 changes. Keep provider entitlement, completeness, source exactness, and local
 test evidence distinct in code and documentation. A socket write or connection
 state does not confirm a subscription.
+
+Public pull-request and `main` validation is defined in
+`.github/workflows/public-validation.yml`. It runs the same all-feature Rust
+workspace checks plus the source-provenance validator with read-only repository
+permission; keep provider credentials, provider requests, Docker, and artifact
+uploads out of that workflow.
 
 Keep Clippy's conversion and safety diagnostics enabled. A temporary allowance
 for inherited documentation/style warnings must be attached only to the
