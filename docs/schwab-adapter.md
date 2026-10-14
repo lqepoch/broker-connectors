@@ -108,11 +108,15 @@ provider compatibility or market-data acceptance evidence.
 
 ## Validation status
 
-The final integrated workspace uses Core `domain`, `market-contracts`, and
-`exact-decimal` from the published trading-core revision
-`23a87d5b5a549e4489c1a2844c4132c43148fe6b` (tree
-`f7b0c789bdc16c4695730d349cd519d2196900c7`). The full nine-package workspace
-passes these offline gates with the Rust 1.99.0 toolchain:
+The current workspace uses Core `domain`, `market-contracts`, and
+`exact-decimal` from the frozen trading-core revision
+`f793be47ab90ebff9f530c8b08f41db5e774e4e5` (tree
+`061c28d14b5dc91800798a404778704c456bb1bf`). This revision includes the shared
+Bars v1 contract. The 313-test offline run below was recorded against the
+previous `23a87d5b5a549e4489c1a2844c4132c43148fe6b` Core revision and remains
+historical evidence for that SHA only; it is not a test result for the newer
+pin. `.github/workflows/public-validation.yml` runs the current all-feature
+workspace checks on each PR head.
 
 ```text
 CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 CARGO_TARGET_DIR=/root/.cache/lqepoch/broker-connectors-target \

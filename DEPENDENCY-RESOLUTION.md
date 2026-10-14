@@ -45,11 +45,16 @@ precision. The source-to-target version adaptation is recorded in
 `vendor/schwab/SOURCE-MANIFEST.json`.
 
 The current workspace pins `domain` and `market-contracts`, and their transitive
-`exact-decimal` package, to the same immutable trading-core PR 11 revision
-`23a87d5b5a549e4489c1a2844c4132c43148fe6b` (tree
-`f7b0c789bdc16c4695730d349cd519d2196900c7`). Cargo.lock records one shared
+`exact-decimal` package, to the same immutable trading-core revision
+`f793be47ab90ebff9f530c8b08f41db5e774e4e5` (tree
+`061c28d14b5dc91800798a404778704c456bb1bf`). This revision adds the shared
+Bars v1 contract and its schema validation. Cargo.lock records one shared
 revision so adapters and consumers use the same Rust domain and market-contract
-types. `SOURCE-MANIFEST.json` records that pin for all three packages.
+types. `SOURCE-MANIFEST.json` records that pin for all three packages. The
+previously recorded 313-test local run was against the earlier
+`23a87d5b5a549e4489c1a2844c4132c43148fe6b` revision; this newer pin is covered
+by the public `Rust workspace` CI on the frozen PR head, not by that historical
+local result.
 
 The pinned Alpaca REST stack's target-union dependency graph includes
 `webpki-root-certs 1.0.9`: the SDK enables reqwest 0.13.5's `rustls` feature,

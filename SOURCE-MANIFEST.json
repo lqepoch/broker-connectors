@@ -14,33 +14,38 @@
       "target_path": ".gitattributes"
     },
     {
+      "origin": "Public read-only Rust workspace validation with pinned action revisions; no secrets, provider access, Docker, or artifacts.",
+      "sha256": "2157dca52129e65282414a01a920fb1f0210a4dc305cd1bc7757fcdcce3201f5",
+      "target_path": ".github/workflows/public-validation.yml"
+    },
+    {
       "origin": "new project-owned code",
       "sha256": "5db6d4d3c5dbf893830c45033241e8068eb81dd11136c7ee1e33f14a883da68b",
       "target_path": ".gitleaksignore"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "3c00aebbafe2661b01a5354fd1a9c19a7fcbab28d38c5cf7551bd8b107eaf57f",
+      "sha256": "6e63caf4e0cbd47433c24a8cc0ad1f763d2ac5fc597ed496ee44c12d1b2efa1e",
       "target_path": "AGENTS.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "281e49250558d96889a8f7b463719d346f2f92cae61566fd3387e6226a01331e",
+      "sha256": "e4b936fa1dae1f593f8e12bcaf3498de2efedc2a3450cd8b11c0ed1d5c496370",
       "target_path": "CONTRIBUTING.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "3b322ea8b4ad60b9b23d01036dc8bdd363a3702550d977d5259a2a8a8dfb81e0",
+      "sha256": "fb125e8982dadc37c42fd158757deb20a5b939e2db1cf6eb5151f15c0089894f",
       "target_path": "Cargo.lock"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "2cbac7240ece8f8d1237abe816e5c5f1b98c066abac96254ff5ba7361ccd9998",
+      "sha256": "58771fd05cf43a24e45965779b88b2c9cf365e7376b1cb02b2b4e0d02e816d67",
       "target_path": "Cargo.toml"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "3bc1c074667ac1560a54450ed21c7b8ba261abfec5b22a38ff63ece5484dda69",
+      "sha256": "3c856a3a69a93756145e51aeeb9f24f63a3f61ab9d0d2947dd74d9f7f358c923",
       "target_path": "DEPENDENCY-RESOLUTION.md"
     },
     {
@@ -50,12 +55,12 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "c6960c9c80adfe183ad4fce699e3deea29dd702435996f6d179cdd614c70b6d1",
+      "sha256": "a99b9e823d8490109843554c8958fda30a6a25fd1ddc7feb4bde3de707731416",
       "target_path": "README.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "69c94f647c41639072ddeefa0d0da3f3396b4dcd97b295dfa0f14fb29d388a67",
+      "sha256": "86b60f63d69ee09e2285856c90287ae6026f01ffdbca95cbbc6bab67fe355e20",
       "target_path": "SBOM.spdx.json"
     },
     {
@@ -299,7 +304,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "bba9064989e65ef91744bb1cd6b551546eac82fd7125eee0abd6e596b78c0be1",
+      "sha256": "7ef608788c3f000b92eda22687fdc51aa8ff9532daa920f80e8b178e07583895",
       "target_path": "docs/schwab-adapter.md"
     },
     {
@@ -409,8 +414,8 @@
   ],
   "shared_contract_dependencies": [
     {
-      "commit": "b2679e757576f8da7850cd4b5ea2958bc9a2354c",
-      "git_tree": "7a05c8272b716cb5c6f928ef4beeeb2206a13abc",
+      "commit": "f793be47ab90ebff9f530c8b08f41db5e774e4e5",
+      "git_tree": "061c28d14b5dc91800798a404778704c456bb1bf",
       "license": "MIT OR Apache-2.0",
       "lockfile": "Cargo.lock includes this package and its transitive core packages at the same commit.",
       "package": "market-contracts",
@@ -418,8 +423,8 @@
       "repository": "lqepoch/trading-core"
     },
     {
-      "commit": "b2679e757576f8da7850cd4b5ea2958bc9a2354c",
-      "git_tree": "7a05c8272b716cb5c6f928ef4beeeb2206a13abc",
+      "commit": "f793be47ab90ebff9f530c8b08f41db5e774e4e5",
+      "git_tree": "061c28d14b5dc91800798a404778704c456bb1bf",
       "license": "MIT OR Apache-2.0",
       "lockfile": "Cargo.lock resolves exact-decimal as the only normal transitive dependency of domain for broker-execution.",
       "package": "exact-decimal",
@@ -427,8 +432,8 @@
       "repository": "lqepoch/trading-core"
     },
     {
-      "commit": "b2679e757576f8da7850cd4b5ea2958bc9a2354c",
-      "git_tree": "7a05c8272b716cb5c6f928ef4beeeb2206a13abc",
+      "commit": "f793be47ab90ebff9f530c8b08f41db5e774e4e5",
+      "git_tree": "061c28d14b5dc91800798a404778704c456bb1bf",
       "license": "MIT OR Apache-2.0",
       "lockfile": "Cargo.lock resolves domain and market-contracts from the same immutable trading-core revision.",
       "package": "domain",

@@ -1,6 +1,6 @@
 # broker-connectors
 
-This public Rust workspace owns broker protocol adapters and provider-neutral ports. It starts with the audited Alpaca options WebSocket protocol and bounded market-data contracts. Shared domain and market-contract types come from the frozen [`trading-core`](https://github.com/lqepoch/trading-core) revision `b2679e757576f8da7850cd4b5ea2958bc9a2354c` (tree `7a05c8272b716cb5c6f928ef4beeeb2206a13abc`).
+This public Rust workspace owns broker protocol adapters and provider-neutral ports. It starts with the audited Alpaca options WebSocket protocol and bounded market-data contracts. Shared domain and market-contract types come from the frozen [`trading-core`](https://github.com/lqepoch/trading-core) revision `f793be47ab90ebff9f530c8b08f41db5e774e4e5` (tree `061c28d14b5dc91800798a404778704c456bb1bf`), including the shared Bars v1 contract.
 
 Boundary: this repository owns provider SDK/protocol integration and adapter ports; `broker-execution` is a software contract only, with no independent OMS, account-state authority, persistence, or broker writer. The nine-repository map is a [governance candidate in Draft PR #20](https://github.com/lqepoch/platform-ops/blob/codex/chg-2026-001-workspace-layout/docs/NINE-REPOSITORY-ARCHITECTURE.md), not yet the `main` authority; current behavior follows this repository's source, manifests, locks, and local documentation.
 
@@ -58,6 +58,12 @@ storage and research qualification remain MDP responsibilities.
 The initial `alpaca-stream` implementation reuses source at `schwab_auto_bot@c907d18bc31790ede4cf36a4312a6813467506f0` for protocol/session mechanics, with file-level provenance in `SOURCE-MANIFEST.json`. Schwab source extraction uses the same immutable source pin but a separate selected-path manifest. New public package files use the project-authorized `MIT OR Apache-2.0` license; third-party dependency license terms remain separate and are recorded in the manifest/SBOM.
 
 ## Local checks
+
+Pull requests and pushes to `main` run the public Rust workspace validation in
+`.github/workflows/public-validation.yml` with Rust 1.99.0. It runs formatting,
+all-feature workspace tests and Clippy, then checks source provenance. The job
+has `contents: read`, uses no repository or organization secrets, and performs
+no provider calls, Docker builds, or artifact uploads.
 
 ```sh
 CARGO_BUILD_JOBS=2 cargo +1.99.0 fmt --all -- --check

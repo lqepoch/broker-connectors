@@ -32,6 +32,12 @@ them or add module/workspace-wide suppressions.
 
 ## Validation
 
+The public `Rust workspace` pull-request and `main` workflow uses the pinned
+Rust 1.99.0 toolchain to run formatting, all-feature workspace tests and
+all-target Clippy, followed by `scripts/check_vendor_provenance.py`. Its token
+permission is `contents: read`; it has no secrets, provider calls, Docker
+builds, or public artifacts. Keep Cargo dependencies and source pins locked.
+
 Use the pinned toolchain and `CARGO_BUILD_JOBS=2`. Run the affected crate tests first, then workspace tests, formatting, Clippy with `-D warnings`, dependency/license checks, and secret scanning. Do not suppress numeric conversion or safety lints. The current item-scoped Clippy allowances are: `MarketNumber::to_f64` documents its intentionally lossy projection; the Alpaca request/control entrypoints, MessagePack preflight, and two session-state transitions keep their bounded state machine together; `receive_frame` keeps each protocol deadline explicit; the runner imports its parent's private session vocabulary; the fake socket implements the required async test trait without awaiting. Report native provider, OAuth, live-data, and Windows/macOS runtime checks as `NOT RUN` unless they were actually executed in an authorized environment.
 
 ## Owner self-review and self-merge
