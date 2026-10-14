@@ -50,7 +50,7 @@ fn received_at() -> UtcTimestamp {
 }
 
 #[test]
-fn request_fixes_sip_query_and_validates_boundaries() {
+fn request_fixes_default_sip_query_and_validates_boundaries() {
     let request = request();
     let sdk = request.to_sdk_request();
     assert_eq!(sdk.symbols, vec![SYMBOL.to_owned()]);
@@ -110,6 +110,27 @@ fn request_fixes_sip_query_and_validates_boundaries() {
         )
         .is_err()
     );
+}
+
+#[test]
+fn boats_request_is_explicit_and_query_getters_are_available() {
+    let request = AlpacaStockBarsRequest::new_with_feed(
+        RequestedStockBarsFeed::Boats,
+        SYMBOL,
+        StockBarsTimeframe::Minute1,
+        UtcTimestamp::parse(START).expect("valid time"),
+        UtcTimestamp::parse(END).expect("valid time"),
+        100,
+    )
+    .expect("valid synthetic BOATS query");
+    let sdk = request.to_sdk_request();
+    assert_eq!(sdk.feed.expect("feed is explicit").to_string(), "boats");
+    assert_eq!(request.requested_feed(), RequestedStockBarsFeed::Boats);
+    assert_eq!(request.requested_feed().as_str(), "boats");
+    assert_eq!(request.timeframe(), StockBarsTimeframe::Minute1);
+    assert_eq!(request.start().as_str(), START);
+    assert_eq!(request.end().as_str(), END);
+    assert_eq!(request.page_size(), 100);
 }
 
 #[test]
@@ -223,6 +244,14 @@ fn continuation_rejects_every_mutable_query_identity_field() {
             end.clone(),
             100,
         ),
+        AlpacaStockBarsRequest::new_with_feed(
+            RequestedStockBarsFeed::Boats,
+            SYMBOL,
+            StockBarsTimeframe::Minute1,
+            UtcTimestamp::parse(START).expect("valid start"),
+            UtcTimestamp::parse(END).expect("valid end"),
+            100,
+        ),
         AlpacaStockBarsRequest::new(
             SYMBOL,
             StockBarsTimeframe::Minute1,
@@ -253,6 +282,29 @@ fn continuation_rejects_every_mutable_query_identity_field() {
             Err(AlpacaRestError::InvalidRequest)
         );
     }
+}
+
+#[test]
+fn continuation_cursor_round_trips_as_versioned_opaque_state() {
+    let mut page = AlpacaStockBarsPage::from_provider(
+        &request(),
+        response(vec![bar(START)], Some("synthetic-page-token")),
+        received_at(),
+    )
+    .expect("synthetic page validates");
+    let cursor = page.take_next_cursor().expect("continuation returned");
+    let encoded = serde_json::to_string(&cursor).expect("cursor serializes");
+    assert!(!format!("{cursor:?}").contains("synthetic-page-token"));
+
+    let decoded: StockBarsCursor =
+        serde_json::from_str(&encoded).expect("versioned cursor deserializes");
+    assert_eq!(decoded, cursor);
+    assert!(request().with_cursor(decoded).is_ok());
+
+    let mut malformed: serde_json::Value =
+        serde_json::from_str(&encoded).expect("serialized cursor is JSON");
+    malformed["version"] = serde_json::json!(2);
+    assert!(serde_json::from_value::<StockBarsCursor>(malformed).is_err());
 }
 
 #[test]

@@ -6,6 +6,7 @@ use alpaca_data::stocks::{
 use market_contracts::{
     DecimalString, EntitlementState, MarketDataSourceV1, NumericEncodingV1, UtcTimestamp,
 };
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::{AlpacaRestError, MAX_PAGE_CURSOR_BYTES};
 
@@ -15,11 +16,15 @@ pub const MAX_STOCK_BARS_PAGE_SIZE: u16 = 1_000;
 
 /// Fixed feed intent for the stock-history facade.
 /// 该枚举记录请求意图，不构成返回来源或账户权限证据。
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum RequestedStockBarsFeed {
     /// Request the SIP feed. This is request intent, not source or entitlement evidence.
     /// 请求 SIP 不证明响应来自 SIP，也不证明账户具有相应权限。
     Sip,
+    /// Request historical bars from the BOATS feed.
+    /// 请求 BOATS 历史数据；请求意图不证明响应来源或 entitlement。
+    Boats,
 }
 
 impl RequestedStockBarsFeed {
@@ -28,13 +33,22 @@ impl RequestedStockBarsFeed {
     pub const fn as_str(self) -> &'static str {
         match self {
             Self::Sip => "sip",
+            Self::Boats => "boats",
+        }
+    }
+
+    fn to_sdk(self) -> DataFeed {
+        match self {
+            Self::Sip => DataFeed::Sip,
+            Self::Boats => DataFeed::Boats,
         }
     }
 }
 
 /// Supported Alpaca stock-bar intervals.
 /// 本枚举列出该适配器接受的股票 K 线周期。
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum StockBarsTimeframe {
     /// One-minute bars.
     Minute1,
@@ -66,7 +80,7 @@ impl StockBarsTimeframe {
     }
 }
 
-/// Validated identity for one single-symbol SIP bars query.
+/// Validated identity for one single-symbol SIP or BOATS bars query.
 #[derive(Clone, Eq, PartialEq)]
 struct StockBarsQueryIdentity {
     symbol: String,
@@ -81,8 +95,8 @@ struct StockBarsQueryIdentity {
     asof: &'static str,
 }
 
-/// Validated single-symbol request for one page of SIP-intent historical stock bars.
-/// 此请求固定单一股票与 SIP 请求参数，但不声明响应来源、权限或历史完整性。
+/// Validated single-symbol request for one page of explicit-feed historical stock bars.
+/// 此请求固定单一股票与 feed 意图，但不声明响应来源、权限或历史完整性。
 #[derive(Clone, Eq, PartialEq)]
 pub struct AlpacaStockBarsRequest {
     identity: StockBarsQueryIdentity,
@@ -92,16 +106,45 @@ pub struct AlpacaStockBarsRequest {
 impl AlpacaStockBarsRequest {
     /// Validate an uppercase stock symbol, a closed UTC time range, and a page size.
     ///
-    /// The request always fixes feed to `sip`, adjustment to `raw`, sort to `asc`, currency to
-    /// `USD`, and `asof` to `-`. A SIP request does not prove that Alpaca returned SIP data or
-    /// that the account is entitled to it.
-    /// 请求参数固定为 SIP；响应来源和账户权限仍须独立验证。
+    /// The request defaults to `sip` and fixes adjustment to `raw`, sort to `asc`, currency to
+    /// `USD`, and `asof` to `-`. Use [`Self::new_with_feed`] to select `boats`. A requested feed
+    /// does not prove the response source or account entitlement.
+    /// 默认请求 SIP；其他固定参数为 raw、asc、USD 和 `asof=-`。使用 `new_with_feed` 选择 BOATS。
     ///
     /// # Errors
     ///
     /// Returns [`AlpacaRestError::InvalidRequest`] for a non-canonical symbol, invalid UTC range,
     /// or page size outside 1 through 1,000.
     pub fn new(
+        symbol: impl Into<String>,
+        timeframe: StockBarsTimeframe,
+        start: UtcTimestamp,
+        end: UtcTimestamp,
+        limit: u16,
+    ) -> Result<Self, AlpacaRestError> {
+        Self::new_with_feed(
+            RequestedStockBarsFeed::Sip,
+            symbol,
+            timeframe,
+            start,
+            end,
+            limit,
+        )
+    }
+
+    /// Validate a historical stock-bars query with an explicit SIP or BOATS feed.
+    ///
+    /// A requested feed is intent only. Effective source and account entitlement remain unknown
+    /// unless separately verified. Historical overnight bars use `boats`; `overnight` is not a
+    /// supported historical-bars feed.
+    /// 请求 feed 仅表示意图；实际来源和账户权限仍未知。历史隔夜 bars 使用 `boats`，不使用 `overnight`。
+    ///
+    /// # Errors
+    ///
+    /// Returns [`AlpacaRestError::InvalidRequest`] for a non-canonical symbol, invalid UTC range,
+    /// or page size outside 1 through 1,000.
+    pub fn new_with_feed(
+        feed: RequestedStockBarsFeed,
         symbol: impl Into<String>,
         timeframe: StockBarsTimeframe,
         start: UtcTimestamp,
@@ -123,7 +166,7 @@ impl AlpacaStockBarsRequest {
                 start,
                 end,
                 limit,
-                feed: RequestedStockBarsFeed::Sip,
+                feed,
                 adjustment: "raw",
                 sort: "asc",
                 currency: "USD",
@@ -136,14 +179,14 @@ impl AlpacaStockBarsRequest {
     /// Continue exactly the query that produced `cursor`.
     ///
     /// A cursor cannot be reused with a different symbol, timeframe, time range, page size, or
-    /// any fixed SIP query parameter.
+    /// any fixed query parameter, including the selected feed.
     /// 游标绑定完整查询身份，不能跨股票、周期、时间范围、页大小或固定参数复用。
     ///
     /// # Errors
     ///
     /// Returns [`AlpacaRestError::InvalidRequest`] when the cursor belongs to another query.
     pub fn with_cursor(mut self, cursor: StockBarsCursor) -> Result<Self, AlpacaRestError> {
-        if self.identity != cursor.identity {
+        if self.identity != cursor.identity || !cursor.is_well_formed() {
             return Err(AlpacaRestError::InvalidRequest);
         }
         self.cursor = Some(cursor);
@@ -156,7 +199,31 @@ impl AlpacaStockBarsRequest {
         &self.identity.symbol
     }
 
-    /// Return the fixed SIP request intent.
+    /// Return the requested bar timeframe.
+    #[must_use]
+    pub const fn timeframe(&self) -> StockBarsTimeframe {
+        self.identity.timeframe
+    }
+
+    /// Return the inclusive UTC query start.
+    #[must_use]
+    pub const fn start(&self) -> &UtcTimestamp {
+        &self.identity.start
+    }
+
+    /// Return the inclusive UTC query end.
+    #[must_use]
+    pub const fn end(&self) -> &UtcTimestamp {
+        &self.identity.end
+    }
+
+    /// Return the maximum number of bars requested from one provider page.
+    #[must_use]
+    pub const fn page_size(&self) -> u16 {
+        self.identity.limit
+    }
+
+    /// Return the explicit SIP or BOATS request intent.
     /// 返回请求意图，不是响应来源或权限证据。
     #[must_use]
     pub const fn requested_feed(&self) -> RequestedStockBarsFeed {
@@ -171,12 +238,16 @@ impl AlpacaStockBarsRequest {
             end: Some(self.identity.end.as_str().to_owned()),
             limit: Some(u32::from(self.identity.limit)),
             adjustment: Some(Adjustment::from(self.identity.adjustment)),
-            feed: Some(DataFeed::Sip),
+            feed: Some(self.identity.feed.to_sdk()),
             sort: Some(Sort::Asc),
             asof: Some(self.identity.asof.to_owned()),
             currency: Some(Currency::from(self.identity.currency)),
             page_token: self.cursor.as_ref().map(|cursor| cursor.token.clone()),
         }
+    }
+
+    pub(crate) fn cursor(&self) -> Option<&StockBarsCursor> {
+        self.cursor.as_ref()
     }
 
     fn previous_timestamp(&self) -> Option<&UtcTimestamp> {
@@ -201,7 +272,7 @@ impl fmt::Debug for AlpacaStockBarsRequest {
     }
 }
 
-/// Opaque, redacted continuation for the next single page of the same SIP bars query.
+/// Opaque, redacted continuation for the next page of the same historical bars query.
 /// 游标仅用于继续同一查询；其存在或缺失均不证明历史数据完整。
 #[derive(Clone, Eq, PartialEq)]
 pub struct StockBarsCursor {
@@ -229,6 +300,89 @@ impl StockBarsCursor {
             token,
             last_bar_timestamp,
         })
+    }
+
+    pub(crate) fn provider_token(&self) -> &str {
+        &self.token
+    }
+
+    fn is_well_formed(&self) -> bool {
+        valid_stock_symbol(&self.identity.symbol)
+            && self.identity.start <= self.identity.end
+            && (1..=MAX_STOCK_BARS_PAGE_SIZE).contains(&self.identity.limit)
+            && self.identity.adjustment == "raw"
+            && self.identity.sort == "asc"
+            && self.identity.currency == "USD"
+            && self.identity.asof == "-"
+            && !self.token.is_empty()
+            && self.token.len() <= MAX_PAGE_CURSOR_BYTES
+            && !self.token.bytes().any(|byte| byte.is_ascii_control())
+            && self.last_bar_timestamp.as_ref().is_none_or(|timestamp| {
+                timestamp >= &self.identity.start && timestamp <= &self.identity.end
+            })
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct StockBarsCursorWire {
+    version: u8,
+    symbol: String,
+    timeframe: StockBarsTimeframe,
+    start: UtcTimestamp,
+    end: UtcTimestamp,
+    page_size: u16,
+    feed: RequestedStockBarsFeed,
+    page_token: String,
+    last_bar_timestamp: Option<UtcTimestamp>,
+}
+
+impl Serialize for StockBarsCursor {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        StockBarsCursorWire {
+            version: 1,
+            symbol: self.identity.symbol.clone(),
+            timeframe: self.identity.timeframe,
+            start: self.identity.start.clone(),
+            end: self.identity.end.clone(),
+            page_size: self.identity.limit,
+            feed: self.identity.feed,
+            page_token: self.token.clone(),
+            last_bar_timestamp: self.last_bar_timestamp.clone(),
+        }
+        .serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for StockBarsCursor {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let wire = StockBarsCursorWire::deserialize(deserializer)?;
+        let cursor = Self {
+            identity: StockBarsQueryIdentity {
+                symbol: wire.symbol,
+                timeframe: wire.timeframe,
+                start: wire.start,
+                end: wire.end,
+                limit: wire.page_size,
+                feed: wire.feed,
+                adjustment: "raw",
+                sort: "asc",
+                currency: "USD",
+                asof: "-",
+            },
+            token: wire.page_token,
+            last_bar_timestamp: wire.last_bar_timestamp,
+        };
+        if wire.version != 1 || !cursor.is_well_formed() {
+            return Err(serde::de::Error::custom("invalid stock-bars cursor"));
+        }
+        Ok(cursor)
     }
 }
 
@@ -317,7 +471,7 @@ impl AlpacaStockBarObservation {
         &self.source
     }
 
-    /// Return the fixed SIP request intent, not proof of the returned source.
+    /// Return the explicit SIP or BOATS request intent, not proof of the returned source.
     /// 返回请求意图，不表示响应 feed 或权限已经确认。
     #[must_use]
     pub const fn requested_feed(&self) -> RequestedStockBarsFeed {

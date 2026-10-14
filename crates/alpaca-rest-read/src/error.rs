@@ -7,9 +7,15 @@ pub enum AlpacaRestError {
     InvalidConfiguration,
     /// Invalid symbol, time range, page size, cursor, or duplicate request value.
     InvalidRequest,
+    /// The provider rejected authentication credentials.
+    /// provider 拒绝了认证凭据。
+    AuthenticationRejected,
+    /// The provider denied access to the requested resource or feed.
+    /// provider 拒绝访问请求资源或 feed。
+    AccessDenied,
     /// The upstream returned an HTTP rate-limit response.
     RateLimited,
-    /// Alpaca rejected the request, key, or feed entitlement.
+    /// Alpaca rejected a request for a provider-specific reason that is not classified further.
     ProviderRejected,
     /// The HTTP operation failed without a safe detailed classification.
     Transport,
@@ -26,6 +32,8 @@ impl fmt::Display for AlpacaRestError {
         formatter.write_str(match self {
             Self::InvalidConfiguration => "ALPACA_REST_INVALID_CONFIGURATION",
             Self::InvalidRequest => "ALPACA_REST_INVALID_REQUEST",
+            Self::AuthenticationRejected => "ALPACA_REST_AUTHENTICATION_REJECTED",
+            Self::AccessDenied => "ALPACA_REST_ACCESS_DENIED",
             Self::RateLimited => "ALPACA_REST_RATE_LIMITED",
             Self::ProviderRejected => "ALPACA_REST_PROVIDER_REJECTED",
             Self::Transport => "ALPACA_REST_TRANSPORT_FAILURE",
