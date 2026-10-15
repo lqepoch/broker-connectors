@@ -53,7 +53,21 @@ returns a bounded adapter observation with exact decimal OHLC/VWAP and integer
 volume; it is not the shared MDP minute-bar schema. Requested feed remains
 separate from source evidence: `MarketDataSourceV1.feed` and entitlement stay
 `unknown` because a request parameter does not prove which feed was returned
-or the account's entitlement. HTTP 401, 403, and 429 map to distinct fixed
+or the account's entitlement. A page returned by the read client after SDK and
+page validation also carries an opaque, in-process
+`AlpacaStockBarsQueryAccessWitness` for its exact API selector and typed response
+observation. Its getters expose the contract ID, fixed HTTPS origin and path,
+symbol, requested feed, raw adjustment, timeframe, inclusive range, sort, page
+limit, fixed currency/as-of selectors, incoming and next-cursor SHA-256, local
+observation time, row count, and typed-response SHA-256. Parser-only fixture
+pages do not carry it. A unit test may call the crate-private projection
+attachment directly with synthetic values to validate field mapping and Debug
+redaction; the resulting test-only value is not provider evidence. The witness does not
+echo or verify the effective feed, account plan, entitlement, license, or history
+completeness; an empty page records query success with zero rows, and a missing
+next-page cursor is not a completeness claim. Its SHA-256 covers a stable
+SDK-typed response projection, not the HTTP wire body. This SDK wrapper does not
+expose the exact HTTP status or request-id. HTTP 401, 403, and 429 map to distinct fixed
 authentication, access-denied, and rate-limit errors. Other provider 4xx errors
 remain generic because status alone cannot identify whether a request failed
 due to plan, time range, or another rule. No error triggers a fallback to IEX
@@ -92,7 +106,8 @@ capability report returns these unsupported states explicitly.
 
 The decimal-preservation test uses a synthetic normalized `BarsResponse`
 fixture from the pinned SDK model. It does not claim coverage of the
-single-symbol endpoint's raw HTTP response shape.
+single-symbol endpoint's raw HTTP response shape, and the parser-only fixture
+path does not mint a query-access witness.
 
 The upstream is [`wmzhai/alpaca-rust` v0.33.3 at commit
 `d91be382e3e9d25c52c24e626e78702532d24ba2`](https://github.com/wmzhai/alpaca-rust/tree/d91be382e3e9d25c52c24e626e78702532d24ba2).

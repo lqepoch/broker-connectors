@@ -10,6 +10,7 @@ use chrono::{SecondsFormat, Utc};
 use market_contracts::{DecimalString, MarketEventV1, UtcTimestamp};
 use zeroize::Zeroizing;
 
+use crate::stock_bars::{ALPACA_DATA_API_ORIGIN, typed_bars_response_sha256};
 use crate::stock_bars_window::{StockBarsPageProgress, StockBarsWindowBuilder};
 use crate::{
     AlpacaOptionsObservation, AlpacaOptionsRequest, AlpacaRestError, AlpacaStockBarsPage,
@@ -30,7 +31,6 @@ pub const MAX_RETRY_BUDGET: Duration = Duration::from_secs(2);
 const DEFAULT_RETRY_BUDGET: Duration = Duration::from_millis(500);
 const MAX_IN_FLIGHT_REQUESTS: usize = 2;
 const MAX_CREDENTIAL_FIELD_BYTES: usize = 1_024;
-const DATA_API_ORIGIN: &str = "https://data.alpaca.markets";
 
 /// Bounds for one instance of the Alpaca REST read adapter.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -167,7 +167,7 @@ impl AlpacaRestReadClient {
             .with_total_retry_budget(limits.retry_budget());
         let builder = alpaca_data::Client::builder()
             .credentials_zeroizing(key_id, secret)
-            .base_url_str(DATA_API_ORIGIN)
+            .base_url_str(ALPACA_DATA_API_ORIGIN)
             .map_err(|_| AlpacaRestError::InvalidConfiguration)?
             .timeout(limits.request_timeout())
             .max_in_flight(MAX_IN_FLIGHT_REQUESTS)
@@ -303,7 +303,10 @@ impl AlpacaRestReadClient {
             .await
             .map_err(map_sdk_error)?;
         let response_observed_at = now_utc()?;
-        AlpacaStockBarsPage::from_provider(request, response, response_observed_at)
+        let typed_response_sha256 = typed_bars_response_sha256(&response);
+        let mut page = AlpacaStockBarsPage::from_provider(request, response, response_observed_at)?;
+        page.attach_query_access_witness(request, typed_response_sha256);
+        Ok(page)
     }
 
     /// Read at most the requested number of explicit-feed option snapshot pages.
@@ -405,7 +408,7 @@ impl fmt::Debug for AlpacaRestReadClient {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter
             .debug_struct("AlpacaRestReadClient")
-            .field("origin", &DATA_API_ORIGIN)
+            .field("origin", &ALPACA_DATA_API_ORIGIN)
             .field("limits", &self.limits)
             .field("credentials", &"[REDACTED]")
             .finish_non_exhaustive()

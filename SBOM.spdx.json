@@ -1,13 +1,13 @@
 {
   "SPDXID": "SPDXRef-DOCUMENT",
   "creationInfo": {
-    "created": "2026-10-14T03:10:31Z",
+    "created": "2026-10-15T01:00:55Z",
     "creators": [
       "Tool: scripts/generate_spdx_sbom.py"
     ]
   },
   "dataLicense": "CC0-1.0",
-  "documentNamespace": "https://spdx.org/spdxdocs/broker-connectors-fb125e8982dadc37c42fd158757deb20a5b939e2db1cf6eb5151f15c0089894f",
+  "documentNamespace": "https://spdx.org/spdxdocs/broker-connectors-c8c3bd4b66e1f56d349aef4294ac2c77a8ffd7ebe107e11d47380c0359c9ec13",
   "name": "broker-connectors Cargo workspace",
   "packages": [
     {
@@ -9334,6 +9334,11 @@
     },
     {
       "relatedSpdxElement": "SPDXRef-Package-188-serde-json-1.0.151",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-5-alpaca-rest-read-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-191-sha2-0.10.9",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-Package-5-alpaca-rest-read-0.1.0"
     },
