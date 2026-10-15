@@ -408,7 +408,7 @@ impl fmt::Debug for AlpacaRestReadClient {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter
             .debug_struct("AlpacaRestReadClient")
-            .field("origin", &DATA_API_ORIGIN)
+            .field("origin", &ALPACA_DATA_API_ORIGIN)
             .field("limits", &self.limits)
             .field("credentials", &"[REDACTED]")
             .finish_non_exhaustive()
