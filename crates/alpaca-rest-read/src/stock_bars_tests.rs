@@ -5,7 +5,7 @@ use market_contracts::{DecimalString, EntitlementState, UtcTimestamp};
 
 use super::{
     AlpacaStockBarsPage, AlpacaStockBarsRequest, MAX_STOCK_BARS_PAGE_SIZE, RequestedStockBarsFeed,
-    StockBarsCursor, StockBarsSort, StockBarsTimeframe,
+    StockBarsCursor, StockBarsSort, StockBarsTimeframe, typed_bars_response_sha256,
 };
 use crate::AlpacaRestError;
 
@@ -223,6 +223,41 @@ fn provider_bars_preserve_exact_values_and_unknown_effective_source() {
     );
     assert_eq!(page.response_observed_at().as_str(), "2026-10-09T00:00:00Z");
     assert!(!page.has_next_page());
+    assert!(page.query_access_witness().is_none());
+}
+
+#[test]
+fn synthetic_empty_page_has_no_query_access_witness_or_completeness_claim() {
+    let page =
+        AlpacaStockBarsPage::from_provider(&request(), response(Vec::new(), None), received_at())
+            .expect("empty synthetic provider page is structurally valid");
+
+    assert!(page.bars().is_empty());
+    assert!(!page.has_next_page());
+    assert!(page.query_access_witness().is_none());
+}
+
+#[test]
+fn typed_response_digest_is_stable_and_binds_rows_and_cursor() {
+    let original = response(vec![bar(START)], Some("synthetic-page-token"));
+    let same_typed_response = response(vec![bar(START)], Some("synthetic-page-token"));
+    let changed_cursor = response(vec![bar(START)], Some("different-synthetic-token"));
+    let changed_row = response(
+        vec![bar("2026-10-08T13:31:00Z")],
+        Some("synthetic-page-token"),
+    );
+
+    let digest = typed_bars_response_sha256(&original);
+    assert_eq!(digest, typed_bars_response_sha256(&same_typed_response));
+    assert_ne!(digest, typed_bars_response_sha256(&changed_cursor));
+    assert_ne!(digest, typed_bars_response_sha256(&changed_row));
+    assert_eq!(digest.len(), 64);
+    assert!(
+        digest
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+    );
+    assert!(!digest.contains("synthetic-page-token"));
 }
 
 #[test]

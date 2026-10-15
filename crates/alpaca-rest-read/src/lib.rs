@@ -8,11 +8,16 @@
 //! separate bounded adapter observation and never collect or publish a history. Stock history can
 //! be read one page at a time or in a finite four-page window. A requested feed is not entitlement
 //! evidence; REST reads do not provide a trusted sequence, stream watermark, or completion receipt.
+//! A single page returned by the read client may additionally carry an opaque, process-local
+//! query-access witness after SDK success and page validation. Parser-created fixtures do not
+//! mint it, and the witness does not establish effective feed, entitlement, or completeness.
 //!
 //! 本 crate 基于固定版本的社区 Rust SDK 提供有界、只读 Alpaca 期权及股票 bars REST 接口。
 //! 股票历史可逐页或以最多四页的窗口读取。期权读取返回共享 `market-contracts` quote/trade 类型；
 //! 股票 bars 返回独立的有界适配器观察值，不负责历史采集或发布。请求 feed 不构成 entitlement
 //! 证据；REST 读取不提供可信序号、水位或完整性回执。
+//! 只读客户端成功解码并校验单页后可附加进程内不透明查询见证；解析 fixture 不生成见证，
+//! 见证不证明有效 feed、entitlement 或完整性。
 
 mod client;
 mod error;
@@ -33,9 +38,9 @@ pub use request::{
     OptionsSnapshotWindowRequest, RequestedOptionsFeed,
 };
 pub use stock_bars::{
-    AlpacaStockBarObservation, AlpacaStockBarsPage, AlpacaStockBarsRequest,
-    MAX_STOCK_BARS_PAGE_SIZE, RequestedStockBarsFeed, StockBarsCursor, StockBarsSort,
-    StockBarsTimeframe,
+    AlpacaStockBarObservation, AlpacaStockBarsPage, AlpacaStockBarsQueryAccessWitness,
+    AlpacaStockBarsQuerySuccessClass, AlpacaStockBarsRequest, MAX_STOCK_BARS_PAGE_SIZE,
+    RequestedStockBarsFeed, StockBarsCursor, StockBarsSort, StockBarsTimeframe,
 };
 pub use stock_bars_window::{
     AlpacaStockBarsWindow, AlpacaStockBarsWindowRequest, MAX_STOCK_BARS_PAGES_PER_WINDOW,
