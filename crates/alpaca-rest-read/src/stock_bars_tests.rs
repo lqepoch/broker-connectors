@@ -233,7 +233,7 @@ fn synthetic_empty_page_has_no_query_access_witness_or_completeness_claim() {
         AlpacaStockBarsPage::from_provider(&request(), response(Vec::new(), None), received_at())
             .expect("empty synthetic provider page is structurally valid");
 
-    assert!(page.bars().is_empty());
+    assert_eq!(page.bars().len(), 0);
     assert!(!page.has_next_page());
     assert!(page.query_access_witness().is_none());
 }

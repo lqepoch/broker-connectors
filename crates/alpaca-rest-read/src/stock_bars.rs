@@ -576,7 +576,7 @@ impl fmt::Debug for AlpacaStockBarsQueryAccessWitness {
             .field("row_count", &self.row_count)
             .field("has_request_cursor", &self.request_cursor_sha256.is_some())
             .field("has_next_page", &self.has_next_page())
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 
@@ -590,7 +590,7 @@ pub(crate) fn typed_bars_response_sha256(response: &BarsResponse) -> String {
     update_optional_string(&mut hasher, response.next_page_token.as_deref());
 
     let mut symbols = response.bars.iter().collect::<Vec<_>>();
-    symbols.sort_unstable_by(|(left, _), (right, _)| left.cmp(right));
+    symbols.sort_unstable_by_key(|(symbol, _)| *symbol);
     update_length(&mut hasher, symbols.len());
     for (symbol, bars) in symbols {
         update_string(&mut hasher, symbol);
@@ -1001,7 +1001,7 @@ impl fmt::Debug for AlpacaStockBarsPage {
                 "has_query_access_witness",
                 &self.query_access_witness.is_some(),
             )
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 
