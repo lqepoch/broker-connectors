@@ -25,7 +25,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "6e63caf4e0cbd47433c24a8cc0ad1f763d2ac5fc597ed496ee44c12d1b2efa1e",
+      "sha256": "0e851362864051f15460e176a0eefabe0b5a850a4b34fb83e5ed990daaeed439",
       "target_path": "AGENTS.md"
     },
     {
@@ -35,7 +35,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "fb125e8982dadc37c42fd158757deb20a5b939e2db1cf6eb5151f15c0089894f",
+      "sha256": "c8c3bd4b66e1f56d349aef4294ac2c77a8ffd7ebe107e11d47380c0359c9ec13",
       "target_path": "Cargo.lock"
     },
     {
@@ -55,12 +55,12 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "a99b9e823d8490109843554c8958fda30a6a25fd1ddc7feb4bde3de707731416",
+      "sha256": "2049aabcfd26c7077396e49657df2c54c3df912eaf66af50a5e8818487c50580",
       "target_path": "README.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "86b60f63d69ee09e2285856c90287ae6026f01ffdbca95cbbc6bab67fe355e20",
+      "sha256": "59b0e6ef90116487556d9e273b98b442a25d1eb21e3adba682fdd7758e250f31",
       "target_path": "SBOM.spdx.json"
     },
     {
@@ -70,17 +70,17 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "ee989cf05ef6253d570716846015aca4c18eead622d7c5fc45a8b65445c952fe",
+      "sha256": "3a6fc7f1a3ed5fdaacfa1423237bd9c5b2da8726c510a7769b3aacb5183c066e",
       "target_path": "crates/alpaca-rest-read/Cargo.toml"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "093e5a2b044da75ee8d194ce571f3d5f891acec846f289111e10074a06f965fa",
+      "sha256": "d2d9db216f5f847e7aa564b1f186b2cf60dcd75b675d8fa7066026b953c9dcf2",
       "target_path": "crates/alpaca-rest-read/README.md"
     },
     {
       "origin": "new project-owned code",
-      "sha256": "59e6c6796041224008d42d486155683f7b2cfdaf42c1e653904ba8131820dbfc",
+      "sha256": "a6932470e5e5185350acb8c0cfc985a4c277b64300c1789321517083943bb085",
       "target_path": "crates/alpaca-rest-read/src/client.rs"
     },
     {
@@ -90,7 +90,7 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "e87d97ac1d3c8f72af8ff2dcbfddd0f888e3305b921f1003470fb273cfba998d",
+      "sha256": "14ef70dffe12df5c2b71fb82342558828b7ebbb52a14702e0d24cf0e6d57ca62",
       "target_path": "crates/alpaca-rest-read/src/lib.rs"
     },
     {
@@ -105,12 +105,12 @@
     },
     {
       "origin": "new project-owned code",
-      "sha256": "49c7c2c176504046e4e3a7e3aca02ef95e3b97d97954559c5217a4c0fd0f8299",
+      "sha256": "be15ead86b8675a23a4d679959895164779f0d60d7ffa6540275b4fb6aef8ced",
       "target_path": "crates/alpaca-rest-read/src/stock_bars.rs"
     },
     {
       "origin": "Synthetic tests for the bounded SIP/BOATS historical bars facade, ascending and descending order, query-bound cursors, provider response validation, and explicit unknown provenance; no provider calls.",
-      "sha256": "2981f9f95068f8e63e0d8fb17e24048b40edab9274ccec856a232ecbe6a92c1a",
+      "sha256": "6a1053c15c12b02d238cac34d5cc4199c18be5766d3041a915415c6d41adc0c5",
       "target_path": "crates/alpaca-rest-read/src/stock_bars_tests.rs"
     },
     {
