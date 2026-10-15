@@ -4,8 +4,9 @@ use alpaca_data::stocks::{Bar, BarsResponse, Currency};
 use market_contracts::{DecimalString, EntitlementState, UtcTimestamp};
 
 use super::{
-    AlpacaStockBarsPage, AlpacaStockBarsRequest, MAX_STOCK_BARS_PAGE_SIZE, RequestedStockBarsFeed,
-    StockBarsCursor, StockBarsSort, StockBarsTimeframe, typed_bars_response_sha256,
+    AlpacaStockBarsPage, AlpacaStockBarsQuerySuccessClass, AlpacaStockBarsRequest,
+    MAX_STOCK_BARS_PAGE_SIZE, RequestedStockBarsFeed, StockBarsCursor, StockBarsSort,
+    StockBarsTimeframe, typed_bars_response_sha256,
 };
 use crate::AlpacaRestError;
 
@@ -258,6 +259,100 @@ fn typed_response_digest_is_stable_and_binds_rows_and_cursor() {
             .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
     );
     assert!(!digest.contains("synthetic-page-token"));
+}
+
+#[test]
+fn test_only_synthetic_witness_projection_binds_scope_and_redacts_debug() {
+    // TEST ONLY: directly exercise the projection constructor. This does not represent a client
+    // SDK call, a provider response, or ProviderVerified evidence.
+    let initial_request = request();
+    let mut first_page = AlpacaStockBarsPage::from_provider(
+        &initial_request,
+        response(vec![bar(START)], Some("synthetic-incoming-token")),
+        received_at(),
+    )
+    .expect("synthetic first page parses");
+    assert!(first_page.query_access_witness().is_none());
+    let cursor = first_page
+        .take_next_cursor()
+        .expect("synthetic page has a cursor");
+    let continued_request = initial_request
+        .with_cursor(cursor)
+        .expect("synthetic cursor matches query");
+    let raw_response = response(
+        vec![bar("2026-10-08T13:31:00Z")],
+        Some("synthetic-outgoing-token"),
+    );
+    let response_digest = typed_bars_response_sha256(&raw_response);
+    let mut page =
+        AlpacaStockBarsPage::from_provider(&continued_request, raw_response, received_at())
+            .expect("synthetic continuation page parses");
+    assert!(page.query_access_witness().is_none());
+
+    page.attach_query_access_witness(&continued_request, response_digest.clone());
+    let witness = page
+        .query_access_witness()
+        .expect("test attaches projection");
+
+    assert_eq!(
+        witness.api_contract_id(),
+        "alpaca-stock-bars-single-symbol-v2/typed-observation-v1"
+    );
+    assert_eq!(witness.api_method(), "GET");
+    assert_eq!(witness.api_origin(), "https://data.alpaca.markets");
+    assert_eq!(witness.api_path_template(), "/v2/stocks/{symbol}/bars");
+    assert_eq!(
+        witness.success_class(),
+        AlpacaStockBarsQuerySuccessClass::SdkReturnedDecodedResponse
+    );
+    assert_eq!(witness.symbol(), SYMBOL);
+    assert_eq!(witness.requested_feed(), RequestedStockBarsFeed::Sip);
+    assert_eq!(witness.adjustment(), "raw");
+    assert_eq!(witness.currency(), "USD");
+    assert_eq!(witness.asof(), "-");
+    assert_eq!(witness.timeframe(), StockBarsTimeframe::Minute1);
+    assert_eq!(witness.start_inclusive().as_str(), START);
+    assert_eq!(witness.end_inclusive().as_str(), END);
+    assert_eq!(witness.sort(), StockBarsSort::Asc);
+    assert_eq!(witness.page_size(), 100);
+    assert!(
+        witness
+            .request_cursor_sha256()
+            .is_some_and(|digest| { digest.len() == 64 && digest != "synthetic-incoming-token" })
+    );
+    assert_eq!(witness.typed_response_sha256(), response_digest);
+    assert_eq!(
+        witness.response_observed_at().as_str(),
+        "2026-10-09T00:00:00Z"
+    );
+    assert_eq!(witness.row_count(), 1);
+    assert!(witness.contains_rows());
+    assert!(witness.has_next_page());
+    assert!(
+        witness
+            .next_page_cursor_sha256()
+            .is_some_and(|digest| { digest.len() == 64 && digest != "synthetic-outgoing-token" })
+    );
+    assert_eq!(page.bars()[0].source().feed, "unknown");
+    assert_eq!(
+        page.bars()[0].source().entitlement,
+        EntitlementState::Unknown
+    );
+
+    let debug = format!("{witness:?}");
+    for private_scope in [
+        SYMBOL,
+        START,
+        END,
+        "synthetic-incoming-token",
+        "synthetic-outgoing-token",
+    ] {
+        assert!(!debug.contains(private_scope));
+    }
+    assert!(!debug.contains(&response_digest));
+    assert!(debug.contains("row_count"));
+    assert!(debug.contains("has_request_cursor"));
+    assert!(debug.contains("has_next_page"));
 }
 
 #[test]
