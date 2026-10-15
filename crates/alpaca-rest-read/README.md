@@ -59,8 +59,10 @@ page validation also carries an opaque, in-process
 observation. Its getters expose the contract ID, fixed HTTPS origin and path,
 symbol, requested feed, raw adjustment, timeframe, inclusive range, sort, page
 limit, fixed currency/as-of selectors, incoming and next-cursor SHA-256, local
-observation time, row count, and typed-response SHA-256. Parser-created fixture
-pages do not carry it. The witness does not
+observation time, row count, and typed-response SHA-256. Parser-only fixture
+pages do not carry it. A unit test may call the crate-private projection
+attachment directly with synthetic values to validate field mapping and Debug
+redaction; the resulting test-only value is not provider evidence. The witness does not
 echo or verify the effective feed, account plan, entitlement, license, or history
 completeness; an empty page records query success with zero rows, and a missing
 next-page cursor is not a completeness claim. Its SHA-256 covers a stable

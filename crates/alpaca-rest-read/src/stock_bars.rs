@@ -406,14 +406,17 @@ impl StockBarsCursor {
 /// Opaque in-process witness for one successfully decoded Alpaca stock-bars query page.
 /// 单页 Alpaca 股票 bars 查询的进程内不透明见证。
 ///
-/// The value is constructed only by the read client after the pinned SDK returns a decoded
-/// success and the page passes the adapter's validation. Its feed is the request's documented
+/// Production values are attached only by the read client after the pinned SDK returns a decoded
+/// success and the page passes the adapter's validation. Unit tests may call the crate-private
+/// projection attachment with synthetic values to check field mapping and redaction; that test
+/// value is not provider evidence. Its feed is the request's documented
 /// source selector, not a response echo or an independently verified effective feed. It does not
 /// establish account plan, entitlement, completeness, or licensing. The response digest covers
 /// a stable projection of the SDK-typed response, not the HTTP wire body. This type has no public
 /// constructor or serde implementation; do not treat a serialized copy as a trusted witness.
 ///
-/// 该值仅由只读客户端在固定 SDK 成功解码并通过页面校验后构造。feed 是请求中的文档化来源选择器，
+/// 生产值仅由只读客户端在固定 SDK 成功解码并通过页面校验后附加。单元测试可用合成值调用
+/// crate-private 投影附加函数来检查字段映射和脱敏；该测试值不是 provider evidence。feed 是请求中的文档化来源选择器，
 /// 不是响应回显，也不是独立核实的有效来源。它不证明账户计划、权限、完整性或许可。响应摘要覆盖
 /// SDK 类型响应的稳定投影，不是 HTTP 原始报文摘要。该类型没有公共构造器或 serde 实现；序列化副本
 /// 不应视为可信见证。
@@ -964,9 +967,9 @@ impl AlpacaStockBarsPage {
         &self.response_observed_at
     }
 
-    /// Borrow the in-process witness attached only after a real SDK read and page validation.
-    /// Pages made by the parser from synthetic payloads do not carry a witness.
-    /// 仅在真实 SDK 读取且页面校验成功后附加进程内见证；合成 payload 解析页没有此见证。
+    /// Borrow the witness attached in production only after a real SDK read and page validation.
+    /// Parser-only fixture pages remain witness-free; direct synthetic attachment is test-only.
+    /// 生产路径仅在真实 SDK 读取且页面校验成功后附加见证。仅解析 fixture 保持无见证；合成直调仅用于测试。
     #[must_use]
     pub fn query_access_witness(&self) -> Option<&AlpacaStockBarsQueryAccessWitness> {
         self.query_access_witness.as_ref()

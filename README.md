@@ -19,6 +19,8 @@ non-serializable `AlpacaStockBarsQueryAccessWitness` scoped to the exact request
 response observation. Synthetic parser fixtures do not mint it. This process-local witness does
 not assert effective feed, account entitlement, plan, licensing, or history completeness; an
 empty response has no rows, and absence of a continuation token is not a completeness receipt.
+Unit tests may directly exercise its crate-private projection attachment using synthetic values;
+such test-only values validate projection and redaction only and are not provider evidence.
 
 The [`schwab-adapter`](crates/schwab-adapter/README.md) wraps the selected project-owned `schwab-sdk`, `schwab-rest`, and `schwab-streamer` source at immutable private-source pin `c907d18bc31790ede4cf36a4312a6813467506f0`. It exposes bounded account-summary and positions reads only, holds an explicit shared admission permit for each request, and omits raw account numbers. It does not implement order/fill pagination, execution, OAuth/bootstrap, or a production stream lease. Streamer fields remain opaque; the public `schwab-streamer` API is decoder/state only, while native credential and LOGIN runtime modules are unit-test-only. The adapter gate validates an exact full WSS URL and drops its candidate lease without returning credentials. The selected 66 source files and per-file hashes/categories are in [`vendor/schwab/SOURCE-MANIFEST.json`](vendor/schwab/SOURCE-MANIFEST.json); owner authorization covers only those paths under the target `MIT OR Apache-2.0` license. Tests use synthetic payloads, fake transports, or localhost-only TLS sockets; no provider call or OAuth flow was run.
 
