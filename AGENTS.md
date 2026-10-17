@@ -2,7 +2,7 @@
 
 This public workspace contains provider protocol adapters, provider-neutral read ports, and a separate provider-neutral execution software contract. Keep market reads, account reads, and execution authority separate. The library must not create a second OMS, account-state authority, quote store, persistence layer, or runtime scheduler.
 
-The nine-repository map is a [governance candidate in Draft PR #20](https://github.com/lqepoch/platform-ops/blob/codex/chg-2026-001-workspace-layout/docs/NINE-REPOSITORY-ARCHITECTURE.md), not yet the `main` authority. Until it is merged, use this repository's source, manifests, locks, and local documentation as current behavior evidence.
+The [nine-repository target architecture](https://github.com/lqepoch/platform-ops/blob/main/docs/NINE-REPOSITORY-ARCHITECTURE.md) was published on `platform-ops/main` on 2026-10-17. It governs target responsibilities and migration gates; implemented authority and readiness still require source, exact dependency locks and head-bound acceptance evidence.
 
 ## Safety Boundaries
 
